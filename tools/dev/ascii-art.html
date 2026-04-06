@@ -116,17 +116,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/figlet.js/1.6.0/figlet.min.js" onerror="handleLibError()"></script>
 
     <script>
-      // Pre-configure figlet to load fonts from CDN
-      // Using unpkg as it has the full fonts directory structure
-      const FIGLET_FONT_PATH = "https://unpkg.com/figlet@1.6.0/fonts/";
-      
+      // Using a more reliable font source (jsDelivr) and adding preloading logic
+      const FIGLET_FONT_BASE = "https://cdn.jsdelivr.net/npm/figlet@1.6.0/fonts/";
+      const loadedFonts = new Map(); // Cache for parsed fonts
+
       function handleLibError() {
         console.error("Failed to load figlet.js");
         const status = document.getElementById("statusBar");
+        const msg = "核心库加载失败，请检查网络并刷新重试";
         if (status) {
-          status.innerHTML = `<span class="status-error">核心库加载失败，请刷新页面重试</span>`;
+          status.innerHTML = `<span class="status-error">${msg}</span>`;
         } else {
-          alert("核心库加载失败，请刷新页面重试");
+          alert(msg);
         }
       }
     </script>
@@ -687,6 +688,8 @@
               <option value="Banner">Banner (条幅)</option>
               <option value="Doom">Doom (毁灭)</option>
               <option value="Ivrit">Ivrit (希伯来)</option>
+              <option value="Star Wars">Star Wars (星战)</option>
+              <option value="Graffiti">Graffiti (涂鸦)</option>
             </select>
           </div>
         </div>
@@ -788,50 +791,72 @@
 
       function generateArt() {
         if (genTimeout) clearTimeout(genTimeout);
-        genTimeout = setTimeout(_generateArt, 300);
+        genTimeout = setTimeout(_generateArt, 150); // Faster response
       }
 
-      function _generateArt() {
+      async function _generateArt() {
         const text = textInput.value;
-        const font = fontSelect.value;
+        const fontName = fontSelect.value;
 
         if (!text) {
           output.style.display = "none";
           placeholder.style.display = "block";
+          showStatus("");
           return;
         }
 
-        // Check if library is ready
+        // Library check
         if (typeof figlet === 'undefined') {
           showStatus("正在加载引擎...", "info");
           setTimeout(generateArt, 500);
           return;
         }
 
-        showStatus("生成中...", "info");
-        
-        // Use figlet.defaults to set the font path
-        figlet.defaults({ fontPath: FIGLET_FONT_PATH });
-
-        figlet.text(text, {
-          font: font,
-          horizontalLayout: 'default',
-          verticalLayout: 'default',
-          width: 80,
-          whitespaceBreak: true
-        }, function(err, data) {
-          if (err) {
-            console.error('Figlet error:', err);
-            showStatus("字体加载失败，请检查网络", "error");
-            return;
+        try {
+          // Font caching and loading
+          if (!loadedFonts.has(fontName)) {
+            showStatus(`正在加载字体: ${fontName}...`, "info");
+            const response = await fetch(`${FIGLET_FONT_BASE}${fontName}.flf`);
+            if (!response.ok) throw new Error(`Font loading failed: ${response.statusText}`);
+            const fontData = await response.text();
+            
+            // figlet.parseFont parses the .flf string
+            figlet.parseFont(fontName, fontData);
+            loadedFonts.set(fontName, true);
           }
-          output.textContent = data;
-          output.style.display = "block";
-          placeholder.style.display = "none";
-          localStorage.setItem(LS_KEY, text);
-          showStatus("生成成功", "success");
-          setTimeout(() => { if(statusBar.innerText === "生成成功") statusBar.innerHTML = ""; }, 1500);
-        });
+
+          // Generate art using the parsed font
+          figlet.text(text, {
+            font: fontName,
+            horizontalLayout: 'default',
+            verticalLayout: 'default',
+            width: 120, // Increased width for better fitting
+            whitespaceBreak: true
+          }, function(err, data) {
+            if (err) {
+              console.error('Figlet generation error:', err);
+              showStatus("生成艺术字时出错", "error");
+              return;
+            }
+            output.textContent = data;
+            output.style.display = "block";
+            placeholder.style.display = "none";
+            localStorage.setItem(LS_KEY, text);
+            showStatus("生成成功", "success");
+            setTimeout(() => { if(statusBar.innerText === "生成成功") statusBar.innerHTML = ""; }, 1000);
+          });
+        } catch (error) {
+          console.error('ASCII Art Process Error:', error);
+          showStatus(`加载字体失败 (${error.message})`, "error");
+          
+          // Fallback to Standard font if custom font fails
+          if (fontName !== 'Standard') {
+            setTimeout(() => {
+              fontSelect.value = 'Standard';
+              generateArt();
+            }, 1500);
+          }
+        }
       }
 
       async function copyResult() {
