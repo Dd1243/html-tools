@@ -143,7 +143,7 @@ function generateMetaTags(config, url) {
     <meta property="og:url" content="${url}" />
     <meta property="og:site_name" content="WebUtils" />
     <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://tools.realtime-ai.chat/social-preview.png" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
     <meta property="og:image:width" content="1280" />
     <meta property="og:image:height" content="640" />
     <meta property="og:image:type" content="image/png" />
@@ -152,7 +152,7 @@ function generateMetaTags(config, url) {
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${config.title}" />
     <meta name="twitter:description" content="${config.description}" />
-    <meta name="twitter:image" content="https://tools.realtime-ai.chat/social-preview.png" />
+    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
   `;
 }
 
@@ -166,13 +166,13 @@ function generateStructuredData(config, url, toolName) {
         '@type': 'ListItem',
         'position': 1,
         'name': '首页',
-        'item': 'https://tools.realtime-ai.chat/'
+        'item': 'https://essays4u.net/'
       },
       {
         '@type': 'ListItem',
         'position': 2,
         'name': config.category,
-        'item': 'https://tools.realtime-ai.chat/#dev'
+        'item': 'https://essays4u.net/#dev'
       },
       {
         '@type': 'ListItem',
@@ -197,11 +197,11 @@ function generateStructuredData(config, url, toolName) {
     },
     'description': config.description,
     'featureList': config.features,
-    'screenshot': 'https://tools.realtime-ai.chat/social-preview.png',
+    'screenshot': 'https://essays4u.net/social-preview.png',
     'author': {
       '@type': 'Organization',
       'name': 'WebUtils',
-      'url': 'https://tools.realtime-ai.chat/'
+      'url': 'https://essays4u.net/'
     }
   };
 
@@ -346,7 +346,7 @@ function processHtmlFile(filePath, category) {
     const filename = path.basename(filePath);
     const toolName = path.basename(filename, '.html');
     const config = getToolConfig(filename);
-    const url = `https://tools.realtime-ai.chat/tools/${category}/${filename}`;
+    const url = `https://essays4u.net/tools/${category}/${filename}`;
 
     // 检查是否已经优化过
     if (content.includes('<!-- JSON-LD FAQ Schema -->')) {

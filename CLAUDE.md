@@ -85,7 +85,7 @@ JavaScript 从内联的 TOOLS/CATEGORIES 数组动态渲染工具卡片（`rende
 
 - **字体**: Space Grotesk（正文）、JetBrains Mono（代码/输入）
 - **主题**: 暗色赛博朋克为主，CSS 变量驱动，支持 `[data-theme="light"]` 覆盖
-- **域名**: `tools.realtime-ai.chat`（sitemap、canonical URL、OG 标签等）
+- **域名**: `essays4u.net`（sitemap、canonical URL、OG 标签等）
 
 ## CI/CD
 

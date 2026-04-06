@@ -28,7 +28,7 @@ const SITEMAP_XML = path.join(ROOT_DIR, 'sitemap.xml');
 const MANIFEST_JSON = path.join(ROOT_DIR, 'manifest.json');
 
 // 网站域名 (不带尾部斜杠)
-const SITE_URL = 'https://tools.realtime-ai.chat';
+const SITE_URL = 'https://essays4u.net';
 
 // 优先显示的分类顺序
 const PRIORITY_CATEGORIES = [

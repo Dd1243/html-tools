@@ -3,7 +3,7 @@
 <div align="center">
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tools](https://img.shields.io/badge/Tools-1001+-blue.svg)](https://tools.realtime-ai.chat)
+[![Tools](https://img.shields.io/badge/Tools-1001+-blue.svg)](https://essays4u.net)
 [![Lint](https://github.com/chicogong/html-tools/actions/workflows/lint.yml/badge.svg)](https://github.com/chicogong/html-tools/actions/workflows/lint.yml)
 [![Deploy](https://github.com/chicogong/html-tools/actions/workflows/deploy.yml/badge.svg)](https://github.com/chicogong/html-tools/actions/workflows/deploy.yml)
 [![Vercel](https://img.shields.io/badge/Vercel-deployed-black?logo=vercel)](https://html-tools-jade.vercel.app)
@@ -20,7 +20,7 @@
 
 一个完全开源、隐私至上的在线工具集。无需安装、无需注册、无广告、无追踪。
 
-[**🌐 立即体验**](https://tools.realtime-ai.chat) | [工具列表](#工具列表-1001-个) | [贡献指南](#贡献指南) | [添加新工具](#添加新工具)
+[**🌐 立即体验**](https://essays4u.net) | [工具列表](#工具列表-1001-个) | [贡献指南](#贡献指南) | [添加新工具](#添加新工具)
 
 </div>
 
@@ -101,7 +101,7 @@
 
 | 平台              | 链接                                    | 状态    |
 | ----------------- | --------------------------------------- | ------- |
-| **🌐 自定义域名** | https://tools.realtime-ai.chat          | ✅      |
+| **🌐 自定义域名** | https://essays4u.net          | ✅      |
 | GitHub Pages      | https://chicogong.github.io/html-tools/ | ✅      |
 | Cloudflare Pages  | https://htmltools-bkt.pages.dev         | ✅      |
 | Vercel            | https://html-tools-jade.vercel.app      | ✅      |
