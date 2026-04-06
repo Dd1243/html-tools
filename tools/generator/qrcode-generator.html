@@ -142,7 +142,7 @@
     />
 
     <!-- QRCode library -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
 
     <style>
       /* ============================================
@@ -486,7 +486,6 @@
 
       #qrCanvas {
         max-width: 100%;
-        height: auto !important;
         image-rendering: pixelated;
       }
 
@@ -832,37 +831,54 @@
       // ============================================
       // Core Logic
       // ============================================
-      const textInput = document.getElementById("textInput");
-      const qrSize = document.getElementById("qrSize");
-      const fgColor = document.getElementById("fgColor");
-      const bgColor = document.getElementById("bgColor");
-      const canvas = document.getElementById("qrCanvas");
-      const qrPlaceholder = document.getElementById("qrPlaceholder");
-      const btnDownload = document.getElementById("btnDownload");
-      const btnCopy = document.getElementById("btnCopy");
-      const qrStats = document.getElementById("qrStats");
-
+      let textInput, qrSize, fgColor, bgColor, canvas, qrPlaceholder, btnDownload, btnCopy, qrStats;
       const LS_KEY = "qrcode_generator_state";
 
+      function initElements() {
+        textInput = document.getElementById("textInput");
+        qrSize = document.getElementById("qrSize");
+        fgColor = document.getElementById("fgColor");
+        bgColor = document.getElementById("bgColor");
+        canvas = document.getElementById("qrCanvas");
+        qrPlaceholder = document.getElementById("qrPlaceholder");
+        btnDownload = document.getElementById("btnDownload");
+        btnCopy = document.getElementById("btnCopy");
+        qrStats = document.getElementById("qrStats");
+      }
+
       function updateColorText(inputId, textId) {
-        document.getElementById(textId).textContent = document.getElementById(inputId).value.toUpperCase();
-        if (textInput.value.trim()) generateQR();
+        const input = document.getElementById(inputId);
+        const text = document.getElementById(textId);
+        if (input && text) {
+          text.textContent = input.value.toUpperCase();
+        }
+        if (textInput && textInput.value.trim()) generateQR();
       }
 
       function generateQR() {
+        if (!textInput) return;
         const text = textInput.value.trim();
         if (!text) {
-          canvas.style.display = "none";
-          qrPlaceholder.style.display = "block";
-          btnDownload.disabled = true;
-          btnCopy.disabled = true;
-          qrStats.textContent = "";
+          if (canvas) canvas.style.display = "none";
+          if (qrPlaceholder) qrPlaceholder.style.display = "block";
+          if (btnDownload) btnDownload.disabled = true;
+          if (btnCopy) btnCopy.disabled = true;
+          if (qrStats) qrStats.textContent = "";
           return;
         }
 
         const size = parseInt(qrSize.value) || 300;
         
-        QRCode.toCanvas(canvas, text, {
+        // Both uppercase and lowercase might work depending on the version
+        const qrEngine = typeof QRCode !== 'undefined' ? QRCode : (typeof qrcode !== 'undefined' ? qrcode : null);
+        
+        if (!qrEngine) {
+          if (qrStats) qrStats.textContent = "正在加载生成引擎，请稍候...";
+          setTimeout(generateQR, 500);
+          return;
+        }
+
+        qrEngine.toCanvas(canvas, text, {
           width: size,
           margin: 2,
           color: {
@@ -872,20 +888,21 @@
           errorCorrectionLevel: 'H'
         }, function (error) {
           if (error) {
-            console.error(error);
-            qrStats.textContent = "生成失败: " + error.message;
+            console.error("QRCode Error:", error);
+            if (qrStats) qrStats.textContent = "生成失败: " + error.message;
           } else {
-            canvas.style.display = "block";
-            qrPlaceholder.style.display = "none";
-            btnDownload.disabled = false;
-            btnCopy.disabled = false;
-            qrStats.textContent = `分辨率: ${size}x${size} px`;
+            if (canvas) canvas.style.display = "block";
+            if (qrPlaceholder) qrPlaceholder.style.display = "none";
+            if (btnDownload) btnDownload.disabled = false;
+            if (btnCopy) btnCopy.disabled = false;
+            if (qrStats) qrStats.textContent = `分辨率: ${size}x${size} px`;
             saveState();
           }
         });
       }
 
       function downloadQR() {
+        if (!canvas) return;
         const link = document.createElement("a");
         link.download = `webutils-qr-${Date.now()}.png`;
         link.href = canvas.toDataURL("image/png");
@@ -893,6 +910,7 @@
       }
 
       async function copyQR() {
+        if (!canvas) return;
         try {
           const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png"));
           await navigator.clipboard.write([
@@ -908,11 +926,14 @@
       }
 
       function resetForm() {
-        textInput.value = "";
-        generateQR();
+        if (textInput) {
+          textInput.value = "";
+          generateQR();
+        }
       }
 
       function saveState() {
+        if (!textInput) return;
         const state = {
           text: textInput.value,
           size: qrSize.value,
@@ -923,8 +944,12 @@
         
         // Update URL Hash for sharing (only if text is small)
         if (textInput.value.length < 500) {
-          const hash = btoa(encodeURIComponent(JSON.stringify(state)));
-          history.replaceState(null, "", "#" + hash);
+          try {
+            const hash = btoa(unescape(encodeURIComponent(JSON.stringify(state))));
+            history.replaceState(null, "", "#" + hash);
+          } catch (e) {
+            console.error("Hash generation failed", e);
+          }
         }
       }
 
@@ -933,10 +958,12 @@
         const hash = window.location.hash.slice(1);
         if (hash) {
           try {
-            const state = JSON.parse(decodeURIComponent(atob(hash)));
+            const state = JSON.parse(decodeURIComponent(escape(atob(hash))));
             applyState(state);
             return;
-          } catch (e) {}
+          } catch (e) {
+            console.error("Hash parsing failed", e);
+          }
         }
 
         // Then LocalStorage
@@ -949,25 +976,21 @@
       }
 
       function applyState(state) {
+        if (!textInput) return;
         if (state.text) textInput.value = state.text;
         if (state.size) qrSize.value = state.size;
         if (state.fg) {
           fgColor.value = state.fg;
-          document.getElementById("fgText").textContent = state.fg.toUpperCase();
+          const fgText = document.getElementById("fgText");
+          if (fgText) fgText.textContent = state.fg.toUpperCase();
         }
         if (state.bg) {
           bgColor.value = state.bg;
-          document.getElementById("bgText").textContent = state.bg.toUpperCase();
+          const bgText = document.getElementById("bgText");
+          if (bgText) bgText.textContent = state.bg.toUpperCase();
         }
         if (state.text) generateQR();
       }
-
-      // Real-time updates
-      textInput.addEventListener("input", () => {
-        clearTimeout(window.genTimer);
-        window.genTimeout = setTimeout(generateQR, 300);
-      });
-      qrSize.addEventListener("change", generateQR);
 
       // Theme
       window.toggleTheme = function () {
@@ -985,8 +1008,34 @@
       }
 
       // Run
-      initTheme();
-      loadState();
+      window.onload = () => {
+        initElements();
+        initTheme();
+        loadState();
+        
+        // Setup real-time listeners
+        if (textInput) {
+          textInput.addEventListener("input", () => {
+            if (window.genTimeout) clearTimeout(window.genTimeout);
+            window.genTimeout = setTimeout(generateQR, 300);
+          });
+        }
+        
+        if (qrSize) {
+          qrSize.addEventListener("input", () => {
+            if (window.genTimeout) clearTimeout(window.genTimeout);
+            window.genTimeout = setTimeout(generateQR, 300);
+          });
+        }
+        
+        if (fgColor) fgColor.addEventListener("change", generateQR);
+        if (bgColor) bgColor.addEventListener("change", generateQR);
+
+        // Initial generation if text exists
+        if (textInput && textInput.value.trim()) {
+          generateQR();
+        }
+      };
     </script>
   </body>
 </html>
