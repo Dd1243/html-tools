@@ -113,7 +113,23 @@
     />
 
     <!-- Figlet.js for ASCII generation -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/figlet.js/1.6.0/figlet.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/figlet.js/1.6.0/figlet.min.js" onerror="handleLibError()"></script>
+
+    <script>
+      // Pre-configure figlet to load fonts from CDN
+      // Using unpkg as it has the full fonts directory structure
+      const FIGLET_FONT_PATH = "https://unpkg.com/figlet@1.6.0/fonts/";
+      
+      function handleLibError() {
+        console.error("Failed to load figlet.js");
+        const status = document.getElementById("statusBar");
+        if (status) {
+          status.innerHTML = `<span class="status-error">核心库加载失败，请刷新页面重试</span>`;
+        } else {
+          alert("核心库加载失败，请刷新页面重试");
+        }
+      }
+    </script>
 
     <style>
       /* ============================================
@@ -423,27 +439,30 @@
         border: 1px solid var(--border-strong);
         border-radius: var(--radius-md);
         padding: var(--space-5);
-        overflow-x: auto;
+        overflow: auto;
         position: relative;
-        min-height: 200px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        min-height: 240px;
       }
 
       pre {
         font-family: var(--font-mono);
-        font-size: 0.75rem;
+        font-size: 0.8125rem;
         line-height: 1.1;
         color: var(--accent-primary);
         white-space: pre;
         margin: 0;
+        min-width: min-content;
       }
 
       .placeholder-text {
         color: #444;
         font-family: var(--font-mono);
         text-align: center;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
       }
 
       /* Buttons */
@@ -506,6 +525,8 @@
         min-height: 1.2rem;
       }
       .status-success { color: var(--color-success); }
+      .status-info { color: var(--accent-primary); }
+      .status-error { color: var(--color-error); }
 
       /* ============================================
          Content Sections (SEO)
@@ -652,20 +673,20 @@
           <div class="option-item">
             <label for="fontSelect">选择字体:</label>
             <select id="fontSelect">
-              <option value="Standard">Standard</option>
-              <option value="Banner">Banner</option>
-              <option value="Big">Big</option>
-              <option value="Block">Block</option>
-              <option value="Bubble">Bubble</option>
-              <option value="Digital">Digital</option>
-              <option value="Lean">Lean</option>
-              <option value="Mini">Mini</option>
-              <option value="Script">Script</option>
-              <option value="Shadow">Shadow</option>
-              <option value="Slant">Slant</option>
-              <option value="Small">Small</option>
-              <option value="Smslant">SmSlant</option>
-              <option value="Doom">Doom</option>
+              <option value="Standard">Standard (标准)</option>
+              <option value="Slant">Slant (斜体)</option>
+              <option value="Big">Big (巨大)</option>
+              <option value="Small">Small (迷你)</option>
+              <option value="Shadow">Shadow (阴影)</option>
+              <option value="Block">Block (方块)</option>
+              <option value="Bubble">Bubble (气泡)</option>
+              <option value="Digital">Digital (数字)</option>
+              <option value="Lean">Lean (倾斜)</option>
+              <option value="Mini">Mini (微型)</option>
+              <option value="Script">Script (手写)</option>
+              <option value="Banner">Banner (条幅)</option>
+              <option value="Doom">Doom (毁灭)</option>
+              <option value="Ivrit">Ivrit (希伯来)</option>
             </select>
           </div>
         </div>
@@ -754,6 +775,7 @@
       // Core Logic
       // ============================================
       let textInput, fontSelect, output, placeholder, statusBar;
+      let genTimeout;
       const LS_KEY = "ascii_art_last_text";
 
       function initElements() {
@@ -765,6 +787,11 @@
       }
 
       function generateArt() {
+        if (genTimeout) clearTimeout(genTimeout);
+        genTimeout = setTimeout(_generateArt, 300);
+      }
+
+      function _generateArt() {
         const text = textInput.value;
         const font = fontSelect.value;
 
@@ -774,6 +801,18 @@
           return;
         }
 
+        // Check if library is ready
+        if (typeof figlet === 'undefined') {
+          showStatus("正在加载引擎...", "info");
+          setTimeout(generateArt, 500);
+          return;
+        }
+
+        showStatus("生成中...", "info");
+        
+        // Use figlet.defaults to set the font path
+        figlet.defaults({ fontPath: FIGLET_FONT_PATH });
+
         figlet.text(text, {
           font: font,
           horizontalLayout: 'default',
@@ -782,13 +821,16 @@
           whitespaceBreak: true
         }, function(err, data) {
           if (err) {
-            console.error('Something went wrong...', err);
+            console.error('Figlet error:', err);
+            showStatus("字体加载失败，请检查网络", "error");
             return;
           }
           output.textContent = data;
           output.style.display = "block";
           placeholder.style.display = "none";
           localStorage.setItem(LS_KEY, text);
+          showStatus("生成成功", "success");
+          setTimeout(() => { if(statusBar.innerText === "生成成功") statusBar.innerHTML = ""; }, 1500);
         });
       }
 
