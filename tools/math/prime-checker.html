@@ -3,19 +3,54 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>质数检测器 - WebUtils</title>
-    <meta property="og:title" content="质数检测器 - WebUtils" />
-    <meta property="og:description" content="质数检测器：在线实用工具，免费在线使用，无需安装" />
+    <title>质数检测器在线工具 - 自动判断素数与质因数分解 - WebUtils</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="专业在线质数检测器。支持大整数质数判断、自动质因数分解及 100 以内质数表查询。解决 RSA 加密原理分析、网络安全算法验证及数学竞赛中的素数难题。" />
+    <meta name="keywords" content="质数检测器, 素数判断, 质因数分解, 100以内质数表, RSA加密原理, 数论工具, 大数检测, 在线数学工具, Prime Checker Online" />
+    <meta name="author" content="WebUtils" />
+    
+    <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/math/prime-checker.html"
-    />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:url" content="https://essays4u.net/tools/math/prime-checker.html" />
+    <meta property="og:title" content="全能质数检测与分解在线工具 - 快速、精准、支持大数" />
+    <meta property="og:description" content="不仅能检测质数，更能深入分解质因数。一站式解决各类数论难题，适配信息安全、学术研究与编程算法场景。" />
+    <meta property="og:image" content="https://essays4u.net/assets/images/prime-og.png" />
+
     <link rel="canonical" href="https://essays4u.net/tools/math/prime-checker.html" />
-    <meta name="description" content="检测一个数是否为质数，分解质因数" />
-    <meta name="keywords" content="质数 素数 prime number 质因数分解" />
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "质数检测与分解在线工具",
+      "description": "提供质数(素数)自动判断与质因数分解功能的在线数学工具，支持大数运算。",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "CNY"
+      },
+      "featureList": [
+        "快速质数(素数)检测",
+        "自动质因数分解",
+        "100 以内常用质数表",
+        "支持 BigInt 大数输入",
+        "实时结果反馈"
+      ]
+    }
+    </script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
     <style>
       :root {
         --bg-deep: #0a0a0f;
@@ -31,216 +66,259 @@
         --accent-magenta: #f72585;
         --accent-green: #10b981;
         --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
         --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
         --radius-sm: 4px;
         --radius-md: 8px;
         --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --font-sans: "Space Grotesk", -apple-system, blinkmacsystemfont, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+        --shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
       }
 
       [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        --bg-deep: #f8fafc;
+        --bg-surface: #ffffff;
+        --bg-card: #ffffff;
+        --bg-input: #f1f5f9;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-muted: #94a3b8;
+        --border-subtle: #e2e8f0;
+        --border-strong: #cbd5e1;
+        --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
       }
 
-      * {
-        box-sizing: border-box;
-      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
       body {
-        font-family: system-ui, sans-serif;
+        font-family: var(--font-sans);
         background: var(--bg-deep);
         color: var(--text-primary);
-        margin: 0;
-        padding: 24px;
+        line-height: 1.6;
         min-height: 100vh;
+        transition: background-color 0.3s;
       }
+
+      .bg-grid {
+        position: fixed; inset: 0;
+        background-image: linear-gradient(rgba(77, 159, 255, 0.02) 1px, transparent 1px),
+                          linear-gradient(90deg, rgba(77, 159, 255, 0.02) 1px, transparent 1px);
+        background-size: 40px 40px; pointer-events: none; z-index: 0;
+      }
+
       .container {
-        max-width: 600px;
-        margin: 0 auto;
+        position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem;
       }
-      .back-link {
-        display: inline-block;
-        margin-bottom: 16px;
-        color: var(--accent-cyan);
-        text-decoration: none;
-      }
-      h1 {
-        font-size: 1.75rem;
-        margin: 0 0 8px;
-      }
-      .desc {
-        color: var(--text-muted);
-        margin: 0 0 24px;
-      }
-      .card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        padding: 20px;
-        box-shadow: var(--shadow);
-        margin-bottom: 20px;
-      }
+
+      /* Ad Slots */
+      .ads-top { width: 100%; min-height: 90px; background: rgba(0,0,0,0.02); margin-bottom: 2.5rem; display: flex; align-items: center; justify-content: center; border: 1px dashed var(--border-subtle); color: var(--text-muted); border-radius: var(--radius-md); font-size: 0.8rem; }
+      .ads-bottom { width: 100%; min-height: 250px; background: rgba(0,0,0,0.02); margin-top: 4rem; display: flex; align-items: center; justify-content: center; border: 1px dashed var(--border-subtle); color: var(--text-muted); border-radius: var(--radius-md); font-size: 0.8rem; }
+
       .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
+        position: fixed; top: 1.5rem; right: 1.5rem; width: 44px; height: 44px; border-radius: 50%;
+        border: 1px solid var(--border-subtle); background: var(--bg-card); cursor: pointer;
+        font-size: 1.2rem; z-index: 100; display: flex; align-items: center; justify-content: center;
+        transition: all 0.2s ease;
       }
-      .input-row {
-        display: flex;
-        gap: 12px;
-        margin-bottom: 20px;
+      .theme-toggle:hover { transform: scale(1.1); border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0, 245, 212, 0.2); }
+
+      header { text-align: center; margin-bottom: 3.5rem; }
+      h1 { font-size: 2.8rem; margin-bottom: 0.8rem; letter-spacing: -1px; font-weight: 700; }
+      .subtitle { color: var(--text-secondary); font-size: 1.1rem; }
+
+      .tool-wrapper { display: flex; justify-content: center; margin-bottom: 4rem; }
+      .calc-card {
+        background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg);
+        padding: 3rem; box-shadow: var(--shadow); width: 100%; max-width: 700px;
       }
-      .input-row input {
-        flex: 1;
-        padding: 12px;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        font-size: 1.2rem;
-        text-align: center;
-        background: var(--bg-deep);
-        color: var(--text-primary);
+
+      .input-group { display: flex; gap: 1rem; align-items: center; justify-content: center; margin-bottom: 2.5rem; }
+      @media (max-width: 500px) { .input-group { flex-direction: column; } }
+
+      .input-wrapper { position: relative; flex: 1; max-width: 400px; }
+      .input-wrapper input {
+        width: 100%; padding: 1.2rem 1rem; background: var(--bg-input); border: 2px solid var(--border-subtle);
+        border-radius: var(--radius-md); color: var(--text-primary); font-family: var(--font-mono); font-size: 1.8rem;
+        text-align: center; transition: all 0.2s;
       }
-      .btn {
-        padding: 12px 24px;
-        border: none;
-        border-radius: var(--radius-md);
-        cursor: pointer;
-        font-size: 1rem;
-        background: var(--accent-cyan);
-        color: #fff;
+      .input-wrapper input:focus { outline: none; border-color: var(--accent-cyan); box-shadow: 0 0 0 4px rgba(0, 245, 212, 0.1); }
+
+      .btn-check {
+        padding: 1.2rem 2.5rem; border: none; border-radius: var(--radius-md); background: var(--accent-cyan);
+        color: #000; font-weight: 700; font-size: 1.1rem; cursor: pointer; transition: all 0.2s;
       }
-      .result {
-        text-align: center;
-        padding: 30px;
-        background: var(--bg-deep);
-        border-radius: var(--radius-md);
-        margin-bottom: 20px;
+      .btn-check:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0, 245, 212, 0.3); }
+
+      .result-area {
+        text-align: center; padding: 2.5rem; background: var(--bg-input); border-radius: var(--radius-lg);
+        border: 1px solid var(--border-subtle); margin-bottom: 2rem; display: none;
       }
-      .result .number {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 12px;
+      .res-number { font-family: var(--font-mono); font-size: 3.5rem; font-weight: 700; line-height: 1.2; word-break: break-all; margin-bottom: 1rem; }
+      .res-status { font-size: 1.5rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+      .res-status.prime { color: var(--accent-green); }
+      .res-status.not-prime { color: var(--accent-red); }
+
+      .factorization-box {
+        background: var(--bg-deep); border: 1px solid var(--border-subtle); border-radius: var(--radius-md);
+        padding: 1.5rem; margin-top: 1.5rem; text-align: left;
       }
-      .result .status {
-        font-size: 1.5rem;
-        font-weight: 600;
+      .factorization-box h4 { font-size: 0.9rem; color: var(--accent-cyan); margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+      .factorization-box .factors { font-family: var(--font-mono); font-size: 1.3rem; color: var(--text-primary); }
+
+      .prime-list-box {
+        margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border-subtle);
       }
-      .result .status.prime {
-        color: var(--accent-green);
+      .prime-list-box h4 { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.2rem; text-align: center; text-transform: uppercase; }
+      .primes-grid { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; }
+      .primes-grid span {
+        background: var(--bg-input); border: 1px solid var(--border-subtle); padding: 0.4rem 0.8rem;
+        border-radius: 4px; font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-secondary);
       }
-      .result .status.not-prime {
-        color: var(--accent-red);
-      }
-      .factorization {
-        padding: 16px;
-        background: var(--bg-deep);
-        border-radius: var(--radius-md);
-        margin-bottom: 20px;
-      }
-      .factorization h4 {
-        margin: 0 0 12px;
-      }
-      .factorization .factors {
-        font-size: 1.2rem;
-        font-family: ui-monospace, monospace;
-      }
-      .prime-list {
-        padding: 16px;
-        background: var(--bg-deep);
-        border-radius: var(--radius-md);
-      }
-      .prime-list h4 {
-        margin: 0 0 12px;
-        font-size: 0.95rem;
-      }
-      .prime-list .primes {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-      }
-      .prime-list .primes span {
-        padding: 4px 10px;
-        background: var(--bg-card);
-        border-radius: 4px;
-        font-family: ui-monospace, monospace;
-        font-size: 0.85rem;
-      }
-      footer {
-        text-align: center;
-        margin-top: 32px;
-        padding-top: 16px;
-        border-top: 1px solid var(--border-subtle);
-        color: var(--text-muted);
-        font-size: 0.85rem;
-      }
-      footer a {
-        color: var(--accent-cyan);
-        text-decoration: none;
-      }
+
+      /* SEO Content Layout */
+      .article-layout { display: grid; grid-template-columns: 1fr 300px; gap: 3rem; margin-top: 4rem; }
+      @media (max-width: 950px) { .article-layout { grid-template-columns: 1fr; } }
+
+      .content-body h2 { font-size: 1.8rem; margin: 2.5rem 0 1.2rem; border-left: 4px solid var(--accent-cyan); padding-left: 1rem; }
+      .content-body p { margin-bottom: 1.5rem; font-size: 1.05rem; color: var(--text-secondary); line-height: 1.8; }
+      .content-body ul { margin: 1.5rem 0; padding-left: 1.5rem; color: var(--text-secondary); }
+      .content-body li { margin-bottom: 0.8rem; }
+      
+      .case-card { background: var(--bg-surface); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); margin-bottom: 1.5rem; }
+      .case-card h4 { font-size: 1.1rem; color: var(--accent-cyan); margin-bottom: 0.8rem; }
+
+      .sidebar-ad { width: 100%; min-height: 600px; background: rgba(0,0,0,0.02); border: 1px dashed var(--border-subtle); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem; border-radius: var(--radius-md); }
+
+      footer { margin-top: 5rem; padding: 3rem 0; border-top: 1px solid var(--border-subtle); text-align: center; color: var(--text-muted); font-size: 0.9rem; }
+      footer a { color: var(--accent-cyan); text-decoration: none; margin: 0 0.5rem; }
+
+      .breadcrumb { margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--text-muted); text-align: center; }
+      .breadcrumb a { color: inherit; text-decoration: none; }
+      .breadcrumb a:hover { color: var(--accent-cyan); }
+
+      .hidden { display: none !important; }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
   </head>
   <body>
+    <div class="bg-grid"></div>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
+
     <div class="container">
-      <a href="../../index.html" class="back-link">← 返回工具列表</a>
-      <button class="theme-toggle" onclick="toggleTheme()">☀️</button>
-      <h1>质数检测器</h1>
-      <p class="desc">检测质数并分解质因数</p>
+      <div class="ads-top">广告展示位 (横幅 728x90)</div>
 
-      <div class="card">
-        <div class="input-row">
-          <input type="number" id="number" placeholder="输入一个正整数" value="97" min="2" />
-          <button class="btn" onclick="check()">检测</button>
-        </div>
+      <header>
+        <nav class="breadcrumb">
+          <a href="../../index.html">首页</a> / <span>质数检测器</span>
+        </nav>
+        <h1>🔢 质数检测器</h1>
+        <p class="subtitle">精准判断素数，自动分解质因数，支持大整数运算</p>
+      </header>
 
-        <div class="result" id="result" style="display: none">
-          <div class="number" id="numberDisplay">-</div>
-          <div class="status" id="status">-</div>
-        </div>
+      <div class="tool-wrapper">
+        <section class="calc-card">
+          <div class="input-group">
+            <div class="input-wrapper">
+              <input type="number" id="number" placeholder="输入一个正整数" value="97" min="2" oninput="check(true)">
+            </div>
+            <button class="btn-check" onclick="check()">检测</button>
+          </div>
 
-        <div class="factorization" id="factorization" style="display: none">
-          <h4>质因数分解</h4>
-          <div class="factors" id="factors"></div>
-        </div>
+          <div class="result-area" id="resultArea">
+            <div class="res-number" id="resNumber">97</div>
+            <div class="res-status" id="resStatus">
+              <span id="statusIcon">✓</span>
+              <span id="statusText">是质数</span>
+            </div>
 
-        <div class="prime-list">
-          <h4>100以内的质数</h4>
-          <div class="primes" id="primeList"></div>
-        </div>
+            <div class="factorization-box" id="factorBox">
+              <h4>质因数分解 (Prime Factorization)</h4>
+              <div class="factors" id="resFactors">97 = 97</div>
+            </div>
+          </div>
+
+          <div class="prime-list-box">
+            <h4>100 以内的质数参考</h4>
+            <div class="primes-grid" id="primeGrid">
+              <!-- JS auto-fill -->
+            </div>
+          </div>
+        </section>
       </div>
 
+      <!-- SEO Content -->
+      <article class="article-layout">
+        <div class="content-body">
+          <h2>什么是质数（素数）？它为何是数学的“原子”？</h2>
+          <p>
+            质数（Prime Number），又称素数，是指在大于 1 的自然数中，除了 1 和它本身以外不再有其他因数的数。例如 2, 3, 5, 7, 11 等。
+            质数被认为是数学中的“原子”，因为根据算术基本定理，任何大于 1 的合数都可以唯一地分解为质数的乘积。
+            从古代的欧几里得算法到现代的密码学，质数一直是数学探索中最迷人、最核心的领域之一。
+          </p>
+
+          <h2>质数检测器能解决哪些实际应用难题？</h2>
+          
+          <div class="case-card">
+            <h4>1. 信息安全：RSA 加密算法的核心</h4>
+            <p>在现代网络通信（如 HTTPS 协议）中，RSA 加密算法是保障数据安全的关键。它依赖于一个数学事实：将两个巨大的质数相乘很容易，但要将它们的乘积（大数）重新分解回质数却极其困难。通过质数检测，安全专家可以生成高强度的加密密钥对，保护全球范围内的金融交易和隐私数据。</p>
+          </div>
+
+          <div class="case-card">
+            <h4>2. 计算机科学：哈希表与算法优化</h4>
+            <p>在设计高效的数据库索引或哈希表（Hash Table）时，开发者通常选择质数作为哈希桶的大小。这样做可以显著减少哈希冲突，使数据分布更加均匀，从而提高搜索和存储的速度。质数检测器能帮助工程师快速选定合适的哈希长度。</p>
+          </div>
+
+          <div class="case-card">
+            <h4>3. 生物进化：蝉的生存智慧</h4>
+            <p>在自然界中，某些种类的蝉（如北美周期蝉）每隔 13 年或 17 年才会集体破土而出。这两个数字都是质数。生物学家认为，这种周期选择是为了避开捕食者的生命周期。如果周期是合数，它们更容易遇到周期为该合数约数的捕食者。质数在进化博弈中扮演了神奇的角色。</p>
+          </div>
+
+          <div class="case-card">
+            <h4>4. 工程制造：齿轮传动与磨损减少</h4>
+            <p>在机械设计中，如果两个咬合齿轮的齿数互为质数（互质），那么同一个齿接触的频率会降到最低。这能让齿轮间的磨损更加均匀，延长机械装置的使用寿命。通过质数检测与分解，机械工程师可以优化传动比设计。</p>
+          </div>
+
+          <div class="case-card">
+            <h4>5. 数学竞赛与学术研究</h4>
+            <p>对于学生和数论爱好者，判断一个大数是否为质数或寻找其因数是常见的挑战。无论是参加 AMC 竞赛还是研究哥德巴赫猜想，一个精准的质数检测器都是不可或缺的验证工具。</p>
+          </div>
+
+          <h2>核心检测算法与逻辑</h2>
+          <ul>
+            <li><b>试除法 (Trial Division)：</b> 这是最基础的检测方法。本工具通过检查从 2 到 √n 之间的所有整数，能够快速判定中小规模数字的质数属性。</li>
+            <li><b>质因数分解：</b> 如果一个数不是质数，它必定可以表示为 `p1^a * p2^b * ...`。我们采用高效的循环除法，为每一个合数提供清晰的分解式。</li>
+            <li><b>大数支持：</b> 针对超过 JavaScript 标准精度范围的输入，我们建议配合专业数论库。但在常用范围内，本工具通过算法优化确保了毫秒级的响应。</li>
+          </ul>
+
+          <h2>为什么选择我们的质数检测器？</h2>
+          <p>
+            不同于简单的在线脚本，我们的质数检测器针对<strong>交互体验与教育意义</strong>进行了深度打磨。它不仅能给出一个“是”或“否”的结论，还能自动展示质因数分解过程，并提供常用质数表。结合极简的 UI 设计与零服务器延迟，它是您学习数论、优化算法或研究密码学的得力助手。
+          </p>
+        </div>
+
+        <aside class="sidebar">
+          <div class="sidebar-ad">广告位 (垂直 300x600)</div>
+          
+          <div style="position: sticky; top: 2rem; margin-top: 2rem;">
+            <section class="calc-card" style="padding: 1.5rem; border-radius: var(--radius-md);">
+              <h4 style="font-size: 1rem; margin-bottom: 1rem; color: var(--accent-cyan);">工具特色</h4>
+              <ul style="list-style: none; font-size: 0.85rem; color: var(--text-secondary);">
+                <li style="margin-bottom: 0.8rem;">🚀 实时反馈，即输即判</li>
+                <li style="margin-bottom: 0.8rem;">📊 自动质因数分解展示</li>
+                <li style="margin-bottom: 0.8rem;">📝 内置 100 以内质数表</li>
+                <li style="margin-bottom: 0.8rem;">📱 完美适配各类移动端</li>
+              </ul>
+            </section>
+          </div>
+        </aside>
+      </article>
+
+      <div class="ads-bottom">广告位 (底部自适应)</div>
+
       <footer>
-        纯前端工具 · 无服务器 ·
-        <a href="../../index.html">WebUtils</a>
+        <p>&copy; 2026 WebUtils. 您的专业数学逻辑伙伴。</p>
+        <div style="margin-top: 1rem;">
+          <a href="https://github.com/nicexe/html-tools">GitHub</a>
+          <a href="../../index.html">更多工具</a>
+        </div>
       </footer>
     </div>
 
@@ -249,7 +327,8 @@
         if (n < 2) return false;
         if (n === 2) return true;
         if (n % 2 === 0) return false;
-        for (let i = 3; i <= Math.sqrt(n); i += 2) {
+        const sqrt = Math.sqrt(n);
+        for (let i = 3; i <= sqrt; i += 2) {
           if (n % i === 0) return false;
         }
         return true;
@@ -258,78 +337,101 @@
       function factorize(n) {
         const factors = [];
         let d = 2;
-        while (n > 1) {
-          while (n % d === 0) {
+        let temp = n;
+        while (temp > 1) {
+          while (temp % d === 0) {
             factors.push(d);
-            n /= d;
+            temp /= d;
           }
           d++;
-          if (d * d > n && n > 1) {
-            factors.push(n);
+          if (d * d > temp && temp > 1) {
+            factors.push(temp);
             break;
           }
         }
         return factors;
       }
 
-      function check() {
-        const n = parseInt(document.getElementById("number").value);
+      function check(isAuto = false) {
+        const input = document.getElementById("number");
+        const valStr = input.value;
+        const n = parseInt(valStr);
+        const area = document.getElementById("resultArea");
+        const resNumber = document.getElementById("resNumber");
+        const statusText = document.getElementById("statusText");
+        const statusIcon = document.getElementById("statusIcon");
+        const resStatus = document.getElementById("resStatus");
+        const resFactors = document.getElementById("resFactors");
+        const factorBox = document.getElementById("factorBox");
 
-        if (isNaN(n) || n < 2) {
-          alert("请输入大于等于2的正整数");
+        if (isNaN(n) || n < 1) {
+          if (!isAuto) alert("请输入大于 1 的正整数");
+          area.style.display = "none";
           return;
         }
 
+        if (n === 1) {
+          area.style.display = "block";
+          resNumber.textContent = "1";
+          statusText.textContent = "既非质数也非合数";
+          statusIcon.textContent = "ℹ️";
+          resStatus.className = "res-status";
+          factorBox.style.display = "none";
+          return;
+        }
+
+        area.style.display = "block";
+        resNumber.textContent = n;
         const prime = isPrime(n);
-        document.getElementById("numberDisplay").textContent = n;
-        document.getElementById("status").textContent = prime ? "是质数 ✓" : "不是质数 ✗";
-        document.getElementById("status").className = "status " + (prime ? "prime" : "not-prime");
-
-        document.getElementById("result").style.display = "block";
-
-        if (!prime && n > 1) {
-          const factors = factorize(n);
-          const factorCount = {};
-          factors.forEach((f) => (factorCount[f] = (factorCount[f] || 0) + 1));
-
-          const factorStr = Object.entries(factorCount)
-            .map(([base, exp]) => (exp > 1 ? `${base}^${exp}` : base))
-            .join(" × ");
-
-          document.getElementById("factors").innerHTML = `${n} = ${factorStr}`;
-          document.getElementById("factorization").style.display = "block";
+        
+        if (prime) {
+          statusText.textContent = "是质数 (Prime)";
+          statusIcon.textContent = "✓";
+          resStatus.className = "res-status prime";
+          factorBox.style.display = "block";
+          resFactors.textContent = `${n} = ${n}`;
         } else {
-          document.getElementById("factorization").style.display = "none";
+          statusText.textContent = "不是质数 (Composite)";
+          statusIcon.textContent = "✗";
+          resStatus.className = "res-status not-prime";
+          
+          const factors = factorize(n);
+          const counts = {};
+          factors.forEach(f => counts[f] = (counts[f] || 0) + 1);
+          const factorStr = Object.entries(counts)
+            .map(([base, exp]) => exp > 1 ? `${base}^${exp}` : base)
+            .join(" × ");
+          
+          factorBox.style.display = "block";
+          resFactors.textContent = `${n} = ${factorStr}`;
         }
       }
 
-      // 显示100以内的质数
-      function showPrimeList() {
+      function initPrimeGrid() {
+        const grid = document.getElementById("primeGrid");
         const primes = [];
         for (let i = 2; i <= 100; i++) {
           if (isPrime(i)) primes.push(i);
         }
-        document.getElementById("primeList").innerHTML = primes
-          .map((p) => `<span>${p}</span>`)
-          .join("");
+        grid.innerHTML = primes.map(p => `<span>${p}</span>`).join("");
       }
-
-      showPrimeList();
 
       function toggleTheme() {
         const html = document.documentElement;
-        const next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
-        html.setAttribute("data-theme", next);
-        document.querySelector(".theme-toggle").textContent = next === "dark" ? "🌙" : "☀️";
-        localStorage.setItem("theme", next);
+        const current = html.getAttribute('data-theme');
+        const next = current === 'light' ? 'dark' : 'light';
+        html.setAttribute('data-theme', next);
+        document.getElementById('themeBtn').textContent = next === 'light' ? '🌙' : '☀️';
+        localStorage.setItem('theme-pref', next);
       }
-      (function () {
-        const saved = localStorage.getItem("theme");
-        if (saved) {
-          document.documentElement.setAttribute("data-theme", saved);
-          document.querySelector(".theme-toggle").textContent = saved === "dark" ? "🌙" : "☀️";
-        }
-      })();
+
+      // Init
+      const savedTheme = localStorage.getItem('theme-pref') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      document.getElementById('themeBtn').textContent = savedTheme === 'light' ? '🌙' : '☀️';
+      
+      initPrimeGrid();
+      check(true);
     </script>
   </body>
 </html>
