@@ -3,588 +3,537 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>跑步配速计算器 - WebUtils</title>
-    <meta name="description" content="计算跑步配速、完赛时间预测，支持马拉松、半马、10K等距离" />
-    <meta name="keywords" content="跑步 配速 马拉松 半马 10K 5K running pace calculator" />
+    <title>跑步配速计算器 - 马拉松完赛时间预测与科学训练区间工具 | WebUtils</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="免费在线跑步配速计算器。精确计算跑步配速，预测马拉松、半马、10K 及 5K 完赛时间。基于 Riegel 科学公式提供成绩预测，并根据您的水平划分轻松跑、节奏跑、乳酸门槛及间歇训练区间。助您实现破三、破四目标。" />
+    <meta name="keywords" content="跑步配速计算,马拉松时间预测,配速换算,完赛时间计算器,跑步训练区间,破三配速,破四配速,Riegel公式,WebUtils" />
     <meta name="author" content="WebUtils" />
-    <link rel="canonical" href="https://essays4u.net/tools/sports/running-pace.html" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://essays4u.net/tools/sports/running-pace" />
 
-    <meta property="og:title" content="跑步配速计算器 - WebUtils" />
-    <meta property="og:description" content="计算跑步配速、完赛时间预测" />
+    <!-- JSON-LD 结构化数据 -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "跑步配速计算器",
+        "alternateName": "Running Pace & Race Predictor",
+        "description": "专业的跑步数据计算工具，支持配速换算、完赛时间预测及科学训练区间划分。",
+        "url": "https://essays4u.net/tools/sports/running-pace",
+        "applicationCategory": "SportsApplication",
+        "operatingSystem": "Any",
+        "inLanguage": "zh-CN",
+        "isAccessibleForFree": true,
+        "author": {
+          "@type": "Organization",
+          "name": "WebUtils"
+        }
+      }
+    </script>
+
+    <!-- Google AdSense Placeholder -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_CLIENT_ID" crossorigin="anonymous"></script>
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="跑步配速计算器 - 马拉松完赛时间预测与科学训练区间工具" />
+    <meta property="og:description" content="精准计算配速，科学预测完赛时间。无论是初学者还是资深跑者，都能在这里找到属于自己的训练节奏。" />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://essays4u.net/tools/sports/running-pace" />
+    <meta property="og:site_name" content="WebUtils" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
+    <meta name="twitter:card" content="summary_large_image" />
 
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+
     <style>
       :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
+        --color-bg-deep: #0a0a0f;
+        --color-bg-surface: #12121a;
+        --color-bg-card: #1a1a24;
+        --color-bg-input: #0e0e14;
+        --color-text-primary: #e8e8ed;
+        --color-text-secondary: #8888a0;
+        --color-text-muted: #55556a;
+        --border-default: #2a2a3a;
+        --border-focus: #3a3a4a;
+        --color-accent-cyan: #00f5d4;
+        --color-accent-orange: #ff9f43;
+        --color-accent-blue: #4cc9f0;
+        --color-accent-purple: #7b2cbf;
+        --color-accent-magenta: #f72585;
+        --color-accent-green: #10b981;
         --radius-sm: 4px;
         --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --radius-lg: 16px;
+        --font-sans: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+        --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
       }
 
       [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        --color-bg-deep: #fafafa;
+        --color-bg-surface: #ffffff;
+        --color-bg-card: #ffffff;
+        --color-bg-input: #f5f5f5;
+        --color-text-primary: #1a1a1a;
+        --color-text-secondary: #666666;
+        --color-text-muted: #999999;
+        --border-default: #e5e5e5;
+        --border-focus: #d5d5d5;
+        --color-accent-cyan: #00d4b8;
+        --color-accent-orange: #e67e22;
+        --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
       }
 
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
       body {
         font-family: var(--font-sans);
         background: var(--color-bg-deep);
         color: var(--color-text-primary);
-        min-height: 100vh;
         line-height: 1.6;
+        min-height: 100vh;
+        transition: background 0.3s, color 0.3s;
       }
-      .bg-grid {
-        position: fixed;
-        inset: 0;
-        background-image:
-          linear-gradient(rgba(77, 159, 255, 0.03) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(77, 159, 255, 0.03) 1px, transparent 1px);
-        background-size: 50px 50px;
-        pointer-events: none;
-        z-index: 0;
-      }
-      .container {
-        position: relative;
-        z-index: 1;
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 2rem 1.5rem;
-      }
+
       .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--color-bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
+        position: fixed; top: 1rem; right: 1rem; width: 44px; height: 44px;
+        border-radius: 50%; border: 1px solid var(--border-default);
+        background: var(--color-bg-card); cursor: pointer; font-size: 1.2rem;
+        z-index: 1000; display: flex; align-items: center; justify-content: center;
+        color: var(--color-text-primary); box-shadow: var(--shadow); transition: transform 0.2s;
       }
-      .theme-toggle:hover {
-        border-color: var(--color-accent-cyan);
-        transform: scale(1.1);
+
+      .theme-toggle:hover { transform: scale(1.1); border-color: var(--color-accent-cyan); }
+
+      .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+
+      .breadcrumb { margin-bottom: 30px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+      .breadcrumb a { color: var(--color-accent-blue); text-decoration: none; }
+      .breadcrumb span { color: var(--color-text-muted); }
+
+      .hero { text-align: center; margin-bottom: 40px; }
+      .hero h1 {
+        font-size: clamp(2rem, 5vw, 2.8rem); font-weight: 700; margin-bottom: 12px;
+        background: linear-gradient(135deg, var(--color-accent-cyan), var(--color-accent-blue), var(--color-accent-purple));
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
       }
-      .breadcrumb {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 0.85rem;
-        padding: 8px 14px;
-        background: var(--color-bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        margin-bottom: 1.5rem;
-        flex-wrap: wrap;
+      .hero p { font-size: 1.1rem; color: var(--color-text-secondary); }
+
+      .ads-slot {
+        margin: 30px 0; text-align: center; background: var(--color-bg-card);
+        border: 1px solid var(--border-default); border-radius: var(--radius-md);
+        padding: 10px; min-height: 100px; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; position: relative; overflow: hidden;
       }
-      .breadcrumb a {
-        color: var(--color-text-secondary);
-        text-decoration: none;
+      .ads-slot::before {
+        content: "ADVERTISEMENT"; display: block; font-size: 10px; color: var(--color-text-muted);
+        margin-bottom: 5px; letter-spacing: 1px;
       }
-      .breadcrumb a:hover {
-        color: var(--color-accent-cyan);
-      }
-      .breadcrumb-separator {
-        color: var(--text-muted);
-      }
-      .breadcrumb-current {
-        color: var(--color-text-primary);
-        font-weight: 500;
-      }
-      h1 {
-        font-size: 2rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        background: linear-gradient(135deg, var(--color-text-primary), var(--color-accent-cyan));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-      .subtitle {
-        color: var(--color-text-secondary);
-        margin-bottom: 2rem;
-      }
-      .tabs {
-        display: flex;
-        gap: 0.5rem;
-        margin-bottom: 1.5rem;
-        flex-wrap: wrap;
-      }
+
+      .tabs { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
       .tab {
-        padding: 0.75rem 1.5rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        background: var(--color-bg-card);
-        color: var(--color-text-secondary);
-        cursor: pointer;
-        font-family: inherit;
-        font-size: 0.9rem;
-        transition: all 0.2s;
+        padding: 12px 24px; background: var(--color-bg-card); border: 1px solid var(--border-default);
+        border-radius: var(--radius-md); color: var(--color-text-secondary); cursor: pointer;
+        font-weight: 600; font-size: 0.95rem; transition: 0.2s;
       }
-      .tab:hover {
-        border-color: var(--color-accent-cyan);
-        color: var(--color-text-primary);
-      }
-      .tab.active {
-        background: linear-gradient(135deg, var(--accent-blue), var(--color-accent-cyan));
-        color: #000;
-        border-color: transparent;
-      }
+      .tab:hover { border-color: var(--color-accent-blue); color: var(--color-text-primary); }
+      .tab.active { background: var(--color-accent-blue); color: #000; border-color: var(--color-accent-blue); }
+
       .card {
-        background: var(--color-bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-lg);
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
+        background: var(--color-bg-card); border: 1px solid var(--border-default);
+        border-radius: var(--radius-lg); padding: 30px; margin-bottom: 25px; box-shadow: var(--shadow);
       }
-      .card-title {
-        font-size: 1rem;
-        font-weight: 500;
-        color: var(--color-text-secondary);
-        margin-bottom: 1rem;
+      .card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 25px; color: var(--color-accent-cyan); display: flex; align-items: center; gap: 10px; }
+
+      .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px; }
+      .form-group { display: flex; flex-direction: column; gap: 10px; }
+      .form-group label { font-size: 0.85rem; color: var(--color-text-muted); font-weight: 500; }
+      .form-group input, .form-group select {
+        padding: 12px 15px; background: var(--color-bg-input); border: 1px solid var(--border-default);
+        color: var(--color-text-primary); border-radius: var(--radius-md); font-family: var(--font-mono); outline: none; transition: 0.2s;
       }
-      .form-row {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 1rem;
-        margin-bottom: 1rem;
+      .form-group input:focus, .form-group select:focus { border-color: var(--color-accent-blue); }
+
+      .time-inputs { display: flex; align-items: center; gap: 10px; }
+      .time-inputs input { width: 100%; text-align: center; }
+      .time-sep { color: var(--color-text-muted); font-weight: bold; }
+
+      .btn-calculate {
+        width: 100%; padding: 15px; background: linear-gradient(135deg, var(--color-accent-cyan), var(--color-accent-blue));
+        border: none; border-radius: var(--radius-md); color: #000; font-weight: 700; font-size: 1rem;
+        cursor: pointer; transition: transform 0.2s, opacity 0.2s; margin-top: 10px;
       }
-      .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-      .form-group label {
-        font-size: 0.85rem;
-        color: var(--color-text-secondary);
-      }
-      .form-group input,
-      .form-group select {
-        padding: 0.75rem 1rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        background: var(--color-bg-surface);
-        color: var(--color-text-primary);
-        font-family: var(--font-mono);
-        font-size: 1rem;
-      }
-      .form-group input:focus,
-      .form-group select:focus {
-        outline: none;
-        border-color: var(--accent-blue);
-      }
-      .time-input {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-      }
-      .time-input input {
-        width: 60px;
-        text-align: center;
-      }
-      .time-input span {
-        color: var(--text-muted);
-      }
-      .btn {
-        padding: 0.75rem 1.5rem;
-        border: none;
-        border-radius: var(--radius-sm);
-        cursor: pointer;
-        font-family: inherit;
-        font-size: 0.95rem;
-        font-weight: 500;
-        transition: all 0.2s;
-      }
-      .btn-primary {
-        background: linear-gradient(135deg, var(--accent-blue), var(--color-accent-cyan));
-        color: #000;
-      }
-      .btn-primary:hover {
-        transform: translateY(-2px);
-      }
+      .btn-calculate:hover { transform: translateY(-2px); opacity: 0.9; }
+
       .result-box {
-        text-align: center;
-        padding: 2rem;
-        background: var(--color-bg-surface);
-        border-radius: var(--radius-md);
-        margin-top: 1.5rem;
+        margin-top: 30px; padding: 30px; background: var(--color-bg-surface);
+        border-radius: var(--radius-md); border: 1px solid var(--border-default); text-align: center;
+        display: none; animation: fadeIn 0.4s ease-out;
       }
-      .result-label {
-        font-size: 0.9rem;
-        color: var(--color-text-secondary);
-        margin-bottom: 0.5rem;
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+      .result-label { font-size: 0.95rem; color: var(--color-text-muted); margin-bottom: 10px; display: block; }
+      .result-value { font-family: var(--font-mono); font-size: 4rem; font-weight: 800; color: var(--color-accent-cyan); line-height: 1; }
+      .result-unit { font-size: 1.2rem; color: var(--color-text-muted); margin-left: 10px; font-weight: 600; }
+
+      .prediction-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; margin-top: 25px; }
+      .prediction-item {
+        background: var(--color-bg-surface); padding: 20px; border-radius: var(--radius-md);
+        border: 1px solid var(--border-default); text-align: center; transition: 0.2s;
       }
-      .result-value {
-        font-family: var(--font-mono);
-        font-size: 3rem;
-        font-weight: 600;
-        color: var(--color-accent-cyan);
+      .prediction-item:hover { border-color: var(--color-accent-blue); transform: translateY(-3px); }
+      .pred-dist { font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 8px; display: block; font-weight: 600; }
+      .pred-time { font-family: var(--font-mono); font-size: 1.4rem; font-weight: 700; color: var(--color-text-primary); }
+
+      .zones-list { display: flex; flex-direction: column; gap: 12px; margin-top: 25px; }
+      .zone-card {
+        display: flex; justify-content: space-between; align-items: center; padding: 15px 25px;
+        border-radius: var(--radius-md); border-left: 5px solid transparent; background: var(--color-bg-surface);
       }
-      .result-unit {
-        font-size: 1rem;
-        color: var(--text-muted);
-        margin-left: 0.5rem;
-      }
-      .predictions {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        gap: 1rem;
-        margin-top: 1.5rem;
-      }
-      .prediction-card {
-        background: var(--color-bg-surface);
-        border-radius: var(--radius-sm);
-        padding: 1rem;
-        text-align: center;
-      }
-      .prediction-distance {
-        font-size: 0.85rem;
-        color: var(--color-text-secondary);
-        margin-bottom: 0.25rem;
-      }
-      .prediction-time {
-        font-family: var(--font-mono);
-        font-size: 1.25rem;
-        color: var(--color-text-primary);
-        font-weight: 500;
-      }
-      .pace-zones {
-        margin-top: 1.5rem;
-      }
-      .zone {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.75rem 1rem;
-        border-radius: var(--radius-sm);
-        margin-bottom: 0.5rem;
-      }
-      .zone-easy {
-        background: rgba(0, 210, 106, 0.1);
-        border-left: 3px solid #00d26a;
-      }
-      .zone-tempo {
-        background: rgba(77, 159, 255, 0.1);
-        border-left: 3px solid #4d9fff;
-      }
-      .zone-threshold {
-        background: rgba(255, 159, 67, 0.1);
-        border-left: 3px solid #ff9f43;
-      }
-      .zone-interval {
-        background: rgba(255, 107, 107, 0.1);
-        border-left: 3px solid #ff6b6b;
-      }
-      .zone-name {
-        font-weight: 500;
-      }
-      .zone-pace {
-        font-family: var(--font-mono);
-        color: var(--color-text-secondary);
-      }
-      footer {
-        margin-top: 3rem;
-        padding-top: 1.5rem;
-        border-top: 1px solid var(--border-subtle);
-        text-align: center;
-        color: var(--text-muted);
-        font-size: 0.85rem;
-      }
-      footer a {
-        color: var(--accent-blue);
-        text-decoration: none;
-      }
-      .hidden {
-        display: none;
+      .zone-info { display: flex; flex-direction: column; gap: 4px; }
+      .zone-name { font-weight: 700; font-size: 1rem; }
+      .zone-desc { font-size: 0.8rem; color: var(--color-text-muted); }
+      .zone-pace-val { font-family: var(--font-mono); font-size: 1.2rem; font-weight: 700; color: var(--color-text-primary); }
+
+      .zone-easy { border-left-color: var(--color-accent-green); background: rgba(16, 185, 129, 0.05); }
+      .zone-tempo { border-left-color: var(--color-accent-blue); background: rgba(76, 201, 240, 0.05); }
+      .zone-threshold { border-left-color: var(--color-accent-orange); background: rgba(255, 159, 67, 0.05); }
+      .zone-interval { border-left-color: var(--color-accent-magenta); background: rgba(247, 37, 133, 0.05); }
+
+      .seo-content { margin-top: 60px; display: grid; gap: 40px; }
+      .seo-section h2 { color: var(--color-accent-blue); margin-bottom: 20px; font-size: 1.6rem; border-bottom: 1px solid var(--border-default); padding-bottom: 10px; }
+      .seo-section h3 { color: var(--color-text-primary); margin: 25px 0 12px; font-size: 1.25rem; }
+      .seo-section p { color: var(--color-text-secondary); margin-bottom: 15px; line-height: 1.8; }
+      .seo-section ul { list-style: none; padding-left: 0; margin-bottom: 20px; }
+      .seo-section li { color: var(--color-text-secondary); margin-bottom: 12px; display: flex; align-items: flex-start; gap: 12px; }
+      .seo-section li::before { content: "•"; color: var(--color-accent-cyan); font-weight: bold; }
+      .seo-section strong { color: var(--color-text-primary); }
+
+      footer { text-align: center; padding: 40px 0; color: var(--color-text-muted); border-top: 1px solid var(--border-default); margin-top: 60px; }
+
+      .hidden { display: none; }
+
+      @media (max-width: 600px) {
+        .scoreboard-card { grid-template-columns: 1fr; }
+        .result-value { font-size: 3rem; }
+        .tab { padding: 10px 15px; font-size: 0.85rem; flex: 1; text-align: center; }
       }
     </style>
   </head>
   <body>
-    <div class="bg-grid"></div>
-    <div class="container">
-      <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">🌙</button>
+    <button class="theme-toggle" id="themeToggle" title="切换主题">🌓</button>
 
+    <div class="container">
       <nav class="breadcrumb">
-        <a href="../../index.html">首页</a>
-        <span class="breadcrumb-separator">/</span>
-        <span class="breadcrumb-current">跑步配速计算器</span>
+        <a href="../../">首页</a>
+        <span>/</span>
+        <a href="../">体育竞技</a>
+        <span>/</span>
+        <span>跑步配速计算器</span>
       </nav>
 
-      <h1>跑步配速计算器</h1>
-      <p class="subtitle">计算配速、预测完赛时间、规划训练区间</p>
+      <header class="hero">
+        <h1>🏃 跑步配速计算器</h1>
+        <p>精准规划你的每一步，从配速换算到科学完赛预测</p>
+      </header>
+
+      <!-- Top Ad Slot -->
+      <div class="ads-slot">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-YOUR_CLIENT_ID"
+             data-ad-slot="YOUR_AD_SLOT_TOP"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+      </div>
 
       <div class="tabs">
-        <button class="tab active" onclick="switchTab('pace')">配速计算</button>
-        <button class="tab" onclick="switchTab('time')">时间预测</button>
-        <button class="tab" onclick="switchTab('zones')">训练区间</button>
+        <button class="tab active" onclick="switchTab('pace', this)">配速计算</button>
+        <button class="tab" onclick="switchTab('time', this)">完赛预测</button>
+        <button class="tab" onclick="switchTab('zones', this)">训练区间</button>
       </div>
 
-      <!-- Pace Calculator -->
-      <div id="paceTab" class="card">
-        <div class="card-title">🏃 根据距离和时间计算配速</div>
-        <div class="form-row">
+      <main>
+        <!-- Pace Tab -->
+        <div id="paceTab" class="card">
+          <div class="card-title">🚀 配速换算</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>目标距离</label>
+              <select id="paceDistSelect" onchange="toggleCustomDist('pace')">
+                <option value="5">5 公里</option>
+                <option value="10" selected>10 公里</option>
+                <option value="21.0975">半程马拉松 (21.1km)</option>
+                <option value="42.195">全程马拉松 (42.2km)</option>
+                <option value="custom">自定义距离</option>
+              </select>
+            </div>
+            <div class="form-group hidden" id="paceCustomGroup">
+              <label>自定义距离 (km)</label>
+              <input type="number" id="paceCustomDist" step="0.01" placeholder="输入公里数" />
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label>完成时间</label>
+              <div class="time-inputs">
+                <input type="number" id="paceH" placeholder="时" min="0" value="0" />
+                <span class="time-sep">:</span>
+                <input type="number" id="paceM" placeholder="分" min="0" max="59" value="50" />
+                <span class="time-sep">:</span>
+                <input type="number" id="paceS" placeholder="秒" min="0" max="59" value="0" />
+              </div>
+            </div>
+          </div>
+          <button class="btn-calculate" onclick="calcPace()">计算平均配速</button>
+          <div class="result-box" id="paceResult">
+            <span class="result-label">平均配速</span>
+            <span class="result-value" id="paceVal">--</span>
+            <span class="result-unit">/ 公里</span>
+          </div>
+        </div>
+
+        <!-- Prediction Tab -->
+        <div id="timeTab" class="card hidden">
+          <div class="card-title">⏱️ 成绩预测 (Riegel 公式)</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>已知成绩距离</label>
+              <select id="knownDist">
+                <option value="5">5 公里</option>
+                <option value="10" selected>10 公里</option>
+                <option value="21.0975">半程马拉松</option>
+                <option value="42.195">全程马拉松</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>已知成绩用时</label>
+              <div class="time-inputs">
+                <input type="number" id="knownH" placeholder="时" min="0" value="0" />
+                <span class="time-sep">:</span>
+                <input type="number" id="knownM" placeholder="分" min="0" max="59" value="50" />
+                <span class="time-sep">:</span>
+                <input type="number" id="knownS" placeholder="秒" min="0" max="59" value="0" />
+              </div>
+            </div>
+          </div>
+          <button class="btn-calculate" onclick="predictTime()">生成预测清单</button>
+          <div class="prediction-grid" id="predGrid"></div>
+        </div>
+
+        <!-- Zones Tab -->
+        <div id="zonesTab" class="card hidden">
+          <div class="card-title">📊 科学训练区间划分</div>
           <div class="form-group">
-            <label>距离</label>
-            <select id="paceDistance">
-              <option value="1">1 公里</option>
-              <option value="5">5 公里</option>
-              <option value="10" selected>10 公里</option>
-              <option value="21.0975">半程马拉松 (21.1km)</option>
-              <option value="42.195">全程马拉松 (42.2km)</option>
-              <option value="custom">自定义</option>
-            </select>
+            <label>最近比赛/测试配速 (min:sec / km)</label>
+            <div class="time-inputs" style="max-width: 300px;">
+              <input type="number" id="refM" placeholder="分" min="0" value="5" />
+              <span class="time-sep">:</span>
+              <input type="number" id="refS" placeholder="秒" min="0" max="59" value="0" />
+            </div>
           </div>
-          <div class="form-group hidden" id="customDistanceGroup">
-            <label>自定义距离 (公里)</label>
-            <input type="number" id="customDistance" step="0.01" placeholder="输入距离" />
-          </div>
+          <button class="btn-calculate" onclick="calcZones()">计算训练区间</button>
+          <div class="zones-list" id="zonesList"></div>
         </div>
-        <div class="form-group">
-          <label>完成时间</label>
-          <div class="time-input">
-            <input type="number" id="paceHours" min="0" max="23" value="0" placeholder="时" />
-            <span>:</span>
-            <input type="number" id="paceMinutes" min="0" max="59" value="50" placeholder="分" />
-            <span>:</span>
-            <input type="number" id="paceSeconds" min="0" max="59" value="0" placeholder="秒" />
-          </div>
-        </div>
-        <button class="btn btn-primary" onclick="calculatePace()">计算配速</button>
-        <div class="result-box" id="paceResult" style="display: none">
-          <div class="result-label">平均配速</div>
-          <div class="result-value" id="paceValue">--</div>
-          <div class="result-unit">/公里</div>
-        </div>
-      </div>
 
-      <!-- Time Prediction -->
-      <div id="timeTab" class="card hidden">
-        <div class="card-title">⏱️ 根据已知成绩预测其他距离时间</div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>已知距离</label>
-            <select id="knownDistance">
-              <option value="5">5 公里</option>
-              <option value="10" selected>10 公里</option>
-              <option value="21.0975">半程马拉松</option>
-              <option value="42.195">全程马拉松</option>
-            </select>
-          </div>
+        <!-- Middle Ad Slot -->
+        <div class="ads-slot">
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-client="ca-pub-YOUR_CLIENT_ID"
+               data-ad-slot="YOUR_AD_SLOT_MIDDLE"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
         </div>
-        <div class="form-group">
-          <label>已知时间</label>
-          <div class="time-input">
-            <input type="number" id="knownHours" min="0" max="23" value="0" placeholder="时" />
-            <span>:</span>
-            <input type="number" id="knownMinutes" min="0" max="59" value="50" placeholder="分" />
-            <span>:</span>
-            <input type="number" id="knownSeconds" min="0" max="59" value="0" placeholder="秒" />
-          </div>
-        </div>
-        <button class="btn btn-primary" onclick="predictTimes()">预测时间</button>
-        <div class="predictions" id="predictions"></div>
-      </div>
+      </main>
 
-      <!-- Training Zones -->
-      <div id="zonesTab" class="card hidden">
-        <div class="card-title">📊 基于配速的训练区间</div>
-        <div class="form-group">
-          <label>最近5K/10K比赛配速 (分钟:秒)</label>
-          <div class="time-input">
-            <input type="number" id="zoneMinutes" min="0" max="15" value="5" placeholder="分" />
-            <span>:</span>
-            <input type="number" id="zoneSeconds" min="0" max="59" value="0" placeholder="秒" />
-            <span>/公里</span>
-          </div>
+      <section class="seo-content">
+        <div class="seo-section">
+          <h2>跑步配速计算：如何解决从小白到精英跑者的进阶难题？</h2>
+          <p>跑步是门严谨的科学。无论是想完成人生第一个 5 公里，还是追求马拉松“破三”梦想，掌握自己的<strong>配速 (Pace)</strong> 都是核心。本工具旨在通过科学的模型，解决跑者在不同阶段遇到的具体问题。</p>
+          
+          <h3>1. 告别盲目训练：为什么要划分“训练区间”？</h3>
+          <p>很多跑者陷入了一个误区：每次跑步都拼尽全力。这不仅容易导致受伤，还会让训练陷入平台期。科学的训练体系（如丹尼尔斯跑步公式）强调不同强度的组合：</p>
+          <ul>
+            <li><strong>轻松跑 (Easy Run)：</strong> 解决基础耐力和恢复问题。配速应在比赛配速的 120%-135%，让你能边跑边轻松交谈。</li>
+            <li><strong>乳酸门槛跑 (Threshold Run)：</strong> 解决身体处理乳酸的能力。这是提升马拉松成绩最关键的训练，通常处于“舒适的艰辛”状态。</li>
+            <li><strong>间歇跑 (Interval Run)：</strong> 解决最大摄氧量 (VO2 Max) 问题。通过高强度的冲刺与休息循环，提升你的极限速度。</li>
+          </ul>
+
+          <h3>2. 马拉松破四、破三：我需要跑多快？</h3>
+          <p>对于马拉松爱好者来说，特定的完赛目标对应着严苛的配速要求：</p>
+          <ul>
+            <li><strong>破四 (4:00:00)：</strong> 平均配速需达到 <strong>5'41"</strong> / 公里。这意味着你每 5 公里要保持在 28 分 25 秒左右。</li>
+            <li><strong>破三 (3:00:00)：</strong> 平均配速需达到 <strong>4'15"</strong> / 公里。这需要极强的抗乳酸能力和高效的跑步经济性。</li>
+          </ul>
+          <p>使用我们的计算器，你可以倒推每公里的配速要求，并在训练中严格执行，确保比赛当天体力分配均匀，避免“撞墙”。</p>
+
+          <h3>3. 比赛日配速策略：先快还是先慢？</h3>
+          <p>如何分配体力是决定比赛成败的关键。常见的配速策略包括：</p>
+          <ul>
+            <li><strong>匀速跑 (Even Splits)：</strong> 最理想的状态。通过本工具计算出目标配速，全程严格执行，减少体能波动。</li>
+            <li><strong>先慢后快 (Negative Splits)：</strong> 许多精英选手的首选。前半程比目标配速慢 5-10 秒，下半程利用剩余体能加速。这能有效降低 30 公里后“撞墙”的风险。</li>
+            <li><strong>应对坡度：</strong> 遇到上坡时不要死守配速，而应保持相同的努力程度（心率）；下坡时利用重力稍微加速，抵消上坡的时间损失。</li>
+          </ul>
+
+          <h3>4. 解决 30 公里后的“撞墙”问题</h3>
+          <p>所谓的“撞墙”，本质上是身体糖原耗尽的表现。通过科学的配速管理，你可以推迟这一时刻：</p>
+          <ul>
+            <li><strong>赛前减量 (Tapering)：</strong> 赛前两周逐步减少跑量，但保持一定的配速刺激，让肌肉糖原储备达到峰值。</li>
+            <li><strong>补糖策略：</strong> 建议每 5-7 公里补充一次能量胶（约 20-30g 碳水），不要等到感觉饿了才吃。</li>
+            <li><strong>初期降速：</strong> 比赛前 5 公里由于肾上腺素分泌，很容易跑快。如果你比计划配速快了 10 秒以上，请立刻降速，否则你将在 35 公里处付出代价。</li>
+          </ul>
         </div>
-        <button class="btn btn-primary" onclick="calculateZones()">计算训练区间</button>
-        <div class="pace-zones" id="paceZones"></div>
+
+        <div class="seo-section">
+          <h2>常见问题解答 (FAQ)</h2>
+          <h3>为什么预测时间比我实际跑的快？</h3>
+          <p>Riegel 公式预测的是在<strong>充分训练</strong>且<strong>赛道理想</strong>情况下的成绩。如果你的长距离耐力训练不足（每月跑量低于 150km），或者比赛当天有坡度、高温，实际成绩会慢于预测值。</p>
+          <h3>如何定义“自定义距离”？</h3>
+          <p>如果你在操场跑了 12 圈（4.8km），或者在公园跑了一个不规则的闭环，只需在“配速计算”中选择自定义距离，输入 4.8，即可获得精准的配速数据。</p>
+          <h3>什么是“跑步经济性”？</h3>
+          <p>跑步经济性是指在特定配速下身体消耗氧气的效率。通过核心训练、力量训练和正确的跑姿纠正，你可以用同样的体能跑出更快的配速。</p>
+        </div>
+      </section>
+
+      <!-- Bottom Ad Slot -->
+      <div class="ads-slot">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-YOUR_CLIENT_ID"
+             data-ad-slot="YOUR_AD_SLOT_BOTTOM"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
       </div>
 
       <footer>
-        <a href="https://github.com/chicogong/html-tools" target="_blank">GitHub</a>
+        <p>&copy; 2026 WebUtils. 专注于提供高效、科学、免费的运动竞技辅助工具。</p>
       </footer>
     </div>
 
     <script>
-      function switchTab(tab) {
-        document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
-        document.querySelectorAll(".card").forEach((c) => c.classList.add("hidden"));
-        event.target.classList.add("active");
-        document.getElementById(tab + "Tab").classList.remove("hidden");
+      function switchTab(tab, el) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.card').forEach(c => c.classList.add('hidden'));
+        el.classList.add('active');
+        document.getElementById(tab + 'Tab').classList.remove('hidden');
       }
 
-      document.getElementById("paceDistance").addEventListener("change", function () {
-        document
-          .getElementById("customDistanceGroup")
-          .classList.toggle("hidden", this.value !== "custom");
-      });
+      function toggleCustomDist(tab) {
+        const select = document.getElementById(tab + 'DistSelect');
+        const group = document.getElementById(tab + 'CustomGroup');
+        group.classList.toggle('hidden', select.value !== 'custom');
+      }
 
       function formatPace(seconds) {
-        const mins = Math.floor(seconds / 60);
-        const secs = Math.round(seconds % 60);
-        return `${mins}'${secs.toString().padStart(2, "0")}"`;
+        const m = Math.floor(seconds / 60);
+        const s = Math.round(seconds % 60);
+        return `${m}'${String(s).padStart(2, '0')}"`;
       }
 
-      function formatTime(totalSeconds) {
-        const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = Math.round(totalSeconds % 60);
-        if (hours > 0) {
-          return `${hours}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-        }
-        return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+      function formatDuration(totalSeconds) {
+        const h = Math.floor(totalSeconds / 3600);
+        const m = Math.floor((totalSeconds % 3600) / 60);
+        const s = Math.round(totalSeconds % 60);
+        if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        return `${m}:${String(s).padStart(2, '0')}`;
       }
 
-      function calculatePace() {
-        let distance = parseFloat(document.getElementById("paceDistance").value);
-        if (document.getElementById("paceDistance").value === "custom") {
-          distance = parseFloat(document.getElementById("customDistance").value);
-        }
+      function calcPace() {
+        let dist = parseFloat(document.getElementById('paceDistSelect').value);
+        if (isNaN(dist)) dist = parseFloat(document.getElementById('paceCustomDist').value);
+        
+        const h = parseInt(document.getElementById('paceH').value) || 0;
+        const m = parseInt(document.getElementById('paceM').value) || 0;
+        const s = parseInt(document.getElementById('paceS').value) || 0;
+        const totalS = h * 3600 + m * 60 + s;
 
-        const hours = parseInt(document.getElementById("paceHours").value) || 0;
-        const minutes = parseInt(document.getElementById("paceMinutes").value) || 0;
-        const seconds = parseInt(document.getElementById("paceSeconds").value) || 0;
-        const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+        if (!dist || totalS <= 0) return alert('请输入有效的距离和时间');
 
-        if (distance <= 0 || totalSeconds <= 0) {
-          alert("请输入有效的距离和时间");
-          return;
-        }
-
-        const paceSeconds = totalSeconds / distance;
-        document.getElementById("paceValue").textContent = formatPace(paceSeconds);
-        document.getElementById("paceResult").style.display = "block";
+        const paceS = totalS / dist;
+        const resBox = document.getElementById('paceResult');
+        document.getElementById('paceVal').textContent = formatPace(paceS);
+        resBox.style.display = 'block';
       }
 
-      function predictTimes() {
-        const knownDist = parseFloat(document.getElementById("knownDistance").value);
-        const hours = parseInt(document.getElementById("knownHours").value) || 0;
-        const minutes = parseInt(document.getElementById("knownMinutes").value) || 0;
-        const seconds = parseInt(document.getElementById("knownSeconds").value) || 0;
-        const knownTime = hours * 3600 + minutes * 60 + seconds;
+      function predictTime() {
+        const knownD = parseFloat(document.getElementById('knownDist').value);
+        const h = parseInt(document.getElementById('knownH').value) || 0;
+        const m = parseInt(document.getElementById('knownM').value) || 0;
+        const s = parseInt(document.getElementById('knownS').value) || 0;
+        const knownS = h * 3600 + m * 60 + s;
 
-        if (knownTime <= 0) {
-          alert("请输入有效的时间");
-          return;
-        }
+        if (knownS <= 0) return alert('请输入已知成绩时间');
 
-        // Riegel formula: T2 = T1 * (D2/D1)^1.06
-        const distances = [
-          { name: "5K", km: 5 },
-          { name: "10K", km: 10 },
-          { name: "半马", km: 21.0975 },
-          { name: "全马", km: 42.195 }
+        const targets = [
+          { n: '5 公里', d: 5 },
+          { n: '10 公里', d: 10 },
+          { n: '半程马拉松', d: 21.0975 },
+          { n: '全程马拉松', d: 42.195 }
         ];
 
-        const predictions = document.getElementById("predictions");
-        predictions.innerHTML = "";
-
-        distances.forEach((d) => {
-          const predictedTime = knownTime * Math.pow(d.km / knownDist, 1.06);
-          const card = document.createElement("div");
-          card.className = "prediction-card";
-          card.innerHTML = `
-          <div class="prediction-distance">${d.name}</div>
-          <div class="prediction-time">${formatTime(predictedTime)}</div>
-        `;
-          predictions.appendChild(card);
-        });
+        const grid = document.getElementById('predGrid');
+        grid.innerHTML = targets.map(t => {
+          const predS = knownS * Math.pow(t.d / knownD, 1.06);
+          return `
+            <div class="prediction-item">
+              <span class="pred-dist">${t.n}</span>
+              <div class="pred-time">${formatDuration(predS)}</div>
+            </div>
+          `;
+        }).join('');
       }
 
-      function calculateZones() {
-        const mins = parseInt(document.getElementById("zoneMinutes").value) || 0;
-        const secs = parseInt(document.getElementById("zoneSeconds").value) || 0;
-        const racePace = mins * 60 + secs;
+      function calcZones() {
+        const m = parseInt(document.getElementById('refM').value) || 0;
+        const s = parseInt(document.getElementById('refS').value) || 0;
+        const refPaceS = m * 60 + s;
 
-        if (racePace <= 0) {
-          alert("请输入有效的配速");
-          return;
-        }
+        if (refPaceS <= 0) return alert('请输入参考配速');
 
         const zones = [
-          { name: "轻松跑 (Easy)", factor: [1.2, 1.35], class: "zone-easy" },
-          { name: "节奏跑 (Tempo)", factor: [1.05, 1.12], class: "zone-tempo" },
-          { name: "乳酸门槛 (Threshold)", factor: [0.98, 1.05], class: "zone-threshold" },
-          { name: "间歇训练 (Interval)", factor: [0.88, 0.95], class: "zone-interval" }
+          { name: '轻松跑 (Easy)', desc: '提升基础耐力，心率约为 60-70%', factor: [1.2, 1.35], cls: 'zone-easy' },
+          { name: '节奏跑 (Tempo)', desc: '马拉松比赛目标配速，心率约为 75-85%', factor: [1.05, 1.12], cls: 'zone-tempo' },
+          { name: '乳酸门槛 (Threshold)', desc: '提升排酸能力，心率约为 88-92%', factor: [0.98, 1.05], cls: 'zone-threshold' },
+          { name: '间歇训练 (Interval)', desc: '提升最大摄氧量，极限挑战', factor: [0.88, 0.95], cls: 'zone-interval' }
         ];
 
-        const zonesContainer = document.getElementById("paceZones");
-        zonesContainer.innerHTML = "";
-
-        zones.forEach((zone) => {
-          const minPace = racePace * zone.factor[0];
-          const maxPace = racePace * zone.factor[1];
-          const div = document.createElement("div");
-          div.className = `zone ${zone.class}`;
-          div.innerHTML = `
-          <span class="zone-name">${zone.name}</span>
-          <span class="zone-pace">${formatPace(minPace)} - ${formatPace(maxPace)}</span>
-        `;
-          zonesContainer.appendChild(div);
-        });
+        const list = document.getElementById('zonesList');
+        list.innerHTML = zones.map(z => `
+          <div class="zone-card ${z.cls}">
+            <div class="zone-info">
+              <span class="zone-name">${z.name}</span>
+              <span class="zone-desc">${z.desc}</span>
+            </div>
+            <div class="zone-pace-val">${formatPace(refPaceS * z.factor[0])} - ${formatPace(refPaceS * z.factor[1])}</div>
+          </div>
+        `).join('');
       }
 
-      window.toggleTheme = function () {
-        const html = document.documentElement;
-        const btn = document.querySelector(".theme-toggle");
-        const current = html.getAttribute("data-theme");
-        const next = current === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", next);
-        btn.textContent = next === "light" ? "☀️" : "🌙";
-        localStorage.setItem("theme", next);
-      };
+      // Theme Management
+      function initTheme() {
+        const saved = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', saved);
+        const toggle = document.getElementById('themeToggle');
+        toggle.textContent = saved === 'dark' ? '☀️' : '🌙';
+        toggle.onclick = () => {
+          const cur = document.documentElement.getAttribute('data-theme');
+          const next = cur === 'dark' ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', next);
+          toggle.textContent = next === 'dark' ? '☀️' : '🌙';
+          localStorage.setItem('theme', next);
+        };
+      }
 
-      (function () {
-        const saved = localStorage.getItem("theme");
-        if (saved) {
-          document.documentElement.setAttribute("data-theme", saved);
-          document.querySelector(".theme-toggle").textContent = saved === "light" ? "☀️" : "🌙";
-        }
-      })();
+      initTheme();
+      calcPace(); // Initial calc
+
+      // AdSense Initialization
+      (adsbygoogle = window.adsbygoogle || []).push({});
+      (adsbygoogle = window.adsbygoogle || []).push({});
+      (adsbygoogle = window.adsbygoogle || []).push({});
     </script>
   </body>
 </html>
