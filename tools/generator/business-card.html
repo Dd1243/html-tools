@@ -347,23 +347,30 @@
 
     <script>
         // Theme management
-        function updateThemeIcon(theme) {
-            const btn = document.getElementById("theme-btn");
-            if (btn) btn.textContent = theme === "light" ? "☀️" : "🌙";
-        }
-
-        function toggleTheme() {
+        (function() {
             const html = document.documentElement;
-            const currentTheme = html.getAttribute("data-theme") || "dark";
-            const newTheme = currentTheme === "light" ? "dark" : "light";
-            html.setAttribute("data-theme", newTheme);
-            updateThemeIcon(newTheme);
-            localStorage.setItem("theme", newTheme);
-        }
+            const themeBtn = document.getElementById("theme-btn");
 
-        const savedTheme = localStorage.getItem("theme") || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-        document.documentElement.setAttribute("data-theme", savedTheme);
-        updateThemeIcon(savedTheme);
+            function updateTheme(theme) {
+                html.setAttribute("data-theme", theme);
+                if (themeBtn) {
+                    themeBtn.textContent = theme === "light" ? "☀️" : "🌙";
+                }
+                localStorage.setItem("theme", theme);
+                if (typeof render === "function") render();
+            }
+
+            if (themeBtn) {
+                themeBtn.addEventListener("click", () => {
+                    const currentTheme = html.getAttribute("data-theme") || "dark";
+                    updateTheme(currentTheme === "light" ? "dark" : "light");
+                });
+            }
+
+            const savedTheme = localStorage.getItem("theme") || 
+                               (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+            updateTheme(savedTheme);
+        })();
 
         // Tab management
         document.querySelectorAll(".tab-btn").forEach((btn) => {
@@ -371,15 +378,16 @@
                 document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
                 document.querySelectorAll(".tab-content").forEach((c) => c.classList.remove("active"));
                 btn.classList.add("active");
-                document.getElementById(btn.dataset.tab + "-tab").classList.add("active");
+                const target = document.getElementById(btn.dataset.tab + "-tab");
+                if (target) target.classList.add("active");
             });
         });
 
         // Canvas logic
         const canvasFront = document.getElementById("canvasFront");
         const canvasBack = document.getElementById("canvasBack");
-        const ctxFront = canvasFront.getContext("2d");
-        const ctxBack = canvasBack.getContext("2d");
+        const ctxFront = canvasFront ? canvasFront.getContext("2d") : null;
+        const ctxBack = canvasBack ? canvasBack.getContext("2d") : null;
 
         let state = {
             name: "张三",
@@ -410,6 +418,7 @@
         };
 
         function render() {
+            if (!ctxFront || !ctxBack) return;
             renderFront();
             renderBack();
         }
@@ -534,30 +543,37 @@
         });
 
         ["name", "title", "company", "email", "phone", "website", "address"].forEach((id) => {
-            document.getElementById(id).addEventListener("input", (e) => { state[id] = e.target.value; render(); });
+            const el = document.getElementById(id);
+            if (el) el.addEventListener("input", (e) => { state[id] = e.target.value; render(); });
         });
         ["primaryColor", "secondaryColor", "textColor", "accentColor"].forEach((id) => {
-            document.getElementById(id).addEventListener("input", (e) => { state[id] = e.target.value; render(); });
+            const el = document.getElementById(id);
+            if (el) el.addEventListener("input", (e) => { state[id] = e.target.value; render(); });
         });
         ["nameSize", "titleSize", "borderRadius"].forEach((id) => {
-            document.getElementById(id).addEventListener("input", (e) => { state[id] = parseInt(e.target.value); render(); });
+            const el = document.getElementById(id);
+            if (el) el.addEventListener("input", (e) => { state[id] = parseInt(e.target.value); render(); });
         });
 
-        document.getElementById("avatarUpload").addEventListener("change", (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    const img = new Image();
-                    img.onload = () => { state.avatar = img; render(); };
-                    img.src = event.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
+        const avatarUpload = document.getElementById("avatarUpload");
+        if (avatarUpload) {
+            avatarUpload.addEventListener("change", (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const img = new Image();
+                        img.onload = () => { state.avatar = img; render(); };
+                        img.src = event.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
 
         window.downloadCard = function (side) {
             const canvas = side === "front" ? canvasFront : canvasBack;
+            if (!canvas) return;
             const link = document.createElement("a");
             link.download = `business-card-${side}.png`;
             link.href = canvas.toDataURL("image/png");

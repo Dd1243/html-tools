@@ -59,7 +59,7 @@
             --gh-level-4: #39d353;
         }
 
-        body { padding: 0; margin: 0; min-height: 100vh; background: var(--pico-background-color); }
+        body { padding: 0; margin: 0; min-height: 100vh; background: var(--pico-background-color); transition: background-color 0.3s; }
         .container-wrapper { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
         
         .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 32px; }
@@ -116,7 +116,7 @@
         }
 
         .pattern-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 24px; }
-        .pattern-btn { padding: 8px; font-size: 0.75rem; border: 1px solid var(--pico-muted-border-color); border-radius: 6px; cursor: pointer; text-align: center; transition: all 0.2s; background: transparent; }
+        .pattern-btn { padding: 8px; font-size: 0.75rem; border: 1px solid var(--pico-muted-border-color); border-radius: 6px; cursor: pointer; text-align: center; transition: all 0.2s; background: transparent; color: var(--pico-color); }
         .pattern-btn:hover { border-color: #2ea44f; }
         .pattern-btn.active { background: #2ea44f; color: white; border-color: #2ea44f; }
 
@@ -138,12 +138,13 @@
         .content-section p { line-height: 1.8; color: var(--pico-muted-color); margin-bottom: 16px; }
         .highlight-box { background: rgba(46, 164, 79, 0.05); border-left: 4px solid #2ea44f; padding: 20px; border-radius: 0 8px 8px 0; margin: 32px 0; }
 
-        .theme-toggle { position: fixed; top: 20px; right: 20px; width: 44px; height: 44px; border-radius: 50%; background: #2ea44f; color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .theme-toggle { position: fixed; top: 20px; right: 20px; width: 44px; height: 44px; border-radius: 50%; background: #2ea44f; color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: transform 0.2s; font-size: 1.2rem; }
+        .theme-toggle:hover { transform: scale(1.1); }
         
         .footer { text-align: center; padding: 64px 0; border-top: 1px solid var(--pico-muted-border-color); margin-top: 64px; }
         .footer a { color: #2ea44f; text-decoration: none; }
 
-        input, select { font-size: 0.875rem !important; margin-bottom: 16px !important; }
+        input, select { font-size: 0.875rem !important; margin-bottom: 16px !important; background-color: var(--pico-form-element-background-color) !important; color: var(--pico-color) !important; }
         label { font-size: 0.75rem !important; font-weight: 600 !important; color: var(--pico-muted-color) !important; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px !important; }
 
         .breadcrumb { display: flex; gap: 8px; font-size: 0.8125rem; margin-bottom: 16px; color: var(--pico-muted-color); }
@@ -154,8 +155,8 @@
     </style>
 </head>
 <body>
-    <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">
-        <span id="theme-icon">🌙</span>
+    <button class="theme-toggle" id="theme-toggle-btn" title="切换主题">
+        <span id="theme-icon"></span>
     </button>
 
     <div class="container-wrapper">
@@ -316,6 +317,33 @@
     </div>
 
     <script>
+        // Theme Management logic
+        (function() {
+            const html = document.documentElement;
+            const themeBtn = document.getElementById("theme-toggle-btn");
+            const themeIcon = document.getElementById("theme-icon");
+
+            function updateTheme(theme) {
+                html.setAttribute("data-theme", theme);
+                if (themeIcon) {
+                    themeIcon.textContent = theme === "light" ? "☀️" : "🌙";
+                }
+                localStorage.setItem("theme", theme);
+                if (typeof renderGraph === "function") renderGraph();
+            }
+
+            if (themeBtn) {
+                themeBtn.addEventListener("click", () => {
+                    const currentTheme = html.getAttribute("data-theme") || "dark";
+                    updateTheme(currentTheme === "light" ? "dark" : "light");
+                });
+            }
+
+            const savedTheme = localStorage.getItem("theme") || 
+                               (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+            updateTheme(savedTheme);
+        })();
+
         const colorSchemes = [
             { name: "GitHub", colors: ["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"] },
             { name: "GitHub Dark", colors: ["#161b22", "#0e4429", "#006d32", "#26a641", "#39d353"] },
@@ -422,6 +450,7 @@
             const numWeeks = parseInt(document.getElementById("weeks").value);
             const maxContributions = parseInt(document.getElementById("maxContrib").value);
             const container = document.getElementById("contribGraph");
+            if (!container) return;
             container.innerHTML = "";
 
             for (let day = 0; day < 7; day++) {
@@ -452,13 +481,15 @@
             // Month labels
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             const monthLabels = document.getElementById("monthLabels");
-            const numMonths = Math.ceil(numWeeks / 4);
-            const startMonth = new Date().getMonth() - numMonths + 1;
-            monthLabels.innerHTML = "";
-            for (let i = 0; i < numMonths; i++) {
-                const span = document.createElement("span");
-                span.textContent = months[(startMonth + i + 12) % 12];
-                monthLabels.appendChild(span);
+            if (monthLabels) {
+                const numMonths = Math.ceil(numWeeks / 4);
+                const startMonth = new Date().getMonth() - numMonths + 1;
+                monthLabels.innerHTML = "";
+                for (let i = 0; i < numMonths; i++) {
+                    const span = document.createElement("span");
+                    span.textContent = months[(startMonth + i + 12) % 12];
+                    monthLabels.appendChild(span);
+                }
             }
             updateStats();
         }
@@ -473,33 +504,38 @@
                 });
             });
 
-            document.getElementById("stats").innerHTML = `
-                <div class="stat-item"><span class="stat-value">${total}</span><span class="stat-label">总贡献</span></div>
-                <div class="stat-item"><span class="stat-value">${activeDays}</span><span class="stat-label">活跃天数</span></div>
-                <div class="stat-item"><span class="stat-value">${maxStreak}</span><span class="stat-label">最长连击</span></div>
-            `;
+            const statsContainer = document.getElementById("stats");
+            if (statsContainer) {
+                statsContainer.innerHTML = `
+                    <div class="stat-item"><span class="stat-value">${total}</span><span class="stat-label">总贡献</span></div>
+                    <div class="stat-item"><span class="stat-value">${activeDays}</span><span class="stat-label">活跃天数</span></div>
+                    <div class="stat-item"><span class="stat-value">${maxStreak}</span><span class="stat-label">最长连击</span></div>
+                `;
+            }
         }
 
         // Initialize color schemes
         const schemesContainer = document.getElementById("colorSchemes");
-        colorSchemes.forEach((scheme, index) => {
-            const div = document.createElement("div");
-            div.className = `scheme-option ${index === 1 ? 'active' : ''}`;
-            div.title = scheme.name;
-            scheme.colors.forEach(color => {
-                const colorDiv = document.createElement("div");
-                colorDiv.className = "scheme-color";
-                colorDiv.style.background = color;
-                div.appendChild(colorDiv);
+        if (schemesContainer) {
+            colorSchemes.forEach((scheme, index) => {
+                const div = document.createElement("div");
+                div.className = `scheme-option ${index === 1 ? 'active' : ''}`;
+                div.title = scheme.name;
+                scheme.colors.forEach(color => {
+                    const colorDiv = document.createElement("div");
+                    colorDiv.className = "scheme-color";
+                    colorDiv.style.background = color;
+                    div.appendChild(colorDiv);
+                });
+                div.onclick = () => {
+                    document.querySelectorAll(".scheme-option").forEach(s => s.classList.remove("active"));
+                    div.classList.add("active");
+                    currentScheme = scheme;
+                    renderGraph();
+                };
+                schemesContainer.appendChild(div);
             });
-            div.onclick = () => {
-                document.querySelectorAll(".scheme-option").forEach(s => s.classList.remove("active"));
-                div.classList.add("active");
-                currentScheme = scheme;
-                renderGraph();
-            };
-            schemesContainer.appendChild(div);
-        });
+        }
 
         // Event Listeners
         document.querySelectorAll(".pattern-btn").forEach(btn => {
@@ -507,98 +543,104 @@
                 document.querySelectorAll(".pattern-btn").forEach(b => b.classList.remove("active"));
                 btn.classList.add("active");
                 currentPattern = btn.dataset.pattern;
-                document.getElementById("textPatternGroup").style.display = currentPattern === "text" ? "block" : "none";
+                const textGroup = document.getElementById("textPatternGroup");
+                if (textGroup) textGroup.style.display = currentPattern === "text" ? "block" : "none";
                 if (currentPattern !== "custom") { generateContributionData(); renderGraph(); }
             };
         });
 
         ["activity", "maxContrib", "weeks", "brushLevel"].forEach(id => {
-            document.getElementById(id).oninput = (e) => {
-                document.getElementById(id + "Value").textContent = e.target.value;
-                if (id === "brushLevel") brushLevel = parseInt(e.target.value);
-                else { generateContributionData(); renderGraph(); }
-            };
+            const el = document.getElementById(id);
+            if (el) {
+                el.oninput = (e) => {
+                    const valEl = document.getElementById(id + "Value");
+                    if (valEl) valEl.textContent = e.target.value;
+                    if (id === "brushLevel") brushLevel = parseInt(e.target.value);
+                    else { generateContributionData(); renderGraph(); }
+                };
+            }
         });
 
-        document.getElementById("textPattern").oninput = () => { if (currentPattern === "text") { generateContributionData(); renderGraph(); } };
-        document.getElementById("generateBtn").onclick = () => { generateContributionData(); renderGraph(); };
-        document.getElementById("randomBtn").onclick = () => {
-            const patterns = ["random", "wave", "gradient", "sparse", "dense", "weekday"];
-            currentPattern = patterns[Math.floor(Math.random() * patterns.length)];
-            document.querySelectorAll(".pattern-btn").forEach(btn => btn.classList.toggle("active", btn.dataset.pattern === currentPattern));
-            currentScheme = colorSchemes[Math.floor(Math.random() * colorSchemes.length)];
-            document.querySelectorAll(".scheme-option").forEach((s, i) => s.classList.toggle("active", colorSchemes[i] === currentScheme));
-            generateContributionData(); renderGraph();
-        };
+        const textPattern = document.getElementById("textPattern");
+        if (textPattern) {
+            textPattern.oninput = () => { if (currentPattern === "text") { generateContributionData(); renderGraph(); } };
+        }
+        const generateBtn = document.getElementById("generateBtn");
+        if (generateBtn) generateBtn.onclick = () => { generateContributionData(); renderGraph(); };
+        
+        const randomBtn = document.getElementById("randomBtn");
+        if (randomBtn) {
+            randomBtn.onclick = () => {
+                const patterns = ["random", "wave", "gradient", "sparse", "dense", "weekday"];
+                currentPattern = patterns[Math.floor(Math.random() * patterns.length)];
+                document.querySelectorAll(".pattern-btn").forEach(btn => btn.classList.toggle("active", btn.dataset.pattern === currentPattern));
+                currentScheme = colorSchemes[Math.floor(Math.random() * colorSchemes.length)];
+                document.querySelectorAll(".scheme-option").forEach((s, i) => s.classList.toggle("active", colorSchemes[i] === currentScheme));
+                generateContributionData(); renderGraph();
+            };
+        }
 
         // Download PNG/SVG
         function setupDownload() {
             const cellSize = 12, gap = 3, padding = 20;
-            const numWeeks = parseInt(document.getElementById("weeks").value);
-            const maxContributions = parseInt(document.getElementById("maxContrib").value);
-
-            document.getElementById("downloadPng").onclick = () => {
-                const canvas = document.createElement("canvas");
-                canvas.width = numWeeks * (cellSize + gap) + padding * 2;
-                canvas.height = 7 * (cellSize + gap) + padding * 2;
-                const ctx = canvas.getContext("2d");
-                ctx.fillStyle = document.documentElement.getAttribute("data-theme") === "dark" ? "#0d1117" : "#ffffff";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                for (let w = 0; w < numWeeks; w++) {
-                    for (let d = 0; d < 7; d++) {
-                        const level = getLevel(contributionData[w][d], maxContributions);
-                        ctx.fillStyle = currentScheme.colors[level];
-                        ctx.beginPath();
-                        ctx.roundRect(padding + w * (cellSize + gap), padding + d * (cellSize + gap), cellSize, cellSize, 2);
-                        ctx.fill();
+            
+            const pngBtn = document.getElementById("downloadPng");
+            if (pngBtn) {
+                pngBtn.onclick = () => {
+                    const numWeeks = parseInt(document.getElementById("weeks").value);
+                    const maxContributions = parseInt(document.getElementById("maxContrib").value);
+                    const canvas = document.createElement("canvas");
+                    canvas.width = numWeeks * (cellSize + gap) + padding * 2;
+                    canvas.height = 7 * (cellSize + gap) + padding * 2;
+                    const ctx = canvas.getContext("2d");
+                    ctx.fillStyle = document.documentElement.getAttribute("data-theme") === "dark" ? "#0d1117" : "#ffffff";
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    for (let w = 0; w < numWeeks; w++) {
+                        for (let d = 0; d < 7; d++) {
+                            const level = getLevel(contributionData[w][d], maxContributions);
+                            ctx.fillStyle = currentScheme.colors[level];
+                            ctx.beginPath();
+                            if (ctx.roundRect) {
+                                ctx.roundRect(padding + w * (cellSize + gap), padding + d * (cellSize + gap), cellSize, cellSize, 2);
+                            } else {
+                                ctx.rect(padding + w * (cellSize + gap), padding + d * (cellSize + gap), cellSize, cellSize);
+                            }
+                            ctx.fill();
+                        }
                     }
-                }
-                const a = document.createElement("a");
-                a.href = canvas.toDataURL("image/png");
-                a.download = "github-contributions.png";
-                a.click();
-            };
+                    const a = document.createElement("a");
+                    a.href = canvas.toDataURL("image/png");
+                    a.download = "github-contributions.png";
+                    a.click();
+                };
+            }
 
-            document.getElementById("downloadSvg").onclick = () => {
-                const width = numWeeks * (cellSize + gap) + padding * 2;
-                const height = 7 * (cellSize + gap) + padding * 2;
-                const bg = document.documentElement.getAttribute("data-theme") === "dark" ? "#0d1117" : "#ffffff";
-                let svg = `<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><rect width="100%" height="100%" fill="${bg}"/>`;
-                for (let w = 0; w < numWeeks; w++) {
-                    for (let d = 0; d < 7; d++) {
-                        const level = getLevel(contributionData[w][d], maxContributions);
-                        svg += `<rect x="${padding + w * (cellSize + gap)}" y="${padding + d * (cellSize + gap)}" width="${cellSize}" height="${cellSize}" rx="2" fill="${currentScheme.colors[level]}"/>`;
+            const svgBtn = document.getElementById("downloadSvg");
+            if (svgBtn) {
+                svgBtn.onclick = () => {
+                    const numWeeks = parseInt(document.getElementById("weeks").value);
+                    const maxContributions = parseInt(document.getElementById("maxContrib").value);
+                    const width = numWeeks * (cellSize + gap) + padding * 2;
+                    const height = 7 * (cellSize + gap) + padding * 2;
+                    const bg = document.documentElement.getAttribute("data-theme") === "dark" ? "#0d1117" : "#ffffff";
+                    let svg = `<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><rect width="100%" height="100%" fill="${bg}"/>`;
+                    for (let w = 0; w < numWeeks; w++) {
+                        for (let d = 0; d < 7; d++) {
+                            const level = getLevel(contributionData[w][d], maxContributions);
+                            svg += `<rect x="${padding + w * (cellSize + gap)}" y="${padding + d * (cellSize + gap)}" width="${cellSize}" height="${cellSize}" rx="2" fill="${currentScheme.colors[level]}"/>`;
+                        }
                     }
-                }
-                svg += `</svg>`;
-                const blob = new Blob([svg], { type: "image/svg+xml" });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = "github-contributions.svg";
-                a.click();
-                URL.revokeObjectURL(url);
-            };
+                    svg += `</svg>`;
+                    const blob = new Blob([svg], { type: "image/svg+xml" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = "github-contributions.svg";
+                    a.click();
+                    URL.revokeObjectURL(url);
+                };
+            }
         }
-
-        function updateThemeIcon(theme) {
-            const icon = document.getElementById("theme-icon");
-            if (icon) icon.textContent = theme === "light" ? "☀️" : "🌙";
-        }
-
-        function toggleTheme() {
-            const html = document.documentElement;
-            const currentTheme = html.getAttribute("data-theme") || "dark";
-            const newTheme = currentTheme === "light" ? "dark" : "light";
-            html.setAttribute("data-theme", newTheme);
-            updateThemeIcon(newTheme);
-            localStorage.setItem("theme", newTheme);
-            renderGraph();
-        }
-
-        const savedTheme = localStorage.getItem("theme") || "dark";
-        document.documentElement.setAttribute("data-theme", savedTheme);
-        updateThemeIcon(savedTheme);
 
         generateContributionData();
         renderGraph();
