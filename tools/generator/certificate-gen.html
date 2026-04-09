@@ -47,7 +47,7 @@
             --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
         }
 
-        body { padding: 0; margin: 0; min-height: 100vh; }
+        body { padding: 0; margin: 0; min-height: 100vh; background: var(--pico-background-color); }
         .container-wrapper { max-width: 1300px; margin: 0 auto; padding: 32px 24px; }
         
         .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 32px; }
@@ -155,7 +155,7 @@
     </style>
 </head>
 <body>
-    <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">🌓</button>
+    <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()" title="切换主题">🌓</button>
 
     <div class="container-wrapper">
         <nav class="no-print">
@@ -328,16 +328,23 @@
             award: { title: "奖状", content: "在本次活动/竞赛中表现出色，荣获一等奖，特发此状，以资鼓励。" }
         };
 
+        function updateThemeIcon(theme) {
+            const btn = document.getElementById("theme-btn");
+            if (btn) btn.textContent = theme === "light" ? "☀️" : "🌙";
+        }
+
         function toggleTheme() {
             const html = document.documentElement;
-            const currentTheme = html.getAttribute("data-theme");
+            const currentTheme = html.getAttribute("data-theme") || "dark";
             const newTheme = currentTheme === "light" ? "dark" : "light";
             html.setAttribute("data-theme", newTheme);
+            updateThemeIcon(newTheme);
             localStorage.setItem("cert-theme", newTheme);
         }
 
         const savedTheme = localStorage.getItem("cert-theme") || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         document.documentElement.setAttribute("data-theme", savedTheme);
+        updateThemeIcon(savedTheme);
 
         function selectTemplate(template) {
             currentTemplate = template;

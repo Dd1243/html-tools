@@ -50,9 +50,15 @@
             --radius-lg: 1rem;
             --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
             --accent-cyan: #00f5d4;
+            --bg-deep: #0a0a0f;
         }
 
-        body { padding: 0; margin: 0; min-height: 100vh; }
+        [data-theme="light"] {
+            --bg-deep: #f8fafc;
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        body { padding: 0; margin: 0; min-height: 100vh; background: var(--bg-deep); }
         .container-wrapper { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
         
         .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 32px; position: relative; }
@@ -87,7 +93,7 @@
         }
 
         .template-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 24px; }
-        .template-btn { padding: 10px; font-size: 0.75rem; border: 1px solid var(--pico-muted-border-color); border-radius: 8px; cursor: pointer; text-align: center; transition: all 0.2s; background: transparent; }
+        .template-btn { padding: 10px; font-size: 0.75rem; border: 1px solid var(--pico-muted-border-color); border-radius: 8px; cursor: pointer; text-align: center; transition: all 0.2s; background: transparent; color: var(--pico-color); }
         .template-btn:hover { border-color: var(--pico-primary); }
         .template-btn.active { background: var(--pico-primary); color: white; border-color: var(--pico-primary); }
 
@@ -96,11 +102,10 @@
             display: flex; align-items: center; justify-content: center;
             box-shadow: inset 0 2px 10px rgba(0,0,0,0.05); border: 1px solid #eee;
         }
-        [data-theme="dark"] .preview-container { background: #f9fafb; }
 
         .color-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px; }
         .color-item label { font-size: 0.75rem !important; margin-bottom: 4px !important; }
-        input[type="color"] { height: 44px; padding: 4px; cursor: pointer; }
+        input[type="color"] { height: 44px; padding: 4px; cursor: pointer; border-radius: 8px; border: 1px solid var(--pico-muted-border-color); }
 
         .content-section {
             background: var(--pico-card-background-color);
@@ -132,7 +137,9 @@
     </style>
 </head>
 <body>
-    <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">🌓</button>
+    <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+        <span id="theme-icon">�</span>
+    </button>
 
     <div class="container-wrapper">
         <nav class="breadcrumb">
@@ -170,9 +177,9 @@
 
                     <label style="margin-top: 24px;">🎨 样式与色彩</label>
                     <div class="template-grid">
-                        <button class="template-btn active" onclick="setTemplate('modern')" data-template="modern">现代</button>
-                        <button class="template-btn" onclick="setTemplate('classic')" data-template="classic">经典</button>
-                        <button class="template-btn" onclick="setTemplate('minimal')" data-template="minimal">简约</button>
+                        <button class="template-btn active" onclick="setTemplate('modern', event)" data-template="modern">现代</button>
+                        <button class="template-btn" onclick="setTemplate('classic', event)" data-template="classic">经典</button>
+                        <button class="template-btn" onclick="setTemplate('minimal', event)" data-template="minimal">简约</button>
                     </div>
 
                     <div class="color-row">
@@ -276,21 +283,31 @@
     <script>
         let currentTemplate = "modern";
 
+        function updateThemeIcon(theme) {
+            const icon = document.getElementById("theme-icon");
+            if (icon) icon.textContent = theme === "light" ? "☀️" : "🌙";
+        }
+
         function toggleTheme() {
             const html = document.documentElement;
-            const currentTheme = html.getAttribute("data-theme");
+            const currentTheme = html.getAttribute("data-theme") || "dark";
             const newTheme = currentTheme === "light" ? "dark" : "light";
             html.setAttribute("data-theme", newTheme);
+            updateThemeIcon(newTheme);
             localStorage.setItem("theme", newTheme);
         }
 
+        // Initialize theme
         const savedTheme = localStorage.getItem("theme") || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         document.documentElement.setAttribute("data-theme", savedTheme);
+        updateThemeIcon(savedTheme);
 
-        function setTemplate(t) {
+        function setTemplate(t, event) {
             currentTemplate = t;
             document.querySelectorAll(".template-btn").forEach(btn => btn.classList.remove("active"));
-            document.querySelector(`[data-template="${t}"]`).classList.add("active");
+            if (event && event.target) {
+                event.target.classList.add("active");
+            }
             updatePreview();
         }
 
