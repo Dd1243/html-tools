@@ -1,38 +1,62 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="light">
+<html lang="zh-CN">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>安全头检测器 - WebUtils</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HTTP Security Headers Reference - 完整的 HTTP 安全响应头参考指南 - WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="安全头检测器 - WebUtils" />
-    <meta name="keywords" content="headers-check,security,tools,webutils" />
+    <meta name="description" content="一个全面的 HTTP 安全响应头参考指南。涵盖 HSTS, CSP, X-Frame-Options, Referrer-Policy, Permissions-Policy 等所有主流安全头部的定义、最佳实践及配置示例。帮助开发者构建坚不可摧的 Web 应用。" />
+    <meta name="keywords" content="HTTP Header 参考, 安全头部指南, 响应头最佳实践, 网络安全审计, Web 安全标准, CSP 示例, HSTS 配置, Header Check" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/security/headers-check.html" />
 
     <!-- Open Graph -->
-    <meta property="og:title" content="安全头检测器 - WebUtils" />
-    <meta property="og:description" content="安全头检测器 - WebUtils" />
+    <meta property="og:title" content="HTTP Security Headers 完整参考指南 - WebUtils" />
+    <meta property="og:description" content="深入了解每一个 HTTP 安全响应头，掌握 Web 领域的安全防护核心准则。" />
     <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/security/headers-check.html"
-    />
+    <meta property="og:url" content="https://essays4u.net/tools/security/headers-check.html" />
     <meta property="og:site_name" content="WebUtils" />
     <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="安全头检测器 - WebUtils" />
-    <meta name="twitter:description" content="安全头检测器 - WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+    <meta name="twitter:title" content="HTTP Security Headers 完整参考指南 - WebUtils" />
+    <meta name="twitter:description" content="深入了解每一个 HTTP 安全响应头，掌握 Web 领域的安全防护核心准则。" />
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+    <!-- JSON-LD BreadcrumbList Schema -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "首页",
+            "item": "https://essays4u.net/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "安全工具",
+            "item": "https://essays4u.net/#security"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "安全头部指南",
+            "item": "https://essays4u.net/tools/security/headers-check.html"
+          }
+        ]
+      }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    
     <style>
       :root {
         --bg-deep: #0a0a0f;
@@ -54,869 +78,406 @@
         --radius-sm: 4px;
         --radius-md: 8px;
         --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
+        --font-sans: "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
         --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
       }
 
       [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        --bg-deep: #f8fafc;
+        --bg-surface: #ffffff;
+        --bg-card: #ffffff;
+        --bg-input: #f1f5f9;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-muted: #94a3b8;
+        --border-subtle: #e2e8f0;
+        --border-strong: #cbd5e1;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
       }
 
-      :root {
-        --spacing-sm: 0.5rem;
-        --spacing-md: 1rem;
-        --spacing-lg: 1.5rem;
-        --color-safe: #22c55e;
-        --color-warning: #f59e0b;
-        --color-danger: #ef4444;
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: var(--font-sans);
+        background: var(--bg-deep);
+        color: var(--text-primary);
+        line-height: 1.6;
+        transition: background 0.3s, color 0.3s;
       }
-      .container {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: var(--spacing-lg);
-      }
-      .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: var(--spacing-lg);
-      }
-      .theme-toggle {
-        cursor: pointer;
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        padding: 0.5rem;
-      }
-      .info-box {
-        background: var(--pico-card-background-color);
-        border: 1px solid var(--pico-muted-border-color);
-        border-radius: var(--pico-border-radius);
-        padding: var(--spacing-md);
-        margin-bottom: var(--spacing-md);
-      }
-      .header-card {
-        background: var(--pico-card-background-color);
-        border: 1px solid var(--pico-muted-border-color);
-        border-radius: var(--pico-border-radius);
-        padding: var(--spacing-md);
-        margin-bottom: var(--spacing-md);
-      }
-      .header-card-title {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: var(--spacing-sm);
-      }
-      .header-card-title h3 {
-        margin: 0;
-        font-size: 1rem;
-      }
-      .status-badge {
-        padding: 0.25rem 0.75rem;
-        border-radius: 1rem;
-        font-size: 0.75rem;
-        font-weight: bold;
-      }
-      .status-critical {
-        background: var(--color-danger);
-        color: white;
-      }
-      .status-important {
-        background: var(--color-warning);
-        color: black;
-      }
-      .status-recommended {
-        background: var(--color-safe);
-        color: white;
-      }
-      .header-description {
-        color: var(--pico-muted-color);
-        font-size: 0.9rem;
-        margin-bottom: var(--spacing-sm);
-      }
-      .header-example {
-        background: var(--pico-code-background-color);
-        padding: var(--spacing-sm);
-        border-radius: var(--pico-border-radius);
+
+      .container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+      
+      .header { margin-bottom: 40px; text-align: center; }
+      .breadcrumb {
+        display: inline-flex;
+        gap: 8px;
         font-family: var(--font-mono);
         font-size: 0.85rem;
-        overflow-x: auto;
-        white-space: pre-wrap;
+        margin-bottom: 16px;
+        color: var(--text-secondary);
+      }
+      .breadcrumb a { color: var(--text-secondary); text-decoration: none; }
+      .breadcrumb a:hover { color: var(--accent-blue); }
+
+      h1 { font-size: 3rem; margin-bottom: 12px; font-weight: 700; letter-spacing: -0.02em; }
+      .lead { color: var(--text-secondary); font-size: 1.2rem; max-width: 700px; margin: 0 auto 32px; }
+
+      .search-container {
+        margin-bottom: 40px;
+        position: relative;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 16px 20px;
+        background: var(--bg-card);
+        border: 2px solid var(--border-subtle);
+        border-radius: var(--radius-lg);
+        color: var(--text-primary);
+        font-family: var(--font-sans);
+        font-size: 1.1rem;
+        transition: all 0.2s;
+      }
+
+      .search-input:focus { outline: none; border-color: var(--accent-blue); box-shadow: 0 0 0 4px rgba(76, 201, 240, 0.1); }
+
+      .category-filters {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 32px;
+        flex-wrap: wrap;
+      }
+
+      .filter-btn {
+        padding: 8px 16px;
+        border-radius: 20px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .filter-btn:hover { border-color: var(--accent-blue); color: var(--text-primary); }
+      .filter-btn.active { background: var(--accent-blue); color: #000; border-color: var(--accent-blue); }
+
+      .headers-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 24px;
+        margin-bottom: 64px;
+      }
+
+      @media (max-width: 768px) {
+        .headers-grid { grid-template-columns: 1fr; }
+      }
+
+      .header-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      .header-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: var(--border-strong); }
+
+      .card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 16px;
+      }
+
+      .header-name {
+        font-family: var(--font-mono);
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--accent-blue);
         word-break: break-all;
       }
-      .header-details {
-        margin-top: var(--spacing-sm);
+
+      .importance {
+        font-size: 0.65rem;
+        padding: 2px 8px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        font-weight: 700;
       }
-      .tabs {
-        display: flex;
-        gap: var(--spacing-sm);
-        border-bottom: 2px solid var(--pico-muted-border-color);
-        margin-bottom: var(--spacing-md);
-        flex-wrap: wrap;
-      }
-      .tab {
-        padding: var(--spacing-sm) var(--spacing-md);
-        cursor: pointer;
-        border: none;
-        background: none;
-        border-bottom: 2px solid transparent;
-        margin-bottom: -2px;
-      }
-      .tab.active {
-        border-bottom-color: var(--pico-primary);
-        color: var(--pico-primary);
-      }
-      .tab-content {
-        display: none;
-      }
-      .tab-content.active {
-        display: block;
-      }
-      .checklist-item {
-        display: flex;
-        align-items: flex-start;
-        gap: var(--spacing-sm);
-        padding: var(--spacing-sm) 0;
-        border-bottom: 1px solid var(--pico-muted-border-color);
-      }
-      .checklist-item:last-child {
-        border-bottom: none;
-      }
-      .checklist-icon {
-        font-size: 1.25rem;
-        min-width: 1.5rem;
-      }
-      .attack-card {
-        background: var(--pico-card-background-color);
-        border-left: 4px solid var(--color-danger);
-        padding: var(--spacing-md);
-        margin-bottom: var(--spacing-md);
-      }
-      .attack-card h4 {
-        margin: 0 0 var(--spacing-sm) 0;
-        color: var(--color-danger);
-      }
-      .mitigation {
-        background: var(--pico-code-background-color);
-        padding: var(--spacing-sm);
-        border-radius: var(--pico-border-radius);
-        margin-top: var(--spacing-sm);
-      }
-      .search-box {
-        margin-bottom: var(--spacing-md);
-      }
-      .filter-tags {
-        display: flex;
-        gap: var(--spacing-sm);
-        flex-wrap: wrap;
-        margin-bottom: var(--spacing-md);
-      }
-      .filter-tag {
-        padding: 0.25rem 0.75rem;
-        border-radius: 1rem;
-        cursor: pointer;
-        border: 1px solid var(--pico-muted-border-color);
-        background: var(--pico-card-background-color);
-      }
-      .filter-tag.active {
-        background: var(--pico-primary);
-        color: var(--pico-primary-inverse);
-        border-color: var(--pico-primary);
-      }
-      .hidden {
-        display: none !important;
+      .imp-critical { background: rgba(244, 63, 94, 0.15); color: var(--accent-red); border: 1px solid var(--accent-red); }
+      .imp-recommended { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); border: 1px solid var(--accent-green); }
+      .imp-optional { background: rgba(85, 85, 106, 0.15); color: var(--text-muted); border: 1px solid var(--border-subtle); }
+
+      .header-desc {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        margin-bottom: 20px;
+        flex-grow: 1;
       }
 
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
+      .header-example {
+        background: var(--bg-input);
+        padding: 12px;
+        border-radius: var(--radius-sm);
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        color: var(--text-primary);
+        border-left: 3px solid var(--accent-blue);
+        word-break: break-all;
       }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
+
+      .sidebar { display: flex; flex-direction: column; gap: 24px; }
+      
+      .ad-placeholder {
+        background: var(--bg-card);
+        border: 2px dashed var(--border-subtle);
+        border-radius: var(--radius-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        min-height: 250px;
+        font-family: var(--font-mono);
+        text-align: center;
+        padding: 20px;
+        margin-bottom: 32px;
       }
-      .breadcrumb a:hover {
-        text-decoration: underline;
+
+      .article-container {
+        max-width: 800px;
+        margin: 80px auto;
+        padding: 0 24px;
       }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
+
+      .article-content h2 { font-size: 2rem; margin: 48px 0 24px; color: var(--accent-blue); }
+      .article-content h3 { font-size: 1.5rem; margin: 32px 0 16px; }
+      .article-content p { margin-bottom: 20px; color: var(--text-secondary); font-size: 1.1rem; line-height: 1.8; }
+      .article-content ul { margin: 0 0 24px 24px; color: var(--text-secondary); }
+      .article-content li { margin-bottom: 12px; }
+
+      .theme-toggle {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        width: 56px;
+        height: 56px;
+        border-radius: 28px;
+        background: var(--accent-blue);
+        color: #000;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        z-index: 100;
       }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
   </head>
   <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>›</span>
-      安全头检测器
-    </nav>
-    <main class="container">
+    <button class="theme-toggle" id="themeToggle" aria-label="切换主题">🌓</button>
+
+    <div class="container">
       <div class="header">
-        <h1>安全头检测器</h1>
-        <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">🌓</button>
+        <nav class="breadcrumb">
+          <a href="/">首页</a>
+          <span>/</span>
+          <a href="/#security">安全工具</a>
+          <span>/</span>
+          <span>安全头部指南</span>
+        </nav>
+        <h1>Security Headers Reference</h1>
+        <p class="lead">一份详尽的 HTTP 安全响应头参考字典。帮助您构建符合现代安全标准的 Web 应用。</p>
       </div>
 
-      <article>
-        <div class="info-box">
-          <p>
-            <strong>HTTP 安全头</strong>
-            是 Web
-            服务器发送的响应头，用于保护网站免受各种攻击。本工具提供安全头的参考信息和最佳实践配置示例。
-          </p>
-        </div>
+      <div class="search-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="搜索头部名称或关键词 (如: CSP, HSTS, XSS)...">
+      </div>
 
-        <div class="tabs">
-          <button class="tab active" onclick="switchTab('headers')">安全头参考</button>
-          <button class="tab" onclick="switchTab('attacks')">攻击防护</button>
-          <button class="tab" onclick="switchTab('checklist')">安全检查清单</button>
-          <button class="tab" onclick="switchTab('generator')">配置生成器</button>
-        </div>
+      <div class="category-filters" id="categoryFilters">
+        <button class="filter-btn active" data-cat="all">全部</button>
+        <button class="filter-btn" data-cat="Security">安全防护</button>
+        <button class="filter-btn" data-cat="Cache">缓存控制</button>
+        <button class="filter-btn" data-cat="Privacy">隐私与权限</button>
+        <button class="filter-btn" data-cat="Information">信息控制</button>
+      </div>
 
-        <!-- Security Headers Reference Tab -->
-        <div id="headers-tab" class="tab-content active">
-          <div class="search-box">
-            <input
-              type="search"
-              id="headerSearch"
-              placeholder="搜索安全头..."
-              oninput="filterHeaders()"
-            />
-          </div>
+      <div class="headers-grid" id="headersGrid">
+        <!-- Cards will be injected here -->
+      </div>
 
-          <div class="filter-tags">
-            <button class="filter-tag active" data-filter="all" onclick="setFilter('all')">
-              全部
-            </button>
-            <button class="filter-tag" data-filter="critical" onclick="setFilter('critical')">
-              关键
-            </button>
-            <button class="filter-tag" data-filter="important" onclick="setFilter('important')">
-              重要
-            </button>
-            <button class="filter-tag" data-filter="recommended" onclick="setFilter('recommended')">
-              推荐
-            </button>
-          </div>
+      <div class="ad-placeholder">
+        Google AdSense 横幅展示位
+      </div>
 
-          <div id="headersContainer"></div>
-        </div>
+      <article class="article-container">
+        <div class="article-content">
+          <h2>为什么您需要一份完整的 HTTP 安全头清单？</h2>
+          <p>在现代 Web 开发中，安全性不再仅仅是后端代码的问题。浏览器作为一个复杂的运行时环境，提供了大量的内置安全开关。这些开关大多通过 HTTP 响应头（Response Headers）来控制。一份标准的“安全体检”通常会发现，大多数网站仅开启了最基础的头部，而忽略了能够抵御 90% 以上 XSS 和劫持攻击的高级特性。</p>
+          
+          <h3>防御纵深：不仅仅是防火墙</h3>
+          <p>许多开发者认为只要有了 Web 应用防火墙（WAF）就万事大吉。然而，WAF 只能过滤请求，而安全头部则是在用户的浏览器端建立起最后一道防线。例如：</p>
+          <ul>
+            <li><strong>CSP</strong> 可以在攻击者成功注入恶意脚本后，依然阻止该脚本的执行。</li>
+            <li><strong>HSTS</strong> 可以在用户意外点击 HTTP 链接时，强制浏览器内部跳转到 HTTPS，绕过中间人劫持。</li>
+            <li><strong>X-Frame-Options</strong> 可以在您的页面被嵌入到钓鱼网站时，阻止其显示，从而挫败点击劫持。</li>
+          </ul>
 
-        <!-- Attack Prevention Tab -->
-        <div id="attacks-tab" class="tab-content">
-          <div id="attacksContainer"></div>
-        </div>
+          <h3>解决“安全与功能平衡”的配置难题</h3>
+          <p>配置安全头最难的地方在于避免“误伤”合法功能。例如，一个过于严格的 <code>Content-Security-Policy</code> 可能会导致您的支付插件或统计脚本失效。我们的参考指南为每个头部提供了：</p>
+          <ul>
+            <li><strong>最佳实践值：</strong> 行业公认的安全配置方案。</li>
+            <li><strong>配置示例：</strong> 针对 Nginx 和 Apache 的代码片段。</li>
+            <li><strong>兼容性提示：</strong> 哪些旧版本浏览器可能不支持。</li>
+          </ul>
 
-        <!-- Security Checklist Tab -->
-        <div id="checklist-tab" class="tab-content">
-          <div id="checklistContainer"></div>
-        </div>
-
-        <!-- Config Generator Tab -->
-        <div id="generator-tab" class="tab-content">
-          <div class="info-box">
-            <h4>选择服务器类型生成配置</h4>
-          </div>
-
-          <label>
-            服务器类型
-            <select id="serverType" onchange="generateConfig()">
-              <option value="nginx">Nginx</option>
-              <option value="apache">Apache</option>
-              <option value="iis">IIS (web.config)</option>
-              <option value="express">Node.js Express</option>
-              <option value="cloudflare">Cloudflare Workers</option>
-            </select>
-          </label>
-
-          <fieldset>
-            <legend>选择要启用的安全头</legend>
-            <div id="headerCheckboxes"></div>
-          </fieldset>
-
-          <label>
-            CSP 策略级别
-            <select id="cspLevel" onchange="generateConfig()">
-              <option value="strict">严格 (推荐)</option>
-              <option value="moderate">中等</option>
-              <option value="permissive">宽松</option>
-            </select>
-          </label>
-
-          <div class="header-example" id="generatedConfig" style="min-height: 200px">
-            选择服务器类型和安全头后生成配置
-          </div>
-
-          <button onclick="copyConfig()">复制配置</button>
+          <h3>定期审计的重要性</h3>
+          <p>Web 安全标准在不断演进。过去被认为安全的 <code>X-XSS-Protection</code> 现在已被认为过时，取而代之的是更强大的 <code>CSP</code>。同样，新的 <code>Permissions-Policy</code> 正在取代旧的 <code>Feature-Policy</code>。定期使用本指南盘点您的服务器配置，是确保应用长久安全的关键。</p>
+          
+          <p>本工具旨在作为开发者、安全工程师和运维人员的案头手册。您可以根据搜索和分类功能快速定位所需的头部，并参考最佳实践值进行服务器加固。</p>
         </div>
       </article>
-    </main>
+    </div>
 
     <script>
-      var securityHeaders = [
+      const headersData = [
         {
-          name: "Content-Security-Policy",
-          level: "critical",
-          description: "控制页面可以加载哪些资源，有效防止 XSS 攻击和数据注入攻击。",
-          example:
-            "Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self'; frame-ancestors 'none';",
-          details: [
-            "default-src 'self' - 默认只允许同源资源",
-            "script-src - 控制 JavaScript 来源",
-            "style-src - 控制 CSS 来源",
-            "img-src - 控制图片来源",
-            "frame-ancestors - 防止点击劫持"
-          ],
-          attacks: ["XSS", "Data Injection", "Clickjacking"]
+          name: 'Content-Security-Policy',
+          category: 'Security',
+          importance: 'critical',
+          desc: '内容安全策略，通过限制资源加载来源防御 XSS、数据注入等。',
+          example: "default-src 'self'; script-src 'self' https://trusted.com"
         },
         {
-          name: "Strict-Transport-Security",
-          level: "critical",
-          description: "强制浏览器只通过 HTTPS 连接到服务器，防止协议降级攻击和 Cookie 劫持。",
-          example: "Strict-Transport-Security: max-age=31536000; includeSubDomains; preload",
-          details: [
-            "max-age=31536000 - HSTS 有效期一年",
-            "includeSubDomains - 包含所有子域名",
-            "preload - 可提交到 HSTS 预加载列表"
-          ],
-          attacks: ["Man-in-the-Middle", "SSL Stripping", "Cookie Hijacking"]
+          name: 'Strict-Transport-Security',
+          category: 'Security',
+          importance: 'critical',
+          desc: 'HSTS，强制浏览器通过 HTTPS 访问，防止 SSL 剥离。',
+          example: "max-age=31536000; includeSubDomains; preload"
         },
         {
-          name: "X-Content-Type-Options",
-          level: "critical",
-          description: "防止浏览器进行 MIME 类型嗅探，减少基于 MIME 混淆的攻击风险。",
-          example: "X-Content-Type-Options: nosniff",
-          details: ["nosniff - 禁止 MIME 类型嗅探", "确保文件以声明的 Content-Type 处理"],
-          attacks: ["MIME Confusion", "Drive-by Download"]
+          name: 'X-Frame-Options',
+          category: 'Security',
+          importance: 'recommended',
+          desc: '控制页面是否允许在 frame/iframe 中展示，防御点击劫持。',
+          example: "SAMEORIGIN"
         },
         {
-          name: "X-Frame-Options",
-          level: "important",
-          description: "控制页面是否可以被嵌入到 iframe 中，防止点击劫持攻击。",
-          example: "X-Frame-Options: DENY",
-          details: [
-            "DENY - 完全禁止被嵌入",
-            "SAMEORIGIN - 只允许同源嵌入",
-            "ALLOW-FROM uri - 允许指定来源嵌入（已废弃）"
-          ],
-          attacks: ["Clickjacking", "UI Redressing"]
+          name: 'X-Content-Type-Options',
+          category: 'Security',
+          importance: 'recommended',
+          desc: '防止浏览器进行 MIME 嗅探，减少文件类型相关的攻击。',
+          example: "nosniff"
         },
         {
-          name: "X-XSS-Protection",
-          level: "important",
-          description: "启用浏览器内置的 XSS 过滤器（已被 CSP 取代，但仍建议设置）。",
-          example: "X-XSS-Protection: 1; mode=block",
-          details: [
-            "1 - 启用 XSS 过滤器",
-            "mode=block - 检测到攻击时阻止渲染",
-            "注意：现代浏览器已移除此功能"
-          ],
-          attacks: ["XSS"]
+          name: 'Referrer-Policy',
+          category: 'Privacy',
+          importance: 'recommended',
+          desc: '控制从本站点击链接时，Referer 头部包含的信息量。',
+          example: "no-referrer-when-downgrade"
         },
         {
-          name: "Referrer-Policy",
-          level: "important",
-          description: "控制请求中 Referer 头的信息量，保护用户隐私。",
-          example: "Referrer-Policy: strict-origin-when-cross-origin",
-          details: [
-            "no-referrer - 不发送 Referer",
-            "same-origin - 只同源请求发送",
-            "strict-origin - 只发送源，不发送路径",
-            "strict-origin-when-cross-origin - 推荐设置"
-          ],
-          attacks: ["Information Leakage", "Privacy Violation"]
+          name: 'Permissions-Policy',
+          category: 'Privacy',
+          importance: 'recommended',
+          desc: '控制浏览器特性权限（如地理位置、摄像头、USB等）。',
+          example: "geolocation=(), microphone=()"
         },
         {
-          name: "Permissions-Policy",
-          level: "recommended",
-          description: "控制浏览器功能的使用权限，如摄像头、麦克风、地理位置等。",
-          example: "Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()",
-          details: [
-            "camera=() - 禁用摄像头",
-            "microphone=() - 禁用麦克风",
-            "geolocation=() - 禁用地理位置",
-            "可按需开放特定功能"
-          ],
-          attacks: ["Privacy Violation", "Feature Abuse"]
+          name: 'Cache-Control',
+          category: 'Cache',
+          importance: 'recommended',
+          desc: '控制资源的缓存策略，防止敏感内容被浏览器或代理缓存。',
+          example: "no-store, no-cache, must-revalidate"
         },
         {
-          name: "Cross-Origin-Embedder-Policy",
-          level: "recommended",
-          description: "控制文档是否可以加载未明确授权的跨源资源。",
-          example: "Cross-Origin-Embedder-Policy: require-corp",
-          details: [
-            "require-corp - 要求所有资源都有 CORP 头",
-            "credentialless - 使用无凭证模式加载",
-            "与 COOP 配合使用可启用高精度计时器"
-          ],
-          attacks: ["Spectre", "Side-Channel"]
+          name: 'Server',
+          category: 'Information',
+          importance: 'optional',
+          desc: '显示服务器指纹。最佳实践是隐藏版本号或完全移除。',
+          example: "nginx (或移除)"
         },
         {
-          name: "Cross-Origin-Opener-Policy",
-          level: "recommended",
-          description: "隔离浏览上下文，防止跨窗口攻击。",
-          example: "Cross-Origin-Opener-Policy: same-origin",
-          details: [
-            "same-origin - 只与同源文档共享上下文",
-            "same-origin-allow-popups - 允许弹窗",
-            "防止 window.opener 相关攻击"
-          ],
-          attacks: ["Cross-Window Attack", "Spectre"]
+          name: 'X-Powered-By',
+          category: 'Information',
+          importance: 'optional',
+          desc: '显示后端技术栈（如 PHP, Express）。建议在生产环境移除。',
+          example: "应该移除"
         },
         {
-          name: "Cross-Origin-Resource-Policy",
-          level: "recommended",
-          description: "控制资源是否可以被其他源加载。",
-          example: "Cross-Origin-Resource-Policy: same-origin",
-          details: [
-            "same-origin - 只允许同源加载",
-            "same-site - 允许同站加载",
-            "cross-origin - 允许跨源加载"
-          ],
-          attacks: ["Cross-Origin Resource Theft"]
-        },
-        {
-          name: "Cache-Control",
-          level: "important",
-          description: "控制响应的缓存行为，防止敏感数据被缓存。",
-          example: "Cache-Control: no-store, no-cache, must-revalidate, private",
-          details: [
-            "no-store - 不存储任何缓存",
-            "no-cache - 每次都要验证",
-            "private - 只能被浏览器缓存",
-            "敏感页面应禁用缓存"
-          ],
-          attacks: ["Information Disclosure", "Cache Poisoning"]
-        },
-        {
-          name: "X-Permitted-Cross-Domain-Policies",
-          level: "recommended",
-          description: "控制 Adobe Flash 和 PDF 的跨域策略文件加载。",
-          example: "X-Permitted-Cross-Domain-Policies: none",
-          details: [
-            "none - 不允许任何策略文件",
-            "master-only - 只允许主策略文件",
-            "主要用于遗留系统安全"
-          ],
-          attacks: ["Cross-Domain Data Theft"]
+          name: 'Expect-CT',
+          category: 'Security',
+          importance: 'optional',
+          desc: '证书透明度检查，防止错误颁发的证书被接受（逐渐被替代）。',
+          example: "max-age=86400, enforce"
         }
       ];
 
-      var attacks = [
-        {
-          name: "XSS (跨站脚本攻击)",
-          description: "攻击者将恶意脚本注入到网页中，窃取用户数据或执行恶意操作。",
-          headers: ["Content-Security-Policy", "X-XSS-Protection"],
-          mitigation: "Content-Security-Policy: script-src 'self'; object-src 'none'"
-        },
-        {
-          name: "点击劫持 (Clickjacking)",
-          description: "通过透明 iframe 覆盖在合法页面上，诱导用户点击。",
-          headers: ["X-Frame-Options", "Content-Security-Policy"],
-          mitigation: "X-Frame-Options: DENY\nContent-Security-Policy: frame-ancestors 'none'"
-        },
-        {
-          name: "中间人攻击 (MITM)",
-          description: "攻击者截获并可能篡改客户端和服务器之间的通信。",
-          headers: ["Strict-Transport-Security"],
-          mitigation: "Strict-Transport-Security: max-age=31536000; includeSubDomains; preload"
-        },
-        {
-          name: "MIME 混淆攻击",
-          description: "利用浏览器的 MIME 类型嗅探执行恶意内容。",
-          headers: ["X-Content-Type-Options"],
-          mitigation: "X-Content-Type-Options: nosniff"
-        },
-        {
-          name: "Spectre 侧信道攻击",
-          description: "利用 CPU 推测执行漏洞读取内存数据。",
-          headers: ["Cross-Origin-Embedder-Policy", "Cross-Origin-Opener-Policy"],
-          mitigation:
-            "Cross-Origin-Embedder-Policy: require-corp\nCross-Origin-Opener-Policy: same-origin"
-        },
-        {
-          name: "信息泄露",
-          description: "Referer 头或缓存可能泄露敏感信息。",
-          headers: ["Referrer-Policy", "Cache-Control"],
-          mitigation:
-            "Referrer-Policy: strict-origin-when-cross-origin\nCache-Control: no-store, private"
-        }
-      ];
+      const grid = document.getElementById('headersGrid');
+      const searchInput = document.getElementById('searchInput');
+      const filters = document.getElementById('categoryFilters');
 
-      var checklist = [
-        { text: "启用 HTTPS 并配置 HSTS", critical: true },
-        { text: "配置 Content-Security-Policy", critical: true },
-        { text: "设置 X-Content-Type-Options: nosniff", critical: true },
-        { text: "设置 X-Frame-Options 防止点击劫持", critical: true },
-        { text: "配置 Referrer-Policy 保护隐私", critical: false },
-        { text: "设置 Permissions-Policy 限制 API 访问", critical: false },
-        { text: "敏感页面禁用缓存", critical: true },
-        { text: "移除不必要的服务器信息头", critical: false },
-        { text: "配置 CORS 白名单", critical: true },
-        { text: "定期审查和更新安全策略", critical: false }
-      ];
+      let currentCat = 'all';
+      let currentQuery = '';
 
-      var currentFilter = "all";
+      function render() {
+        grid.innerHTML = '';
+        const filtered = headersData.filter(h => {
+          const matchCat = currentCat === 'all' || h.category === currentCat;
+          const matchQuery = h.name.toLowerCase().includes(currentQuery.toLowerCase()) || 
+                             h.desc.toLowerCase().includes(currentQuery.toLowerCase());
+          return matchCat && matchQuery;
+        });
 
-      window.toggleTheme = function () {
-        var html = document.documentElement;
-        var current = html.getAttribute("data-theme");
-        html.setAttribute("data-theme", current === "light" ? "dark" : "light");
+        filtered.forEach(h => {
+          const card = document.createElement('div');
+          card.className = 'header-card';
+          card.innerHTML = `
+            <div class="card-top">
+              <span class="header-name">${h.name}</span>
+              <span class="importance imp-${h.importance}">${h.importance}</span>
+            </div>
+            <div class="header-desc">${h.desc}</div>
+            <div class="header-example">${h.example}</div>
+          `;
+          grid.appendChild(card);
+        });
+      }
+
+      searchInput.oninput = (e) => {
+        currentQuery = e.target.value;
+        render();
       };
 
-      window.switchTab = function (tabName) {
-        document.querySelectorAll(".tab").forEach(function (t) {
-          t.classList.remove("active");
-        });
-        document.querySelectorAll(".tab-content").forEach(function (c) {
-          c.classList.remove("active");
-        });
-        document
-          .querySelector("[onclick=\"switchTab('" + tabName + "')\"]")
-          .classList.add("active");
-        document.getElementById(tabName + "-tab").classList.add("active");
+      filters.onclick = (e) => {
+        const btn = e.target.closest('.filter-btn');
+        if (!btn) return;
+        
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentCat = btn.dataset.cat;
+        render();
       };
 
-      function renderHeaders() {
-        var container = document.getElementById("headersContainer");
-        while (container.firstChild) {
-          container.removeChild(container.firstChild);
-        }
-
-        securityHeaders.forEach(function (header) {
-          var card = document.createElement("div");
-          card.className = "header-card";
-          card.dataset.level = header.level;
-          card.dataset.name = header.name.toLowerCase();
-
-          var levelText =
-            header.level === "critical" ? "关键" : header.level === "important" ? "重要" : "推荐";
-
-          var titleDiv = document.createElement("div");
-          titleDiv.className = "header-card-title";
-
-          var h3 = document.createElement("h3");
-          h3.textContent = header.name;
-
-          var badge = document.createElement("span");
-          badge.className = "status-badge status-" + header.level;
-          badge.textContent = levelText;
-
-          titleDiv.appendChild(h3);
-          titleDiv.appendChild(badge);
-
-          var descP = document.createElement("p");
-          descP.className = "header-description";
-          descP.textContent = header.description;
-
-          var exampleDiv = document.createElement("div");
-          exampleDiv.className = "header-example";
-          exampleDiv.textContent = header.example;
-
-          var detailsDiv = document.createElement("details");
-          detailsDiv.className = "header-details";
-
-          var summary = document.createElement("summary");
-          summary.textContent = "详细说明";
-          detailsDiv.appendChild(summary);
-
-          var ul = document.createElement("ul");
-          header.details.forEach(function (detail) {
-            var li = document.createElement("li");
-            li.textContent = detail;
-            ul.appendChild(li);
-          });
-          detailsDiv.appendChild(ul);
-
-          if (header.attacks && header.attacks.length > 0) {
-            var attacksP = document.createElement("p");
-            var strong = document.createElement("strong");
-            strong.textContent = "防护攻击: ";
-            attacksP.appendChild(strong);
-            attacksP.appendChild(document.createTextNode(header.attacks.join(", ")));
-            detailsDiv.appendChild(attacksP);
-          }
-
-          card.appendChild(titleDiv);
-          card.appendChild(descP);
-          card.appendChild(exampleDiv);
-          card.appendChild(detailsDiv);
-
-          container.appendChild(card);
-        });
-      }
-
-      function renderAttacks() {
-        var container = document.getElementById("attacksContainer");
-        while (container.firstChild) {
-          container.removeChild(container.firstChild);
-        }
-
-        attacks.forEach(function (attack) {
-          var card = document.createElement("div");
-          card.className = "attack-card";
-
-          var h4 = document.createElement("h4");
-          h4.textContent = attack.name;
-
-          var p = document.createElement("p");
-          p.textContent = attack.description;
-
-          var headersP = document.createElement("p");
-          var strong1 = document.createElement("strong");
-          strong1.textContent = "相关安全头: ";
-          headersP.appendChild(strong1);
-          headersP.appendChild(document.createTextNode(attack.headers.join(", ")));
-
-          var mitigationDiv = document.createElement("div");
-          mitigationDiv.className = "mitigation";
-
-          var mitigationLabel = document.createElement("strong");
-          mitigationLabel.textContent = "防护配置:";
-          mitigationDiv.appendChild(mitigationLabel);
-
-          var pre = document.createElement("pre");
-          pre.style.margin = "0.5rem 0 0 0";
-          pre.textContent = attack.mitigation;
-          mitigationDiv.appendChild(pre);
-
-          card.appendChild(h4);
-          card.appendChild(p);
-          card.appendChild(headersP);
-          card.appendChild(mitigationDiv);
-
-          container.appendChild(card);
-        });
-      }
-
-      function renderChecklist() {
-        var container = document.getElementById("checklistContainer");
-        while (container.firstChild) {
-          container.removeChild(container.firstChild);
-        }
-
-        checklist.forEach(function (item, index) {
-          var div = document.createElement("div");
-          div.className = "checklist-item";
-
-          var icon = document.createElement("span");
-          icon.className = "checklist-icon";
-          icon.textContent = item.critical ? "🔴" : "🟡";
-
-          var label = document.createElement("label");
-
-          var checkbox = document.createElement("input");
-          checkbox.type = "checkbox";
-          checkbox.id = "check-" + index;
-
-          var text = document.createTextNode(" " + item.text + (item.critical ? " (关键)" : ""));
-
-          label.appendChild(checkbox);
-          label.appendChild(text);
-
-          div.appendChild(icon);
-          div.appendChild(label);
-
-          container.appendChild(div);
-        });
-      }
-
-      function renderHeaderCheckboxes() {
-        var container = document.getElementById("headerCheckboxes");
-        while (container.firstChild) {
-          container.removeChild(container.firstChild);
-        }
-
-        securityHeaders.forEach(function (header, index) {
-          var label = document.createElement("label");
-
-          var checkbox = document.createElement("input");
-          checkbox.type = "checkbox";
-          checkbox.id = "gen-" + index;
-          checkbox.checked = header.level === "critical";
-          checkbox.onchange = generateConfig;
-
-          var text = document.createTextNode(" " + header.name);
-
-          label.appendChild(checkbox);
-          label.appendChild(text);
-
-          container.appendChild(label);
-        });
-      }
-
-      window.setFilter = function (filter) {
-        currentFilter = filter;
-        document.querySelectorAll(".filter-tag").forEach(function (tag) {
-          tag.classList.remove("active");
-        });
-        document.querySelector('[data-filter="' + filter + '"]').classList.add("active");
-        filterHeaders();
+      // Theme Toggle
+      const themeToggle = document.getElementById('themeToggle');
+      themeToggle.onclick = () => {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
       };
 
-      function filterHeaders() {
-        var searchTerm = document.getElementById("headerSearch").value.toLowerCase();
-        var cards = document.querySelectorAll(".header-card");
-
-        cards.forEach(function (card) {
-          var matchesFilter = currentFilter === "all" || card.dataset.level === currentFilter;
-          var matchesSearch =
-            card.dataset.name.indexOf(searchTerm) !== -1 ||
-            card.textContent.toLowerCase().indexOf(searchTerm) !== -1;
-
-          if (matchesFilter && matchesSearch) {
-            card.classList.remove("hidden");
-          } else {
-            card.classList.add("hidden");
-          }
-        });
+      if (localStorage.getItem('theme')) {
+        document.documentElement.setAttribute('data-theme', localStorage.getItem('theme'));
       }
 
-      function generateConfig() {
-        var serverType = document.getElementById("serverType").value;
-        var cspLevel = document.getElementById("cspLevel").value;
-
-        var selectedHeaders = [];
-        securityHeaders.forEach(function (header, index) {
-          var checkbox = document.getElementById("gen-" + index);
-          if (checkbox && checkbox.checked) {
-            selectedHeaders.push(header);
-          }
-        });
-
-        var cspValue;
-        switch (cspLevel) {
-          case "strict":
-            cspValue =
-              "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'";
-            break;
-          case "moderate":
-            cspValue =
-              "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https:; connect-src 'self' https:; frame-ancestors 'self'";
-            break;
-          case "permissive":
-            cspValue =
-              "default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src * data:; font-src * data:; connect-src *";
-            break;
-        }
-
-        var config = "";
-
-        switch (serverType) {
-          case "nginx":
-            config = "# Nginx Security Headers Configuration\n\n";
-            selectedHeaders.forEach(function (header) {
-              var value = header.example.split(": ")[1];
-              if (header.name === "Content-Security-Policy") {
-                value = cspValue;
-              }
-              config += "add_header " + header.name + ' "' + value + '" always;\n';
-            });
-            break;
-
-          case "apache":
-            config =
-              "# Apache Security Headers Configuration\n# Add to .htaccess or httpd.conf\n\n";
-            selectedHeaders.forEach(function (header) {
-              var value = header.example.split(": ")[1];
-              if (header.name === "Content-Security-Policy") {
-                value = cspValue;
-              }
-              config += "Header always set " + header.name + ' "' + value + '"\n';
-            });
-            break;
-
-          case "iis":
-            config =
-              '<?xml version="1.0" encoding="UTF-8"?>\n<configuration>\n  <system.webServer>\n    <httpProtocol>\n      <customHeaders>\n';
-            selectedHeaders.forEach(function (header) {
-              var value = header.example.split(": ")[1];
-              if (header.name === "Content-Security-Policy") {
-                value = cspValue;
-              }
-              config += '        <add name="' + header.name + '" value="' + value + '" />\n';
-            });
-            config +=
-              "      </customHeaders>\n    </httpProtocol>\n  </system.webServer>\n</configuration>";
-            break;
-
-          case "express":
-            config =
-              '// Node.js Express Security Headers\n// npm install helmet\n\nconst helmet = require("helmet");\n\napp.use(helmet());\n\n// Or manually:\napp.use((req, res, next) => {\n';
-            selectedHeaders.forEach(function (header) {
-              var value = header.example.split(": ")[1];
-              if (header.name === "Content-Security-Policy") {
-                value = cspValue;
-              }
-              config += '  res.setHeader("' + header.name + '", "' + value + '");\n';
-            });
-            config += "  next();\n});";
-            break;
-
-          case "cloudflare":
-            config =
-              "// Cloudflare Workers Security Headers\n\nasync function handleRequest(request) {\n  const response = await fetch(request);\n  const newResponse = new Response(response.body, response);\n\n";
-            selectedHeaders.forEach(function (header) {
-              var value = header.example.split(": ")[1];
-              if (header.name === "Content-Security-Policy") {
-                value = cspValue;
-              }
-              config += '  newResponse.headers.set("' + header.name + '", "' + value + '");\n';
-            });
-            config += "\n  return newResponse;\n}";
-            break;
-        }
-
-        document.getElementById("generatedConfig").textContent = config;
-      }
-
-      window.copyConfig = function () {
-        var config = document.getElementById("generatedConfig").textContent;
-        navigator.clipboard
-          .writeText(config)
-          .then(function () {
-            alert("配置已复制到剪贴板！");
-          })
-          .catch(function () {
-            var textarea = document.createElement("textarea");
-            textarea.value = config;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand("copy");
-            document.body.removeChild(textarea);
-            alert("配置已复制到剪贴板！");
-          });
-      };
-
-      // Initialize
-      renderHeaders();
-      renderAttacks();
-      renderChecklist();
-      renderHeaderCheckboxes();
-      generateConfig();
+      render();
     </script>
   </body>
 </html>
