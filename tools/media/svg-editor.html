@@ -106,16 +106,13 @@
             color: var(--text-primary);
             line-height: 1.6;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
 
         /* Layout */
         .app-container {
             display: flex;
             flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
         }
 
         /* Top Header */
@@ -126,6 +123,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            position: sticky;
+            top: 0;
             z-index: 100;
         }
 
@@ -150,9 +149,18 @@
 
         /* Main Workspace */
         .main-workspace {
-            flex: 1;
             display: flex;
-            overflow: hidden;
+            height: 700px; /* 固定工作区高度，避免被长文章挤压 */
+            background: var(--bg-deep);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        @media (max-width: 1024px) {
+            .main-workspace {
+                height: auto;
+                min-height: 1000px;
+                flex-direction: column;
+            }
         }
 
         /* Sidebar */
@@ -164,6 +172,7 @@
             flex-direction: column;
             overflow-y: auto;
             padding: 20px;
+            flex-shrink: 0;
         }
 
         .sidebar-section {
@@ -216,7 +225,8 @@
             display: flex;
             flex-direction: column;
             background: var(--bg-deep);
-            min-width: 0;
+            min-width: 300px;
+            border-right: 1px solid var(--border-subtle);
         }
 
         .editor-header {
@@ -242,15 +252,23 @@
             resize: none;
             outline: none;
             line-height: 1.6;
+            display: block; /* 确保是 block 元素 */
+            z-index: 10;
         }
 
         /* Preview Area */
         .preview-area {
-            width: 400px;
+            width: 450px;
             background: var(--bg-surface);
-            border-left: 1px solid var(--border-subtle);
             display: flex;
             flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 1200px) {
+            .preview-area {
+                width: 350px;
+            }
         }
 
         .preview-header {
@@ -271,6 +289,7 @@
             padding: 20px;
             overflow: auto;
             position: relative;
+            min-height: 300px;
         }
 
         .bg-checkerboard {
@@ -283,10 +302,10 @@
             background-color: var(--bg-surface);
         }
 
-        #svg-preview {
+        #svg-container svg {
             max-width: 100%;
             max-height: 100%;
-            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+            display: block;
         }
 
         .preview-footer {
@@ -371,18 +390,6 @@
             font-size: 12px;
         }
 
-        /* Theme Toggle */
-        .theme-toggle {
-            background: none;
-            border: none;
-            color: var(--text-primary);
-            cursor: pointer;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
         /* Error Overlay */
         .error-overlay {
             position: absolute;
@@ -396,43 +403,17 @@
             font-size: 12px;
             display: none;
             backdrop-filter: blur(4px);
+            z-index: 50;
         }
 
-        /* Mobile View */
-        @media (max-width: 1024px) {
-            .preview-area {
-                width: 300px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .main-workspace {
-                flex-direction: column;
-            }
-            .sidebar {
-                width: 100%;
-                height: 200px;
-                border-right: none;
-                border-bottom: 1px solid var(--border-subtle);
-            }
-            .preview-area {
-                width: 100%;
-                height: 300px;
-                border-left: none;
-                border-top: 1px solid var(--border-subtle);
-            }
-        }
-
-        /* Article Content Overlay */
+        /* Article Content */
         .content-overlay {
             padding: 60px 24px;
             background: var(--bg-deep);
-            border-top: 1px solid var(--border-subtle);
-            overflow-y: auto;
         }
 
         .prose {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
         }
 
@@ -476,24 +457,40 @@
             margin: 30px 0;
             min-height: 100px;
         }
+
+        /* Breadcrumb fix */
+        .breadcrumb-nav {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+        .breadcrumb-nav a {
+            color: inherit;
+            text-decoration: none;
+        }
+        .breadcrumb-nav a:hover {
+            color: var(--accent-cyan);
+        }
     </style>
 </head>
 <body>
     <div class="app-container">
         <header>
             <div class="brand">
-                <h1>SVG 编辑器</h1>
-                <nav style="font-size: 12px; color: var(--text-muted);">
-                    <a href="../../index.html" style="color: inherit; text-decoration: none;">首页</a> / 
-                    <a href="../media.html" style="color: inherit; text-decoration: none;">媒体工具</a>
-                </nav>
+                <div style="display: flex; flex-direction: column;">
+                    <nav class="breadcrumb-nav">
+                        <a href="../../index.html">首页</a> / 
+                        <a href="../media.html">媒体工具</a>
+                    </nav>
+                    <h1>SVG 编辑器</h1>
+                </div>
             </div>
             <div class="header-actions">
                 <button class="btn btn-sm" onclick="formatCode()" title="自动缩进代码">📐 格式化</button>
                 <button class="btn btn-sm" onclick="copyCode()" title="复制代码到剪贴板">📋 复制</button>
                 <button class="btn btn-sm btn-primary" onclick="downloadSvg()" title="保存为 .svg 文件">💾 下载 SVG</button>
                 <button class="btn btn-sm" onclick="downloadPng()" title="保存为 .png 文件">🖼️ 下载 PNG</button>
-                <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">🌙</button>
+                <button class="btn btn-sm" onclick="toggleTheme()" id="theme-btn">🌙</button>
             </div>
         </header>
 
@@ -535,7 +532,7 @@
 
             <main class="editor-area">
                 <div class="editor-header">
-                    <span>SVG 代码编辑</span>
+                    <span>SVG 代码编辑 (直接输入)</span>
                     <span id="char-count">字符数: 0</span>
                 </div>
                 <textarea id="code-editor" spellcheck="false" placeholder="在此输入或粘贴 SVG 代码..."></textarea>
@@ -561,9 +558,13 @@
             </section>
         </div>
 
-        <!-- Scrollable Content Section -->
+        <!-- Article Content Section -->
         <div class="content-overlay">
             <article class="prose">
+                <div class="ad-placeholder">
+                    AD_TOP_ARTICLE
+                </div>
+
                 <h2>SVG 编辑器完全指南：从入门到精通</h2>
                 <p>SVG（Scalable Vector Graphics，可缩放矢量图形）是现代网页设计的核心技术之一。与传统的位图（如 JPEG 或 PNG）不同，SVG 使用数学描述来定义形状，这意味着无论你如何放大，它都不会失真。本在线编辑器旨在为你提供一个轻量、实时且功能强大的 SVG 创作环境。</p>
 
@@ -614,6 +615,15 @@
     </div>
 
     <script>
+        // DOM Elements
+        const editor = document.getElementById('code-editor');
+        const container = document.getElementById('svg-container');
+        const errorOverlay = document.getElementById('error-overlay');
+        const dimLabel = document.getElementById('dimensions');
+        const sizeLabel = document.getElementById('file-size');
+        const charCount = document.getElementById('char-count');
+        const templatesGrid = document.getElementById('templates-grid');
+
         // Templates
         const templates = [
             { name: '矩形', code: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">\n  <rect x="10" y="10" width="80" height="80" rx="8" fill="#00f5d4" stroke="#4cc9f0" stroke-width="2"/>\n</svg>' },
@@ -624,13 +634,7 @@
             { name: '加载', code: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">\n  <circle cx="50" cy="50" r="35" fill="none" stroke="#00f5d4" stroke-width="10" stroke-dasharray="164 54" stroke-linecap="round">\n    <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="1s" repeatCount="indefinite" />\n  </circle>\n</svg>' }
         ];
 
-        const editor = document.getElementById('code-editor');
-        const container = document.getElementById('svg-container');
-        const errorOverlay = document.getElementById('error-overlay');
-        const dimLabel = document.getElementById('dimensions');
-        const sizeLabel = document.getElementById('file-size');
-
-        // Theme
+        // Theme Management
         function toggleTheme() {
             const html = document.documentElement;
             const isDark = html.getAttribute('data-theme') === 'dark';
@@ -640,31 +644,32 @@
             localStorage.setItem('theme', next);
         }
 
-        // Background
+        // Background Toggle
         function setBg(type) {
             const viewport = document.getElementById('preview-viewport');
             viewport.className = `preview-viewport bg-${type}`;
         }
 
         // Initialize Templates
-        const grid = document.getElementById('templates-grid');
-        templates.forEach(t => {
-            const div = document.createElement('div');
-            div.className = 'template-card';
-            div.innerHTML = t.code;
-            div.onclick = () => {
-                editor.value = t.code;
-                updatePreview();
-            };
-            grid.appendChild(div);
-        });
+        function initTemplates() {
+            templates.forEach(t => {
+                const div = document.createElement('div');
+                div.className = 'template-card';
+                div.innerHTML = t.code;
+                div.onclick = () => {
+                    editor.value = t.code;
+                    updatePreview();
+                };
+                templatesGrid.appendChild(div);
+            });
+        }
 
         // Live Preview Logic
         function updatePreview() {
             const code = editor.value;
             
             // Stats
-            document.getElementById('char-count').textContent = `字符数: ${code.length}`;
+            charCount.textContent = `字符数: ${code.length}`;
             sizeLabel.textContent = `估计大小: ${(code.length / 1024).toFixed(2)} KB`;
 
             try {
@@ -674,7 +679,7 @@
                 
                 if (error) {
                     errorOverlay.style.display = 'block';
-                    errorOverlay.textContent = 'XML 语法错误，请检查闭合标签。';
+                    errorOverlay.textContent = 'XML 语法错误，请检查标签闭合。';
                     return;
                 }
 
@@ -703,7 +708,6 @@
             
             if (!svg) return;
 
-            // Update all elements that have this attribute or common ones
             const elements = svg.querySelectorAll('*');
             elements.forEach(el => {
                 if (el.hasAttribute(attr) || ['rect', 'circle', 'path', 'polygon'].includes(el.tagName)) {
@@ -721,22 +725,24 @@
             }
 
             editor.value = new XMLSerializer().serializeToString(doc);
-            formatCode();
+            updatePreview();
         }
 
         // Actions
         function formatCode() {
             let code = editor.value;
-            // Simple formatting
+            // Simple robust formatting
             code = code.replace(/>\s*</g, '>\n<');
             let lines = code.split('\n');
             let indent = 0;
             let formatted = lines.map(line => {
-                if (line.match(/<\/\w+/)) indent--;
-                let res = '  '.repeat(Math.max(0, indent)) + line.trim();
-                if (line.match(/<\w+[^>]*[^\/]>$/)) indent++;
+                line = line.trim();
+                if (!line) return '';
+                if (line.match(/^<\/\w+/)) indent--;
+                let res = '  '.repeat(Math.max(0, indent)) + line;
+                if (line.match(/^<\w+[^>]*[^\/]>$/)) indent++;
                 return res;
-            }).join('\n');
+            }).filter(l => l).join('\n');
             editor.value = formatted;
             updatePreview();
         }
@@ -744,7 +750,7 @@
         function copyCode() {
             editor.select();
             document.execCommand('copy');
-            alert('代码已复制！');
+            alert('代码已复制到剪贴板！');
         }
 
         function downloadSvg() {
@@ -764,35 +770,49 @@
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             const data = new XMLSerializer().serializeToString(svg);
-            const win = window.URL || window.webkitURL || window;
             const img = new Image();
-            const blob = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
-            const url = win.createObjectURL(blob);
+            const svgBlob = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(svgBlob);
 
             img.onload = function() {
-                canvas.width = img.width || 500;
-                canvas.height = img.height || 500;
+                // Use viewBox or attributes for canvas size
+                const box = svg.viewBox.baseVal;
+                canvas.width = svg.getAttribute('width') || (box ? box.width : 500);
+                canvas.height = svg.getAttribute('height') || (box ? box.height : 500);
+                
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(img, 0, 0);
-                const png = canvas.toDataURL('image/png');
+                
+                const pngUrl = canvas.toDataURL('image/png');
                 const a = document.createElement('a');
-                a.href = png;
+                a.href = pngUrl;
                 a.download = `webutils_${Date.now()}.png`;
                 a.click();
-                win.revokeObjectURL(url);
+                URL.revokeObjectURL(url);
             };
             img.src = url;
         }
 
-        // Init
-        editor.addEventListener('input', updatePreview);
-        const initial = localStorage.getItem('theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', initial);
-        document.getElementById('theme-btn').textContent = initial === 'dark' ? '🌙' : '☀️';
-        
-        // Load default
-        editor.value = templates[0].code;
-        updatePreview();
-        formatCode();
+        // Initialize
+        function init() {
+            // Theme
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            document.getElementById('theme-btn').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+
+            // Editor listeners
+            editor.addEventListener('input', updatePreview);
+            
+            // Templates
+            initTemplates();
+
+            // Load default template
+            editor.value = templates[0].code;
+            updatePreview();
+            formatCode();
+        }
+
+        init();
     </script>
 </body>
 </html>
