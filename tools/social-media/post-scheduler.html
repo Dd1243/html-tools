@@ -41,6 +41,7 @@
         --accent-glow: rgba(255, 149, 0, 0.15);
         --hot: #ff2d55;
         --warm: #ff9500;
+        --cool: #3b82f6;
         --radius-sm: 6px;
         --radius-md: 10px;
         --radius-lg: 14px;
@@ -82,11 +83,6 @@
       .header h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.02em; }
       .header p { color: var(--text-secondary); font-size: 1.1rem; }
 
-      .adsense-placeholder {
-        min-height: 90px; background: rgba(128,128,128,0.03); margin: 32px 0; border: 1px dashed var(--border-color); border-radius: var(--radius-md);
-        display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem;
-      }
-
       .main-card {
         background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 32px; margin-bottom: 40px; box-shadow: 0 4px 24px rgba(0,0,0,0.2);
       }
@@ -96,44 +92,75 @@
       .field label { font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); }
       select {
         background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px 16px; color: var(--text-primary); font-size: 1rem; cursor: pointer; transition: all 0.2s;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23737373' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        background-size: 16px;
       }
       select:focus { outline: none; border-color: var(--accent); }
 
       .btn-analyze {
         width: 100%; padding: 16px; background: var(--accent); color: #000; border: none; border-radius: var(--radius-sm); font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.2s;
+        display: flex; align-items: center; justify-content: center; gap: 8px;
       }
       .btn-analyze:hover { background: var(--accent-hover); transform: translateY(-1px); }
+      .btn-analyze svg { width: 20px; height: 20px; }
 
-      .results-area { margin-top: 40px; display: none; }
-      .results-area.show { display: block; }
+      .results-area { margin-top: 40px; display: none; opacity: 0; transform: translateY(20px); transition: all 0.4s ease; }
+      .results-area.show { display: block; opacity: 1; transform: translateY(0); }
 
-      .heatmap-wrap { margin-bottom: 32px; overflow-x: auto; }
-      .heatmap-grid { display: grid; grid-template-columns: 80px repeat(7, 1fr); gap: 4px; min-width: 600px; }
-      .time-label { font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-family: var(--font-mono); }
-      .day-label { font-size: 0.8rem; font-weight: 600; text-align: center; padding: 10px 0; color: var(--text-secondary); }
-      .cell { height: 24px; border-radius: 2px; background: var(--bg-input); transition: transform 0.2s; cursor: help; }
-      .cell:hover { transform: scale(1.1); z-index: 10; border: 1px solid #fff; }
-      .cell.lvl-1 { background: rgba(255, 149, 0, 0.2); }
-      .cell.lvl-2 { background: rgba(255, 149, 0, 0.5); }
-      .cell.lvl-3 { background: var(--warm); }
-      .cell.lvl-4 { background: var(--hot); box-shadow: 0 0 10px rgba(255, 45, 85, 0.3); }
+      .section-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+      .section-title::before { content: ''; display: block; width: 4px; height: 20px; background: var(--accent); border-radius: 2px; }
 
-      .best-slots-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 32px; }
-      .slot-card { background: var(--bg-input); padding: 20px; border-radius: var(--radius-md); border-left: 4px solid var(--border-color); }
-      .slot-card.prime { border-left-color: var(--hot); background: rgba(255, 45, 85, 0.05); }
-      .slot-time { font-size: 1.5rem; font-weight: 800; color: var(--text-primary); font-family: var(--font-mono); margin-bottom: 4px; }
-      .slot-label { font-size: 0.85rem; color: var(--text-secondary); font-weight: 600; }
-      .slot-desc { font-size: 0.8rem; color: var(--text-muted); margin-top: 8px; }
+      .heatmap-wrap { margin-bottom: 40px; background: var(--bg-input); padding: 24px; border-radius: var(--radius-md); border: 1px solid var(--border-color); overflow-x: auto; }
+      .heatmap-grid { display: grid; grid-template-columns: 80px repeat(7, 1fr); gap: 6px; min-width: 700px; }
+      .time-label { font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; justify-content: flex-end; padding-right: 12px; font-family: var(--font-mono); height: 28px; }
+      .day-label { font-size: 0.85rem; font-weight: 600; text-align: center; padding-bottom: 16px; color: var(--text-secondary); }
+      
+      .cell { 
+        height: 28px; border-radius: 4px; background: var(--bg-card); transition: all 0.2s; cursor: help; position: relative;
+        border: 1px solid rgba(255,255,255,0.03);
+      }
+      .cell:hover { transform: scale(1.15); z-index: 10; border: 1px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+      .cell.lvl-1 { background: rgba(255, 149, 0, 0.15); }
+      .cell.lvl-2 { background: rgba(255, 149, 0, 0.4); }
+      .cell.lvl-3 { background: rgba(255, 149, 0, 0.7); }
+      .cell.lvl-4 { background: var(--hot); box-shadow: inset 0 0 10px rgba(255,255,255,0.2); }
 
-      .article-section { margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--border-color); }
-      .article-section h2 { font-size: 1.75rem; margin-bottom: 24px; color: var(--accent); }
-      .article-section h3 { font-size: 1.25rem; margin: 32px 0 16px; color: var(--text-primary); }
-      .article-section p { color: var(--text-secondary); margin-bottom: 16px; }
+      .heatmap-legend { display: flex; align-items: center; justify-content: center; gap: 20px; margin-top: 20px; font-size: 0.8rem; color: var(--text-secondary); }
+      .legend-item { display: flex; align-items: center; gap: 6px; }
+      .legend-box { width: 14px; height: 14px; border-radius: 2px; }
+
+      .best-slots-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+      .slot-card { background: var(--bg-input); padding: 24px; border-radius: var(--radius-md); border: 1px solid var(--border-color); transition: all 0.3s; position: relative; overflow: hidden; }
+      .slot-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+      .slot-card.prime { border-color: var(--hot); background: rgba(255, 45, 85, 0.03); }
+      .slot-card.prime::after { content: '🔥 流量王'; position: absolute; top: 12px; right: 12px; font-size: 0.7rem; font-weight: 700; color: var(--hot); background: rgba(255, 45, 85, 0.1); padding: 4px 8px; border-radius: 4px; }
+      
+      .slot-time { font-size: 1.75rem; font-weight: 800; color: var(--text-primary); font-family: var(--font-mono); margin-bottom: 8px; display: flex; align-items: baseline; gap: 8px; }
+      .slot-time span { font-size: 0.9rem; font-weight: 500; color: var(--text-muted); }
+      .slot-label { font-size: 0.9rem; color: var(--accent); font-weight: 700; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+      .slot-desc { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; }
+
+      .article-section { margin-top: 60px; padding: 40px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); }
+      .article-section h2 { font-size: 1.75rem; margin-bottom: 24px; color: var(--text-primary); letter-spacing: -0.02em; }
+      .article-section h3 { font-size: 1.25rem; margin: 32px 0 16px; color: var(--accent); }
+      .article-section p { color: var(--text-secondary); margin-bottom: 16px; font-size: 1rem; }
       .article-section ul { margin: 0 0 24px 24px; color: var(--text-secondary); }
-      .article-section li { margin-bottom: 8px; }
+      .article-section li { margin-bottom: 12px; }
+      .article-section strong { color: var(--text-primary); }
 
       .theme-toggle {
-        position: fixed; bottom: 24px; right: 24px; background: var(--bg-card); border: 1px solid var(--border-color); width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-primary); box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 100;
+        position: fixed; bottom: 24px; right: 24px; background: var(--bg-card); border: 1px solid var(--border-color); width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-primary); box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 100; transition: all 0.2s;
+      }
+      .theme-toggle:hover { transform: scale(1.1); border-color: var(--accent); }
+
+      @media (max-width: 640px) {
+        .header h1 { font-size: 1.75rem; }
+        .main-card { padding: 20px; }
+        .heatmap-wrap { padding: 12px; }
+        .slot-time { font-size: 1.5rem; }
       }
     </style>
   </head>
@@ -154,11 +181,6 @@
         <p>基于平台算法与受众行为模型，为您锁定流量爆发的黄金时段</p>
       </header>
 
-      <!-- Google AdSense Placeholder - Top -->
-      <div class="adsense-placeholder">
-        <span>广告位 - 顶部</span>
-      </div>
-
       <div class="main-card">
         <div class="config-grid">
           <div class="field">
@@ -174,10 +196,10 @@
           <div class="field">
             <label>目标受众群体</label>
             <select id="audienceSelect">
-              <option value="student">学生党 (深夜活跃)</option>
-              <option value="worker">上班族 (通勤/午休活跃)</option>
-              <option value="parent">宝妈/家长 (早起/深夜活跃)</option>
               <option value="general">大众受众 (全天均衡)</option>
+              <option value="worker">上班族 (通勤/午休活跃)</option>
+              <option value="student">学生党 (深夜活跃)</option>
+              <option value="parent">宝妈/家长 (早起/深夜活跃)</option>
             </select>
           </div>
           <div class="field">
@@ -186,29 +208,39 @@
               <option value="8">北京时间 (UTC+8)</option>
               <option value="0">伦敦时间 (UTC+0)</option>
               <option value="-5">纽约时间 (UTC-5)</option>
+              <option value="-8">洛杉矶时间 (UTC-8)</option>
               <option value="9">东京时间 (UTC+9)</option>
+              <option value="1">巴黎时间 (UTC+1)</option>
             </select>
           </div>
         </div>
 
-        <button class="btn-analyze" onclick="analyzeTime()">分析流量黄金期</button>
+        <button class="btn-analyze" onclick="analyzeTime()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+          分析流量黄金期
+        </button>
 
         <div class="results-area" id="resultsArea">
+          <h2 class="section-title">流量分布预测</h2>
           <div class="heatmap-wrap">
-            <div class="heatmap-grid" id="heatmapGrid">
-              <!-- JS generated -->
+            <div class="heatmap-grid" id="heatmapGrid"></div>
+            <div class="heatmap-legend">
+              <div class="legend-item"><div class="legend-box" style="background: var(--bg-card); border: 1px solid var(--border-color);"></div><span>低流量</span></div>
+              <div class="legend-item"><div class="legend-box" style="background: rgba(255, 149, 0, 0.15);"></div><span>增长中</span></div>
+              <div class="legend-item"><div class="legend-box" style="background: rgba(255, 149, 0, 0.4);"></div><span>中等</span></div>
+              <div class="legend-item"><div class="legend-box" style="background: rgba(255, 149, 0, 0.7);"></div><span>高活跃</span></div>
+              <div class="legend-item"><div class="legend-box" style="background: var(--hot);"></div><span>爆发峰值</span></div>
             </div>
           </div>
 
-          <div class="best-slots-grid" id="bestSlots">
-            <!-- JS generated -->
-          </div>
+          <h2 class="section-title">今日推荐发帖时段</h2>
+          <div class="best-slots-grid" id="bestSlots"></div>
         </div>
       </div>
 
       <section class="article-section">
         <h2>流量真相：为什么“发布时间”决定了内容的生死？</h2>
-        <p>很多创作者辛苦熬夜写出的爆款，却因为发布时间不对，在系统的“第一波测试流量池”中惨淡收场。社交媒体的算法通常会在发布后的前 30-60 分钟内进行压力测试，如果这段时间你的受众正在睡觉或开会，互动率不足，内容就会被判定为低质量，从而失去后续的大规模分发机会。</p>
+        <p>很多创作者辛苦熬夜写出的爆款，却因为发布时间不对，在系统的“第一波测试流量池”中惨淡收场。社交媒体的算法通常会在发布后的前 <strong>30-60 分钟</strong>内进行压力测试，如果这段时间你的受众正在睡觉或开会，互动率不足，内容就会被判定为低质量，从而失去后续的大规模分发机会。</p>
 
         <h3>发布时间建议器解决的具体问题</h3>
         <ul>
@@ -222,20 +254,7 @@
         <p><strong>2. Instagram：</strong> 上午 11:00 - 下午 1:00（午休）以及傍晚 7:00 - 9:00。Instagram 的全球用户属性明显，需注意时区差。</p>
         <p><strong>3. LinkedIn：</strong> 周二至周四的上午 9:00 - 11:00。作为职场社交平台，周末和深夜通常是流量荒漠。</p>
         <p><strong>4. TikTok：</strong> 碎片化时间极高，但早晨 6:00 - 10:00 的“唤醒流量”和深夜 10:00 后的“催眠流量”是两大爆发点。</p>
-
-        <h3>如何利用本工具优化运营？</h3>
-        <p><strong>场景一：账号起步期。</strong> 此时权重低，建议严格遵循本工具推荐的“最高峰值（深红色区域）”发布，确保第一波互动的种子用户足够多。</p>
-        <p><strong>场景二：发布商业合作。</strong> 广告内容的互动天然低于日常。建议选择周三或周四的中午，此时职场人群的购买欲和点击欲处于周周期的高点。</p>
-        <p><strong>场景三：全球化账号。</strong> 如果你人在国内但运营美区账号，本工具的时区转换功能能帮你精准换算当地的黄金时间，避免在凌晨三点发布内容的尴尬。</p>
-
-        <h3>专家小贴士：实验大于一切</h3>
-        <p>本工具提供的是基于大数据统计的“概率最优解”。对于特定垂直领域（如母婴、二次元、B2B），建议您结合本工具的建议，进行为期两周的 A/B 测试，最终找到属于您账号的独特流量密码。</p>
       </section>
-
-      <!-- Google AdSense Placeholder - Bottom -->
-      <div class="adsense-placeholder">
-        <span>广告位 - 底部</span>
-      </div>
     </div>
 
     <script>
@@ -254,31 +273,55 @@
         themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
       });
 
-      // 分析逻辑
+      // 平台活跃度模型 (0-10)
+      const PLATFORM_MODELS = {
+        xiaohongshu: {
+          base: [2, 1, 1, 1, 1, 2, 4, 5, 5, 6, 6, 7, 8, 7, 6, 6, 7, 8, 9, 10, 10, 9, 7, 4],
+          weekendBoost: 1.3
+        },
+        instagram: {
+          base: [3, 2, 1, 1, 2, 3, 4, 6, 7, 7, 7, 9, 9, 8, 7, 7, 8, 9, 9, 8, 7, 6, 5, 4],
+          weekendBoost: 1.1
+        },
+        tiktok: {
+          base: [5, 4, 3, 2, 2, 4, 7, 8, 8, 7, 6, 6, 7, 7, 6, 6, 7, 8, 8, 9, 10, 10, 8, 6],
+          weekendBoost: 1.4
+        },
+        weibo: {
+          base: [3, 2, 1, 1, 1, 2, 5, 7, 9, 9, 10, 9, 9, 8, 8, 9, 8, 8, 9, 10, 10, 9, 7, 5],
+          weekendBoost: 1.2
+        },
+        linkedin: {
+          base: [1, 1, 0, 0, 0, 1, 3, 6, 9, 10, 10, 9, 8, 8, 9, 9, 8, 6, 4, 3, 2, 2, 1, 1],
+          weekendBoost: 0.3
+        }
+      };
+
+      // 受众修正模型
+      const AUDIENCE_MODELS = {
+        general: (h) => 1.0,
+        worker: (h) => (h === 8 || h === 12 || h === 18 || h === 19) ? 1.5 : (h > 9 && h < 17) ? 0.7 : 1.0,
+        student: (h) => (h >= 22 || h <= 2) ? 1.6 : (h >= 8 && h <= 16) ? 0.6 : 1.0,
+        parent: (h) => (h >= 6 && h <= 8) ? 1.4 : (h >= 21) ? 1.3 : (h >= 10 && h <= 15) ? 1.1 : 0.8
+      };
+
       function analyzeTime() {
         const platform = document.getElementById('platformSelect').value;
         const audience = document.getElementById('audienceSelect').value;
-        const grid = document.getElementById('heatmapGrid');
-        const slots = document.getElementById('bestSlots');
-
-        // 生成热力图
-        const days = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
-        let html = '<div></div>' + days.map(d => `<div class="day-label">${d}</div>`).join('');
-
-        for (let h = 0; i < 24; i++) { // 修复循环变量
-          // 重新写循环
-        }
+        const userTz = parseInt(document.getElementById('timezoneSelect').value);
         
-        // 简单化重写生成逻辑
-        grid.innerHTML = '';
-        // Header
-        grid.appendChild(document.createElement('div'));
-        days.forEach(d => {
-          const div = document.createElement('div');
-          div.className = 'day-label';
-          div.textContent = d;
-          grid.appendChild(div);
-        });
+        const grid = document.getElementById('heatmapGrid');
+        const slotsContainer = document.getElementById('bestSlots');
+        const resultsArea = document.getElementById('resultsArea');
+
+        const days = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+        const model = PLATFORM_MODELS[platform];
+        const audienceModifier = AUDIENCE_MODELS[audience];
+
+        // 清空并生成热力图
+        grid.innerHTML = '<div></div>' + days.map(d => `<div class="day-label">${d}</div>`).join('');
+
+        const heatData = [];
 
         for (let h = 0; h < 24; h++) {
           const timeLab = document.createElement('div');
@@ -287,38 +330,60 @@
           grid.appendChild(timeLab);
 
           for (let d = 0; d < 7; d++) {
-            const cell = document.createElement('div');
-            cell.className = 'cell';
+            const isWeekend = d >= 5;
+            let score = model.base[h];
             
-            // 模拟算法热度
+            // 应用受众修正
+            score *= audienceModifier(h);
+            
+            // 应用周末修正
+            if (isWeekend) score *= model.weekendBoost;
+
+            // 归一化到 0-4 级
             let lvl = 0;
-            if (audience === 'student' && h >= 22) lvl = 4;
-            else if (audience === 'worker' && (h === 8 || h === 12 || h === 18)) lvl = 4;
-            else if (h >= 19 && h <= 22) lvl = 3;
-            else if (h >= 10 && h <= 16) lvl = 1;
-            
-            if (lvl > 0) cell.classList.add(`lvl-${lvl}`);
+            if (score > 12) lvl = 4;
+            else if (score > 9) lvl = 3;
+            else if (score > 6) lvl = 2;
+            else if (score > 3) lvl = 1;
+
+            const cell = document.createElement('div');
+            cell.className = `cell lvl-${lvl}`;
+            cell.title = `${days[d]} ${h}:00 - 预计活跃度: ${Math.round(score * 10) / 10}`;
             grid.appendChild(cell);
+
+            // 存储数据用于计算最佳时段 (仅限今天，假设今天是周三以做演示，或者根据实际星期)
+            const today = new Date().getDay(); // 0 is Sunday
+            const adjustedDay = today === 0 ? 6 : today - 1; // Map to 0-6 (Mon-Sun)
+            if (d === adjustedDay) {
+              heatData.push({ h, score });
+            }
           }
         }
 
-        // 推荐卡片
-        const slotData = [
-          { time: '19:30 - 21:15', label: '核心黄金期', desc: '全平台用户活跃度最高点，适合发布重磅内容。', prime: true },
-          { time: '12:15 - 13:00', label: '午休碎片期', desc: '上班族与学生党的高频刷手机时段。', prime: false },
-          { time: '08:00 - 08:45', label: '早间通勤期', desc: '适合发布新闻类、励志类或短平快的内容。', prime: false }
+        // 计算最佳 3 个时段
+        const sortedSlots = heatData.sort((a, b) => b.score - a.score).slice(0, 3);
+        const slotMeta = [
+          { label: '核心黄金期', desc: '全平台用户活跃度最高点，适合发布重磅、高质量内容以冲击爆款。' },
+          { label: '流量增长期', desc: '用户开始大量涌入，竞争相对较小，适合发布互动性强的日常内容。' },
+          { label: '高转化窗口', desc: '用户处于闲暇碎片时间，浏览心情较好，适合发布种草或推广类内容。' }
         ];
 
-        slots.innerHTML = slotData.map(s => `
-          <div class="slot-card ${s.prime ? 'prime' : ''}">
-            <div class="slot-label">${s.label}</div>
-            <div class="slot-time">${s.time}</div>
-            <div class="slot-desc">${s.desc}</div>
+        slotsContainer.innerHTML = sortedSlots.map((s, i) => `
+          <div class="slot-card ${i === 0 ? 'prime' : ''}">
+            <div class="slot-label">${slotMeta[i].label}</div>
+            <div class="slot-time">
+              ${s.h.toString().padStart(2, '0')}:15 - ${(s.h).toString().padStart(2, '0')}:45
+              <span>(活跃度 ${Math.round(s.score * 10)}%)</span>
+            </div>
+            <div class="slot-desc">${slotMeta[i].desc}</div>
           </div>
         `).join('');
 
-        document.getElementById('resultsArea').classList.add('show');
-        document.getElementById('resultsArea').scrollIntoView({ behavior: 'smooth' });
+        // 显示结果
+        resultsArea.classList.add('show');
+        setTimeout(() => {
+          resultsArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
       }
     </script>
   </body>
