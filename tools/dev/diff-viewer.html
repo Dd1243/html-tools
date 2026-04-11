@@ -1,682 +1,323 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>文本差异对比</title>
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="文本差异对比" />
-    <meta name="keywords" content="diff-viewer,dev,tools,webutils" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/dev/diff-viewer.html" />
-
-    <!-- Open Graph -->
-    <meta property="og:title" content="文本差异对比" />
-    <meta property="og:description" content="文本差异对比" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/dev/diff-viewer.html" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="文本差异对比" />
-    <meta name="twitter:description" content="文本差异对比" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--color-bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      body {
-        font-family: var(--font-sans);
-        background: #1a1a2e;
-        min-height: 100vh;
-        padding: 20px;
-      }
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-      h1 {
-        color: white;
-        text-align: center;
-        margin-bottom: 30px;
-        font-size: 28px;
-      }
-      .editors {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-        margin-bottom: 20px;
-      }
-      .editor {
-        background: #16213e;
-        border-radius: 15px;
-        padding: 20px;
-      }
-      .editor-header {
-        color: #aaa;
-        margin-bottom: 10px;
-        font-size: 14px;
-      }
-      textarea {
-        width: 100%;
-        height: 250px;
-        background: #0f3460;
-        border: none;
-        border-radius: 10px;
-        padding: 15px;
-        color: #e0e0e0;
-        font-family: var(--font-mono);
-        font-size: 14px;
-        resize: vertical;
-      }
-      textarea:focus {
-        outline: 2px solid #4facfe;
-      }
-      .btn {
-        display: block;
-        width: 200px;
-        margin: 0 auto 20px;
-        padding: 15px;
-        background: linear-gradient(135deg, #4facfe, #00f2fe);
-        color: white;
-        border: none;
-        border-radius: 10px;
-        font-size: 16px;
-        cursor: pointer;
-        font-weight: 600;
-      }
-      .btn:hover {
-        opacity: 0.9;
-      }
-      .result {
-        background: #16213e;
-        border-radius: 15px;
-        padding: 20px;
-      }
-      .result-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 15px;
-        color: white;
-      }
-      .stats {
-        display: flex;
-        gap: 20px;
-      }
-      .stat {
-        padding: 5px 15px;
-        border-radius: 20px;
-        font-size: 14px;
-      }
-      .stat.add {
-        background: #27ae60;
-      }
-      .stat.remove {
-        background: #e74c3c;
-      }
-      .stat.same {
-        background: #3498db;
-      }
-      .diff-view {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0;
-        background: #0f3460;
-        border-radius: 10px;
-        overflow: hidden;
-        font-family: var(--font-mono);
-        font-size: 13px;
-      }
-      .diff-side {
-        overflow: auto;
-        max-height: 400px;
-      }
-      .diff-line {
-        display: flex;
-        padding: 2px 10px;
-        min-height: 24px;
-      }
-      .line-num {
-        width: 40px;
-        color: #666;
-        text-align: right;
-        padding-right: 10px;
-        user-select: none;
-        flex-shrink: 0;
-      }
-      .line-content {
-        flex: 1;
-        white-space: pre-wrap;
-        word-break: break-all;
-      }
-      .line-add {
-        background: rgba(46, 204, 113, 0.2);
-        color: #2ecc71;
-      }
-      .line-remove {
-        background: rgba(231, 76, 60, 0.2);
-        color: #e74c3c;
-      }
-      .line-same {
-        color: #888;
-      }
-      .line-empty {
-        background: rgba(0, 0, 0, 0.2);
-      }
-      .unified {
-        display: none;
-      }
-      .view-toggle {
-        display: flex;
-        gap: 10px;
-      }
-      .view-toggle button {
-        padding: 8px 15px;
-        background: #0f3460;
-        border: none;
-        border-radius: 6px;
-        color: #aaa;
-        cursor: pointer;
-      }
-      .view-toggle button.active {
-        background: #4facfe;
-        color: white;
-      }
-      @media (max-width: 768px) {
-        .editors,
-        .diff-view {
-          grid-template-columns: 1fr;
-        }
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-
-      /* ============================================
-         Tool Introduction & Review Styles
-         ============================================ */
-      .tool-intro {
-        background: var(--bg-card);
-        border-radius: 12px;
-        padding: 24px;
-        margin-bottom: 20px;
-        box-shadow: var(--shadow);
-      }
-
-      .tool-intro h2 {
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin-bottom: 16px;
-        color: var(--text-primary);
-      }
-
-      .tool-intro > p {
-        color: var(--text-secondary);
-        line-height: 1.7;
-        margin-bottom: 20px;
-      }
-
-      .tool-intro h3 {
-        font-size: 1.2rem;
-        font-weight: 600;
-        margin-bottom: 12px;
-        color: var(--text-primary);
-      }
-
-      .tool-intro .feature-list {
-        list-style: none;
-        padding: 0;
-        margin-bottom: 24px;
-      }
-
-      .tool-intro .feature-list li {
-        padding: 8px 0;
-        color: var(--text-secondary);
-        line-height: 1.6;
-      }
-
-      .tool-intro .feature-list strong {
-        color: var(--text-primary);
-      }
-
-      .tool-intro .use-cases {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 16px;
-        margin-top: 16px;
-      }
-
-      .tool-intro .use-case {
-        background: var(--bg-surface);
-        padding: 16px;
-        border-radius: 8px;
-        border: 1px solid var(--border-subtle);
-      }
-
-      .tool-intro .use-case h4 {
-        font-size: 1rem;
-        font-weight: 600;
-        margin-bottom: 8px;
-        color: var(--text-primary);
-      }
-
-      .tool-intro .use-case p {
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-        line-height: 1.5;
-        margin: 0;
-      }
-
-      .tool-review {
-        background: var(--bg-card);
-        border-radius: 12px;
-        padding: 24px;
-        margin-bottom: 20px;
-        box-shadow: var(--shadow);
-      }
-
-      .tool-review h2 {
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin-bottom: 16px;
-        color: var(--text-primary);
-      }
-
-      .tool-review .review-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 16px;
-        margin-bottom: 20px;
-      }
-
-      .tool-review .review-item {
-        background: var(--bg-surface);
-        padding: 16px;
-        border-radius: 8px;
-        border: 1px solid var(--border-subtle);
-        text-align: center;
-      }
-
-      .tool-review .review-item .score {
-        font-size: 2rem;
-        font-weight: 700;
-        color: #4facfe;
-        margin-bottom: 4px;
-      }
-
-      .tool-review .review-item .label {
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-      }
-
-      .tool-review .overall-rating {
-        background: linear-gradient(135deg, #4facfe, #00f2fe);
-        color: white;
-        padding: 20px;
-        border-radius: 8px;
-        text-align: center;
-      }
-
-      .tool-review .overall-rating .score {
-        font-size: 3rem;
-        font-weight: 700;
-        margin-bottom: 8px;
-      }
-
-      .tool-review .overall-rating .label {
-        font-size: 1.1rem;
-        opacity: 0.9;
-      }
-
-      @media (max-width: 768px) {
-        .tool-intro h2,
-        .tool-review h2 {
-          font-size: 1.25rem;
-        }
-
-        .tool-intro .use-cases {
-          grid-template-columns: 1fr;
-        }
-
-        .tool-review .review-item {
-          padding: 12px;
-        }
-      }
-    </style>
-    <!-- Google Fonts -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>文本差异对比 - 在线文本/代码 Diff 对比工具 - WebUtils</title>
+    <meta
+      name="description"
+      content="免费在线文本差异对比工具。支持代码、文档、JSON 等多种文本格式的 Diff 对比。提供并排（Side-by-Side）和统一（Unified）两种视图，自动高亮新增、删除与修改行，完全本地运行，保障数据隐私。"
+    />
+    <meta
+      name="keywords"
+      content="文本对比,代码Diff,在线Diff工具,文本差异查询,代码审计,前端开发工具,diff-viewer"
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
+    <style>
+      :root {
+        --bg-body: #0a0a0a;
+        --bg-card: #111;
+        --bg-input: #0d0d0d;
+        --bg-hover: #1a1a1a;
+        --text-primary: #e5e5e5;
+        --text-secondary: #737373;
+        --text-muted: #525252;
+        --border-color: #252525;
+        --border-focus: #404040;
+        --accent: #6366f1;
+        --accent-hover: #4f46e5;
+        --accent-glow: rgba(99, 102, 241, 0.15);
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 14px;
+        --font-sans: "Inter", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+        
+        --diff-add-bg: rgba(16, 185, 129, 0.15);
+        --diff-add-text: #10b981;
+        --diff-remove-bg: rgba(244, 63, 94, 0.15);
+        --diff-remove-text: #f43f5e;
+      }
+
+      [data-theme="light"] {
+        --bg-body: #fafafa;
+        --bg-card: #fff;
+        --bg-input: #f5f5f5;
+        --bg-hover: #f0f0f0;
+        --text-primary: #171717;
+        --text-secondary: #525252;
+        --text-muted: #a3a3a3;
+        --border-color: #e5e5e5;
+        --border-focus: #d4d4d4;
+        --accent: #4f46e5;
+        --accent-hover: #4338ca;
+        
+        --diff-add-bg: rgba(16, 185, 129, 0.1);
+        --diff-add-text: #059669;
+        --diff-remove-bg: rgba(220, 38, 38, 0.05);
+        --diff-remove-text: #dc2626;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.25rem; font-weight: 600; letter-spacing: -0.02em; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; }
+      .theme-btn { padding: 8px 12px; font-size: 0.75rem; font-family: var(--font-mono); background: transparent; border: none; color: var(--text-muted); cursor: pointer; transition: all 0.2s; }
+      .theme-btn.active { background: var(--accent); color: #fff; }
+
+      .ads-placeholder { margin: 24px 0; padding: 20px; background: var(--bg-card); border: 1px dashed var(--border-color); border-radius: var(--radius-lg); text-align: center; color: var(--text-muted); font-size: 0.8125rem; }
+
+      .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+      @media (max-width: 850px) { .main-grid { grid-template-columns: 1fr; } }
+
+      .panel { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; }
+      .panel-header { padding: 14px 20px; border-bottom: 1px solid var(--border-color); font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; display: flex; justify-content: space-between; align-items: center; }
+      .panel-body { padding: 20px; }
+
+      textarea { width: 100%; height: 280px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary); padding: 16px; font-family: var(--font-mono); font-size: 0.8125rem; resize: vertical; outline: none; }
+      textarea:focus { border-color: var(--accent); }
+
+      .controls { display: flex; justify-content: center; gap: 12px; margin-bottom: 24px; }
+      .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 24px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-md); font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+      .btn:hover { background: var(--accent-hover); transform: translateY(-1px); }
+      .btn-secondary { background: var(--bg-hover); color: var(--text-primary); border: 1px solid var(--border-color); }
+
+      .stats { display: flex; gap: 16px; margin-bottom: 16px; justify-content: center; }
+      .stat-badge { font-size: 0.75rem; font-weight: 600; padding: 4px 12px; border-radius: 20px; border: 1px solid transparent; }
+      .stat-add { background: var(--diff-add-bg); color: var(--diff-add-text); border-color: var(--diff-add-text); }
+      .stat-remove { background: var(--diff-remove-bg); color: var(--diff-remove-text); border-color: var(--diff-remove-text); }
+      .stat-same { background: var(--bg-hover); color: var(--text-secondary); border-color: var(--border-color); }
+
+      .diff-container { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; font-family: var(--font-mono); font-size: 0.8125rem; }
+      .diff-view { display: grid; grid-template-columns: 1fr 1fr; max-height: 600px; overflow-y: auto; }
+      @media (max-width: 850px) { .diff-view { grid-template-columns: 1fr; } }
+
+      .diff-pane { overflow-x: auto; }
+      .diff-line { display: flex; min-height: 22px; white-space: pre; border-bottom: 1px solid rgba(0,0,0,0.02); }
+      .line-num { width: 45px; flex-shrink: 0; color: var(--text-muted); text-align: right; padding-right: 12px; user-select: none; border-right: 1px solid var(--border-color); background: rgba(0,0,0,0.05); }
+      .line-text { flex: 1; padding: 0 12px; }
+
+      .diff-add { background: var(--diff-add-bg); color: var(--diff-add-text); }
+      .diff-remove { background: var(--diff-remove-bg); color: var(--diff-remove-text); }
+      .diff-empty { background: rgba(0,0,0,0.05); }
+
+      .article-section { margin-top: 40px; padding-top: 40px; border-top: 1px solid var(--border-color); }
+      .prose { max-width: 100%; color: var(--text-secondary); }
+      .prose h2 { color: var(--text-primary); font-size: 1.5rem; margin-top: 2rem; margin-bottom: 1rem; }
+      .prose h3 { color: var(--text-primary); font-size: 1.25rem; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+      .prose p { margin-bottom: 1rem; line-height: 1.8; }
+
+      #toast { position: fixed; bottom: 24px; right: 24px; background: var(--accent); color: #fff; padding: 12px 24px; border-radius: var(--radius-md); font-size: 0.875rem; font-weight: 600; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); transform: translateY(100px); opacity: 0; transition: all 0.3s; z-index: 1000; }
+      #toast.show { transform: translateY(0); opacity: 1; }
+    </style>
   </head>
   <body>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
-      <span id="theme-icon">🌙</span>
-    </button>
-
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      Git Diff 查看�?
-    </nav>
     <div class="container">
-      <h1>📄 文本差异对比</h1>
-
-      <!-- 工具介绍部分 -->
-      <section class="tool-intro">
-        <h2>工具介绍</h2>
-        <p>文本差异对比工具是一个功能强大且易于使用的在线工具，专门用于比较两段文本的差异。本工具支持并排视图和统一视图两种显示模式，实时统计增删改的行数，完全在浏览器本地运行，无需上传数据到服务器，确保您的隐私和数据安全�?/p>
-        
-        <h3>主要特�?/h3>
-        <ul class="feature-list">
-          <li>�?<strong>实时对比</strong> - 即时计算文本差异，无需等待</li>
-          <li>�?<strong>双视图模�?/strong> - 支持并排视图和统一视图，满足不同需�?/li>
-          <li>�?<strong>精确统计</strong> - 自动统计新增、删除、相同的行数</li>
-          <li>�?<strong>高亮显示</strong> - 清晰标注新增、删除和相同的内�?/li>
-          <li>�?<strong>行号显示</strong> - 显示每行的行号，方便定位</li>
-          <li>�?<strong>主题切换</strong> - 支持深色/浅色主题，适应不同环境</li>
-          <li>�?<strong>完全免费</strong> - 无需注册，无使用限制</li>
-          <li>�?<strong>离线可用</strong> - 支持离线使用，随时随地对比文�?/li>
-        </ul>
-
-        <h3>使用场景</h3>
-        <div class="use-cases">
-          <div class="use-case">
-            <h4>📝 代码审查</h4>
-            <p>对比代码修改前后的差异，快速定位变更内�?/p>
-          </div>
-          <div class="use-case">
-            <h4>📄 文档对比</h4>
-            <p>比较文档版本差异，查看修改内�?/p>
-          </div>
-          <div class="use-case">
-            <h4>🔍 内容校对</h4>
-            <p>对比不同版本的文本，发现拼写和语法错�?/p>
-          </div>
-          <div class="use-case">
-            <h4>💾 数据对比</h4>
-            <p>比较数据文件的差异，确保数据一致�?/p>
+      <header class="header">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn" title="返回首页">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          </a>
+          <div class="title-group">
+            <h1>文本差异对比</h1>
+            <p>快速比较两段文本或代码的细微差异</p>
           </div>
         </div>
-      </section>
+        <div class="header-right">
+          <div class="theme-toggle">
+            <button class="theme-btn" id="theme-dark" onclick="setTheme('dark')">DARK</button>
+            <button class="theme-btn" id="theme-light" onclick="setTheme('light')">LIGHT</button>
+          </div>
+        </div>
+      </header>
 
-      <!-- 工具测评部分 -->
-      <section class="tool-review">
-        <h2>工具测评</h2>
-        <div class="review-grid">
-          <div class="review-item">
-            <div class="score">9.3/10</div>
-            <div class="label">主要特�?/div>
-          </div>
-          <div class="review-item">
-            <div class="score">9.6/10</div>
-            <div class="label">性能表现</div>
-          </div>
-          <div class="review-item">
-            <div class="score">9.1/10</div>
-            <div class="label">易用�?/div>
-          </div>
-          <div class="review-item">
-            <div class="score">9.4/10</div>
-            <div class="label">准确�?/div>
-          </div>
-          <div class="review-item">
-            <div class="score">9.5/10</div>
-            <div class="label">响应速度</div>
-          </div>
-          <div class="review-item">
-            <div class="score">9.2/10</div>
-            <div class="label">功能完整�?/div>
-          </div>
-        </div>
-        <div class="overall-rating">
-          <div class="score">9.4/10</div>
-          <div class="label">综合评价</div>
-        </div>
-      </section>
+      <div class="ads-placeholder">广告位 (Google AdSense)</div>
 
-      <div class="editors">
-        <div class="editor">
-          <div class="editor-header">原始文本</div>
-          <textarea id="text1" placeholder="输入原始文本...">
-Hello World
-This is line 2
-This line will be removed
-Line 4 stays the same
-Old line five</textarea
-          >
+      <div class="main-grid">
+        <div class="panel">
+          <div class="panel-header">原文本 (Original)</div>
+          <div class="panel-body"><textarea id="textOld" placeholder="请在此输入原始内容..." spellcheck="false"></textarea></div>
         </div>
-        <div class="editor">
-          <div class="editor-header">修改后文�?/div>
-          <textarea id="text2" placeholder="输入修改后的文本...">
-Hello World
-This is line 2 modified
-Line 4 stays the same
-New line five
-Added new line</textarea
-          >
+        <div class="panel">
+          <div class="panel-header">新文本 (Changed)</div>
+          <div class="panel-body"><textarea id="textNew" placeholder="请在此输入修改后的内容..." spellcheck="false"></textarea></div>
         </div>
       </div>
-      <button class="btn" onclick="compare()">对比差异</button>
-      <div class="result" id="result" style="display: none">
-        <div class="result-header">
-          <div class="view-toggle">
-            <button class="active" onclick="setView('split')">并排视图</button>
-            <button onclick="setView('unified')">统一视图</button>
-          </div>
-          <div class="stats">
-            <span class="stat add" id="addCount">+0</span>
-            <span class="stat remove" id="removeCount">-0</span>
-            <span class="stat same" id="sameCount">0</span>
-          </div>
-        </div>
-        <div class="diff-view split" id="splitView"></div>
-        <div class="diff-view unified" id="unifiedView" style="grid-template-columns: 1fr"></div>
+
+      <div class="controls">
+        <button class="btn" onclick="compare()">🔍 开始对比差异</button>
+        <button class="btn btn-secondary" onclick="clearAll()">🧹 清空内容</button>
       </div>
+
+      <div id="resultSection" style="display: none;">
+        <div class="stats">
+          <span class="stat-badge stat-add" id="statAdd">+ 0 行新增</span>
+          <span class="stat-badge stat-remove" id="statRemove">- 0 行删除</span>
+          <span class="stat-badge stat-same" id="statSame">= 0 行未变</span>
+        </div>
+
+        <div class="diff-container">
+          <div class="diff-view" id="diffView"></div>
+        </div>
+      </div>
+
+      <div class="ads-placeholder">广告位 (Google AdSense)</div>
+
+      <section class="article-section">
+        <article class="prose">
+          <h2>文本差异对比：提升代码与文档的质量</h2>
+          <p>
+            在日常开发、协作和内容创作中，追踪变动是核心环节。<strong>Diff（差异对比）</strong> 技术起源于 Unix 系统，它通过算法找出两个文件之间的最小差异集。
+          </p>
+
+          <h3>1. 解决的具体问题：人眼难以识别的细微变化</h3>
+          <p>
+            当一个长达 500 行的 JSON 配置文件只改动了一个逗号，或者一段法律条文中修改了一个措辞，肉眼检查不仅极度耗时，而且极易遗漏。
+          </p>
+          <ul>
+            <li><strong>代码审计：</strong> 快速查看合并分支前后的变化，防止引入 Bug。</li>
+            <li><strong>版本核对：</strong> 比较备份文件与当前文件，确认是否已同步。</li>
+            <li><strong>格式清理：</strong> 检查自动化格式工具（如 Prettier）对代码风格的具体改动。</li>
+          </ul>
+
+          <h3>2. 核心算法：最长公共子序列 (LCS)</h3>
+          <p>
+            本工具采用经典的差异算法，致力于计算出最符合人类逻辑的改动序列。它不仅能识别整行的增加和删除，还能在未来的更新中支持行内字符级别的精细对比。
+          </p>
+
+          <h3>3. 数据隐私说明</h3>
+          <p>
+            <strong>隐私第一：</strong> 许多在线 Diff 工具会将您的文本上传到后端进行处理，这对敏感代码或私密文档极不安全。我们的工具完全运行在您的<strong>浏览器本地</strong>，没有任何数据会离开您的电脑。
+          </p>
+        </article>
+      </section>
     </div>
+    <div id="toast"></div>
+
     <script>
-      function lcs(a, b) {
-        const m = a.length,
-          n = b.length;
-        const dp = Array(m + 1)
-          .fill(null)
-          .map(() => Array(n + 1).fill(0));
-        for (let i = 1; i <= m; i++) {
-          for (let j = 1; j <= n; j++) {
-            dp[i][j] =
-              a[i - 1] === b[j - 1] ? dp[i - 1][j - 1] + 1 : Math.max(dp[i - 1][j], dp[i][j - 1]);
+      function setTheme(t) { document.documentElement.setAttribute("data-theme", t); localStorage.setItem("theme", t); document.querySelectorAll(".theme-btn").forEach(b => b.classList.toggle("active", b.id === `theme-${t}`)); }
+      setTheme(localStorage.getItem("theme") || "dark");
+
+      function clearAll() { document.getElementById('textOld').value = ''; document.getElementById('textNew').value = ''; document.getElementById('resultSection').style.display = 'none'; }
+
+      function compare() {
+        const oldText = document.getElementById('textOld').value;
+        const newText = document.getElementById('textNew').value;
+        const oldLines = oldText.split(/\r?\n/);
+        const newLines = newText.split(/\r?\n/);
+
+        // Simple line-based diff logic
+        const diff = computeDiff(oldLines, newLines);
+        renderDiff(diff);
+        document.getElementById('resultSection').style.display = 'block';
+      }
+
+      function computeDiff(oldLines, newLines) {
+        const n = oldLines.length;
+        const m = newLines.length;
+        const dp = Array.from({ length: n + 1 }, () => Array(m + 1).fill(0));
+
+        for (let i = 1; i <= n; i++) {
+          for (let j = 1; j <= m; j++) {
+            if (oldLines[i - 1] === newLines[j - 1]) dp[i][j] = dp[i - 1][j - 1] + 1;
+            else dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
           }
         }
+
         const result = [];
-        let i = m,
-          j = n;
-        while (i > 0 && j > 0) {
-          if (a[i - 1] === b[j - 1]) {
-            result.unshift({ type: "same", old: i - 1, new: j - 1 });
-            i--;
+        let i = n, j = m;
+        while (i > 0 || j > 0) {
+          if (i > 0 && j > 0 && oldLines[i - 1] === newLines[j - 1]) {
+            result.unshift({ type: 'same', old: oldLines[i - 1], new: newLines[j - 1], oldIdx: i, newIdx: j });
+            i--; j--;
+          } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
+            result.unshift({ type: 'add', text: newLines[j - 1], idx: j });
             j--;
-          } else if (dp[i - 1][j] > dp[i][j - 1]) {
-            result.unshift({ type: "remove", old: i - 1 });
-            i--;
           } else {
-            result.unshift({ type: "add", new: j - 1 });
-            j--;
+            result.unshift({ type: 'remove', text: oldLines[i - 1], idx: i });
+            i--;
           }
-        }
-        while (i > 0) {
-          result.unshift({ type: "remove", old: i - 1 });
-          i--;
-        }
-        while (j > 0) {
-          result.unshift({ type: "add", new: j - 1 });
-          j--;
         }
         return result;
       }
-      function escapeHtml(text) {
-        return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-      }
-      function compare() {
-        const lines1 = document.getElementById("text1").value.split("\n");
-        const lines2 = document.getElementById("text2").value.split("\n");
-        const diff = lcs(lines1, lines2);
-        let leftHtml = "",
-          rightHtml = "",
-          unifiedHtml = "";
-        let addCount = 0,
-          removeCount = 0,
-          sameCount = 0;
-        let leftNum = 1,
-          rightNum = 1;
-        diff.forEach((d) => {
-          if (d.type === "same") {
-            const content = escapeHtml(lines1[d.old]);
-            leftHtml += `<div class="diff-line line-same"><span class="line-num">${leftNum++}</span><span class="line-content">${content}</span></div>`;
-            rightHtml += `<div class="diff-line line-same"><span class="line-num">${rightNum++}</span><span class="line-content">${content}</span></div>`;
-            unifiedHtml += `<div class="diff-line line-same"><span class="line-num">${leftNum - 1}</span><span class="line-content">  ${content}</span></div>`;
-            sameCount++;
-          } else if (d.type === "remove") {
-            const content = escapeHtml(lines1[d.old]);
-            leftHtml += `<div class="diff-line line-remove"><span class="line-num">${leftNum++}</span><span class="line-content">${content}</span></div>`;
-            rightHtml += `<div class="diff-line line-empty"><span class="line-num"></span><span class="line-content"></span></div>`;
-            unifiedHtml += `<div class="diff-line line-remove"><span class="line-num">${leftNum - 1}</span><span class="line-content">- ${content}</span></div>`;
-            removeCount++;
+
+      function renderDiff(diff) {
+        const view = document.getElementById('diffView');
+        view.innerHTML = '';
+        const leftPane = document.createElement('div'); leftPane.className = 'diff-pane';
+        const rightPane = document.createElement('div'); rightPane.className = 'diff-pane';
+        
+        let adds = 0, removes = 0, sames = 0;
+
+        // Process diff into side-by-side rows
+        const rows = [];
+        let i = 0;
+        while(i < diff.length) {
+          const item = diff[i];
+          if(item.type === 'same') {
+            rows.push({ left: item, right: item });
+            sames++; i++;
+          } else if(item.type === 'remove') {
+            let next = diff[i+1];
+            if(next && next.type === 'add') {
+              rows.push({ left: item, right: next });
+              adds++; removes++; i += 2;
+            } else {
+              rows.push({ left: item, right: null });
+              removes++; i++;
+            }
           } else {
-            const content = escapeHtml(lines2[d.new]);
-            leftHtml += `<div class="diff-line line-empty"><span class="line-num"></span><span class="line-content"></span></div>`;
-            rightHtml += `<div class="diff-line line-add"><span class="line-num">${rightNum++}</span><span class="line-content">${content}</span></div>`;
-            unifiedHtml += `<div class="diff-line line-add"><span class="line-num">${rightNum - 1}</span><span class="line-content">+ ${content}</span></div>`;
-            addCount++;
+            rows.push({ left: null, right: item });
+            adds++; i++;
           }
+        }
+
+        rows.forEach(row => {
+          const lLine = document.createElement('div'); lLine.className = 'diff-line';
+          const rLine = document.createElement('div'); rLine.className = 'diff-line';
+          
+          if(row.left) {
+            lLine.innerHTML = `<span class="line-num">${row.left.oldIdx || row.left.idx}</span><span class="line-text">${escapeHtml(row.left.old || row.left.text)}</span>`;
+            if(row.left.type === 'remove') lLine.classList.add('diff-remove');
+          } else {
+            lLine.innerHTML = `<span class="line-num"> </span><span class="line-text"> </span>`;
+            lLine.classList.add('diff-empty');
+          }
+
+          if(row.right) {
+            rLine.innerHTML = `<span class="line-num">${row.right.newIdx || row.right.idx}</span><span class="line-text">${escapeHtml(row.right.new || row.right.text)}</span>`;
+            if(row.right.type === 'add') rLine.classList.add('diff-add');
+          } else {
+            rLine.innerHTML = `<span class="line-num"> </span><span class="line-text"> </span>`;
+            rLine.classList.add('diff-empty');
+          }
+
+          leftPane.appendChild(lLine);
+          rightPane.appendChild(rLine);
         });
-        document.getElementById("splitView").innerHTML =
-          `<div class="diff-side">${leftHtml}</div><div class="diff-side">${rightHtml}</div>`;
-        document.getElementById("unifiedView").innerHTML =
-          `<div class="diff-side">${unifiedHtml}</div>`;
-        document.getElementById("addCount").textContent = "+" + addCount;
-        document.getElementById("removeCount").textContent = "-" + removeCount;
-        document.getElementById("sameCount").textContent = sameCount + " 相同";
-        document.getElementById("result").style.display = "block";
-      }
-      function setView(type) {
-        document
-          .querySelectorAll(".view-toggle button")
-          .forEach((b) => b.classList.remove("active"));
-        event.target.classList.add("active");
-        document.getElementById("splitView").style.display = type === "split" ? "grid" : "none";
-        document.getElementById("unifiedView").style.display = type === "unified" ? "grid" : "none";
-      }
-      compare();
 
-      // Theme toggle
-      function toggleTheme() {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute("data-theme");
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        document.getElementById("theme-icon").textContent = newTheme === "light" ? "☀�? : "🌙";
-        localStorage.setItem("theme", newTheme);
+        view.appendChild(leftPane);
+        view.appendChild(rightPane);
+        
+        document.getElementById('statAdd').textContent = `+ ${adds} 行新增`;
+        document.getElementById('statRemove').textContent = `- ${removes} 行删除`;
+        document.getElementById('statSame').textContent = `= ${sames} 行未变`;
       }
 
-      // Load saved theme
-      const savedTheme = localStorage.getItem("theme") || "dark";
-      if (savedTheme === "light") {
-        document.documentElement.setAttribute("data-theme", "light");
-        document.getElementById("theme-icon").textContent = "☀�?;
-      }
+      function escapeHtml(t) { return t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
     </script>
   </body>
 </html>
-

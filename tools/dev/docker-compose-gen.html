@@ -1,1026 +1,379 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="light">
+<html lang="zh">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Docker Compose 生成�?- WebUtils</title>
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Docker Compose 生成�?- WebUtils" />
-    <meta name="keywords" content="docker-compose-gen,dev,tools,webutils" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/dev/docker-compose-gen.html" />
-
-    <!-- Open Graph -->
-    <meta property="og:title" content="Docker Compose 生成�?- WebUtils" />
-    <meta property="og:description" content="Docker Compose 生成�?- WebUtils" />
-    <meta property="og:type" content="website" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Docker Compose 生成器 - 可视化在线配置生成工具 - WebUtils</title>
     <meta
-      property="og:url"
-      content="https://essays4u.net/tools/dev/docker-compose-gen.html"
+      name="description"
+      content="免费在线 Docker Compose 生成工具。可视化添加服务、配置镜像、端口映射、环境变量、数据卷及网络。内置 Nginx, MySQL, Redis 等常用模板，一键生成标准 YAML 配置文件。"
     />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Docker Compose 生成�?- WebUtils" />
-    <meta name="twitter:description" content="Docker Compose 生成�?- WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      :root {
-        --spacing-compact: 0.5rem;
-      }
-      body {
-        padding: 1rem;
-      }
-      .container {
-        max-width: 1400px;
-      }
-      .grid-layout {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-      }
-      @media (max-width: 992px) {
-        .grid-layout {
-          grid-template-columns: 1fr;
-        }
-      }
-      .service-card {
-        background: var(--pico-card-background-color);
-        border: 1px solid var(--pico-muted-border-color);
-        border-radius: var(--pico-border-radius);
-        padding: 1rem;
-        margin-bottom: 1rem;
-      }
-      .service-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0.5rem;
-      }
-      .service-header h4 {
-        margin: 0;
-      }
-      .port-row,
-      .env-row,
-      .volume-row {
-        display: flex;
-        gap: 0.5rem;
-        margin-bottom: 0.5rem;
-        align-items: center;
-      }
-      .port-row input,
-      .env-row input,
-      .volume-row input {
-        margin-bottom: 0;
-      }
-      .output-section {
-        position: sticky;
-        top: 1rem;
-      }
-      pre {
-        background: var(--pico-code-background-color);
-        padding: 1rem;
-        border-radius: var(--pico-border-radius);
-        overflow-x: auto;
-        max-height: 70vh;
-        font-size: 0.85rem;
-      }
-      .btn-group {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-      }
-      .template-btn {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.8rem;
-      }
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        z-index: 1000;
-      }
-      details {
-        margin-bottom: 0.5rem;
-      }
-      .small-input {
-        width: 100px;
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-    </style>
-    <!-- Google Fonts -->
+    <meta
+      name="keywords"
+      content="Docker Compose生成器,docker-compose.yml,在线配置工具,容器编排,YAML生成,前端开发工具,Docker工具"
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
+    <style>
+      :root {
+        --bg-body: #0a0a0a;
+        --bg-card: #111;
+        --bg-input: #0d0d0d;
+        --bg-hover: #1a1a1a;
+        --text-primary: #e5e5e5;
+        --text-secondary: #737373;
+        --text-muted: #525252;
+        --border-color: #252525;
+        --border-focus: #404040;
+        --accent: #22d3ee;
+        --accent-hover: #06b6d4;
+        --accent-glow: rgba(34, 211, 238, 0.15);
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 14px;
+        --font-sans: "Inter", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+
+      [data-theme="light"] {
+        --bg-body: #fafafa;
+        --bg-card: #fff;
+        --bg-input: #f5f5f5;
+        --bg-hover: #f0f0f0;
+        --text-primary: #171717;
+        --text-secondary: #525252;
+        --text-muted: #a3a3a3;
+        --border-color: #e5e5e5;
+        --border-focus: #d4d4d4;
+        --accent: #0891b2;
+        --accent-hover: #0e7490;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      .container { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.25rem; font-weight: 600; letter-spacing: -0.02em; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; }
+      .theme-btn { padding: 8px 12px; font-size: 0.75rem; font-family: var(--font-mono); background: transparent; border: none; color: var(--text-muted); cursor: pointer; transition: all 0.2s; }
+      .theme-btn.active { background: var(--accent); color: #fff; }
+
+      .ads-placeholder { margin: 24px 0; padding: 20px; background: var(--bg-card); border: 1px dashed var(--border-color); border-radius: var(--radius-lg); text-align: center; color: var(--text-muted); font-size: 0.8125rem; }
+
+      .main-grid { display: grid; grid-template-columns: 1fr 450px; gap: 24px; }
+      @media (max-width: 1100px) { .main-grid { grid-template-columns: 1fr; } }
+
+      .panel { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; }
+      .panel-header { padding: 14px 20px; border-bottom: 1px solid var(--border-color); font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; display: flex; justify-content: space-between; align-items: center; }
+      .panel-body { padding: 20px; }
+
+      .btn-group { display: flex; flex-wrap: wrap; gap: 8px; }
+      .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 16px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-md); font-size: 0.8125rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+      .btn:hover { background: var(--accent-hover); transform: translateY(-1px); }
+      .btn-secondary { background: var(--bg-hover); color: var(--text-primary); border: 1px solid var(--border-color); }
+      .btn-danger { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid #ef4444; }
+      .btn-danger:hover { background: #ef4444; color: #fff; }
+
+      .service-item { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; margin-bottom: 16px; }
+      .service-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+      .service-name { font-size: 0.9rem; font-weight: 700; color: var(--accent); }
+
+      .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+      .field { display: flex; flex-direction: column; gap: 4px; }
+      .field label { font-size: 0.7rem; font-weight: 600; color: var(--text-muted); }
+      .input-control { width: 100%; background: var(--bg-body); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text-primary); padding: 8px 12px; font-size: 0.8125rem; outline: none; }
+      .input-control:focus { border-color: var(--accent); }
+
+      .sub-section { margin-top: 12px; border-top: 1px solid var(--border-color); padding-top: 12px; }
+      .sub-header { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; display: flex; justify-content: space-between; }
+      
+      .dynamic-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+      .remove-btn { color: #ef4444; cursor: pointer; font-size: 1.2rem; background: none; border: none; }
+
+      .output-area { position: sticky; top: 24px; }
+      pre { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px; font-family: var(--font-mono); font-size: 0.8125rem; color: var(--text-primary); overflow: auto; max-height: 70vh; white-space: pre-wrap; }
+
+      .article-section { margin-top: 40px; padding-top: 40px; border-top: 1px solid var(--border-color); }
+      .prose { max-width: 100%; color: var(--text-secondary); }
+      .prose h2 { color: var(--text-primary); font-size: 1.5rem; margin-top: 2rem; margin-bottom: 1rem; }
+      .prose h3 { color: var(--text-primary); font-size: 1.25rem; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+      .prose p { margin-bottom: 1rem; line-height: 1.8; }
+
+      #toast { position: fixed; bottom: 24px; right: 24px; background: var(--accent); color: #fff; padding: 12px 24px; border-radius: var(--radius-md); font-size: 0.875rem; font-weight: 600; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); transform: translateY(100px); opacity: 0; transition: all 0.3s; z-index: 1000; }
+      #toast.show { transform: translateY(0); opacity: 1; }
+    </style>
   </head>
   <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      Docker Compose 生成�?
-    </nav>
-    <button class="theme-toggle outline" onclick="toggleTheme()">🌓 主题</button>
+    <div class="container">
+      <header class="header">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn" title="返回首页">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          </a>
+          <div class="title-group">
+            <h1>Docker Compose 生成器</h1>
+            <p>可视化编排容器服务，一键生成 YAML 配置</p>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="theme-toggle">
+            <button class="theme-btn" id="theme-dark" onclick="setTheme('dark')">DARK</button>
+            <button class="theme-btn" id="theme-light" onclick="setTheme('light')">LIGHT</button>
+          </div>
+        </div>
+      </header>
 
-    <main class="container">
-      <h1>🐳 Docker Compose 生成�?/h1>
-      <p>可视化创�?docker-compose.yml 配置文件</p>
+      <div class="ads-placeholder">广告位 (Google AdSense)</div>
 
-      <div class="grid-layout">
-        <section>
-          <article>
-            <header>
-              <h3>基础配置</h3>
-            </header>
-            <label>
-              Compose 版本
-              <select id="composeVersion">
-                <option value="3.9">3.9</option>
-                <option value="3.8">3.8</option>
-                <option value="3.7">3.7</option>
-                <option value="3">3</option>
-                <option value="2.4">2.4</option>
-              </select>
-            </label>
-
-            <h4>快速添加模�?/h4>
-            <div class="btn-group">
-              <button class="template-btn outline" onclick="addTemplate('nginx')">Nginx</button>
-              <button class="template-btn outline" onclick="addTemplate('mysql')">MySQL</button>
-              <button class="template-btn outline" onclick="addTemplate('postgres')">
-                PostgreSQL
-              </button>
-              <button class="template-btn outline" onclick="addTemplate('redis')">Redis</button>
-              <button class="template-btn outline" onclick="addTemplate('mongo')">MongoDB</button>
-              <button class="template-btn outline" onclick="addTemplate('node')">Node.js</button>
-              <button class="template-btn outline" onclick="addTemplate('python')">Python</button>
-              <button class="template-btn outline" onclick="addTemplate('php')">PHP</button>
+      <div class="main-grid">
+        <div class="left-col">
+          <div class="panel">
+            <div class="panel-header">基础配置与模板</div>
+            <div class="panel-body">
+              <div class="field" style="margin-bottom: 20px; max-width: 200px;">
+                <label>Compose 版本</label>
+                <select id="composeVersion" class="input-control" onchange="generate()">
+                  <option value="3.9">3.9 (推荐)</option>
+                  <option value="3.8">3.8</option>
+                  <option value="2.4">2.4</option>
+                </select>
+              </div>
+              <div class="sub-header">快速添加服务模板</div>
+              <div class="btn-group">
+                <button class="btn btn-secondary" onclick="addTemplate('nginx')">Nginx</button>
+                <button class="btn btn-secondary" onclick="addTemplate('mysql')">MySQL</button>
+                <button class="btn btn-secondary" onclick="addTemplate('redis')">Redis</button>
+                <button class="btn btn-secondary" onclick="addTemplate('mongo')">MongoDB</button>
+                <button class="btn btn-secondary" onclick="addTemplate('postgres')">PostgreSQL</button>
+                <button class="btn btn-secondary" onclick="addTemplate('node')">Node.js</button>
+              </div>
             </div>
-          </article>
+          </div>
 
-          <article>
-            <header>
-              <div style="display: flex; justify-content: space-between; align-items: center">
-                <h3>服务配置</h3>
-                <button class="outline" onclick="addService()">+ 添加服务</button>
-              </div>
-            </header>
-            <div id="servicesContainer"></div>
-          </article>
+          <div class="panel">
+            <div class="panel-header">
+              服务列表
+              <button class="btn" style="padding: 4px 12px; font-size: 0.7rem;" onclick="addService()">+ 添加自定义服务</button>
+            </div>
+            <div class="panel-body" id="servicesList"></div>
+          </div>
+        </div>
 
-          <article>
-            <header>
-              <div style="display: flex; justify-content: space-between; align-items: center">
-                <h3>网络配置</h3>
-                <button class="outline" onclick="addNetwork()">+ 添加网络</button>
-              </div>
-            </header>
-            <div id="networksContainer"></div>
-          </article>
-
-          <article>
-            <header>
-              <div style="display: flex; justify-content: space-between; align-items: center">
-                <h3>数据卷配�?/h3>
-                <button class="outline" onclick="addVolume()">+ 添加数据�?/button>
-              </div>
-            </header>
-            <div id="volumesContainer"></div>
-          </article>
-        </section>
-
-        <section class="output-section">
-          <article>
-            <header>
-              <div style="display: flex; justify-content: space-between; align-items: center">
-                <h3>生成结果</h3>
+        <div class="right-col">
+          <div class="output-area">
+            <div class="panel">
+              <div class="panel-header">
+                YAML 生成结果
                 <div class="btn-group">
-                  <button class="outline" onclick="copyOutput()">📋 复制</button>
-                  <button class="outline" onclick="downloadFile()">💾 下载</button>
+                  <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.7rem;" onclick="copyOutput()">📋 复制</button>
+                  <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.7rem;" onclick="downloadYaml()">💾 下载</button>
                 </div>
               </div>
-            </header>
-            <pre><code id="output">version: "3.9"
-
+              <div class="panel-body">
+                <pre id="output">version: "3.9"
 services:
-  # 点击左侧添加服务开始配�?/code></pre>
-          </article>
-        </section>
+  # 尚未添加服务</pre>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </main>
+
+      <div class="ads-placeholder">广告位 (Google AdSense)</div>
+
+      <section class="article-section">
+        <article class="prose">
+          <h2>Docker Compose：简化容器化应用的编排</h2>
+          <p>
+            在现代后端开发中，一个应用通常由多个服务组成（如 Web 服务器、数据库、缓存等）。<strong>Docker Compose</strong> 是 Docker 官方提供的工具，允许你通过一个 YAML 文件来定义和运行多容器应用。
+          </p>
+
+          <h3>1. 解决的具体问题：摆脱冗长的 Docker 命令</h3>
+          <p>
+            如果你手动启动容器，可能需要运行一长串 <code>docker run</code> 命令，包含复杂的 <code>-p</code>（端口）、<code>-v</code>（挂载）、<code>-e</code>（变量）参数。
+          </p>
+          <ul>
+            <li><strong>一键启动：</strong> 只需要一个 <code>docker-compose up</code>，即可按顺序启动所有关联服务。</li>
+            <li><strong>环境一致性：</strong> 配置文件随代码走，确保开发、测试和生产环境的容器配置完全一致。</li>
+            <li><strong>服务发现：</strong> Compose 会自动为服务创建网络，服务之间可以通过名称（如 <code>db</code>）互相访问，无需手动维护 IP 地址。</li>
+          </ul>
+
+          <h3>2. 核心配置概念解析</h3>
+          <ul>
+            <li><strong>Services (服务)：</strong> 一个服务就是一个容器。你可以指定它使用的镜像、构建路径、环境变量等。</li>
+            <li><strong>Volumes (数据卷)：</strong> 将宿主机的目录或文件挂载到容器内。这是实现数据库持久化和开发时热更新（Hot Reload）的关键。</li>
+            <li><strong>Networks (网络)：</strong> 定义容器间的通信隔离。默认情况下，同一 Compose 文件下的服务处于同一网络。</li>
+            <li><strong>Environment (环境变量)：</strong> 传递敏感信息（如数据库密码）或配置项（如 API 地址）的推荐方式。</li>
+          </ul>
+
+          <h3>3. 生产环境建议</h3>
+          <p>
+            在生产环境中使用时，建议为镜像指定具体的版本标签（如 <code>mysql:8.0</code> 而非 <code>latest</code>），以保证稳定性。同时，利用 <code>restart: always</code> 确保容器在服务器重启后能自动恢复运行。
+          </p>
+        </article>
+      </section>
+    </div>
+    <div id="toast"></div>
 
     <script>
       let services = [];
-      let networks = [];
-      let volumes = [];
-      let serviceId = 0;
-      let networkId = 0;
-      let volumeId = 0;
+      let serviceCounter = 0;
 
-      // 主题切换
-      window.toggleTheme = function () {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute("data-theme");
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
-      };
-
-      // 加载保存的主�?
-      (function () {
-        const savedTheme = localStorage.getItem("theme") || "light";
-        document.documentElement.setAttribute("data-theme", savedTheme);
-      })();
-
-      // 服务模板
       const templates = {
-        nginx: {
-          name: "nginx",
-          image: "nginx:alpine",
-          ports: [{ host: "80", container: "80" }],
-          volumes: [{ host: "./nginx.conf", container: "/etc/nginx/nginx.conf", readonly: true }]
-        },
-        mysql: {
-          name: "mysql",
-          image: "mysql:8.0",
-          ports: [{ host: "3306", container: "3306" }],
-          environment: [
-            { key: "MYSQL_ROOT_PASSWORD", value: "rootpassword" },
-            { key: "MYSQL_DATABASE", value: "mydb" }
-          ],
-          volumes: [{ host: "mysql_data", container: "/var/lib/mysql", readonly: false }]
-        },
-        postgres: {
-          name: "postgres",
-          image: "postgres:15-alpine",
-          ports: [{ host: "5432", container: "5432" }],
-          environment: [
-            { key: "POSTGRES_PASSWORD", value: "postgres" },
-            { key: "POSTGRES_DB", value: "mydb" }
-          ],
-          volumes: [
-            { host: "postgres_data", container: "/var/lib/postgresql/data", readonly: false }
-          ]
-        },
-        redis: {
-          name: "redis",
-          image: "redis:alpine",
-          ports: [{ host: "6379", container: "6379" }],
-          volumes: [{ host: "redis_data", container: "/data", readonly: false }]
-        },
-        mongo: {
-          name: "mongo",
-          image: "mongo:6",
-          ports: [{ host: "27017", container: "27017" }],
-          environment: [
-            { key: "MONGO_INITDB_ROOT_USERNAME", value: "root" },
-            { key: "MONGO_INITDB_ROOT_PASSWORD", value: "rootpassword" }
-          ],
-          volumes: [{ host: "mongo_data", container: "/data/db", readonly: false }]
-        },
-        node: {
-          name: "app",
-          image: "node:18-alpine",
-          ports: [{ host: "3000", container: "3000" }],
-          volumes: [{ host: ".", container: "/app", readonly: false }],
-          workingDir: "/app",
-          command: "npm start"
-        },
-        python: {
-          name: "app",
-          image: "python:3.11-slim",
-          ports: [{ host: "8000", container: "8000" }],
-          volumes: [{ host: ".", container: "/app", readonly: false }],
-          workingDir: "/app",
-          command: "python app.py"
-        },
-        php: {
-          name: "php",
-          image: "php:8.2-fpm",
-          volumes: [{ host: "./src", container: "/var/www/html", readonly: false }]
-        }
+        nginx: { name: "web", image: "nginx:alpine", ports: ["80:80"], volumes: ["./html:/usr/share/nginx/html:ro"] },
+        mysql: { name: "db", image: "mysql:8.0", env: ["MYSQL_ROOT_PASSWORD=root", "MYSQL_DATABASE=app"], volumes: ["db_data:/var/lib/mysql"] },
+        redis: { name: "cache", image: "redis:alpine", ports: ["6379:6379"] },
+        mongo: { name: "mongo", image: "mongo:6", env: ["MONGO_INITDB_ROOT_USERNAME=admin", "MONGO_INITDB_ROOT_PASSWORD=admin"] },
+        postgres: { name: "postgres", image: "postgres:15-alpine", env: ["POSTGRES_PASSWORD=postgres"] },
+        node: { name: "app", image: "node:18-alpine", volumes: [".:/app"], working_dir: "/app", command: "npm start" }
       };
 
-      window.addTemplate = function (type) {
-        const template = templates[type];
-        if (template) {
-          addService(template);
-        }
-      };
+      function setTheme(t) { document.documentElement.setAttribute("data-theme", t); localStorage.setItem("theme", t); document.querySelectorAll(".theme-btn").forEach(b => b.classList.toggle("active", b.id === `theme-${t}`)); }
+      setTheme(localStorage.getItem("theme") || "dark");
 
-      function addService(template = null) {
-        const id = serviceId++;
-        const service = {
-          id,
-          name: template?.name || "service_" + id,
-          image: template?.image || "",
-          ports: template?.ports ? JSON.parse(JSON.stringify(template.ports)) : [],
-          environment: template?.environment
-            ? JSON.parse(JSON.stringify(template.environment))
-            : [],
-          volumes: template?.volumes ? JSON.parse(JSON.stringify(template.volumes)) : [],
-          dependsOn: [],
-          restart: "unless-stopped",
-          workingDir: template?.workingDir || "",
-          command: template?.command || "",
-          networks: []
+      function showToast(msg) { const t = document.getElementById("toast"); t.textContent = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 2000); }
+
+      function addTemplate(type) {
+        const t = templates[type];
+        const s = {
+          id: serviceCounter++,
+          name: t.name + "_" + serviceCounter,
+          image: t.image,
+          ports: [...(t.ports || [])],
+          env: [...(t.env || [])],
+          volumes: [...(t.volumes || [])],
+          command: t.command || "",
+          restart: "unless-stopped"
         };
-        services.push(service);
-        renderServices();
-        generateOutput();
+        services.push(s); render(); generate();
       }
 
-      window.removeService = function (id) {
-        services = services.filter((s) => s.id !== id);
-        renderServices();
-        generateOutput();
-      };
+      function addService() {
+        services.push({ id: serviceCounter++, name: "service_" + serviceCounter, image: "", ports: [], env: [], volumes: [], restart: "unless-stopped" });
+        render(); generate();
+      }
 
-      function renderServices() {
-        const container = document.getElementById("servicesContainer");
-        container.replaceChildren();
+      function update(id, key, val) {
+        const s = services.find(x => x.id === id);
+        if(s) { s[key] = val; generate(); }
+      }
 
-        services.forEach((service) => {
-          const card = document.createElement("div");
-          card.className = "service-card";
+      function remove(id) {
+        services = services.filter(x => x.id !== id);
+        render(); generate();
+      }
 
-          // Header
-          const header = document.createElement("div");
-          header.className = "service-header";
-          const title = document.createElement("h4");
-          title.textContent = "🔧 " + service.name;
-          const deleteBtn = document.createElement("button");
-          deleteBtn.className = "outline secondary";
-          deleteBtn.textContent = "删除";
-          deleteBtn.onclick = () => removeService(service.id);
-          header.appendChild(title);
-          header.appendChild(deleteBtn);
-          card.appendChild(header);
+      function addSub(id, type) {
+        const s = services.find(x => x.id === id);
+        if(s) { s[type].push(""); render(); }
+      }
 
-          // Name and Image inputs
-          const gridDiv = document.createElement("div");
-          gridDiv.className = "grid";
+      function updateSub(id, type, idx, val) {
+        const s = services.find(x => x.id === id);
+        if(s) { s[type][idx] = val; generate(); }
+      }
 
-          const nameLabel = document.createElement("label");
-          nameLabel.textContent = "服务名称";
-          const nameInput = document.createElement("input");
-          nameInput.type = "text";
-          nameInput.value = service.name;
-          nameInput.onchange = (e) => updateService(service.id, "name", e.target.value);
-          nameLabel.appendChild(nameInput);
+      function removeSub(id, type, idx) {
+        const s = services.find(x => x.id === id);
+        if(s) { s[type].splice(idx, 1); render(); generate(); }
+      }
 
-          const imageLabel = document.createElement("label");
-          imageLabel.textContent = "镜像";
-          const imageInput = document.createElement("input");
-          imageInput.type = "text";
-          imageInput.value = service.image;
-          imageInput.placeholder = "nginx:alpine";
-          imageInput.onchange = (e) => updateService(service.id, "image", e.target.value);
-          imageLabel.appendChild(imageInput);
+      function render() {
+        const list = document.getElementById('servicesList');
+        list.innerHTML = '';
+        services.forEach(s => {
+          const div = document.createElement('div');
+          div.className = 'service-item';
+          div.innerHTML = `
+            <div class="service-top">
+              <span class="service-name">${s.name || '未命名'}</span>
+              <button class="btn-danger btn" style="padding: 2px 8px; font-size: 0.7rem;" onclick="remove(${s.id})">删除服务</button>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>服务名称</label><input class="input-control" value="${s.name}" oninput="update(${s.id}, 'name', this.value)"></div>
+              <div class="field"><label>镜像 (Image)</label><input class="input-control" value="${s.image}" placeholder="e.g. nginx:alpine" oninput="update(${s.id}, 'image', this.value)"></div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>重启策略</label>
+                <select class="input-control" onchange="update(${s.id}, 'restart', this.value)">
+                  <option value="unless-stopped" ${s.restart === 'unless-stopped' ? 'selected' : ''}>unless-stopped</option>
+                  <option value="always" ${s.restart === 'always' ? 'selected' : ''}>always</option>
+                  <option value="no" ${s.restart === 'no' ? 'selected' : ''}>no</option>
+                </select>
+              </div>
+              <div class="field"><label>启动命令 (Command)</label><input class="input-control" value="${s.command || ''}" oninput="update(${s.id}, 'command', this.value)"></div>
+            </div>
+            
+            <div class="sub-section">
+              <div class="sub-header">端口映射 (Ports) <span class="accent" style="cursor:pointer" onclick="addSub(${s.id}, 'ports')">+ 新增</span></div>
+              ${s.ports.map((p, i) => `<div class="dynamic-row"><input class="input-control" value="${p}" placeholder="80:80" oninput="updateSub(${s.id}, 'ports', ${i}, this.value)"><button class="remove-btn" onclick="removeSub(${s.id}, 'ports', ${i})">×</button></div>`).join('')}
+            </div>
 
-          gridDiv.appendChild(nameLabel);
-          gridDiv.appendChild(imageLabel);
-          card.appendChild(gridDiv);
+            <div class="sub-section">
+              <div class="sub-header">环境变量 (Env) <span class="accent" style="cursor:pointer" onclick="addSub(${s.id}, 'env')">+ 新增</span></div>
+              ${s.env.map((e, i) => `<div class="dynamic-row"><input class="input-control" value="${e}" placeholder="KEY=VALUE" oninput="updateSub(${s.id}, 'env', ${i}, this.value)"><button class="remove-btn" onclick="removeSub(${s.id}, 'env', ${i})">×</button></div>`).join('')}
+            </div>
 
-          // Ports details
-          const portsDetails = document.createElement("details");
-          const portsSummary = document.createElement("summary");
-          portsSummary.textContent = "端口映射 (" + service.ports.length + ")";
-          portsDetails.appendChild(portsSummary);
-
-          const portsDiv = document.createElement("div");
-          service.ports.forEach((p, i) => {
-            const row = createPortRow(service.id, p, i);
-            portsDiv.appendChild(row);
-          });
-          portsDetails.appendChild(portsDiv);
-
-          const addPortBtn = document.createElement("button");
-          addPortBtn.className = "outline";
-          addPortBtn.textContent = "+ 添加端口";
-          addPortBtn.onclick = () => addServicePort(service.id);
-          portsDetails.appendChild(addPortBtn);
-          card.appendChild(portsDetails);
-
-          // Environment details
-          const envDetails = document.createElement("details");
-          const envSummary = document.createElement("summary");
-          envSummary.textContent = "环境变量 (" + service.environment.length + ")";
-          envDetails.appendChild(envSummary);
-
-          const envDiv = document.createElement("div");
-          service.environment.forEach((e, i) => {
-            const row = createEnvRow(service.id, e, i);
-            envDiv.appendChild(row);
-          });
-          envDetails.appendChild(envDiv);
-
-          const addEnvBtn = document.createElement("button");
-          addEnvBtn.className = "outline";
-          addEnvBtn.textContent = "+ 添加变量";
-          addEnvBtn.onclick = () => addServiceEnv(service.id);
-          envDetails.appendChild(addEnvBtn);
-          card.appendChild(envDetails);
-
-          // Volumes details
-          const volDetails = document.createElement("details");
-          const volSummary = document.createElement("summary");
-          volSummary.textContent = "数据�?(" + service.volumes.length + ")";
-          volDetails.appendChild(volSummary);
-
-          const volDiv = document.createElement("div");
-          service.volumes.forEach((v, i) => {
-            const row = createVolumeRow(service.id, v, i);
-            volDiv.appendChild(row);
-          });
-          volDetails.appendChild(volDiv);
-
-          const addVolBtn = document.createElement("button");
-          addVolBtn.className = "outline";
-          addVolBtn.textContent = "+ 添加数据�?;
-          addVolBtn.onclick = () => addServiceVol(service.id);
-          volDetails.appendChild(addVolBtn);
-          card.appendChild(volDetails);
-
-          // Advanced options
-          const advDetails = document.createElement("details");
-          const advSummary = document.createElement("summary");
-          advSummary.textContent = "高级选项";
-          advDetails.appendChild(advSummary);
-
-          // Restart policy
-          const restartLabel = document.createElement("label");
-          restartLabel.textContent = "重启策略";
-          const restartSelect = document.createElement("select");
-          ["no", "always", "on-failure", "unless-stopped"].forEach((opt) => {
-            const option = document.createElement("option");
-            option.value = opt;
-            option.textContent = opt;
-            option.selected = service.restart === opt;
-            restartSelect.appendChild(option);
-          });
-          restartSelect.onchange = (e) => updateService(service.id, "restart", e.target.value);
-          restartLabel.appendChild(restartSelect);
-          advDetails.appendChild(restartLabel);
-
-          // Working directory
-          const wdLabel = document.createElement("label");
-          wdLabel.textContent = "工作目录";
-          const wdInput = document.createElement("input");
-          wdInput.type = "text";
-          wdInput.value = service.workingDir;
-          wdInput.placeholder = "/app";
-          wdInput.onchange = (e) => updateService(service.id, "workingDir", e.target.value);
-          wdLabel.appendChild(wdInput);
-          advDetails.appendChild(wdLabel);
-
-          // Command
-          const cmdLabel = document.createElement("label");
-          cmdLabel.textContent = "启动命令";
-          const cmdInput = document.createElement("input");
-          cmdInput.type = "text";
-          cmdInput.value = service.command;
-          cmdInput.placeholder = "npm start";
-          cmdInput.onchange = (e) => updateService(service.id, "command", e.target.value);
-          cmdLabel.appendChild(cmdInput);
-          advDetails.appendChild(cmdLabel);
-
-          // Depends on
-          const depLabel = document.createElement("label");
-          depLabel.textContent = "依赖服务";
-          const depSelect = document.createElement("select");
-          depSelect.multiple = true;
-          services
-            .filter((s) => s.id !== service.id)
-            .forEach((s) => {
-              const option = document.createElement("option");
-              option.value = s.name;
-              option.textContent = s.name;
-              option.selected = service.dependsOn.includes(s.name);
-              depSelect.appendChild(option);
-            });
-          depSelect.onchange = (e) => {
-            const selected = Array.from(e.target.selectedOptions).map((o) => o.value);
-            service.dependsOn = selected;
-            generateOutput();
-          };
-          depLabel.appendChild(depSelect);
-          advDetails.appendChild(depLabel);
-
-          card.appendChild(advDetails);
-          container.appendChild(card);
+            <div class="sub-section">
+              <div class="sub-header">挂载卷 (Volumes) <span class="accent" style="cursor:pointer" onclick="addSub(${s.id}, 'volumes')">+ 新增</span></div>
+              ${s.volumes.map((v, i) => `<div class="dynamic-row"><input class="input-control" value="${v}" placeholder="./data:/app/data" oninput="updateSub(${s.id}, 'volumes', ${i}, this.value)"><button class="remove-btn" onclick="removeSub(${s.id}, 'volumes', ${i})">×</button></div>`).join('')}
+            </div>
+          `;
+          list.appendChild(div);
         });
       }
 
-      function createPortRow(serviceId, port, index) {
-        const row = document.createElement("div");
-        row.className = "port-row";
-
-        const hostInput = document.createElement("input");
-        hostInput.type = "text";
-        hostInput.value = port.host;
-        hostInput.placeholder = "主机端口";
-        hostInput.className = "small-input";
-        hostInput.onchange = (e) => updateServicePort(serviceId, index, "host", e.target.value);
-
-        const sep = document.createElement("span");
-        sep.textContent = ":";
-
-        const containerInput = document.createElement("input");
-        containerInput.type = "text";
-        containerInput.value = port.container;
-        containerInput.placeholder = "容器端口";
-        containerInput.className = "small-input";
-        containerInput.onchange = (e) =>
-          updateServicePort(serviceId, index, "container", e.target.value);
-
-        const delBtn = document.createElement("button");
-        delBtn.className = "outline secondary";
-        delBtn.textContent = "×";
-        delBtn.onclick = () => removeServicePort(serviceId, index);
-
-        row.appendChild(hostInput);
-        row.appendChild(sep);
-        row.appendChild(containerInput);
-        row.appendChild(delBtn);
-        return row;
-      }
-
-      function createEnvRow(serviceId, env, index) {
-        const row = document.createElement("div");
-        row.className = "env-row";
-
-        const keyInput = document.createElement("input");
-        keyInput.type = "text";
-        keyInput.value = env.key;
-        keyInput.placeholder = "变量�?;
-        keyInput.onchange = (e) => updateServiceEnv(serviceId, index, "key", e.target.value);
-
-        const sep = document.createElement("span");
-        sep.textContent = "=";
-
-        const valInput = document.createElement("input");
-        valInput.type = "text";
-        valInput.value = env.value;
-        valInput.placeholder = "�?;
-        valInput.onchange = (e) => updateServiceEnv(serviceId, index, "value", e.target.value);
-
-        const delBtn = document.createElement("button");
-        delBtn.className = "outline secondary";
-        delBtn.textContent = "×";
-        delBtn.onclick = () => removeServiceEnv(serviceId, index);
-
-        row.appendChild(keyInput);
-        row.appendChild(sep);
-        row.appendChild(valInput);
-        row.appendChild(delBtn);
-        return row;
-      }
-
-      function createVolumeRow(serviceId, vol, index) {
-        const row = document.createElement("div");
-        row.className = "volume-row";
-
-        const hostInput = document.createElement("input");
-        hostInput.type = "text";
-        hostInput.value = vol.host;
-        hostInput.placeholder = "主机路径";
-        hostInput.onchange = (e) => updateServiceVol(serviceId, index, "host", e.target.value);
-
-        const sep = document.createElement("span");
-        sep.textContent = ":";
-
-        const containerInput = document.createElement("input");
-        containerInput.type = "text";
-        containerInput.value = vol.container;
-        containerInput.placeholder = "容器路径";
-        containerInput.onchange = (e) =>
-          updateServiceVol(serviceId, index, "container", e.target.value);
-
-        const roLabel = document.createElement("label");
-        roLabel.style.cssText = "margin:0;display:flex;align-items:center;gap:0.25rem;";
-        const roCheck = document.createElement("input");
-        roCheck.type = "checkbox";
-        roCheck.checked = vol.readonly;
-        roCheck.onchange = (e) => updateServiceVol(serviceId, index, "readonly", e.target.checked);
-        roLabel.appendChild(roCheck);
-        roLabel.appendChild(document.createTextNode("只读"));
-
-        const delBtn = document.createElement("button");
-        delBtn.className = "outline secondary";
-        delBtn.textContent = "×";
-        delBtn.onclick = () => removeServiceVol(serviceId, index);
-
-        row.appendChild(hostInput);
-        row.appendChild(sep);
-        row.appendChild(containerInput);
-        row.appendChild(roLabel);
-        row.appendChild(delBtn);
-        return row;
-      }
-
-      function updateService(id, field, value) {
-        const service = services.find((s) => s.id === id);
-        if (service) {
-          service[field] = value;
-          if (field === "name") renderServices();
-          generateOutput();
-        }
-      }
-
-      // 端口操作
-      function addServicePort(id) {
-        const service = services.find((s) => s.id === id);
-        if (service) {
-          service.ports.push({ host: "", container: "" });
-          renderServices();
-          generateOutput();
-        }
-      }
-
-      function updateServicePort(id, index, field, value) {
-        const service = services.find((s) => s.id === id);
-        if (service && service.ports[index]) {
-          service.ports[index][field] = value;
-          generateOutput();
-        }
-      }
-
-      function removeServicePort(id, index) {
-        const service = services.find((s) => s.id === id);
-        if (service) {
-          service.ports.splice(index, 1);
-          renderServices();
-          generateOutput();
-        }
-      }
-
-      // 环境变量操作
-      function addServiceEnv(id) {
-        const service = services.find((s) => s.id === id);
-        if (service) {
-          service.environment.push({ key: "", value: "" });
-          renderServices();
-          generateOutput();
-        }
-      }
-
-      function updateServiceEnv(id, index, field, value) {
-        const service = services.find((s) => s.id === id);
-        if (service && service.environment[index]) {
-          service.environment[index][field] = value;
-          generateOutput();
-        }
-      }
-
-      function removeServiceEnv(id, index) {
-        const service = services.find((s) => s.id === id);
-        if (service) {
-          service.environment.splice(index, 1);
-          renderServices();
-          generateOutput();
-        }
-      }
-
-      // 数据卷操�?
-      function addServiceVol(id) {
-        const service = services.find((s) => s.id === id);
-        if (service) {
-          service.volumes.push({ host: "", container: "", readonly: false });
-          renderServices();
-          generateOutput();
-        }
-      }
-
-      function updateServiceVol(id, index, field, value) {
-        const service = services.find((s) => s.id === id);
-        if (service && service.volumes[index]) {
-          service.volumes[index][field] = value;
-          generateOutput();
-        }
-      }
-
-      function removeServiceVol(id, index) {
-        const service = services.find((s) => s.id === id);
-        if (service) {
-          service.volumes.splice(index, 1);
-          renderServices();
-          generateOutput();
-        }
-      }
-
-      // 网络配置
-      window.addNetwork = function () {
-        const id = networkId++;
-        networks.push({
-          id,
-          name: "network_" + id,
-          driver: "bridge"
-        });
-        renderNetworks();
-        generateOutput();
-      };
-
-      function removeNetwork(id) {
-        networks = networks.filter((n) => n.id !== id);
-        renderNetworks();
-        generateOutput();
-      }
-
-      function renderNetworks() {
-        const container = document.getElementById("networksContainer");
-        container.replaceChildren();
-
-        networks.forEach((network) => {
-          const card = document.createElement("div");
-          card.className = "service-card";
-
-          const grid = document.createElement("div");
-          grid.className = "grid";
-
-          const nameLabel = document.createElement("label");
-          nameLabel.textContent = "网络名称";
-          const nameInput = document.createElement("input");
-          nameInput.type = "text";
-          nameInput.value = network.name;
-          nameInput.onchange = (e) => updateNetwork(network.id, "name", e.target.value);
-          nameLabel.appendChild(nameInput);
-
-          const driverLabel = document.createElement("label");
-          driverLabel.textContent = "驱动";
-          const driverSelect = document.createElement("select");
-          ["bridge", "host", "overlay", "none"].forEach((d) => {
-            const opt = document.createElement("option");
-            opt.value = d;
-            opt.textContent = d;
-            opt.selected = network.driver === d;
-            driverSelect.appendChild(opt);
-          });
-          driverSelect.onchange = (e) => updateNetwork(network.id, "driver", e.target.value);
-          driverLabel.appendChild(driverSelect);
-
-          grid.appendChild(nameLabel);
-          grid.appendChild(driverLabel);
-          card.appendChild(grid);
-
-          const delBtn = document.createElement("button");
-          delBtn.className = "outline secondary";
-          delBtn.textContent = "删除网络";
-          delBtn.onclick = () => removeNetwork(network.id);
-          card.appendChild(delBtn);
-
-          container.appendChild(card);
-        });
-      }
-
-      function updateNetwork(id, field, value) {
-        const network = networks.find((n) => n.id === id);
-        if (network) {
-          network[field] = value;
-          generateOutput();
-        }
-      }
-
-      // 数据卷配�?
-      window.addVolume = function () {
-        const id = volumeId++;
-        volumes.push({
-          id,
-          name: "volume_" + id,
-          driver: "local"
-        });
-        renderVolumes();
-        generateOutput();
-      };
-
-      function removeVolume(id) {
-        volumes = volumes.filter((v) => v.id !== id);
-        renderVolumes();
-        generateOutput();
-      }
-
-      function renderVolumes() {
-        const container = document.getElementById("volumesContainer");
-        container.replaceChildren();
-
-        volumes.forEach((volume) => {
-          const card = document.createElement("div");
-          card.className = "service-card";
-
-          const grid = document.createElement("div");
-          grid.className = "grid";
-
-          const nameLabel = document.createElement("label");
-          nameLabel.textContent = "数据卷名�?;
-          const nameInput = document.createElement("input");
-          nameInput.type = "text";
-          nameInput.value = volume.name;
-          nameInput.onchange = (e) => updateVolume(volume.id, "name", e.target.value);
-          nameLabel.appendChild(nameInput);
-
-          const driverLabel = document.createElement("label");
-          driverLabel.textContent = "驱动";
-          const driverSelect = document.createElement("select");
-          const opt = document.createElement("option");
-          opt.value = "local";
-          opt.textContent = "local";
-          opt.selected = volume.driver === "local";
-          driverSelect.appendChild(opt);
-          driverSelect.onchange = (e) => updateVolume(volume.id, "driver", e.target.value);
-          driverLabel.appendChild(driverSelect);
-
-          grid.appendChild(nameLabel);
-          grid.appendChild(driverLabel);
-          card.appendChild(grid);
-
-          const delBtn = document.createElement("button");
-          delBtn.className = "outline secondary";
-          delBtn.textContent = "删除数据�?;
-          delBtn.onclick = () => removeVolume(volume.id);
-          card.appendChild(delBtn);
-
-          container.appendChild(card);
-        });
-      }
-
-      function updateVolume(id, field, value) {
-        const volume = volumes.find((v) => v.id === id);
-        if (volume) {
-          volume[field] = value;
-          generateOutput();
-        }
-      }
-
-      // 生成输出
-      function generateOutput() {
-        const version = document.getElementById("composeVersion").value;
-        let yaml = 'version: "' + version + '"\n\n';
-
-        if (services.length > 0) {
-          yaml += "services:\n";
-          services.forEach((service) => {
-            yaml += "  " + service.name + ":\n";
-            if (service.image) yaml += "    image: " + service.image + "\n";
-            if (service.command) yaml += "    command: " + service.command + "\n";
-            if (service.workingDir) yaml += "    working_dir: " + service.workingDir + "\n";
-            if (service.restart) yaml += "    restart: " + service.restart + "\n";
-
-            if (service.ports.length > 0) {
-              const validPorts = service.ports.filter((p) => p.host && p.container);
-              if (validPorts.length > 0) {
-                yaml += "    ports:\n";
-                validPorts.forEach((p) => {
-                  yaml += '      - "' + p.host + ":" + p.container + '"\n';
-                });
-              }
+      function generate() {
+        const ver = document.getElementById('composeVersion').value;
+        let yaml = `version: "${ver}"\n\nservices:`;
+        
+        if(services.length === 0) {
+          yaml += "\n  # 请点击上方模板或添加服务开始配置";
+        } else {
+          services.forEach(s => {
+            yaml += `\n  ${s.name || 'service'}:\n    image: ${s.image || 'missing-image'}`;
+            if(s.restart) yaml += `\n    restart: ${s.restart}`;
+            if(s.command) yaml += `\n    command: ${s.command}`;
+            if(s.ports && s.ports.length > 0) {
+              yaml += `\n    ports:`;
+              s.ports.forEach(p => { if(p) yaml += `\n      - "${p}"`; });
             }
-
-            if (service.environment.length > 0) {
-              const validEnv = service.environment.filter((e) => e.key);
-              if (validEnv.length > 0) {
-                yaml += "    environment:\n";
-                validEnv.forEach((e) => {
-                  yaml += "      " + e.key + ": " + e.value + "\n";
-                });
-              }
+            if(s.env && s.env.length > 0) {
+              yaml += `\n    environment:`;
+              s.env.forEach(e => { if(e) yaml += `\n      - ${e}`; });
             }
-
-            if (service.volumes.length > 0) {
-              const validVols = service.volumes.filter((v) => v.host && v.container);
-              if (validVols.length > 0) {
-                yaml += "    volumes:\n";
-                validVols.forEach((v) => {
-                  const ro = v.readonly ? ":ro" : "";
-                  yaml += "      - " + v.host + ":" + v.container + ro + "\n";
-                });
-              }
+            if(s.volumes && s.volumes.length > 0) {
+              yaml += `\n    volumes:`;
+              s.volumes.forEach(v => { if(v) yaml += `\n      - ${v}`; });
             }
-
-            if (service.dependsOn.length > 0) {
-              yaml += "    depends_on:\n";
-              service.dependsOn.forEach((d) => {
-                yaml += "      - " + d + "\n";
-              });
-            }
-
-            yaml += "\n";
           });
         }
 
-        if (networks.length > 0) {
-          yaml += "networks:\n";
-          networks.forEach((network) => {
-            yaml += "  " + network.name + ":\n";
-            yaml += "    driver: " + network.driver + "\n";
-          });
-          yaml += "\n";
-        }
-
-        if (volumes.length > 0) {
-          yaml += "volumes:\n";
-          volumes.forEach((volume) => {
-            yaml += "  " + volume.name + ":\n";
-            yaml += "    driver: " + volume.driver + "\n";
-          });
-        }
-
-        document.getElementById("output").textContent = yaml;
+        document.getElementById('output').textContent = yaml;
       }
 
-      window.copyOutput = function () {
-        const output = document.getElementById("output").textContent;
-        navigator.clipboard.writeText(output).then(() => {
-          alert("已复制到剪贴板！");
-        });
-      };
+      function copyOutput() {
+        const text = document.getElementById('output').textContent;
+        navigator.clipboard.writeText(text).then(() => showToast("YAML 已复制到剪贴板"));
+      }
 
-      window.downloadFile = function () {
-        const output = document.getElementById("output").textContent;
-        const blob = new Blob([output], { type: "text/yaml" });
+      function downloadYaml() {
+        const text = document.getElementById('output').textContent;
+        const blob = new Blob([text], { type: 'text/yaml' });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "docker-compose.yml";
-        a.click();
-        URL.revokeObjectURL(url);
-      };
-
-      // 监听版本变化
-      document.getElementById("composeVersion").addEventListener("change", generateOutput);
-
-      // 初始�?
-      generateOutput();
+        const a = document.createElement('a');
+        a.href = url; a.download = 'docker-compose.yml'; a.click();
+      }
     </script>
   </body>
 </html>
-
