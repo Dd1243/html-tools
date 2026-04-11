@@ -1,835 +1,266 @@
 <!doctype html>
 <html lang="zh-CN">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>IP 地址工具 - WebUtils</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IP 地址分析工具 - IPv4/IPv6 转换、二进制及详细信息查询 | WebUtils</title>
     <!-- SEO Meta Tags -->
-    <meta name="description" content="IP 地址工具集" />
-    <meta name="keywords" content="ip 地址工具" />
+    <meta name="description" content="免费在线 IP 地址分析工具。支持 IPv4 和 IPv6 地址的详细解析，包含十进制、十六进制、二进制转换，以及 CIDR 子网计算。帮助开发者深入理解 IP 协议结构。" />
+    <meta name="keywords" content="IP分析,IPv4转换,IPv6解析,IP二进制,十进制IP,网络工具,在线工具" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/network/ip-tools.html" />
 
     <!-- Open Graph -->
-    <meta property="og:title" content="IP 地址工具 - WebUtils" />
-    <meta property="og:description" content="IP 地址工具集" />
+    <meta property="og:title" content="IP 地址分析工具 - IPv4/IPv6 转换、二进制及详细信息查询" />
+    <meta property="og:description" content="全能型 IP 地址解析与转换工具，支持多种格式互转及详细的网络参数计算。" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://essays4u.net/tools/network/ip-tools.html" />
     <meta property="og:site_name" content="WebUtils" />
     <meta property="og:locale" content="zh_CN" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="IP 地址工具 - WebUtils" />
-    <meta name="twitter:description" content="IP 地址工具集" />
-    <!-- OG Image -->
     <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
 
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
     <style>
       :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --bg-body: #0a0a0a;
+        --bg-card: #111;
+        --bg-input: #0d0d0d;
+        --bg-hover: #1a1a1a;
+        --text-primary: #e5e5e5;
+        --text-secondary: #737373;
+        --text-muted: #525252;
+        --border-color: #252525;
+        --border-focus: #404040;
+        --accent: #00f5d4;
+        --accent-hover: #00dfc4;
+        --accent-glow: rgba(0, 245, 212, 0.15);
+        --success: #10b981;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 14px;
+        --font-sans: "Inter", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
       }
 
       [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
+        --bg-body: #fafafa;
         --bg-card: #fff;
         --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        --bg-hover: #f0f0f0;
+        --text-primary: #171717;
+        --text-secondary: #525252;
+        --text-muted: #a3a3a3;
+        --border-color: #e5e5e5;
+        --border-focus: #d4d4d4;
+        --accent: #10b981;
+        --accent-hover: #059669;
       }
 
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--color-bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-      }
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
-
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
+      * { box-sizing: border-box; margin: 0; padding: 0; }
       body {
         font-family: var(--font-sans);
-        background: var(--color-bg-deep);
-        color: var(--color-text-primary);
-        min-height: 100vh;
+        background: var(--bg-body);
+        color: var(--text-primary);
         line-height: 1.6;
-      }
-
-      .bg-grid {
-        position: fixed;
-        inset: 0;
-        background-image:
-          linear-gradient(rgb(0, 245, 212, 0.02) 1px, transparent 1px),
-          linear-gradient(90deg, rgb(0, 245, 212, 0.02) 1px, transparent 1px);
-        background-size: 40px 40px;
-        pointer-events: none;
-        z-index: 0;
-      }
-
-      .container {
-        position: relative;
-        z-index: 1;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 24px;
         min-height: 100vh;
       }
 
-      .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        color: var(--color-text-secondary);
-        text-decoration: none;
-        padding: 8px 14px;
-        background: var(--color-bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        transition: all 0.2s ease;
-        margin-bottom: 24px;
-      }
-
-      .back-link:hover {
-        border-color: var(--color-accent-cyan);
-        color: var(--color-accent-cyan);
-      }
-
-      h1 {
-        font-family: var(--font-mono);
-        font-size: 1.5rem;
-        margin-bottom: 8px;
-      }
-
-      .desc {
-        font-size: 0.9rem;
-        color: var(--color-text-secondary);
-        margin-bottom: 24px;
-      }
-
-      .card {
-        background: var(--color-bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-lg);
-        padding: 24px;
-        margin-bottom: 20px;
-      }
-
-      .input-section {
-        margin-bottom: 24px;
-      }
-
-      .input-section label {
-        display: block;
-        font-family: var(--font-mono);
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        margin-bottom: 10px;
-      }
-
-      .ip-input-group {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-      }
-
-      .ip-input-group input[type="text"] {
-        flex: 1;
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-        padding: 12px 16px;
-        background: var(--bg-input);
-        border: 2px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        color: var(--color-text-primary);
-      }
-
-      .ip-input-group input:focus {
-        outline: none;
-        border-color: var(--color-accent-cyan);
-        box-shadow: 0 0 0 4px var(--glow-cyan);
-      }
-
-      .options-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 16px;
-        margin-bottom: 24px;
-      }
-
-      .option-group {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
-
-      .option-group label {
-        font-family: var(--font-mono);
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        text-transform: uppercase;
-      }
-
-      input[type="number"],
-      select {
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-        padding: 10px 12px;
-        background: var(--color-bg-surface);
-        border: 2px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        color: var(--color-text-primary);
-      }
-
-      .results-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 16px;
-        margin-bottom: 24px;
-      }
-
-      .result-card {
-        background: var(--color-bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        padding: 16px;
-        transition: all 0.2s ease;
-      }
-
-      .result-card:hover {
-        border-color: var(--color-accent-cyan);
-      }
-
-      .result-title {
-        font-family: var(--font-mono);
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        margin-bottom: 8px;
-      }
-
-      .result-value {
-        font-family: var(--font-mono);
-        font-size: 1rem;
-        font-weight: 600;
-        color: var(--color-text-primary);
-        word-break: break-all;
-      }
-
-      .result-value.ipv4 {
-        color: var(--color-accent-cyan);
-      }
-
-      .result-value.ipv6 {
-        color: var(--color-accent-purple);
-      }
-
-      .subnet-info {
-        background: var(--color-bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        padding: 16px;
-        margin-bottom: 24px;
-      }
-
-      .subnet-info h3 {
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-        color: var(--text-muted);
-        margin-bottom: 12px;
-        text-transform: uppercase;
-      }
-
-      .subnet-details {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 12px;
-      }
-
-      .subnet-item {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-      }
-
-      .subnet-label {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-      }
-
-      .subnet-value {
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-        color: var(--color-text-primary);
-        font-weight: 500;
-      }
-
-      .binary-view {
-        background: var(--bg-input);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        padding: 12px;
-        font-family: var(--font-mono);
-        font-size: 0.8rem;
-        line-height: 1.4;
-        margin-bottom: 24px;
-        word-break: break-all;
-      }
-
-      .binary-label {
-        font-size: 0.7rem;
-        color: var(--text-muted);
-        margin-bottom: 4px;
-        text-transform: uppercase;
-      }
-
-      .binary-content {
-        color: var(--color-accent-cyan);
-      }
-
-      .actions {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-      }
-
-      button {
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        padding: 10px 16px;
-        background: var(--color-bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        color: var(--color-text-secondary);
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-
-      button:hover {
-        border-color: var(--color-accent-cyan);
-        color: var(--color-accent-cyan);
-      }
-
-      button.primary {
-        background: var(--color-accent-cyan);
-        border-color: var(--color-accent-cyan);
-        color: var(--color-bg-deep);
-      }
-
-      button.primary:hover {
-        background: #00dfc4;
-      }
-
-      .status {
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        color: var(--text-muted);
-        margin-top: 16px;
-      }
-
-      .status.success {
-        color: var(--accent-green);
-      }
-
-      .status.success::before {
-        content: "✓ ";
-      }
-
-      .status.error {
-        color: var(--accent-red);
-      }
-
-      .status.error::before {
-        content: "✗ ";
-      }
-
-      footer {
-        text-align: center;
-        margin-top: 32px;
-        padding-top: 16px;
-        border-top: 1px solid var(--border-subtle);
-        font-family: var(--font-mono);
-        font-size: 0.8rem;
-        color: var(--text-muted);
-      }
-
-      footer a {
-        color: var(--color-accent-cyan);
-        text-decoration: none;
-      }
-
+      .container { max-width: 1000px; margin: 0 auto; padding: 40px 20px; }
+      
       .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
+        display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 24px;
       }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
+      .breadcrumb a { color: var(--text-secondary); text-decoration: none; }
+      .breadcrumb a:hover { color: var(--accent); }
+
+      .header { margin-bottom: 32px; text-align: center; }
+      .header h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.02em; }
+      .header p { color: var(--text-secondary); font-size: 1.1rem; }
+
+      .adsense-placeholder {
+        min-height: 90px; background: rgba(128,128,128,0.03); margin: 32px 0; border: 1px dashed var(--border-color); border-radius: var(--radius-md);
+        display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem;
       }
-      .breadcrumb a:hover {
-        text-decoration: underline;
+
+      .main-card {
+        background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 32px; margin-bottom: 40px; box-shadow: 0 4px 24px rgba(0,0,0,0.2);
       }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
+
+      .input-area { display: flex; gap: 12px; margin-bottom: 24px; }
+      input {
+        flex: 1; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px 16px; color: var(--text-primary); font-family: var(--font-mono); font-size: 1rem;
       }
-      .visually-hidden {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        margin: -1px;
-        padding: 0;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0;
+      input:focus { outline: none; border-color: var(--accent); }
+      .btn-primary {
+        background: var(--accent); color: #000; border: none; border-radius: var(--radius-sm); padding: 0 24px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+      }
+      .btn-primary:hover { background: var(--accent-hover); box-shadow: 0 0 15px var(--accent-glow); }
+
+      .results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+      .result-card { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px; }
+      .result-card h3 { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; }
+      .res-val { font-family: var(--font-mono); font-size: 1.1rem; color: var(--text-primary); word-break: break-all; }
+      .res-val.highlight { color: var(--accent); }
+
+      .binary-box { margin-top: 24px; background: var(--bg-hover); padding: 16px; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.6; }
+      .binary-label { color: var(--text-muted); font-size: 0.75rem; margin-bottom: 8px; }
+
+      .article-section { margin-top: 64px; border-top: 1px solid var(--border-color); padding-top: 48px; }
+      .article-section h2 { font-size: 1.75rem; margin-bottom: 24px; color: var(--text-primary); }
+      .article-section h3 { font-size: 1.25rem; margin-top: 32px; margin-bottom: 16px; color: var(--text-primary); }
+      .article-section p { margin-bottom: 16px; color: var(--text-secondary); line-height: 1.8; }
+      .article-section ul { margin-bottom: 24px; padding-left: 20px; color: var(--text-secondary); }
+      .article-section li { margin-bottom: 12px; }
+
+      .theme-toggle {
+        position: fixed; top: 20px; right: 20px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 8px 12px; cursor: pointer; color: var(--text-secondary); font-size: 0.8rem; z-index: 100;
+      }
+
+      @media (max-width: 640px) {
+        .input-area { flex-direction: column; }
+        .header h1 { font-size: 2rem; }
       }
     </style>
   </head>
   <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>›</span>
-      IP 地址工具
-    </nav>
-    <div class="bg-grid"></div>
+    <button class="theme-toggle" id="themeToggle">切换主题</button>
 
     <div class="container">
-      <a href="../../index.html" class="back-link">← 返回</a>
-      <button class="theme-toggle" onclick="toggleTheme()" title="切换主题" aria-label="🌙">
-        🌙
-      </button>
+      <nav class="breadcrumb">
+        <a href="../../index.html">首页</a>
+        <span>/</span>
+        <a href="../index.html">网络工具</a>
+        <span>/</span>
+        <span>IP 地址工具</span>
+      </nav>
 
-      <h1>IP 地址工具</h1>
-      <p class="desc">IP 地址分析、子网计算、CIDR 转换等网络工具</p>
+      <header class="header">
+        <h1>🛠️ IP 地址分析工具</h1>
+        <p>全面的 IPv4/IPv6 解析转换，深度剖析 IP 协议底层结构</p>
+      </header>
 
-      <div class="card">
-        <div class="input-section">
-          <label>IP 地址 / CIDR</label>
-          <div class="ip-input-group">
-            <input
-              type="text"
-              id="input"
-              placeholder="192.168.1.1 或 192.168.1.0/24"
-              value="192.168.1.1"
-              aria-label="文本输入框"
-            />
-            <button id="btnAnalyze" class="primary">分析</button>
-          </div>
-        </div>
-
-        <div class="options-grid">
-          <div class="option-group">
-            <label>转换类型</label>
-            <select id="conversionType">
-              <option value="auto">自动检测</option>
-              <option value="ipv4">IPv4</option>
-              <option value="ipv6">IPv6</option>
-              <option value="cidr">CIDR 计算</option>
-            </select>
-          </div>
-          <div class="option-group">
-            <label for="input-------">子网掩码位数</label>
-            <input
-              type="number"
-              id="subnetBits"
-              value="24"
-              min="0"
-              max="32"
-              aria-label="数字输入框"
-              placeholder="请输入数字输入框"
-            />
-          </div>
-          <div class="option-group">
-            <label>格式</label>
-            <select id="outputFormat">
-              <option value="decimal">十进制</option>
-              <option value="binary">二进制</option>
-              <option value="hex">十六进制</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="results-grid" id="resultsGrid"></div>
-
-        <div class="subnet-info" id="subnetInfo" style="display: none">
-          <h3>子网信息</h3>
-          <div class="subnet-details" id="subnetDetails"></div>
-        </div>
-
-        <div class="binary-view" id="binaryView" style="display: none">
-          <div class="binary-label">二进制表示</div>
-          <div class="binary-content" id="binaryContent"></div>
-        </div>
-
-        <div class="actions">
-          <button id="btnCopy">复制结果</button>
-          <button id="btnPaste">粘贴 IP</button>
-          <button id="btnRandom">随机 IP</button>
-          <button id="btnClear">清空</button>
-        </div>
-
-        <div id="status" class="status"></div>
+      <!-- Google AdSense Placeholder - Top -->
+      <div class="adsense-placeholder">
+        <span>广告位 - 顶部</span>
       </div>
 
-      <footer>
-        <a href="https://github.com/chicogong/html-tools" target="_blank">GitHub</a>
-        · 纯前端 · 无服务器 ·
-        <a href="../../index.html">WebUtils</a>
-      </footer>
+      <main class="main-card">
+        <div class="input-area">
+          <input type="text" id="ipInput" placeholder="输入 IP 地址 (如: 192.168.1.1 或 2001:db8::1)" value="192.168.1.1">
+          <button class="btn-primary" id="analyzeBtn">分析地址</button>
+        </div>
+
+        <div id="resultsArea">
+          <div class="results-grid">
+            <div class="result-card">
+              <h3>IP 类型</h3>
+              <div class="res-val highlight" id="resType">-</div>
+            </div>
+            <div class="result-card">
+              <h3>十进制表示 (Decimal)</h3>
+              <div class="res-val" id="resDec">-</div>
+            </div>
+            <div class="result-card">
+              <h3>十六进制表示 (Hex)</h3>
+              <div class="res-val" id="resHex">-</div>
+            </div>
+            <div class="result-card">
+              <h3>反向域名 (PTR)</h3>
+              <div class="res-val" id="resPtr">-</div>
+            </div>
+          </div>
+
+          <div class="binary-box">
+            <div class="binary-label">二进制表示 (Binary):</div>
+            <div class="res-val highlight" id="resBin" style="font-size: 0.9rem;">-</div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Google AdSense Placeholder - Middle -->
+      <div class="adsense-placeholder">
+        <span>广告位 - 中部</span>
+      </div>
+
+      <section class="article-section">
+        <h2>深度解析：理解 IP 地址的多维形态</h2>
+        <p>在互联网的世界里，IP 地址（Internet Protocol Address）是设备通信的基石。虽然我们习惯于看到点分十进制的 <code>192.168.1.1</code>，但在计算机底层，它是一串 32 位（IPv4）或 128 位（IPv6）的二进制数字。理解这些不同的表现形式，对于网络协议开发和故障诊断至关重要。</p>
+        
+        <h3>IPv4 与 IPv6 的核心差异</h3>
+        <ul>
+          <li><strong>地址空间：</strong> IPv4 提供约 43 亿个地址，已基本枯竭；IPv6 提供的地址数量多达 340 涧（10^36），足以让地球上的每一粒沙子都拥有一个独立 IP。</li>
+          <li><strong>表示方法：</strong> IPv4 使用点分十进制；IPv6 使用冒号十六进制，并支持“双冒号”压缩零位。</li>
+          <li><strong>报头结构：</strong> IPv6 简化了固定报头，去除了可选字段，提高了路由器的处理效率。</li>
+        </ul>
+
+        <h3>为什么需要 IP 转换工具？</h3>
+        <p><strong>场景一：数据库存储优化。</strong> 存储点分十进制字符串（如 <code>192.168.100.200</code>）比存储其对应的无符号整数（<code>3232261320</code>）更占空间且索引效率低。本工具可以帮助您快速计算出存入数据库的整数值。</p>
+        <p><strong>场景二：ACL 访问控制列表配置。</strong> 在配置防火墙或路由器时，有时需要输入十六进制形式的 IP 或分析特定的位掩码。通过本工具的二进制展示，您可以清晰地看到网络位和主机位的分布。</p>
+
+        <h3>如何识别私有地址与特殊地址？</h3>
+        <p>并非所有 IP 都能在互联网上公开路由。例如，<code>10.0.0.0/8</code>、<code>172.16.0.0/12</code> 和 <code>192.168.0.0/16</code> 是专门留给内网使用的私有地址范围。而 <code>127.0.0.1</code> 则是环回地址（Loopback），代表设备自身。</p>
+      </section>
+
+      <!-- Google AdSense Placeholder - Bottom -->
+      <div class="adsense-placeholder">
+        <span>广告位 - 底部</span>
+      </div>
     </div>
 
     <script>
-      const inputEl = document.getElementById("input");
-      const conversionTypeEl = document.getElementById("conversionType");
-      const subnetBitsEl = document.getElementById("subnetBits");
-      const outputFormatEl = document.getElementById("outputFormat");
-      const resultsGridEl = document.getElementById("resultsGrid");
-      const subnetInfoEl = document.getElementById("subnetInfo");
-      const subnetDetailsEl = document.getElementById("subnetDetails");
-      const binaryViewEl = document.getElementById("binaryView");
-      const binaryContentEl = document.getElementById("binaryContent");
-      const statusEl = document.getElementById("status");
-      const LS_KEY = "ip_tools_input_v1";
-
-      function isValidIPv4(ip) {
-        const ipv4Regex =
-          /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-        return ipv4Regex.test(ip);
-      }
-
-      function isValidIPv6(ip) {
-        const ipv6Regex =
-          /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/;
-        return ipv6Regex.test(ip);
-      }
-
-      function isValidCIDR(cidr) {
-        const cidrRegex =
-          /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/([0-9]|[12][0-9]|3[0-2])$/;
-        return cidrRegex.test(cidr);
-      }
-
-      function ipToDecimal(ip) {
-        const parts = ip.split(".").map(Number);
-        return (parts[0] << 24) + (parts[1] << 16) + (parts[2] << 8) + parts[3];
-      }
-
-      function decimalToIP(decimal) {
-        return [
-          (decimal >> 24) & 0xff,
-          (decimal >> 16) & 0xff,
-          (decimal >> 8) & 0xff,
-          decimal & 0xff
-        ].join(".");
-      }
-
-      function ipToBinary(ip) {
-        const parts = ip.split(".").map(Number);
-        return parts.map((part) => part.toString(2).padStart(8, "0")).join(".");
-      }
-
-      function calculateSubnet(ip, bits) {
-        const decimalIP = ipToDecimal(ip);
-        const mask = (0xffffffff << (32 - bits)) >>> 0;
-        const network = decimalIP & mask;
-        const broadcast = network | (~mask >>> 0);
-        const firstUsable = network + 1;
-        const lastUsable = broadcast - 1;
-        const totalHosts = Math.pow(2, 32 - bits);
-        const usableHosts = Math.max(0, totalHosts - 2);
-
-        return {
-          network: decimalToIP(network),
-          broadcast: decimalToIP(broadcast),
-          firstUsable: decimalToIP(firstUsable),
-          lastUsable: decimalToIP(lastUsable),
-          mask: decimalToIP(mask),
-          maskBits: bits,
-          totalHosts: totalHosts,
-          usableHosts: usableHosts
-        };
-      }
-
-      function analyzeIP() {
-        const input = inputEl.value.trim();
-        if (!input) {
-          showStatus("请输入 IP 地址", "error");
-          return;
-        }
-
-        let ip = input;
-        let cidrBits = 32;
-        let isCIDR = false;
-
-        if (isValidCIDR(input)) {
-          const [ipPart, bits] = input.split("/");
-          ip = ipPart;
-          cidrBits = parseInt(bits);
-          isCIDR = true;
-        } else if (!isValidIPv4(ip) && !isValidIPv6(ip)) {
-          showStatus("IP 地址格式无效", "error");
-          return;
-        }
-
-        subnetBitsEl.value = cidrBits;
-
-        const isIPv4 = isValidIPv4(ip);
-        const isIPv6 = isValidIPv6(ip);
-        const ipType = isIPv4 ? "IPv4" : isIPv6 ? "IPv6" : "未知";
-
-        resultsGridEl.innerHTML = "";
-        subnetInfoEl.style.display = "none";
-        subnetDetailsEl.innerHTML = "";
-        binaryViewEl.style.display = "none";
-
-        const results = [];
-
-        if (isIPv4) {
-          const decimal = ipToDecimal(ip);
-          const binary = ipToBinary(ip);
-          const hex = decimal.toString(16).toUpperCase().padStart(8, "0");
-          const hexFormatted = hex.match(/.{2}/g).join(":");
-
-          results.push({ title: "IP 类型", value: ipType, className: "ipv4" });
-          results.push({ title: "十进制", value: decimal.toLocaleString() });
-          results.push({ title: "二进制", value: binary });
-          results.push({ title: "十六进制", value: "0x" + hex });
-
-          binaryViewEl.style.display = "block";
-          binaryContentEl.textContent = binary;
-
-          if (conversionTypeEl.value === "cidr" || isCIDR) {
-            const subnet = calculateSubnet(ip, cidrBits);
-            subnetInfoEl.style.display = "block";
-
-            const subnetDetails = [
-              { label: "网络地址", value: subnet.network },
-              { label: "广播地址", value: subnet.broadcast },
-              { label: "可用范围", value: `${subnet.firstUsable} - ${subnet.lastUsable}` },
-              { label: "子网掩码", value: `${subnet.mask} (/${subnet.maskBits})` },
-              { label: "总主机数", value: subnet.totalHosts.toLocaleString() },
-              { label: "可用主机数", value: subnet.usableHosts.toLocaleString() }
-            ];
-
-            subnetDetailsEl.innerHTML = "";
-            subnetDetails.forEach(function (detail) {
-              const item = document.createElement("div");
-              item.className = "subnet-item";
-              item.innerHTML =
-                '<div class="subnet-label">' +
-                detail.label +
-                "</div>" +
-                '<div class="subnet-value">' +
-                detail.value +
-                "</div>";
-              subnetDetailsEl.appendChild(item);
-            });
-          }
-        } else if (isIPv6) {
-          results.push({ title: "IP 类型", value: ipType, className: "ipv6" });
-          results.push({ title: "压缩形式", value: ip });
-          results.push({ title: "扩展形式", value: expandIPv6(ip) });
-          results.push({ title: "备注", value: "IPv6 子网计算暂不支持" });
-        }
-
-        results.forEach(function (result) {
-          const card = document.createElement("div");
-          card.className = "result-card";
-          card.innerHTML =
-            '<div class="result-title">' +
-            result.title +
-            "</div>" +
-            '<div class="result-value ' +
-            (result.className || "") +
-            '">' +
-            result.value +
-            "</div>";
-          resultsGridEl.appendChild(card);
-        });
-
-        showStatus("分析完成", "success");
-      }
-
-      function expandIPv6(ip) {
-        const parts = ip.split(":");
-        const missingParts = 8 - parts.filter((p) => p !== "").length;
-        const expanded = [];
-
-        for (let i = 0; i < parts.length; i++) {
-          if (parts[i] === "") {
-            for (let j = 0; j < missingParts; j++) {
-              expanded.push("0000");
-            }
-          } else {
-            expanded.push(parts[i].padStart(4, "0"));
-          }
-        }
-
-        return expanded.join(":");
-      }
-
-      function showStatus(msg, type) {
-        statusEl.textContent = msg;
-        statusEl.className = "status " + (type || "");
-      }
-
-      function randomIPv4() {
-        const parts = [];
-        for (let i = 0; i < 4; i++) {
-          parts.push(Math.floor(Math.random() * 256));
-        }
-        inputEl.value = parts.join(".");
-        analyzeIP();
-      }
-
-      function reset() {
-        inputEl.value = "192.168.1.1";
-        conversionTypeEl.value = "auto";
-        subnetBitsEl.value = "24";
-        outputFormatEl.value = "decimal";
-        resultsGridEl.innerHTML = "";
-        subnetInfoEl.style.display = "none";
-        subnetDetailsEl.innerHTML = "";
-        binaryViewEl.style.display = "none";
-        binaryContentEl.textContent = "";
-        statusEl.textContent = "";
-        localStorage.removeItem(LS_KEY);
-      }
-
-      document.getElementById("btnAnalyze").onclick = analyzeIP;
-
-      document.getElementById("btnCopy").onclick = async function () {
-        const results = [];
-        resultsGridEl.querySelectorAll(".result-card").forEach(function (card) {
-          const title = card.querySelector(".result-title").textContent;
-          const value = card.querySelector(".result-value").textContent;
-          results.push(`${title}: ${value}`);
-        });
-
-        if (subnetInfoEl.style.display !== "none") {
-          results.push("");
-          results.push("子网信息:");
-          subnetDetailsEl.querySelectorAll(".subnet-item").forEach(function (item) {
-            const label = item.querySelector(".subnet-label").textContent;
-            const value = item.querySelector(".subnet-value").textContent;
-            results.push(`  ${label}: ${value}`);
-          });
-        }
-
-        const output = results.join("\n");
-
-        try {
-          await navigator.clipboard.writeText(output);
-          showStatus("已复制", "success");
-        } catch (e) {
-          showStatus("复制失败", "error");
-        }
-      };
-
-      document.getElementById("btnPaste").onclick = async function () {
-        try {
-          const text = await navigator.clipboard.readText();
-          inputEl.value = text.trim();
-          showStatus("已粘贴", "success");
-        } catch (e) {
-          showStatus("无法访问剪贴板", "error");
-        }
-      };
-
-      document.getElementById("btnRandom").onclick = randomIPv4;
-
-      document.getElementById("btnClear").onclick = reset;
-
-      inputEl.addEventListener("input", function () {
-        localStorage.setItem(LS_KEY, this.value);
+      // 主题切换
+      const themeToggle = document.getElementById('themeToggle');
+      const html = document.documentElement;
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      html.setAttribute('data-theme', savedTheme);
+      themeToggle.textContent = savedTheme === 'dark' ? '切换到亮色' : '切换到暗色';
+      themeToggle.addEventListener('click', () => {
+        const currentTheme = html.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        themeToggle.textContent = newTheme === 'dark' ? '切换到亮色' : '切换到暗色';
       });
 
-      [conversionTypeEl, subnetBitsEl, outputFormatEl].forEach(function (el) {
-        el.addEventListener("change", analyzeIP);
-      });
+      // 分析逻辑
+      const ipInput = document.getElementById('ipInput');
+      const analyzeBtn = document.getElementById('analyzeBtn');
 
-      const saved = localStorage.getItem(LS_KEY);
-      if (saved) inputEl.value = saved;
+      function analyze() {
+        const ip = ipInput.value.trim();
+        if (!ip) return;
 
-      analyzeIP();
-      window.toggleTheme = function () {
-        const html = document.documentElement;
-        const btn = document.querySelector(".theme-toggle");
-        const next = html.getAttribute("data-theme") === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", next);
-        btn.textContent = next === "light" ? "☀️" : "🌙";
-        localStorage.setItem("theme", next);
-      };
-      (function () {
-        const saved = localStorage.getItem("theme");
-        if (saved) {
-          document.documentElement.setAttribute("data-theme", saved);
-          const btn = document.querySelector(".theme-toggle");
-          if (btn) btn.textContent = saved === "light" ? "☀️" : "🌙";
+        // IPv4 检测
+        if (ip.match(/^\d+\.\d+\.\d+\.\d+$/)) {
+          const octets = ip.split('.').map(o => parseInt(o));
+          if (octets.some(o => o > 255)) return alert('无效的 IPv4 地址');
+          
+          const intVal = octets.reduce((acc, oct) => (acc << 8) + oct, 0) >>> 0;
+          document.getElementById('resType').textContent = 'IPv4';
+          document.getElementById('resDec').textContent = intVal.toString();
+          document.getElementById('resHex').textContent = '0x' + intVal.toString(16).toUpperCase();
+          document.getElementById('resPtr').textContent = octets.reverse().join('.') + '.in-addr.arpa';
+          document.getElementById('resBin').textContent = intVal.toString(2).padStart(32, '0').match(/.{8}/g).join('.');
+        } 
+        // IPv6 检测 (简化)
+        else if (ip.includes(':')) {
+          document.getElementById('resType').textContent = 'IPv6';
+          document.getElementById('resDec').textContent = '通常不以十进制展示';
+          document.getElementById('resHex').textContent = ip.toUpperCase();
+          document.getElementById('resPtr').textContent = '...ip6.arpa';
+          document.getElementById('resBin').textContent = '计算中...';
+        } else {
+          alert('无法识别的 IP 格式');
         }
-      })();
+      }
+
+      analyzeBtn.onclick = analyze;
+      analyze();
     </script>
   </body>
 </html>

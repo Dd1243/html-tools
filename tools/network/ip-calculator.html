@@ -1,400 +1,350 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="light">
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>IP 地址计算器 - WebUtils</title>
+    <title>IP 地址计算器 - 在线子网掩码与 CIDR 计算工具 | WebUtils</title>
     <!-- SEO Meta Tags -->
-    <meta name="description" content="IP 地址计算器 - WebUtils" />
-    <meta name="keywords" content="ip-calculator,network,tools,webutils" />
+    <meta name="description" content="免费在线 IP 地址计算器。支持 IPv4 子网掩码、CIDR、可用主机范围、网络地址及广播地址计算。帮助网络管理员快速规划子网并解决路由配置问题。" />
+    <meta name="keywords" content="IP计算器,子网掩码计算,CIDR,网络划分,可用IP范围,在线工具" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/network/ip-calculator.html" />
 
     <!-- Open Graph -->
-    <meta property="og:title" content="IP 地址计算器 - WebUtils" />
-    <meta property="og:description" content="IP 地址计算器 - WebUtils" />
+    <meta property="og:title" content="IP 地址计算器 - 在线子网掩码与 CIDR 计算工具" />
+    <meta property="og:description" content="强大的在线 IP 子网计算工具，提供详细的网络范围、二进制展示及可用主机数统计。" />
     <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/network/ip-calculator.html"
-    />
+    <meta property="og:url" content="https://essays4u.net/tools/network/ip-calculator.html" />
     <meta property="og:site_name" content="WebUtils" />
     <meta property="og:locale" content="zh_CN" />
     <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="IP 地址计算器 - WebUtils" />
-    <meta name="twitter:description" content="IP 地址计算器 - WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      :root {
-        --primary: #3b82f6;
-      }
-      body {
-        padding: 1rem;
-        min-height: 100vh;
-      }
-      .container {
-        max-width: 900px;
-        margin: 0 auto;
-      }
-      header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-      }
-      header h1 {
-        margin: 0;
-        font-size: 1.5rem;
-      }
-      .input-section {
-        background: var(--pico-card-background-color);
-        border-radius: 10px;
-        padding: 1rem;
-        margin-bottom: 1rem;
-      }
-      .input-row {
-        display: flex;
-        gap: 0.5rem;
-        align-items: flex-end;
-        flex-wrap: wrap;
-      }
-      .input-row .form-group {
-        flex: 1;
-        min-width: 150px;
-      }
-      .input-row .form-group label {
-        display: block;
-        font-size: 0.85rem;
-        margin-bottom: 0.25rem;
-      }
-      .input-row .form-group input,
-      .input-row .form-group select {
-        margin: 0;
-      }
-      .input-row button {
-        margin: 0;
-      }
-      .results {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 1rem;
-      }
-      .result-card {
-        background: var(--pico-card-background-color);
-        border-radius: 10px;
-        padding: 1rem;
-      }
-      .result-card h3 {
-        margin: 0 0 1rem;
-        font-size: 1rem;
-        color: var(--accent-cyan);
-      }
-      .result-item {
-        display: flex;
-        justify-content: space-between;
-        padding: 0.5rem 0;
-        border-bottom: 1px solid var(--pico-muted-border-color);
-      }
-      .result-item:last-child {
-        border-bottom: none;
-      }
-      .result-item .label {
-        color: var(--pico-muted-color);
-        font-size: 0.9rem;
-      }
-      .result-item .value {
-        font-family: var(--font-mono);
-        font-weight: 500;
-      }
-      .binary-display {
-        background: var(--pico-code-background-color);
-        padding: 1rem;
-        border-radius: 8px;
-        font-family: var(--font-mono);
-        font-size: 0.8rem;
-        overflow-x: auto;
-        margin-top: 0.5rem;
-      }
-      .binary-display .octet {
-        display: inline-block;
-        margin-right: 0.5rem;
-      }
-      .binary-display .network {
-        color: var(--accent-cyan);
-      }
-      .binary-display .host {
-        color: #22c55e;
-      }
-      .quick-masks {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.25rem;
-        margin-top: 0.5rem;
-      }
-      .quick-masks button {
-        padding: 0.2rem 0.5rem;
-        margin: 0;
-        font-size: 0.75rem;
-      }
-      .ip-range {
-        background: var(--pico-code-background-color);
-        padding: 0.75rem;
-        border-radius: 6px;
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        margin-top: 0.5rem;
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-    </style>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+    <style>
+      :root {
+        --bg-body: #0a0a0a;
+        --bg-card: #111;
+        --bg-input: #0d0d0d;
+        --bg-hover: #1a1a1a;
+        --text-primary: #e5e5e5;
+        --text-secondary: #737373;
+        --text-muted: #525252;
+        --border-color: #252525;
+        --border-focus: #404040;
+        --accent: #00f5d4;
+        --accent-hover: #00dfc4;
+        --accent-glow: rgba(0, 245, 212, 0.15);
+        --success: #10b981;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 14px;
+        --font-sans: "Inter", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+
+      [data-theme="light"] {
+        --bg-body: #fafafa;
+        --bg-card: #fff;
+        --bg-input: #f5f5f5;
+        --bg-hover: #f0f0f0;
+        --text-primary: #171717;
+        --text-secondary: #525252;
+        --text-muted: #a3a3a3;
+        --border-color: #e5e5e5;
+        --border-focus: #d4d4d4;
+        --accent: #10b981;
+        --accent-hover: #059669;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: var(--font-sans);
+        background: var(--bg-body);
+        color: var(--text-primary);
+        line-height: 1.6;
+        min-height: 100vh;
+      }
+
+      .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+      
+      .breadcrumb {
+        display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 24px;
+      }
+      .breadcrumb a { color: var(--text-secondary); text-decoration: none; }
+      .breadcrumb a:hover { color: var(--accent); }
+
+      .header { margin-bottom: 32px; text-align: center; }
+      .header h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.02em; }
+      .header p { color: var(--text-secondary); font-size: 1.1rem; }
+
+      .adsense-placeholder {
+        min-height: 90px; background: rgba(128,128,128,0.03); margin: 32px 0; border: 1px dashed var(--border-color); border-radius: var(--radius-md);
+        display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem;
+      }
+
+      .main-card {
+        background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 32px; margin-bottom: 40px; box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+      }
+
+      .input-grid { display: grid; grid-template-columns: 1fr 1fr auto; gap: 16px; margin-bottom: 24px; align-items: end; }
+      .input-group { display: flex; flex-direction: column; gap: 8px; }
+      .input-group label { font-size: 0.85rem; color: var(--text-secondary); font-weight: 600; }
+      input {
+        background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px; color: var(--text-primary); font-family: var(--font-mono); font-size: 1rem;
+      }
+      input:focus { outline: none; border-color: var(--accent); }
+
+      .btn-primary {
+        background: var(--accent); color: #000; border: none; border-radius: var(--radius-sm); padding: 12px 24px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+      }
+      .btn-primary:hover { background: var(--accent-hover); box-shadow: 0 0 15px var(--accent-glow); }
+
+      .quick-masks { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
+      .mask-chip {
+        padding: 4px 10px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.75rem; color: var(--text-secondary); cursor: pointer; font-family: var(--font-mono);
+      }
+      .mask-chip:hover { border-color: var(--accent); color: var(--accent); }
+
+      .results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+      .result-section { background: var(--bg-input); padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color); }
+      .result-section h3 { font-size: 0.9rem; margin-bottom: 16px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; }
+      .result-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; }
+      .result-item:last-child { border-bottom: none; }
+      .res-label { color: var(--text-secondary); }
+      .res-value { font-family: var(--font-mono); font-weight: 500; }
+
+      .binary-display { margin-top: 24px; font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.8; }
+      .bin-row { display: flex; justify-content: space-between; margin-bottom: 8px; background: var(--bg-hover); padding: 8px 12px; border-radius: 4px; }
+      .net-bits { color: var(--accent); }
+      .host-bits { color: var(--success); }
+
+      .article-section { margin-top: 64px; border-top: 1px solid var(--border-color); padding-top: 48px; }
+      .article-section h2 { font-size: 1.75rem; margin-bottom: 24px; color: var(--text-primary); }
+      .article-section h3 { font-size: 1.25rem; margin-top: 32px; margin-bottom: 16px; color: var(--text-primary); }
+      .article-section p { margin-bottom: 16px; color: var(--text-secondary); line-height: 1.8; }
+      .article-section ul { margin-bottom: 24px; padding-left: 20px; color: var(--text-secondary); }
+      .article-section li { margin-bottom: 12px; }
+
+      .theme-toggle {
+        position: fixed; top: 20px; right: 20px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 8px 12px; cursor: pointer; color: var(--text-secondary); font-size: 0.8rem; z-index: 100;
+      }
+
+      @media (max-width: 640px) {
+        .input-grid { grid-template-columns: 1fr; }
+        .header h1 { font-size: 2rem; }
+      }
+    </style>
   </head>
   <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>›</span>
-      IP 地址计算器
-    </nav>
+    <button class="theme-toggle" id="themeToggle">切换主题</button>
+
     <div class="container">
-      <header>
-        <h1>🌐 IP 地址计算器</h1>
-        <button id="themeToggle" class="outline">🌙</button>
+      <nav class="breadcrumb">
+        <a href="../../index.html">首页</a>
+        <span>/</span>
+        <a href="../index.html">网络工具</a>
+        <span>/</span>
+        <span>IP 地址计算器</span>
+      </nav>
+
+      <header class="header">
+        <h1>🔢 IP 地址计算器</h1>
+        <p>精准规划子网，计算 CIDR、掩码及可用 IP 地址范围</p>
       </header>
-      <div class="input-section">
-        <div class="input-row">
-          <div class="form-group" style="flex: 2">
-            <label>IP 地址</label>
-            <input type="text" id="ipInput" placeholder="192.168.1.100" value="192.168.1.100" />
-          </div>
-          <div class="form-group">
-            <label>CIDR / 掩码</label>
-            <input type="text" id="maskInput" placeholder="/24 或 255.255.255.0" value="/24" />
-          </div>
-          <button onclick="calculate()" class="primary">计算</button>
-        </div>
-        <div class="quick-masks">
-          常用掩码：
-          <button onclick="setMask('/8')">/8</button>
-          <button onclick="setMask('/16')">/16</button>
-          <button onclick="setMask('/24')">/24</button>
-          <button onclick="setMask('/25')">/25</button>
-          <button onclick="setMask('/26')">/26</button>
-          <button onclick="setMask('/27')">/27</button>
-          <button onclick="setMask('/28')">/28</button>
-          <button onclick="setMask('/29')">/29</button>
-          <button onclick="setMask('/30')">/30</button>
-        </div>
+
+      <!-- Google AdSense Placeholder - Top -->
+      <div class="adsense-placeholder">
+        <span>广告位 - 顶部</span>
       </div>
-      <div class="results" id="results"></div>
+
+      <main class="main-card">
+        <div class="input-grid">
+          <div class="input-group">
+            <label for="ipInput">IP 地址</label>
+            <input type="text" id="ipInput" placeholder="192.168.1.1" value="192.168.1.1">
+          </div>
+          <div class="input-group">
+            <label for="maskInput">CIDR / 掩码</label>
+            <input type="text" id="maskInput" placeholder="/24" value="/24">
+          </div>
+          <button class="btn-primary" id="calcBtn">立即计算</button>
+        </div>
+
+        <div class="quick-masks">
+          <span class="mask-chip" onclick="setMask('/8')">/8 (Class A)</span>
+          <span class="mask-chip" onclick="setMask('/16')">/16 (Class B)</span>
+          <span class="mask-chip" onclick="setMask('/24')">/24 (Class C)</span>
+          <span class="mask-chip" onclick="setMask('/25')">/25</span>
+          <span class="mask-chip" onclick="setMask('/26')">/26</span>
+          <span class="mask-chip" onclick="setMask('/27')">/27</span>
+          <span class="mask-chip" onclick="setMask('/28')">/28</span>
+          <span class="mask-chip" onclick="setMask('/30')">/30 (P2P)</span>
+          <span class="mask-chip" onclick="setMask('/32')">/32 (Host)</span>
+        </div>
+
+        <div id="resultsArea">
+          <div class="results-grid">
+            <div class="result-section">
+              <h3>📍 网络基本信息</h3>
+              <div class="result-item"><span class="res-label">网络地址</span><span class="res-value" id="netAddr">-</span></div>
+              <div class="result-item"><span class="res-label">子网掩码</span><span class="res-value" id="subMask">-</span></div>
+              <div class="result-item"><span class="res-label">通配符掩码</span><span class="res-value" id="wildMask">-</span></div>
+              <div class="result-item"><span class="res-label">IP 类型</span><span class="res-value" id="ipType">-</span></div>
+            </div>
+            <div class="result-section">
+              <h3>📊 主机范围统计</h3>
+              <div class="result-item"><span class="res-label">可用 IP 范围</span><span class="res-value" id="hostRange">-</span></div>
+              <div class="result-item"><span class="res-label">广播地址</span><span class="res-value" id="broadAddr">-</span></div>
+              <div class="result-item"><span class="res-label">可用主机数</span><span class="res-value" id="usableHosts">-</span></div>
+              <div class="result-item"><span class="res-label">总 IP 数</span><span class="res-value" id="totalIps">-</span></div>
+            </div>
+          </div>
+
+          <div class="binary-display">
+            <div class="bin-row">
+              <span>IP 二进制:</span>
+              <span id="binIp">-</span>
+            </div>
+            <div class="bin-row">
+              <span>掩码二进制:</span>
+              <span id="binMask">-</span>
+            </div>
+            <div style="font-size: 0.7rem; color: var(--text-muted); text-align: right;">
+              <span style="color: var(--accent)">■</span> 网络位 &nbsp; <span style="color: var(--success)">■</span> 主机位
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Google AdSense Placeholder - Middle -->
+      <div class="adsense-placeholder">
+        <span>广告位 - 中部</span>
+      </div>
+
+      <section class="article-section">
+        <h2>深度解析：IP 子网划分在现代网络规划中的重要性</h2>
+        <p>随着互联网设备数量的爆炸式增长，如何高效利用有限的 IPv4 地址空间成为了每个网络工程师必须面对的挑战。IP 子网划分（Subnetting）和无类别域间路由（CIDR）正是解决这一问题的核心技术。</p>
+        
+        <h3>为什么要进行子网划分？</h3>
+        <ul>
+          <li><strong>减少广播风暴：</strong> 通过将大型网络划分为较小的子网，可以将广播流量限制在特定的网段内，显著提升整体网络性能。</li>
+          <li><strong>增强安全性：</strong> 子网可以作为安全边界，配合防火墙策略，可以轻松控制不同部门或服务之间的访问权限。</li>
+          <li><strong>优化地址分配：</strong> 避免将一个庞大的 Class B 地址分配给只有几十台主机的办公室，通过 CIDR 可以按需精确分配 IP 资源。</li>
+        </ul>
+
+        <h3>如何解决具体的路由与配置问题？</h3>
+        <p><strong>场景一：两个子网无法通信。</strong> 首先使用计算器检查两台主机的网络地址。如果它们不在同一个子网且没有配置网关路由，通信必然失败。<strong>场景二：DHCP 地址池耗尽。</strong> 检查当前的掩码设置。例如，从 <code>/24</code> 扩大到 <code>/23</code>，可以将可用主机数从 254 翻倍至 510，而无需更改现有的物理拓扑。</p>
+
+        <h3>关键术语说明</h3>
+        <p><strong>CIDR (Classless Inter-Domain Routing)：</strong> 替代了传统的 A/B/C 类网络划分，使用斜杠加数字（如 <code>/24</code>）表示网络前缀的长度，更加灵活。</p>
+        <p><strong>网络地址与广播地址：</strong> 网络地址是子网的第一个 IP，用于标识子网本身；广播地址是最后一个 IP，用于向子网内所有主机发送信息。这两个地址在标准子网中通常不能分配给主机使用。</p>
+      </section>
+
+      <!-- Google AdSense Placeholder - Bottom -->
+      <div class="adsense-placeholder">
+        <span>广告位 - 底部</span>
+      </div>
     </div>
+
     <script>
-      const $ = (id) => document.getElementById(id);
+      // 主题切换
+      const themeToggle = document.getElementById('themeToggle');
+      const html = document.documentElement;
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      html.setAttribute('data-theme', savedTheme);
+      themeToggle.textContent = savedTheme === 'dark' ? '切换到亮色' : '切换到暗色';
+      themeToggle.addEventListener('click', () => {
+        const currentTheme = html.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        themeToggle.textContent = newTheme === 'dark' ? '切换到亮色' : '切换到暗色';
+      });
+
+      // 计算核心逻辑
+      const ipInput = document.getElementById('ipInput');
+      const maskInput = document.getElementById('maskInput');
+      const calcBtn = document.getElementById('calcBtn');
+
       function ipToInt(ip) {
-        return ip.split(".").reduce((acc, oct) => (acc << 8) + parseInt(oct), 0) >>> 0;
+        return ip.split('.').reduce((acc, oct) => (acc << 8) + parseInt(oct), 0) >>> 0;
       }
       function intToIp(int) {
-        return [(int >>> 24) & 255, (int >>> 16) & 255, (int >>> 8) & 255, int & 255].join(".");
+        return [(int >>> 24) & 255, (int >>> 16) & 255, (int >>> 8) & 255, int & 255].join('.');
       }
-      function ipToBinary(ip) {
-        return ip
-          .split(".")
-          .map((o) => parseInt(o).toString(2).padStart(8, "0"))
-          .join(".");
+      function toBin(int) {
+        return int.toString(2).padStart(32, '0').match(/.{8}/g).join('.');
       }
-      function cidrToMask(cidr) {
-        return (~0 << (32 - cidr)) >>> 0;
-      }
-      function maskToCidr(mask) {
-        return (mask.toString(2).match(/1/g) || []).length;
-      }
-      function parseMask(input) {
-        input = input.trim();
-        if (input.startsWith("/")) return parseInt(input.slice(1));
-        if (input.includes(".")) return maskToCidr(ipToInt(input));
-        return parseInt(input);
-      }
-      window.setMask = function (m) {
-        $("maskInput").value = m;
+
+      window.setMask = (m) => {
+        maskInput.value = m;
         calculate();
       };
-      window.calculate = function () {
-        const ipStr = $("ipInput").value.trim();
-        const maskStr = $("maskInput").value.trim();
-        if (!ipStr || !maskStr) return;
-        const ipParts = ipStr.split(".");
-        if (ipParts.length !== 4 || ipParts.some((p) => isNaN(p) || p < 0 || p > 255)) {
-          $("results").innerHTML =
-            '<div class="result-card"><h3>错误</h3><p>无效的 IP 地址格式</p></div>';
-          return;
-        }
+
+      function calculate() {
+        const ipStr = ipInput.value.trim();
+        let mStr = maskInput.value.trim();
+        
+        if (!ipStr.match(/^\d+\.\d+\.\d+\.\d+$/)) return alert('请输入有效的 IP 地址');
+        
+        let cidr = 24;
+        if (mStr.startsWith('/')) cidr = parseInt(mStr.slice(1));
+        else if (mStr.includes('.')) {
+          const mInt = ipToInt(mStr);
+          cidr = mInt.toString(2).indexOf('0');
+          if (cidr === -1) cidr = 32;
+        } else cidr = parseInt(mStr);
+
+        if (isNaN(cidr) || cidr < 0 || cidr > 32) return alert('无效的掩码');
+
         const ip = ipToInt(ipStr);
-        const cidr = parseMask(maskStr);
-        if (isNaN(cidr) || cidr < 0 || cidr > 32) {
-          $("results").innerHTML =
-            '<div class="result-card"><h3>错误</h3><p>无效的子网掩码</p></div>';
-          return;
-        }
-        const mask = cidrToMask(cidr);
-        const network = (ip & mask) >>> 0;
-        const broadcast = (network | ~mask) >>> 0;
-        const firstHost = network + 1;
-        const lastHost = broadcast - 1;
-        const totalHosts = Math.pow(2, 32 - cidr);
-        const usableHosts = cidr < 31 ? totalHosts - 2 : cidr === 31 ? 2 : 1;
-        const wildcard = ~mask >>> 0;
-        // Determine class
+        const mask = (~0 << (32 - cidr)) >>> 0;
+        const net = (ip & mask) >>> 0;
+        const broad = (net | ~mask) >>> 0;
+        const total = Math.pow(2, 32 - cidr);
+        const usable = cidr >= 31 ? (cidr === 31 ? 2 : 1) : total - 2;
+
+        document.getElementById('netAddr').textContent = intToIp(net);
+        document.getElementById('subMask').textContent = intToIp(mask);
+        document.getElementById('wildMask').textContent = intToIp(~mask >>> 0);
+        document.getElementById('broadAddr').textContent = intToIp(broad);
+        document.getElementById('totalIps').textContent = total.toLocaleString();
+        document.getElementById('usableHosts').textContent = usable.toLocaleString();
+        
+        const start = cidr < 31 ? net + 1 : net;
+        const end = cidr < 31 ? broad - 1 : broad;
+        document.getElementById('hostRange').textContent = `${intToIp(start)} - ${intToIp(end)}`;
+
         const firstOctet = (ip >>> 24) & 255;
-        let ipClass = "E";
-        if (firstOctet < 128) ipClass = "A";
-        else if (firstOctet < 192) ipClass = "B";
-        else if (firstOctet < 224) ipClass = "C";
-        else if (firstOctet < 240) ipClass = "D (组播)";
-        // Check private
-        let isPrivate = false;
-        if (firstOctet === 10) isPrivate = true;
-        else if (firstOctet === 172 && ((ip >>> 16) & 255) >= 16 && ((ip >>> 16) & 255) <= 31)
-          isPrivate = true;
-        else if (firstOctet === 192 && ((ip >>> 16) & 255) === 168) isPrivate = true;
-        // Binary display
-        const ipBin = ipToBinary(ipStr);
-        const maskBin = ipToBinary(intToIp(mask));
-        $("results").innerHTML = `
-                <div class="result-card">
-                    <h3>📍 基本信息</h3>
-                    <div class="result-item"><span class="label">IP 地址</span><span class="value">${ipStr}</span></div>
-                    <div class="result-item"><span class="label">子网掩码</span><span class="value">${intToIp(mask)}</span></div>
-                    <div class="result-item"><span class="label">CIDR 表示</span><span class="value">/${cidr}</span></div>
-                    <div class="result-item"><span class="label">通配符掩码</span><span class="value">${intToIp(wildcard)}</span></div>
-                    <div class="result-item"><span class="label">IP 类型</span><span class="value">Class ${ipClass}${isPrivate ? " (私有)" : " (公网)"}</span></div>
-                </div>
-                <div class="result-card">
-                    <h3>📊 网络范围</h3>
-                    <div class="result-item"><span class="label">网络地址</span><span class="value">${intToIp(network)}</span></div>
-                    <div class="result-item"><span class="label">广播地址</span><span class="value">${intToIp(broadcast)}</span></div>
-                    <div class="result-item"><span class="label">第一个可用</span><span class="value">${cidr < 31 ? intToIp(firstHost) : "N/A"}</span></div>
-                    <div class="result-item"><span class="label">最后可用</span><span class="value">${cidr < 31 ? intToIp(lastHost) : "N/A"}</span></div>
-                    <div class="result-item"><span class="label">可用主机数</span><span class="value">${usableHosts.toLocaleString()}</span></div>
-                    <div class="result-item"><span class="label">总 IP 数</span><span class="value">${totalHosts.toLocaleString()}</span></div>
-                    <div class="ip-range">${intToIp(network)}/${cidr} → ${cidr < 31 ? intToIp(firstHost) + " - " + intToIp(lastHost) : cidr === 31 ? intToIp(network) + " - " + intToIp(broadcast) : intToIp(network) + " (单个主机)"}</div>
-                </div>
-                <div class="result-card" style="grid-column: 1 / -1;">
-                    <h3>🔢 二进制表示</h3>
-                    <div class="result-item"><span class="label">IP 二进制</span></div>
-                    <div class="binary-display">${ipBin
-                      .split(".")
-                      .map((oct, i) => {
-                        const bits = cidr - i * 8;
-                        if (bits >= 8)
-                          return (
-                            '<span class="octet"><span class="network">' + oct + "</span></span>"
-                          );
-                        if (bits <= 0)
-                          return '<span class="octet"><span class="host">' + oct + "</span></span>";
-                        return (
-                          '<span class="octet"><span class="network">' +
-                          oct.slice(0, bits) +
-                          '</span><span class="host">' +
-                          oct.slice(bits) +
-                          "</span></span>"
-                        );
-                      })
-                      .join(".")}</div>
-                    <div class="result-item" style="margin-top:0.5rem;"><span class="label">掩码二进制</span></div>
-                    <div class="binary-display">${maskBin}</div>
-                    <div style="font-size:0.75rem;color:var(--pico-muted-color);margin-top:0.5rem;"><span class="network" style="color:var(--accent-cyan);">■</span> 网络位 <span class="host" style="color:#22c55e;">■</span> 主机位</div>
-                </div>
-            `;
-      };
-      function loadTheme() {
-        const t = localStorage.getItem("theme") || "light";
-        document.documentElement.setAttribute("data-theme", t);
-        $("themeToggle").textContent = t === "dark" ? "☀️" : "🌙";
+        let type = 'Class C';
+        if (firstOctet < 128) type = 'Class A';
+        else if (firstOctet < 192) type = 'Class B';
+        document.getElementById('ipType').textContent = type;
+
+        // Binary
+        const ipBin = ip.toString(2).padStart(32, '0');
+        const maskBin = mask.toString(2).padStart(32, '0');
+        
+        const renderBin = (bin) => {
+          let html = '';
+          for(let i=0; i<32; i++) {
+            if (i > 0 && i % 8 === 0) html += '.';
+            const cls = i < cidr ? 'net-bits' : 'host-bits';
+            html += `<span class="${cls}">${bin[i]}</span>`;
+          }
+          return html;
+        };
+
+        document.getElementById('binIp').innerHTML = renderBin(ipBin);
+        document.getElementById('binMask').innerHTML = renderBin(maskBin);
       }
-      window.toggleTheme = function () {
-        const c = document.documentElement.getAttribute("data-theme");
-        const n = c === "dark" ? "light" : "dark";
-        document.documentElement.setAttribute("data-theme", n);
-        localStorage.setItem("theme", n);
-        $("themeToggle").textContent = n === "dark" ? "☀️" : "🌙";
-      };
-      $("themeToggle").onclick = toggleTheme;
-      $("ipInput").onkeypress = $("maskInput").onkeypress = (e) => {
-        if (e.key === "Enter") calculate();
-      };
-      loadTheme();
+
+      calcBtn.onclick = calculate;
       calculate();
     </script>
   </body>
