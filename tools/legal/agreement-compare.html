@@ -1,911 +1,564 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>协议对比工具 - WebUtils</title>
-    <link
-      rel="canonical"
-      href="https://essays4u.net/tools/legal/agreement-compare.html"
-    />
-    <meta name="description" content="对比两份协议或合同的差异，高亮显示修改内�? />
-    <meta name="keywords" content="协议对比 合同比较 文档差异 法律文档 diff" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <meta property="og:title" content="协议对比工具 - WebUtils" />
-    <meta property="og:description" content="对比两份协议或合同的差异，高亮显示修改内�? />
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="协议对比工具 - WebUtils" />
-    <meta name="twitter:description" content="对比两份协议或合同的差异，高亮显示修改内�? />
-
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>协议对比工具 - 快速比对合同差异 - WebUtils</title>
+    <meta name="description" content="专业的在线协议与合同对比工具。支持高亮显示新增、删除和修改的内容，提供并排视图和统一视图。帮助律师和法务人员快速审核合同变更，确保文档版本一致性。">
+    <meta name="keywords" content="协议对比, 合同比对, 文本差异, Diff工具, 法律文档审核, 版本对比">
+    <link rel="canonical" href="https://essays4u.net/tools/legal/agreement-compare.html">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="协议对比工具 - 快速比对合同差异">
+    <meta property="og:description" content="在线对比两份协议或合同的差异，支持多视图模式，自动高亮变更内容。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://essays4u.net/tools/legal/agreement-compare.html">
+    <meta property="og:site_name" content="WebUtils">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
     <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
+        :root {
+            --primary-color: #8b5cf6;
+            --primary-hover: #7c3aed;
+            --bg-deep: #0f172a;
+            --bg-surface: #1e293b;
+            --bg-card: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border-color: #475569;
+            --accent-cyan: #22d3ee;
+            --accent-green: #10b981;
+            --accent-red: #f43f5e;
+            --radius: 12px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --diff-add-bg: rgba(16, 185, 129, 0.15);
+            --diff-add-text: #4ade80;
+            --diff-remove-bg: rgba(244, 63, 94, 0.15);
+            --diff-remove-text: #fb7185;
+        }
 
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
+        [data-theme="light"] {
+            --bg-deep: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-card: #f1f5f9;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --diff-add-bg: #dcfce7;
+            --diff-add-text: #166534;
+            --diff-remove-bg: #fee2e2;
+            --diff-remove-text: #991b1b;
+        }
 
-      * {
-        box-sizing: border-box;
-      }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-      body {
-        font-family:
-          system-ui,
-          -apple-system,
-          "Segoe UI",
-          Roboto,
-          sans-serif;
-        background: var(--bg-deep);
-        color: var(--text-primary);
-        margin: 0;
-        padding: 24px;
-        min-height: 100vh;
-      }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
 
-      .container {
-        max-width: 1400px;
-        margin: 0 auto;
-      }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
 
-      .back-link {
-        display: inline-block;
-        margin-bottom: 16px;
-        color: var(--accent-cyan);
-        text-decoration: none;
-        font-size: 0.9rem;
-      }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
 
-      .back-link:hover {
-        text-decoration: underline;
-      }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
 
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-      }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
 
-      h1 {
-        font-size: 1.75rem;
-        margin: 0 0 8px;
-      }
+        .ads-placeholder {
+            width: 100%;
+            min-height: 90px;
+            background: var(--bg-surface);
+            border: 1px dashed var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            border-radius: var(--radius);
+        }
 
-      .desc {
-        color: var(--text-muted);
-        margin: 0 0 24px;
-        font-size: 0.95rem;
-      }
+        .main-card {
+            background: var(--bg-surface);
+            padding: 30px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
 
-      .card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        padding: 20px;
-        box-shadow: var(--shadow);
-        margin-bottom: 20px;
-      }
-
-      .panels {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-        margin-bottom: 20px;
-      }
-
-      @media (max-width: 900px) {
         .panels {
-          grid-template-columns: 1fr;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
         }
-      }
 
-      .panel {
-        display: flex;
-        flex-direction: column;
-      }
-
-      .panel-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 10px;
-      }
-
-      .panel-label {
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: var(--text-primary);
-      }
-
-      .panel-actions {
-        display: flex;
-        gap: 8px;
-      }
-
-      .panel-actions button {
-        padding: 4px 10px;
-        font-size: 0.8rem;
-      }
-
-      textarea {
-        width: 100%;
-        min-height: 300px;
-        padding: 12px;
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
-        font-size: 0.9rem;
-        line-height: 1.6;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        background: var(--bg-card);
-        color: var(--text-primary);
-        resize: vertical;
-      }
-
-      textarea:focus {
-        outline: none;
-        border-color: var(--accent-cyan);
-        box-shadow: 0 0 0 3px rgb(99, 102, 241, 0.15);
-      }
-
-      .btn-row {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        margin-bottom: 20px;
-      }
-
-      button {
-        padding: 10px 20px;
-        font-size: 0.95rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        background: var(--bg-card);
-        color: var(--text-primary);
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-
-      button:hover {
-        border-color: var(--accent-cyan);
-        color: var(--accent-cyan);
-      }
-
-      button.primary {
-        background: var(--accent-cyan);
-        border-color: var(--accent-cyan);
-        color: #fff;
-      }
-
-      button.primary:hover {
-        background: var(--accent-cyan);
-        border-color: var(--accent-cyan);
-        color: #fff;
-      }
-
-      .options {
-        display: flex;
-        gap: 20px;
-        flex-wrap: wrap;
-        align-items: center;
-        margin-bottom: 20px;
-        font-size: 0.9rem;
-      }
-
-      .options label {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        cursor: pointer;
-      }
-
-      .options input[type="checkbox"] {
-        width: 16px;
-        height: 16px;
-        accent-color: var(--accent-cyan);
-      }
-
-      .stats {
-        display: flex;
-        gap: 24px;
-        flex-wrap: wrap;
-        padding: 16px;
-        background: var(--bg-deep);
-        border-radius: var(--radius-md);
-        margin-bottom: 20px;
-      }
-
-      .stat-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .stat-badge {
-        display: inline-block;
-        padding: 4px 10px;
-        border-radius: 4px;
-        font-size: 0.85rem;
-        font-weight: 600;
-      }
-
-      .stat-badge.added {
-        background: var(--added-bg);
-        color: var(--added-text);
-      }
-
-      .stat-badge.removed {
-        background: var(--removed-bg);
-        color: var(--removed-text);
-      }
-
-      .stat-badge.changed {
-        background: var(--changed-bg);
-        color: var(--changed-text);
-      }
-
-      .result-section {
-        margin-top: 20px;
-      }
-
-      .result-section h3 {
-        font-size: 1rem;
-        margin: 0 0 12px;
-        color: var(--text-primary);
-      }
-
-      .diff-view {
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        padding: 16px;
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
-        font-size: 0.9rem;
-        line-height: 1.8;
-        max-height: 500px;
-        overflow-y: auto;
-      }
-
-      .diff-line {
-        padding: 2px 8px;
-        margin: 2px 0;
-        border-radius: 4px;
-        white-space: pre-wrap;
-        overflow-wrap: break-word;
-      }
-
-      .diff-line.added {
-        background: var(--added-bg);
-        color: var(--added-text);
-      }
-
-      .diff-line.removed {
-        background: var(--removed-bg);
-        color: var(--removed-text);
-      }
-
-      .diff-line.unchanged {
-        color: var(--text-muted);
-      }
-
-      .side-by-side {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-      }
-
-      @media (max-width: 900px) {
-        .side-by-side {
-          grid-template-columns: 1fr;
+        @media (max-width: 800px) {
+            .panels {
+                grid-template-columns: 1fr;
+            }
         }
-      }
 
-      .side-panel {
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        padding: 16px;
-        max-height: 500px;
-        overflow-y: auto;
-      }
+        .panel-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-secondary);
+        }
 
-      .side-panel h4 {
-        margin: 0 0 12px;
-        font-size: 0.9rem;
-        color: var(--text-muted);
-      }
+        .panel-btn {
+            font-size: 0.75rem;
+            color: var(--primary-color);
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 2px 8px;
+        }
 
-      .status {
-        font-size: 0.85rem;
-        margin-top: 8px;
-        min-height: 20px;
-      }
+        textarea {
+            width: 100%;
+            height: 300px;
+            padding: 15px;
+            background: var(--bg-deep);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            resize: vertical;
+            line-height: 1.5;
+        }
 
-      .status.success {
-        color: var(--accent-green);
-      }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: var(--bg-card);
+            border-radius: 8px;
+            align-items: center;
+        }
 
-      .status.error {
-        color: var(--accent-red);
-      }
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
 
-      footer {
-        text-align: center;
-        margin-top: 32px;
-        padding-top: 16px;
-        border-top: 1px solid var(--border-subtle);
-        color: var(--text-muted);
-        font-size: 0.85rem;
-      }
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
 
-      footer a {
-        color: var(--accent-cyan);
-        text-decoration: none;
-      }
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
 
-      footer a:hover {
-        text-decoration: underline;
-      }
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .stat-added { background: var(--diff-add-bg); color: var(--diff-add-text); }
+        .stat-removed { background: var(--diff-remove-bg); color: var(--diff-remove-text); }
+        .stat-unchanged { background: var(--bg-deep); color: var(--text-muted); }
+
+        .result-area {
+            margin-top: 30px;
+        }
+
+        .diff-container {
+            background: var(--bg-deep);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: auto;
+            max-height: 600px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .diff-line {
+            display: flex;
+            padding: 2px 10px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .line-num {
+            width: 40px;
+            color: var(--text-muted);
+            user-select: none;
+            text-align: right;
+            margin-right: 15px;
+            border-right: 1px solid var(--border-color);
+            padding-right: 5px;
+        }
+
+        .line-content {
+            flex: 1;
+        }
+
+        .line-added { background: var(--diff-add-bg); color: var(--diff-add-text); }
+        .line-removed { background: var(--diff-remove-bg); color: var(--diff-remove-text); }
+
+        /* Article Styles */
+        .article-section {
+            background: var(--bg-surface);
+            padding: 40px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            margin-top: 40px;
+        }
+
+        .article-content h2 { font-size: 1.75rem; margin: 30px 0 15px; color: var(--accent-cyan); }
+        .article-content h3 { font-size: 1.25rem; margin: 20px 0 10px; color: var(--text-primary); }
+        .article-content p { margin-bottom: 18px; color: var(--text-secondary); }
+        .article-content ul { margin-bottom: 18px; margin-left: 24px; color: var(--text-secondary); }
+        .article-content li { margin-bottom: 8px; }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 30px;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--bg-surface);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+        }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
+</head>
+<body>
+    <button class="theme-toggle" id="themeToggle">🌓</button>
+
     <div class="container">
-      <a href="../../index.html" class="back-link">�?返回工具列表</a>
-      <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">🌙</button>
+        <header>
+            <a href="../../index.html" class="back-link">← 返回工具中心</a>
+            <h1>协议对比工具</h1>
+            <p class="subtitle">精准对比两份法律文档的差异，确保每一处修改都在掌控之中。</p>
+        </header>
 
-      <h1>协议对比工具</h1>
-      <p class="desc">对比两份协议或合同的差异，高亮显示新增、删除和修改的内�?/p>
+        <div class="ads-placeholder">Google AdSense 广告位 - 顶部</div>
 
-      <div class="card">
-        <div class="panels">
-          <div class="panel">
-            <div class="panel-header">
-              <span class="panel-label">原始协议（旧版本�?/span>
-              <div class="panel-actions">
-                <button type="button" onclick="pasteOriginal()">粘贴</button>
-                <button type="button" onclick="clearOriginal()">清空</button>
-              </div>
+        <div class="main-card">
+            <div class="panels">
+                <div class="panel">
+                    <div class="panel-label">
+                        <span>原始协议 (版本 A)</span>
+                        <div>
+                            <button class="panel-btn" onclick="pasteText('originalText')">粘贴</button>
+                            <button class="panel-btn" onclick="clearText('originalText')">清空</button>
+                        </div>
+                    </div>
+                    <textarea id="originalText" placeholder="在此粘贴原始协议内容..."></textarea>
+                </div>
+                <div class="panel">
+                    <div class="panel-label">
+                        <span>修改后协议 (版本 B)</span>
+                        <div>
+                            <button class="panel-btn" onclick="pasteText('modifiedText')">粘贴</button>
+                            <button class="panel-btn" onclick="clearText('modifiedText')">清空</button>
+                        </div>
+                    </div>
+                    <textarea id="modifiedText" placeholder="在此粘贴修改后的协议内容..."></textarea>
+                </div>
             </div>
-            <textarea id="originalText" placeholder="粘贴原始协议内容..."></textarea>
-          </div>
-          <div class="panel">
-            <div class="panel-header">
-              <span class="panel-label">修改后协议（新版本）</span>
-              <div class="panel-actions">
-                <button type="button" onclick="pasteModified()">粘贴</button>
-                <button type="button" onclick="clearModified()">清空</button>
-              </div>
+
+            <div class="controls">
+                <div class="control-group">
+                    <input type="checkbox" id="ignoreWhitespace" checked>
+                    <label for="ignoreWhitespace">忽略空白字符</label>
+                </div>
+                <div class="control-group">
+                    <input type="checkbox" id="ignoreCase">
+                    <label for="ignoreCase">忽略大小写</label>
+                </div>
+                <div class="control-group">
+                    <input type="checkbox" id="showLineNumbers" checked>
+                    <label for="showLineNumbers">显示行号</label>
+                </div>
             </div>
-            <textarea id="modifiedText" placeholder="粘贴修改后的协议内容..."></textarea>
-          </div>
+
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="compareText()">开始对比差异</button>
+                <button class="btn btn-secondary" onclick="swapText()">交换位置</button>
+                <button class="btn btn-secondary" onclick="clearAll()">全部重置</button>
+            </div>
+
+            <div id="resultArea" class="result-area" style="display: none;">
+                <div class="stats-grid">
+                    <div class="stat-card stat-added" id="statAdded">新增: 0 行</div>
+                    <div class="stat-card stat-removed" id="statRemoved">删除: 0 行</div>
+                    <div class="stat-card stat-unchanged" id="statUnchanged">未变: 0 行</div>
+                </div>
+                <div class="diff-container" id="diffOutput"></div>
+            </div>
         </div>
 
-        <div class="options">
-          <label>
-            <input type="checkbox" id="ignoreWhitespace" />
-            忽略空白差异
-          </label>
-          <label>
-            <input type="checkbox" id="ignoreCase" />
-            忽略大小�?
-          </label>
-          <label>
-            <input type="checkbox" id="showLineNumbers" checked />
-            显示行号
-          </label>
-          <label>
-            <input type="checkbox" id="sideBySide" />
-            并排视图
-          </label>
-        </div>
+        <div class="ads-placeholder">Google AdSense 广告位 - 中间</div>
 
-        <div class="btn-row">
-          <button class="primary" onclick="compareDocuments()">开始对�?/button>
-          <button onclick="swapDocuments()">交换文档</button>
-          <button onclick="copyDiff()">复制差异报告</button>
-          <button onclick="clearAll()">清空全部</button>
-        </div>
+        <section class="article-section">
+            <div class="article-content">
+                <h2>为什么法律从业者需要专业的协议对比工具？</h2>
+                <p>在合同谈判、修订和多轮审核过程中，保持文档的版本控制是一项极具挑战性的任务。手动逐行对比不仅耗时耗力，而且极易遗漏微小但关键的修改（如一个数字或一个“不”字的增减）。</p>
+                
+                <h3>1. 解决版本混乱问题</h3>
+                <p>在复杂的交易中，合同可能会在多方之间往返数十次。如果不使用专业的对比工具，很难确定对方在返回的草案中究竟改动了哪些条款，尤其是当对方没有使用 Word 的“修订”模式时。</p>
 
-        <div id="status" class="status"></div>
+                <h3>2. 提高审核效率</h3>
+                <p>通过自动化的算法对比，您可以在几秒钟内识别出所有的增删改查。我们的工具提供高亮显示，让您可以直观地看到原文被替换成了什么，从而将精力集中在评估这些修改的法律风险上。</p>
 
-        <div id="statsSection" class="stats" style="display: none">
-          <div class="stat-item">
-            <span class="stat-badge added" id="addedCount">+0 行新�?/span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-badge removed" id="removedCount">-0 行删�?/span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-badge changed" id="changedCount">~0 行可能修�?/span>
-          </div>
-        </div>
+                <h3>3. 捕捉“隐藏”的修改</h3>
+                <p>有些修改可能隐藏在长篇大论的条款中间，或者仅仅是标点符号的改变，这些改变有时会彻底扭转合同的法律意义。协议对比工具可以捕捉到每一个字符级的变动。</p>
 
-        <div id="resultSection" class="result-section" style="display: none">
-          <h3>对比结果</h3>
-          <div id="diffOutput"></div>
-        </div>
-      </div>
+                <h2>如何高效使用本工具？</h2>
+                <ul>
+                    <li><strong>忽略空白字符：</strong> 如果两份文档的缩进或空格不一致（常见于从 PDF 复制文本），开启此选项可以减少干扰。</li>
+                    <li><strong>交换位置：</strong> 快速切换对比的方向，查看是从 A 到 B 的增加，还是从 B 到 A 的减少。</li>
+                    <li><strong>行号参考：</strong> 在讨论具体修改时，行号是各方沟通的统一坐标。</li>
+                </ul>
 
-      <footer>
-        纯前端工�?· 无服务器 ·
-        <a href="../../index.html">WebUtils</a>
-      </footer>
+                <p><strong>注意：</strong> 本工具采用纯浏览器端算法处理，您的合同内容不会被上传到任何服务器，确保了商业秘密的绝对安全。</p>
+            </div>
+        </section>
+
+        <div class="ads-placeholder">Google AdSense 广告位 - 底部</div>
+
+        <footer>
+            <p>&copy; 2024 WebUtils Legal Tools. 安全、私密的在线文档对比服务。</p>
+        </footer>
     </div>
 
     <script>
-      var LS_KEY = "agreement_compare_v1";
-
-      function getOptions() {
-        return {
-          ignoreWhitespace: document.getElementById("ignoreWhitespace").checked,
-          ignoreCase: document.getElementById("ignoreCase").checked,
-          showLineNumbers: document.getElementById("showLineNumbers").checked,
-          sideBySide: document.getElementById("sideBySide").checked
+        // Theme Management
+        const themeToggle = document.getElementById('themeToggle');
+        const setTheme = (theme) => {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
         };
-      }
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = localStorage.getItem('theme') || 'dark';
+            setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+        });
+        setTheme(localStorage.getItem('theme') || 'dark');
 
-      function preprocessText(text, options) {
-        if (options.ignoreWhitespace) {
-          text = text.replace(/[ \t]+/g, " ").replace(/^ +| +$/gm, "");
+        function clearText(id) {
+            document.getElementById(id).value = '';
         }
-        if (options.ignoreCase) {
-          text = text.toLowerCase();
-        }
-        return text;
-      }
 
-      function computeLCS(arr1, arr2) {
-        var m = arr1.length;
-        var n = arr2.length;
-        var dp = [];
-
-        for (var i = 0; i <= m; i++) {
-          dp[i] = [];
-          for (var j = 0; j <= n; j++) {
-            if (i === 0 || j === 0) {
-              dp[i][j] = 0;
-            } else if (arr1[i - 1] === arr2[j - 1]) {
-              dp[i][j] = dp[i - 1][j - 1] + 1;
-            } else {
-              dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+        async function pasteText(id) {
+            try {
+                const text = await navigator.clipboard.readText();
+                document.getElementById(id).value = text;
+            } catch (err) {
+                alert('无法访问剪贴板，请手动粘贴。');
             }
-          }
         }
 
-        var lcs = [];
-        var i = m,
-          j = n;
-        while (i > 0 && j > 0) {
-          if (arr1[i - 1] === arr2[j - 1]) {
-            lcs.unshift({ value: arr1[i - 1], index1: i - 1, index2: j - 1 });
-            i--;
-            j--;
-          } else if (dp[i - 1][j] > dp[i][j - 1]) {
-            i--;
-          } else {
-            j--;
-          }
+        function swapText() {
+            const t1 = document.getElementById('originalText');
+            const t2 = document.getElementById('modifiedText');
+            const tmp = t1.value;
+            t1.value = t2.value;
+            t2.value = tmp;
         }
 
-        return lcs;
-      }
+        function clearAll() {
+            if(confirm('确定要清空所有内容吗？')) {
+                clearText('originalText');
+                clearText('modifiedText');
+                document.getElementById('resultArea').style.display = 'none';
+            }
+        }
 
-      function computeDiff(original, modified, options) {
-        var origLines = original.split("\n");
-        var modLines = modified.split("\n");
+        function compareText() {
+            const original = document.getElementById('originalText').value;
+            const modified = document.getElementById('modifiedText').value;
+            
+            if(!original.trim() && !modified.trim()) return;
 
-        var processedOrig = preprocessText(original, options).split("\n");
-        var processedMod = preprocessText(modified, options).split("\n");
+            const ignoreWhitespace = document.getElementById('ignoreWhitespace').checked;
+            const ignoreCase = document.getElementById('ignoreCase').checked;
+            const showLineNumbers = document.getElementById('showLineNumbers').checked;
 
-        var lcs = computeLCS(processedOrig, processedMod);
+            const originalLines = original.split('\n');
+            const modifiedLines = modified.split('\n');
 
-        var diff = [];
-        var origIdx = 0;
-        var modIdx = 0;
-        var lcsIdx = 0;
+            const diff = computeDiff(originalLines, modifiedLines, ignoreWhitespace, ignoreCase);
+            renderDiff(diff, showLineNumbers);
+            
+            document.getElementById('resultArea').style.display = 'block';
+        }
 
-        while (origIdx < origLines.length || modIdx < modLines.length) {
-          if (
-            lcsIdx < lcs.length &&
-            origIdx === lcs[lcsIdx].index1 &&
-            modIdx === lcs[lcsIdx].index2
-          ) {
-            diff.push({
-              type: "unchanged",
-              value: origLines[origIdx],
-              origLine: origIdx + 1,
-              modLine: modIdx + 1
+        // Simple LCS-based Diff Algorithm
+        function computeDiff(oldLines, newLines, ignoreWS, ignoreCase) {
+            const matrix = Array(oldLines.length + 1).fill().map(() => Array(newLines.length + 1).fill(0));
+            
+            const process = (s) => {
+                let res = s;
+                if(ignoreWS) res = res.replace(/\s+/g, '');
+                if(ignoreCase) res = res.toLowerCase();
+                return res;
+            };
+
+            for (let i = 1; i <= oldLines.length; i++) {
+                for (let j = 1; j <= newLines.length; j++) {
+                    if (process(oldLines[i-1]) === process(newLines[j-1])) {
+                        matrix[i][j] = matrix[i-1][j-1] + 1;
+                    } else {
+                        matrix[i][j] = Math.max(matrix[i-1][j], matrix[i][j-1]);
+                    }
+                }
+            }
+
+            const result = [];
+            let i = oldLines.length, j = newLines.length;
+
+            while (i > 0 || j > 0) {
+                if (i > 0 && j > 0 && process(oldLines[i-1]) === process(newLines[j-1])) {
+                    result.unshift({ type: 'unchanged', text: oldLines[i-1], oldLine: i, newLine: j });
+                    i--; j--;
+                } else if (j > 0 && (i === 0 || matrix[i][j-1] >= matrix[i-1][j])) {
+                    result.unshift({ type: 'added', text: newLines[j-1], newLine: j });
+                    j--;
+                } else {
+                    result.unshift({ type: 'removed', text: oldLines[i-1], oldLine: i });
+                    i--;
+                }
+            }
+            return result;
+        }
+
+        function renderDiff(diff, showLineNumbers) {
+            const container = document.getElementById('diffOutput');
+            container.innerHTML = '';
+            
+            let added = 0, removed = 0, unchanged = 0;
+
+            diff.forEach(item => {
+                const line = document.createElement('div');
+                line.className = `diff-line line-${item.type}`;
+                
+                if(showLineNumbers) {
+                    const num = document.createElement('div');
+                    num.className = 'line-num';
+                    num.textContent = item.type === 'added' ? item.newLine : (item.type === 'removed' ? item.oldLine : item.newLine);
+                    line.appendChild(num);
+                }
+
+                const content = document.createElement('div');
+                content.className = 'line-content';
+                content.textContent = (item.type === 'added' ? '+ ' : (item.type === 'removed' ? '- ' : '  ')) + item.text;
+                line.appendChild(content);
+
+                container.appendChild(line);
+
+                if(item.type === 'added') added++;
+                else if(item.type === 'removed') removed++;
+                else unchanged++;
             });
-            origIdx++;
-            modIdx++;
-            lcsIdx++;
-          } else if (lcsIdx < lcs.length && origIdx < lcs[lcsIdx].index1) {
-            diff.push({ type: "removed", value: origLines[origIdx], origLine: origIdx + 1 });
-            origIdx++;
-          } else if (lcsIdx < lcs.length && modIdx < lcs[lcsIdx].index2) {
-            diff.push({ type: "added", value: modLines[modIdx], modLine: modIdx + 1 });
-            modIdx++;
-          } else if (origIdx < origLines.length) {
-            diff.push({ type: "removed", value: origLines[origIdx], origLine: origIdx + 1 });
-            origIdx++;
-          } else {
-            diff.push({ type: "added", value: modLines[modIdx], modLine: modIdx + 1 });
-            modIdx++;
-          }
+
+            document.getElementById('statAdded').textContent = `新增: ${added} 行`;
+            document.getElementById('statRemoved').textContent = `删除: ${removed} 行`;
+            document.getElementById('statUnchanged').textContent = `未变: ${unchanged} 行`;
         }
-
-        return diff;
-      }
-
-      function createDiffLine(text, className) {
-        var div = document.createElement("div");
-        div.className = "diff-line " + className;
-        div.textContent = text;
-        return div;
-      }
-
-      function renderUnifiedDiff(diff, options, container) {
-        var wrapper = document.createElement("div");
-        wrapper.className = "diff-view";
-
-        var addedCount = 0;
-        var removedCount = 0;
-
-        diff.forEach(function (item) {
-          var lineNum = "";
-          if (options.showLineNumbers) {
-            if (item.type === "unchanged") {
-              lineNum = item.origLine + "/" + item.modLine + ": ";
-            } else if (item.type === "removed") {
-              lineNum = item.origLine + "/-: ";
-            } else {
-              lineNum = "-/" + item.modLine + ": ";
-            }
-          }
-
-          var prefix = "";
-          if (item.type === "added") {
-            prefix = "+ ";
-            addedCount++;
-          } else if (item.type === "removed") {
-            prefix = "- ";
-            removedCount++;
-          } else {
-            prefix = "  ";
-          }
-
-          wrapper.appendChild(createDiffLine(lineNum + prefix + item.value, item.type));
-        });
-
-        container.textContent = "";
-        container.appendChild(wrapper);
-        return { added: addedCount, removed: removedCount };
-      }
-
-      function renderSideBySideDiff(diff, options, container) {
-        var wrapper = document.createElement("div");
-        wrapper.className = "side-by-side";
-
-        var leftPanel = document.createElement("div");
-        leftPanel.className = "side-panel";
-        var leftTitle = document.createElement("h4");
-        leftTitle.textContent = "原始协议";
-        leftPanel.appendChild(leftTitle);
-
-        var rightPanel = document.createElement("div");
-        rightPanel.className = "side-panel";
-        var rightTitle = document.createElement("h4");
-        rightTitle.textContent = "修改后协�?;
-        rightPanel.appendChild(rightTitle);
-
-        var addedCount = 0;
-        var removedCount = 0;
-
-        diff.forEach(function (item) {
-          var lineNum = "";
-
-          if (item.type === "unchanged") {
-            if (options.showLineNumbers) {
-              lineNum = item.origLine + ": ";
-            }
-            leftPanel.appendChild(createDiffLine(lineNum + item.value, "unchanged"));
-            if (options.showLineNumbers) {
-              lineNum = item.modLine + ": ";
-            }
-            rightPanel.appendChild(createDiffLine(lineNum + item.value, "unchanged"));
-          } else if (item.type === "removed") {
-            removedCount++;
-            if (options.showLineNumbers) {
-              lineNum = item.origLine + ": ";
-            }
-            leftPanel.appendChild(createDiffLine(lineNum + item.value, "removed"));
-            var emptyDiv = document.createElement("div");
-            emptyDiv.className = "diff-line";
-            emptyDiv.style.opacity = "0.3";
-            emptyDiv.textContent = " ";
-            rightPanel.appendChild(emptyDiv);
-          } else {
-            addedCount++;
-            var emptyDiv = document.createElement("div");
-            emptyDiv.className = "diff-line";
-            emptyDiv.style.opacity = "0.3";
-            emptyDiv.textContent = " ";
-            leftPanel.appendChild(emptyDiv);
-            if (options.showLineNumbers) {
-              lineNum = item.modLine + ": ";
-            }
-            rightPanel.appendChild(createDiffLine(lineNum + item.value, "added"));
-          }
-        });
-
-        wrapper.appendChild(leftPanel);
-        wrapper.appendChild(rightPanel);
-
-        container.textContent = "";
-        container.appendChild(wrapper);
-        return { added: addedCount, removed: removedCount };
-      }
-
-      function compareDocuments() {
-        var original = document.getElementById("originalText").value;
-        var modified = document.getElementById("modifiedText").value;
-
-        if (!original.trim()) {
-          showStatus("请输入原始协议内�?, "error");
-          return;
-        }
-
-        if (!modified.trim()) {
-          showStatus("请输入修改后的协议内�?, "error");
-          return;
-        }
-
-        var options = getOptions();
-        var diff = computeDiff(original, modified, options);
-        var container = document.getElementById("diffOutput");
-
-        var result;
-        if (options.sideBySide) {
-          result = renderSideBySideDiff(diff, options, container);
-        } else {
-          result = renderUnifiedDiff(diff, options, container);
-        }
-
-        document.getElementById("addedCount").textContent = "+" + result.added + " 行新�?;
-        document.getElementById("removedCount").textContent = "-" + result.removed + " 行删�?;
-        document.getElementById("changedCount").textContent =
-          "~" + Math.min(result.added, result.removed) + " 行可能修�?;
-
-        document.getElementById("statsSection").style.display = "flex";
-        document.getElementById("resultSection").style.display = "block";
-
-        saveToStorage();
-        showStatus("对比完成", "success");
-      }
-
-      function swapDocuments() {
-        var original = document.getElementById("originalText");
-        var modified = document.getElementById("modifiedText");
-        var temp = original.value;
-        original.value = modified.value;
-        modified.value = temp;
-        showStatus("文档已交�?, "success");
-      }
-
-      function copyDiff() {
-        var original = document.getElementById("originalText").value;
-        var modified = document.getElementById("modifiedText").value;
-
-        if (!original.trim() || !modified.trim()) {
-          showStatus("请先进行对比", "error");
-          return;
-        }
-
-        var options = getOptions();
-        var diff = computeDiff(original, modified, options);
-
-        var report = "协议对比报告\n";
-        report += "生成时间: " + new Date().toLocaleString() + "\n";
-        report += "==========================================\n\n";
-
-        var added = 0,
-          removed = 0;
-        diff.forEach(function (item) {
-          if (item.type === "added") added++;
-          if (item.type === "removed") removed++;
-        });
-
-        report += "统计: +" + added + " 行新�? -" + removed + " 行删除\n\n";
-        report += "详细差异:\n";
-        report += "------------------------------------------\n";
-
-        diff.forEach(function (item) {
-          var prefix = "";
-          if (item.type === "added") prefix = "+ ";
-          else if (item.type === "removed") prefix = "- ";
-          else prefix = "  ";
-          report += prefix + item.value + "\n";
-        });
-
-        navigator.clipboard
-          .writeText(report)
-          .then(function () {
-            showStatus("差异报告已复制到剪贴�?, "success");
-          })
-          .catch(function () {
-            showStatus("复制失败", "error");
-          });
-      }
-
-      function pasteOriginal() {
-        navigator.clipboard
-          .readText()
-          .then(function (text) {
-            document.getElementById("originalText").value = text;
-            showStatus("已粘贴到原始协议", "success");
-          })
-          .catch(function () {
-            showStatus("无法访问剪贴�?, "error");
-          });
-      }
-
-      function pasteModified() {
-        navigator.clipboard
-          .readText()
-          .then(function (text) {
-            document.getElementById("modifiedText").value = text;
-            showStatus("已粘贴到修改后协�?, "success");
-          })
-          .catch(function () {
-            showStatus("无法访问剪贴�?, "error");
-          });
-      }
-
-      function clearOriginal() {
-        document.getElementById("originalText").value = "";
-        showStatus("已清空原始协�?, "success");
-      }
-
-      function clearModified() {
-        document.getElementById("modifiedText").value = "";
-        showStatus("已清空修改后协议", "success");
-      }
-
-      function clearAll() {
-        document.getElementById("originalText").value = "";
-        document.getElementById("modifiedText").value = "";
-        document.getElementById("diffOutput").textContent = "";
-        document.getElementById("statsSection").style.display = "none";
-        document.getElementById("resultSection").style.display = "none";
-        localStorage.removeItem(LS_KEY);
-        showStatus("已清空全�?, "success");
-      }
-
-      function showStatus(msg, type) {
-        var el = document.getElementById("status");
-        el.textContent = msg;
-        el.className = "status " + (type || "");
-      }
-
-      function saveToStorage() {
-        try {
-          var data = {
-            original: document.getElementById("originalText").value,
-            modified: document.getElementById("modifiedText").value,
-            options: getOptions()
-          };
-          localStorage.setItem(LS_KEY, JSON.stringify(data));
-        } catch (e) {}
-      }
-
-      function loadFromStorage() {
-        try {
-          var saved = localStorage.getItem(LS_KEY);
-          if (saved) {
-            var data = JSON.parse(saved);
-            if (data.original) document.getElementById("originalText").value = data.original;
-            if (data.modified) document.getElementById("modifiedText").value = data.modified;
-            if (data.options) {
-              document.getElementById("ignoreWhitespace").checked = !!data.options.ignoreWhitespace;
-              document.getElementById("ignoreCase").checked = !!data.options.ignoreCase;
-              document.getElementById("showLineNumbers").checked =
-                data.options.showLineNumbers !== false;
-              document.getElementById("sideBySide").checked = !!data.options.sideBySide;
-            }
-          }
-        } catch (e) {}
-      }
-
-      // Auto-save on input
-      document.querySelectorAll('textarea, input[type="checkbox"]').forEach(function (el) {
-        el.addEventListener("change", saveToStorage);
-        el.addEventListener("input", saveToStorage);
-      });
-
-      // Theme toggle
-      function toggleTheme() {
-        var html = document.documentElement;
-        var btn = document.querySelector(".theme-toggle");
-        var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
-        html.setAttribute("data-theme", next);
-        btn.textContent = next === "dark" ? "🌙" : "☀�?;
-        localStorage.setItem("theme", next);
-      }
-
-      // Initialize
-      (function () {
-        var savedTheme = localStorage.getItem("theme");
-        if (savedTheme) {
-          document.documentElement.setAttribute("data-theme", savedTheme);
-          var btn = document.querySelector(".theme-toggle");
-          if (btn) btn.textContent = savedTheme === "dark" ? "🌙" : "☀�?;
-        }
-        loadFromStorage();
-      })();
     </script>
-  </body>
+</body>
 </html>
-
