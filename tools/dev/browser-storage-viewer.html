@@ -1,1208 +1,533 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>浏览器存储查看器 - WebUtils</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>浏览器存储查看器 - 在线管理 LocalStorage, SessionStorage & Cookies | WebUtils</title>
+
     <!-- SEO Meta Tags -->
-    <meta name="description" content="浏览器存储查看器 - WebUtils" />
-    <meta name="keywords" content="browser-storage-viewer,dev,tools,webutils" />
+    <meta
+      name="description"
+      content="免费在线浏览器存储查看器。可视化管理当前页面的 LocalStorage、SessionStorage 和 Cookies。支持新增、编辑、删除和一键清空存储项。解决 Web 开发中数据持久化调试不便的问题。"
+    />
+    <meta
+      name="keywords"
+      content="LocalStorage 查看器, SessionStorage 管理, Cookie 管理, 浏览器存储调试, Web 开发工具, 前端调试, 数据持久化, XSS 安全, 缓存清理"
+    />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
-    <link
-      rel="canonical"
-      href="https://essays4u.net/tools/dev/browser-storage-viewer.html"
-    />
+    <link rel="canonical" href="https://essays4u.net/tools/dev/browser-storage-viewer.html" />
+
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-################" crossorigin="anonymous"></script>
 
     <!-- Open Graph -->
-    <meta property="og:title" content="浏览器存储查看器 - WebUtils" />
-    <meta property="og:description" content="浏览器存储查看器 - WebUtils" />
+    <meta property="og:title" content="浏览器存储查看器 - 轻松调试 Web 状态数据" />
+    <meta property="og:description" content="一站式管理 LocalStorage、SessionStorage 和 Cookies，支持实时编辑和搜索过滤，提升前端开发效率。" />
     <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/dev/browser-storage-viewer.html"
-    />
+    <meta property="og:url" content="https://essays4u.net/tools/dev/browser-storage-viewer.html" />
     <meta property="og:site_name" content="WebUtils" />
     <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="浏览器存储查看器 - WebUtils" />
-    <meta name="twitter:description" content="浏览器存储查看器 - WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
 
     <style>
       :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
+        --bg-deep: #0f172a;
+        --bg-surface: #1e293b;
+        --bg-card: #334155;
+        --bg-input: #0f172a;
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+        --text-muted: #64748b;
+        --border-subtle: #475569;
+        --border-strong: #64748b;
+        --accent-primary: #38bdf8;
+        --accent-secondary: #818cf8;
+        --accent-danger: #ef4444;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
         --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
       }
 
       [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        --bg-deep: #f8fafc;
+        --bg-surface: #ffffff;
+        --bg-card: #f1f5f9;
+        --bg-input: #ffffff;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-muted: #94a3b8;
+        --border-subtle: #e2e8f0;
+        --border-strong: #cbd5e1;
+        --accent-primary: #0ea5e9;
+        --accent-secondary: #4f46e5;
+        --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
       }
 
-      :root {
-        --bg-color: #1a1a2e;
-        --card-bg: #16213e;
-        --text-color: #e0e0e0;
-        --primary-color: #0f3460;
-        --accent-color: #e94560;
-        --border-color: #0f3460;
-        --input-bg: #1a1a2e;
-        --success-color: #4ade80;
-        --warning-color: #fbbf24;
-        --danger-color: #ef4444;
-      }
-
-      [data-theme="light"] {
-        --bg-color: #f0f4f8;
-        --card-bg: #fff;
-        --text-color: #1a1a2e;
-        --primary-color: #e0e7ff;
-        --accent-color: #e94560;
-        --border-color: #c7d2fe;
-        --input-bg: #f8fafc;
-        --success-color: #22c55e;
-        --warning-color: #f59e0b;
-        --danger-color: #dc2626;
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
 
       body {
         font-family: var(--font-sans);
-        background: var(--bg-color);
-        color: var(--text-color);
+        background: var(--bg-deep);
+        color: var(--text-primary);
         min-height: 100vh;
-        padding: 20px;
+        line-height: 1.6;
       }
 
-      .container {
-        max-width: 1400px;
-        margin: 0 auto;
-      }
+      .container { max-width: 1000px; margin: 0 auto; padding: 40px 20px; }
 
-      .header {
-        text-align: center;
-        margin-bottom: 30px;
-        position: relative;
-      }
-
-      .header h1 {
-        font-size: 2rem;
-        margin-bottom: 10px;
-        background: linear-gradient(135deg, var(--accent-color), #a855f7);
+      header { text-align: center; margin-bottom: 40px; }
+      .header-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 12px;
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        background-clip: text;
       }
+      .header-desc { color: var(--text-secondary); font-size: 1.1rem; max-width: 700px; margin: 0 auto; }
 
-      .theme-toggle {
-        position: absolute;
-        right: 0;
-        top: 0;
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        color: var(--text-color);
-        padding: 8px 16px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-      }
-
-      .theme-toggle:hover {
-        background: var(--primary-color);
-      }
-
-      .back-link {
-        position: absolute;
-        left: 0;
-        top: 0;
-        color: var(--accent-color);
-        text-decoration: none;
+      .ads-slot {
+        background: var(--bg-surface);
+        border: 1px dashed var(--border-subtle);
+        border-radius: var(--radius-md);
+        padding: 20px;
+        margin: 20px 0;
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        min-height: 100px;
         display: flex;
         align-items: center;
-        gap: 5px;
-        font-size: 14px;
+        justify-content: center;
       }
 
-      .back-link:hover {
-        text-decoration: underline;
-      }
-
-      .tabs {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-      }
-
-      .tab {
-        padding: 12px 24px;
-        background: var(--bg-card);
+      .card {
+        background: var(--bg-surface);
         border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.3s ease;
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        box-shadow: var(--shadow);
+        margin-bottom: 24px;
+      }
+
+      .card-title {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 20px;
         display: flex;
         align-items: center;
         gap: 8px;
       }
 
-      .tab:hover {
-        background: var(--primary-color);
+      /* Tabs */
+      .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border-subtle); margin-bottom: 24px; }
+      .tab {
+        padding: 12px 24px;
+        cursor: pointer;
+        color: var(--text-secondary);
+        font-weight: 600;
+        font-size: 0.9rem;
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s;
       }
+      .tab.active { color: var(--accent-primary); border-bottom-color: var(--accent-primary); }
+      .tab:hover:not(.active) { color: var(--text-primary); }
 
-      .tab.active {
-        background: var(--accent-color);
-        color: white;
-        border-color: var(--accent-color);
-      }
-
-      .tab-badge {
-        background: rgba(255, 255, 255, 0.2);
-        padding: 2px 8px;
-        border-radius: 10px;
-        font-size: 12px;
-      }
-
-      .tab.active .tab-badge {
-        background: rgba(255, 255, 255, 0.3);
-      }
-
-      .panel {
-        background: var(--bg-card);
-        border-radius: 12px;
-        padding: 20px;
-        border: 1px solid var(--border-subtle);
-      }
-
-      .toolbar {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-        align-items: center;
-      }
-
-      .search-box {
+      /* Toolbar */
+      .toolbar { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+      .search-input {
         flex: 1;
         min-width: 200px;
         padding: 10px 16px;
-        background: var(--bg-input);
+        background: var(--bg-deep);
         border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        color: var(--text-color);
-        font-size: 14px;
+        border-radius: var(--radius-md);
+        color: var(--text-primary);
+        font-size: 0.9rem;
       }
-
-      .search-box:focus {
-        outline: none;
-        border-color: var(--accent-color);
-      }
+      .search-input:focus { outline: none; border-color: var(--accent-primary); }
 
       .btn {
-        padding: 10px 16px;
-        border-radius: 8px;
-        border: none;
+        padding: 10px 20px;
+        border-radius: var(--radius-md);
+        font-weight: 700;
         cursor: pointer;
-        font-size: 14px;
-        transition: all 0.3s ease;
         display: inline-flex;
         align-items: center;
-        gap: 6px;
-      }
-
-      .btn-primary {
-        background: var(--accent-color);
-        color: white;
-      }
-
-      .btn-primary:hover {
-        opacity: 0.9;
-      }
-
-      .btn-secondary {
-        background: var(--primary-color);
-        color: var(--text-color);
+        gap: 8px;
+        transition: all 0.2s;
         border: 1px solid var(--border-subtle);
+        font-size: 0.85rem;
       }
+      .btn-primary { background: var(--accent-primary); color: #000; border: none; }
+      .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--accent-danger); border-color: rgba(239, 68, 68, 0.2); }
+      .btn-danger:hover { background: var(--accent-danger); color: #fff; }
 
-      .btn-secondary:hover {
-        background: var(--border-subtle);
-      }
+      /* Table */
+      .table-container { overflow-x: auto; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); }
+      table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+      th { background: var(--bg-deep); text-align: left; padding: 12px 16px; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--border-subtle); }
+      td { padding: 12px 16px; border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); vertical-align: middle; }
+      tr:last-child td { border-bottom: none; }
+      tr:hover td { background: rgba(255, 255, 255, 0.02); }
 
-      .btn-danger {
-        background: var(--danger-color);
-        color: white;
-      }
+      .key-cell { font-family: var(--font-mono); color: var(--accent-primary); font-weight: 500; }
+      .value-cell { font-family: var(--font-mono); max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .action-cell { display: flex; gap: 8px; }
 
-      .btn-danger:hover {
-        opacity: 0.9;
-      }
-
-      .btn-success {
-        background: var(--success-color);
-        color: white;
-      }
-
-      .storage-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 14px;
-      }
-
-      .storage-table th,
-      .storage-table td {
-        padding: 12px;
-        text-align: left;
-        border-bottom: 1px solid var(--border-subtle);
-      }
-
-      .storage-table th {
-        background: var(--primary-color);
-        font-weight: 600;
-        position: sticky;
-        top: 0;
-      }
-
-      .storage-table tr:hover {
-        background: var(--primary-color);
-      }
-
-      .storage-table td.key {
-        font-family: Consolas, monospace;
-        color: var(--accent-color);
-        word-break: break-all;
-        max-width: 200px;
-      }
-
-      .storage-table td.value {
-        font-family: Consolas, monospace;
-        word-break: break-all;
-        max-width: 400px;
-      }
-
-      .storage-table td.size {
-        white-space: nowrap;
-        color: var(--warning-color);
-      }
-
-      .storage-table td.actions {
-        white-space: nowrap;
-      }
-
-      .action-btn {
-        padding: 4px 8px;
-        border-radius: 4px;
-        border: none;
-        cursor: pointer;
-        font-size: 12px;
-        margin-right: 4px;
-        transition: all 0.3s ease;
-      }
-
-      .action-btn.edit {
-        background: var(--primary-color);
-        color: var(--text-color);
-      }
-
-      .action-btn.delete {
-        background: rgba(239, 68, 68, 0.2);
-        color: var(--danger-color);
-      }
-
-      .action-btn.copy {
-        background: rgba(74, 222, 128, 0.2);
-        color: var(--success-color);
-      }
-
-      .action-btn:hover {
-        opacity: 0.8;
-      }
-
-      .value-preview {
-        max-height: 100px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        line-clamp: 3;
-        -webkit-box-orient: vertical;
-      }
-
-      .json-value {
-        color: var(--success-color);
-      }
-
-      .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-        opacity: 0.7;
-      }
-
-      .empty-state .icon {
-        font-size: 64px;
-        margin-bottom: 15px;
-      }
-
-      .stats-bar {
-        display: flex;
-        gap: 20px;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-      }
-
-      .stat-item {
-        background: var(--primary-color);
-        padding: 12px 20px;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .stat-value {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: var(--accent-color);
-      }
-
-      .stat-label {
-        font-size: 0.9rem;
-        opacity: 0.8;
-      }
+      .empty-state { padding: 40px; text-align: center; color: var(--text-muted); }
 
       /* Modal */
       .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.7);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 1000;
       }
-
-      .modal-overlay.active {
-        display: flex;
-      }
-
       .modal {
-        background: var(--bg-card);
-        border-radius: 12px;
-        padding: 24px;
-        max-width: 600px;
-        width: 90%;
-        max-height: 80vh;
-        overflow-y: auto;
-        border: 1px solid var(--border-subtle);
+        background: var(--bg-surface); width: 100%; max-width: 500px;
+        border-radius: var(--radius-lg); padding: 32px; border: 1px solid var(--border-subtle);
+      }
+      .modal-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 24px; color: var(--accent-primary); }
+      .form-group { margin-bottom: 20px; }
+      .form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; }
+      .form-group input, .form-group textarea {
+        width: 100%; padding: 12px; background: var(--bg-deep); border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md); color: var(--text-primary); font-family: var(--font-mono);
+      }
+      .form-group textarea { height: 120px; resize: vertical; }
+
+      /* Article */
+      .article-section { margin-top: 60px; border-top: 1px solid var(--border-subtle); padding-top: 60px; }
+      .article-content { max-width: 800px; margin: 0 auto; }
+      .article-content h2 { font-size: 2rem; margin: 40px 0 20px; color: var(--text-primary); border-left: 4px solid var(--accent-primary); padding-left: 15px; }
+      .article-content p { margin-bottom: 20px; color: var(--text-secondary); font-size: 1.1rem; line-height: 1.8; }
+      .problem-box { background: rgba(56, 189, 248, 0.05); border: 1px solid var(--accent-primary); border-radius: var(--radius-md); padding: 24px; margin: 24px 0; }
+      .problem-box h4 { color: var(--accent-primary); margin-bottom: 12px; }
+
+      .theme-toggle {
+        position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px;
+        border-radius: 25px; background: var(--accent-primary); color: #000;
+        border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem; z-index: 100;
       }
 
-      .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-      }
-
-      .modal-title {
-        font-size: 1.2rem;
-        color: var(--accent-color);
-      }
-
-      .modal-close {
-        background: none;
-        border: none;
-        font-size: 24px;
-        cursor: pointer;
-        color: var(--text-color);
-        opacity: 0.7;
-      }
-
-      .modal-close:hover {
-        opacity: 1;
-      }
-
-      .form-group {
-        margin-bottom: 15px;
-      }
-
-      .form-group label {
-        display: block;
-        margin-bottom: 5px;
-        font-size: 0.9rem;
-        opacity: 0.8;
-      }
-
-      .form-group input,
-      .form-group textarea {
-        width: 100%;
-        padding: 10px 12px;
-        background: var(--bg-input);
-        border: 1px solid var(--border-subtle);
-        border-radius: 6px;
-        color: var(--text-color);
-        font-family: Consolas, monospace;
-      }
-
-      .form-group textarea {
-        min-height: 150px;
-        resize: vertical;
-      }
-
-      .form-group input:focus,
-      .form-group textarea:focus {
-        outline: none;
-        border-color: var(--accent-color);
-      }
-
-      .modal-actions {
-        display: flex;
-        gap: 10px;
-        justify-content: flex-end;
-        margin-top: 20px;
-      }
-
-      .table-wrapper {
-        max-height: 500px;
-        overflow-y: auto;
-        border-radius: 8px;
-        border: 1px solid var(--border-subtle);
-      }
-
-      .cookie-details {
-        font-size: 12px;
-        opacity: 0.7;
-        margin-top: 4px;
-      }
-
-      .tab-content {
-        display: none;
-      }
-
-      .tab-content.active {
-        display: block;
-      }
-
-      .info-text {
-        font-size: 0.9rem;
-        opacity: 0.7;
-        margin-bottom: 15px;
-      }
-
-      .toast {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        padding: 12px 20px;
-        border-radius: 8px;
-        background: var(--success-color);
-        color: white;
-        font-size: 14px;
-        z-index: 2000;
-        transform: translateY(100px);
-        opacity: 0;
-        transition: all 0.3s ease;
-      }
-
-      .toast.show {
-        transform: translateY(0);
-        opacity: 1;
-      }
-
-      .toast.error {
-        background: var(--danger-color);
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
+      footer { text-align: center; margin-top: 80px; padding: 40px 0; border-top: 1px solid var(--border-subtle); color: var(--text-muted); }
+      footer a { color: var(--accent-primary); text-decoration: none; }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
   </head>
   <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      浏览器存储查看器
-    </nav>
+    <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+
     <div class="container">
-      <div class="header">
-        <h1>🗄�?浏览器存储查看器</h1>
-        <p>查看和管�?LocalStorage、SessionStorage �?Cookies</p>
-        <button class="theme-toggle" onclick="toggleTheme()">🌓 切换主题</button>
+      <header>
+        <h1 class="header-title">浏览器存储查看器</h1>
+        <p class="header-desc">
+          实时查看和管理当前页面的 LocalStorage, SessionStorage 和 Cookies。
+          告别繁琐的控制台指令，通过可视化界面轻松调试 Web 状态。
+        </p>
+      </header>
+
+      <div class="ads-slot">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-################"
+             data-ad-slot="########"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <p>广告占位符 - 支撑免费工具运行</p>
       </div>
 
-      <div class="tabs">
-        <div class="tab active" data-storage="local">
-          📦 LocalStorage
-          <span class="tab-badge" id="localCount">0</span>
-        </div>
-        <div class="tab" data-storage="session">
-          ⏱️ SessionStorage
-          <span class="tab-badge" id="sessionCount">0</span>
-        </div>
-        <div class="tab" data-storage="cookie">
-          🍪 Cookies
-          <span class="tab-badge" id="cookieCount">0</span>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="stats-bar">
-          <div class="stat-item">
-            <div>
-              <div class="stat-value" id="totalItems">0</div>
-              <div class="stat-label">总项目数</div>
-            </div>
-          </div>
-          <div class="stat-item">
-            <div>
-              <div class="stat-value" id="totalSize">0 B</div>
-              <div class="stat-label">总大�?/div>
-            </div>
-          </div>
+      <main class="card">
+        <div class="tabs">
+          <div class="tab active" onclick="switchTab('localStorage')">LocalStorage</div>
+          <div class="tab" onclick="switchTab('sessionStorage')">SessionStorage</div>
+          <div class="tab" onclick="switchTab('cookies')">Cookies</div>
         </div>
 
         <div class="toolbar">
-          <input type="text" class="search-box" id="searchBox" placeholder="搜索键名或�?.." />
-          <button class="btn btn-primary" onclick="openAddModal()">�?添加项目</button>
-          <button class="btn btn-secondary" onclick="refreshStorage()">🔄 刷新</button>
-          <button class="btn btn-secondary" onclick="exportStorage()">📤 导出</button>
-          <button class="btn btn-secondary" onclick="importStorage()">📥 导入</button>
-          <button class="btn btn-danger" onclick="clearAllStorage()">🗑�?清空全部</button>
+          <input type="text" class="search-input" id="searchInput" placeholder="搜索键名或键值..." oninput="renderTable()" />
+          <button class="btn btn-primary" onclick="openAddModal()">+ 新增项</button>
+          <button class="btn btn-danger" onclick="clearStorage()">⚠️ 全部清空</button>
         </div>
 
-        <!-- LocalStorage Tab -->
-        <div class="tab-content active" id="content-local">
-          <div class="table-wrapper">
-            <table class="storage-table">
-              <thead>
-                <tr>
-                  <th>键名</th>
-                  <th>�?/th>
-                  <th>大小</th>
-                  <th>操作</th>
-                </tr>
-              </thead>
-              <tbody id="localStorageBody"></tbody>
-            </table>
-          </div>
+        <div class="table-container">
+          <table id="storageTable">
+            <thead>
+              <tr>
+                <th>键名 (Key)</th>
+                <th>键值 (Value)</th>
+                <th style="width: 150px;">操作</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+          <div id="emptyState" class="empty-state" style="display: none;">暂无数据</div>
         </div>
+      </main>
 
-        <!-- SessionStorage Tab -->
-        <div class="tab-content" id="content-session">
-          <div class="table-wrapper">
-            <table class="storage-table">
-              <thead>
-                <tr>
-                  <th>键名</th>
-                  <th>�?/th>
-                  <th>大小</th>
-                  <th>操作</th>
-                </tr>
-              </thead>
-              <tbody id="sessionStorageBody"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Cookies Tab -->
-        <div class="tab-content" id="content-cookie">
-          <p class="info-text">
-            注意: 由于浏览器安全限制，只能显示当前页面可访问的 Cookies。HttpOnly Cookies 无法通过
-            JavaScript 访问�?
-          </p>
-          <div class="table-wrapper">
-            <table class="storage-table">
-              <thead>
-                <tr>
-                  <th>名称</th>
-                  <th>�?/th>
-                  <th>操作</th>
-                </tr>
-              </thead>
-              <tbody id="cookiesBody"></tbody>
-            </table>
-          </div>
-        </div>
+      <!-- Middle Ad Slot -->
+      <div class="ads-slot">
+        <p>赞助商广告</p>
       </div>
+
+      <section class="article-section">
+        <div class="article-content">
+          <h2>Web 存储：如何选择最适合的持久化方案？</h2>
+          <p>
+            在现代前端开发中，我们有多种方式在客户端保存数据。
+            理解 <strong>LocalStorage</strong>, <strong>SessionStorage</strong> 和 <strong>Cookies</strong> 的区别，是解决状态管理和安全问题的关键。
+          </p>
+
+          <div class="problem-box">
+            <h4>🚨 痛点 1：用户登录状态的“持久”与“会话”</h4>
+            <p>
+              <strong>解决方案：</strong> 
+              如果你希望用户关闭浏览器后下次打开依然保持登录，应使用 <strong>LocalStorage</strong> 或带有过期时间的 <strong>Cookie</strong>。
+              如果你希望用户在关闭标签页后自动注销（例如银行应用），则 <strong>SessionStorage</strong> 是最佳选择。
+              本工具可以帮你实时观察这些数据的生命周期变化。
+            </p>
+          </div>
+
+          <div class="problem-box">
+            <h4>🚨 痛点 2：跨站脚本攻击 (XSS) 下的数据安全</h4>
+            <p>
+              <strong>解决方案：</strong> 
+              LocalStorage 对 JavaScript 是完全透明的，这意味着如果你的页面存在 XSS 漏洞，黑客可以轻易读取其中的敏感 Token。
+              为了提高安全性，建议将敏感的 Session ID 存储在 <strong>HttpOnly Cookie</strong> 中，这样 JavaScript 无法读取它。
+              注意：本工具受限于浏览器安全策略，无法显示 HttpOnly 标记的 Cookie。
+            </p>
+          </div>
+
+          <h3>三大存储方案对比</h3>
+          <ul>
+            <li><strong>LocalStorage</strong>：容量约 5MB，永久存储除非手动清理。适用于保存用户偏好、离线草稿。</li>
+            <li><strong>SessionStorage</strong>：容量约 5MB，数据随标签页关闭而消失。适用于保存单次会话的临时状态。</li>
+            <li><strong>Cookies</strong>：容量仅 4KB，会随每个 HTTP 请求发送到服务器。适用于保存身份认证凭据。</li>
+          </ul>
+
+          <h3>调试建议</h3>
+          <p>
+            在开发环境调试时，经常需要手动修改某个键值来测试 UI 分支逻辑（如 <code>is_new_user: true</code>）。
+            使用本工具的“编辑”功能，你可以直接修改并立即看到页面反馈，无需刷新。
+          </p>
+        </div>
+      </section>
+
+      <footer>
+        <p>© 2026 WebUtils · Web 开发调试助手 · 纯前端实现</p>
+        <div style="margin-top: 10px;">
+          <a href="../../index.html">返回首页</a> · 
+          <a href="https://github.com/chicogong/html-tools" target="_blank">GitHub 源码</a>
+        </div>
+      </footer>
     </div>
 
-    <!-- Add/Edit Modal -->
+    <!-- Modal -->
     <div class="modal-overlay" id="modalOverlay">
       <div class="modal">
-        <div class="modal-header">
-          <h3 class="modal-title" id="modalTitle">添加项目</h3>
-          <button class="modal-close" onclick="closeModal()">&times;</button>
+        <div class="modal-title" id="modalTitle">新增存储项</div>
+        <div class="form-group">
+          <label>键名 (Key)</label>
+          <input type="text" id="itemKey" spellcheck="false" />
         </div>
         <div class="form-group">
-          <label>键名</label>
-          <input type="text" id="itemKey" placeholder="输入键名" />
+          <label>键值 (Value)</label>
+          <textarea id="itemValue" spellcheck="false"></textarea>
         </div>
-        <div class="form-group">
-          <label>�?/label>
-          <textarea id="itemValue" placeholder="输入值（支持 JSON 格式�?></textarea>
-        </div>
-        <div class="modal-actions">
+        <div style="display: flex; gap: 12px; justify-content: flex-end;">
           <button class="btn btn-secondary" onclick="closeModal()">取消</button>
-          <button class="btn btn-primary" onclick="saveItem()">保存</button>
+          <button class="btn btn-primary" onclick="saveItem()">确认保存</button>
         </div>
       </div>
     </div>
-
-    <!-- Import Modal -->
-    <div class="modal-overlay" id="importModalOverlay">
-      <div class="modal">
-        <div class="modal-header">
-          <h3 class="modal-title">导入数据</h3>
-          <button class="modal-close" onclick="closeImportModal()">&times;</button>
-        </div>
-        <div class="form-group">
-          <label>粘贴 JSON 数据</label>
-          <textarea id="importData" placeholder='{"key1": "value1", "key2": "value2"}'></textarea>
-        </div>
-        <div class="modal-actions">
-          <button class="btn btn-secondary" onclick="closeImportModal()">取消</button>
-          <button class="btn btn-primary" onclick="doImport()">导入</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Toast -->
-    <div class="toast" id="toast"></div>
 
     <script>
-      let currentStorage = "local";
+      let currentTab = 'localStorage';
       let editingKey = null;
 
-      // Theme toggle
-      window.toggleTheme = function () {
-        const body = document.body;
-        const currentTheme = body.getAttribute("data-theme");
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-        body.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
-      };
-
-      // Load saved theme
-      (function () {
-        const savedTheme = localStorage.getItem("theme") || "dark";
-        if (savedTheme === "light") {
-          document.body.setAttribute("data-theme", "light");
-        }
-      })();
-
-      // Tab switching
-      document.querySelectorAll(".tab").forEach((tab) => {
-        tab.addEventListener("click", () => {
-          document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
-          document.querySelectorAll(".tab-content").forEach((c) => c.classList.remove("active"));
-          tab.classList.add("active");
-          currentStorage = tab.dataset.storage;
-          document.getElementById("content-" + currentStorage).classList.add("active");
-          refreshStorage();
+      function switchTab(tab) {
+        currentTab = tab;
+        document.querySelectorAll('.tab').forEach(el => {
+          el.classList.toggle('active', el.textContent.toLowerCase().includes(tab.toLowerCase()));
         });
-      });
-
-      // Search functionality
-      document.getElementById("searchBox").addEventListener("input", (e) => {
-        const query = e.target.value.toLowerCase();
-        filterTable(query);
-      });
-
-      window.filterTable = function (query) {
-        const table =
-          document.getElementById(currentStorage + "StorageBody") ||
-          document.getElementById("cookiesBody");
-        if (!table) return;
-
-        const rows = table.querySelectorAll("tr");
-        rows.forEach((row) => {
-          const text = row.textContent.toLowerCase();
-          row.style.display = text.includes(query) ? "" : "none";
-        });
-      };
-
-      function formatBytes(bytes) {
-        if (bytes === 0) return "0 B";
-        const k = 1024;
-        const sizes = ["B", "KB", "MB"];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+        renderTable();
       }
 
-      function getByteSize(str) {
-        return new Blob([str]).size;
-      }
+      function getStorageData() {
+        const data = [];
+        const search = document.getElementById('searchInput').value.toLowerCase();
 
-      function isJson(str) {
-        try {
-          JSON.parse(str);
-          return true;
-        } catch {
-          return false;
-        }
-      }
-
-      function formatValue(value) {
-        if (isJson(value)) {
-          try {
-            const parsed = JSON.parse(value);
-            return `<span class="json-value">${escapeHtml(JSON.stringify(parsed, null, 2))}</span>`;
-          } catch {
-            return escapeHtml(value);
-          }
-        }
-        return escapeHtml(value);
-      }
-
-      window.escapeHtml = function (text) {
-        const div = document.createElement("div");
-        div.textContent = text;
-        return div.innerHTML;
-      };
-
-      function refreshStorage() {
-        loadLocalStorage();
-        loadSessionStorage();
-        loadCookies();
-        updateStats();
-      }
-
-      function loadLocalStorage() {
-        const tbody = document.getElementById("localStorageBody");
-        tbody.innerHTML = "";
-
-        const count = localStorage.length;
-        document.getElementById("localCount").textContent = count;
-
-        if (count === 0) {
-          tbody.innerHTML = `
-                    <tr>
-                        <td colspan="4">
-                            <div class="empty-state">
-                                <div class="icon">📦</div>
-                                <p>LocalStorage 为空</p>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-          return;
-        }
-
-        for (let i = 0; i < count; i++) {
-          const key = localStorage.key(i);
-          const value = localStorage.getItem(key);
-          const size = getByteSize(key + value);
-
-          tbody.innerHTML += `
-                    <tr>
-                        <td class="key">${escapeHtml(key)}</td>
-                        <td class="value">
-                            <div class="value-preview">${formatValue(value)}</div>
-                        </td>
-                        <td class="size">${formatBytes(size)}</td>
-                        <td class="actions">
-                            <button class="action-btn copy" onclick="copyValue('local', '${escapeHtml(key)}')">📋</button>
-                            <button class="action-btn edit" onclick="editItem('local', '${escapeHtml(key)}')">✏️</button>
-                            <button class="action-btn delete" onclick="deleteItem('local', '${escapeHtml(key)}')">🗑�?/button>
-                        </td>
-                    </tr>
-                `;
-        }
-      }
-
-      function loadSessionStorage() {
-        const tbody = document.getElementById("sessionStorageBody");
-        tbody.innerHTML = "";
-
-        const count = sessionStorage.length;
-        document.getElementById("sessionCount").textContent = count;
-
-        if (count === 0) {
-          tbody.innerHTML = `
-                    <tr>
-                        <td colspan="4">
-                            <div class="empty-state">
-                                <div class="icon">⏱️</div>
-                                <p>SessionStorage 为空</p>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-          return;
-        }
-
-        for (let i = 0; i < count; i++) {
-          const key = sessionStorage.key(i);
-          const value = sessionStorage.getItem(key);
-          const size = getByteSize(key + value);
-
-          tbody.innerHTML += `
-                    <tr>
-                        <td class="key">${escapeHtml(key)}</td>
-                        <td class="value">
-                            <div class="value-preview">${formatValue(value)}</div>
-                        </td>
-                        <td class="size">${formatBytes(size)}</td>
-                        <td class="actions">
-                            <button class="action-btn copy" onclick="copyValue('session', '${escapeHtml(key)}')">📋</button>
-                            <button class="action-btn edit" onclick="editItem('session', '${escapeHtml(key)}')">✏️</button>
-                            <button class="action-btn delete" onclick="deleteItem('session', '${escapeHtml(key)}')">🗑�?/button>
-                        </td>
-                    </tr>
-                `;
-        }
-      }
-
-      function loadCookies() {
-        const tbody = document.getElementById("cookiesBody");
-        tbody.innerHTML = "";
-
-        const cookies = document.cookie.split(";").filter((c) => c.trim());
-        const count = cookies.length;
-        document.getElementById("cookieCount").textContent = count;
-
-        if (count === 0 || (count === 1 && !cookies[0].trim())) {
-          tbody.innerHTML = `
-                    <tr>
-                        <td colspan="3">
-                            <div class="empty-state">
-                                <div class="icon">🍪</div>
-                                <p>没有可访问的 Cookies</p>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-          document.getElementById("cookieCount").textContent = 0;
-          return;
-        }
-
-        cookies.forEach((cookie) => {
-          const [name, ...valueParts] = cookie.trim().split("=");
-          const value = valueParts.join("=");
-
-          tbody.innerHTML += `
-                    <tr>
-                        <td class="key">${escapeHtml(name)}</td>
-                        <td class="value">
-                            <div class="value-preview">${escapeHtml(value)}</div>
-                        </td>
-                        <td class="actions">
-                            <button class="action-btn copy" onclick="copyValue('cookie', '${escapeHtml(name)}')">📋</button>
-                            <button class="action-btn edit" onclick="editItem('cookie', '${escapeHtml(name)}')">✏️</button>
-                            <button class="action-btn delete" onclick="deleteItem('cookie', '${escapeHtml(name)}')">🗑�?/button>
-                        </td>
-                    </tr>
-                `;
-        });
-      }
-
-      function updateStats() {
-        let totalItems = localStorage.length + sessionStorage.length;
-        let totalSize = 0;
-
-        for (let i = 0; i < localStorage.length; i++) {
-          const key = localStorage.key(i);
-          totalSize += getByteSize(key + localStorage.getItem(key));
-        }
-
-        for (let i = 0; i < sessionStorage.length; i++) {
-          const key = sessionStorage.key(i);
-          totalSize += getByteSize(key + sessionStorage.getItem(key));
-        }
-
-        const cookies = document.cookie.split(";").filter((c) => c.trim());
-        totalItems += cookies.filter((c) => c.includes("=")).length;
-        totalSize += getByteSize(document.cookie);
-
-        document.getElementById("totalItems").textContent = totalItems;
-        document.getElementById("totalSize").textContent = formatBytes(totalSize);
-      }
-
-      window.openAddModal = function () {
-        editingKey = null;
-        document.getElementById("modalTitle").textContent = "添加项目";
-        document.getElementById("itemKey").value = "";
-        document.getElementById("itemValue").value = "";
-        document.getElementById("itemKey").disabled = false;
-        document.getElementById("modalOverlay").classList.add("active");
-      };
-
-      window.editItem = function (storage, key) {
-        editingKey = key;
-        currentStorage = storage;
-        document.getElementById("modalTitle").textContent = "编辑项目";
-        document.getElementById("itemKey").value = key;
-        document.getElementById("itemKey").disabled = true;
-
-        let value = "";
-        if (storage === "local") {
-          value = localStorage.getItem(key) || "";
-        } else if (storage === "session") {
-          value = sessionStorage.getItem(key) || "";
-        } else if (storage === "cookie") {
-          const cookies = document.cookie.split(";");
-          for (const cookie of cookies) {
-            const [name, ...valueParts] = cookie.trim().split("=");
-            if (name === key) {
-              value = valueParts.join("=");
-              break;
+        if (currentTab === 'localStorage') {
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            const value = localStorage.getItem(key);
+            if (key.toLowerCase().includes(search) || value.toLowerCase().includes(search)) {
+              data.push({ key, value });
             }
           }
-        }
-
-        // Pretty print JSON if possible
-        if (isJson(value)) {
-          try {
-            value = JSON.stringify(JSON.parse(value), null, 2);
-          } catch {
-            // Keep original value
+        } else if (currentTab === 'sessionStorage') {
+          for (let i = 0; i < sessionStorage.length; i++) {
+            const key = sessionStorage.key(i);
+            const value = sessionStorage.getItem(key);
+            if (key.toLowerCase().includes(search) || value.toLowerCase().includes(search)) {
+              data.push({ key, value });
+            }
           }
+        } else if (currentTab === 'cookies') {
+          const cookies = document.cookie.split(';');
+          cookies.forEach(c => {
+            if (!c.trim()) return;
+            const [key, ...valParts] = c.split('=');
+            const value = valParts.join('=');
+            const trimmedKey = key.trim();
+            if (trimmedKey.toLowerCase().includes(search) || value.toLowerCase().includes(search)) {
+              data.push({ key: trimmedKey, value });
+            }
+          });
         }
+        return data;
+      }
 
-        document.getElementById("itemValue").value = value;
-        document.getElementById("modalOverlay").classList.add("active");
-      };
+      function renderTable() {
+        const data = getStorageData();
+        const tbody = document.getElementById('tableBody');
+        const empty = document.getElementById('emptyState');
 
-      window.closeModal = function () {
-        document.getElementById("modalOverlay").classList.remove("active");
-        editingKey = null;
-      };
-
-      window.saveItem = function () {
-        const key = document.getElementById("itemKey").value.trim();
-        const value = document.getElementById("itemValue").value;
-
-        if (!key) {
-          showToast("请输入键�?, true);
+        tbody.innerHTML = '';
+        if (data.length === 0) {
+          empty.style.display = 'block';
           return;
         }
+        empty.style.display = 'none';
 
-        if (currentStorage === "local") {
+        data.forEach(item => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="key-cell">${escapeHtml(item.key)}</td>
+            <td class="value-cell" title="${escapeHtml(item.value)}">${escapeHtml(item.value)}</td>
+            <td class="action-cell">
+              <button class="btn btn-secondary" style="padding: 4px 8px;" onclick="openEditModal('${escapeJs(item.key)}')">✏️</button>
+              <button class="btn btn-danger" style="padding: 4px 8px;" onclick="deleteItem('${escapeJs(item.key)}')">🗑️</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      function openAddModal() {
+        editingKey = null;
+        document.getElementById('modalTitle').textContent = '新增存储项';
+        document.getElementById('itemKey').value = '';
+        document.getElementById('itemKey').disabled = false;
+        document.getElementById('itemValue').value = '';
+        document.getElementById('modalOverlay').style.display = 'flex';
+      }
+
+      function openEditModal(key) {
+        editingKey = key;
+        document.getElementById('modalTitle').textContent = '编辑存储项';
+        document.getElementById('itemKey').value = key;
+        document.getElementById('itemKey').disabled = true;
+        
+        let value = '';
+        if (currentTab === 'localStorage') value = localStorage.getItem(key);
+        else if (currentTab === 'sessionStorage') value = sessionStorage.getItem(key);
+        else if (currentTab === 'cookies') {
+          const c = document.cookie.split(';').find(x => x.trim().startsWith(key + '='));
+          if (c) value = c.split('=')[1];
+        }
+
+        document.getElementById('itemValue').value = value;
+        document.getElementById('modalOverlay').style.display = 'flex';
+      }
+
+      function closeModal() {
+        document.getElementById('modalOverlay').style.display = 'none';
+      }
+
+      function saveItem() {
+        const key = document.getElementById('itemKey').value.trim();
+        const value = document.getElementById('itemValue').value;
+
+        if (!key) return alert('键名不能为空');
+
+        if (currentTab === 'localStorage') {
           localStorage.setItem(key, value);
-        } else if (currentStorage === "session") {
+        } else if (currentTab === 'sessionStorage') {
           sessionStorage.setItem(key, value);
-        } else if (currentStorage === "cookie") {
-          document.cookie = `${key}=${value};path=/`;
+        } else if (currentTab === 'cookies') {
+          document.cookie = `${key}=${value}; path=/; max-age=31536000`;
         }
 
         closeModal();
-        refreshStorage();
-        showToast("保存成功");
-      };
+        renderTable();
+      }
 
-      window.deleteItem = function (storage, key) {
-        if (!confirm(`确定要删�?"${key}" 吗？`)) return;
+      function deleteItem(key) {
+        if (!confirm(`确定删除 ${key} 吗？`)) return;
 
-        if (storage === "local") {
+        if (currentTab === 'localStorage') {
           localStorage.removeItem(key);
-        } else if (storage === "session") {
+        } else if (currentTab === 'sessionStorage') {
           sessionStorage.removeItem(key);
-        } else if (storage === "cookie") {
-          document.cookie = `${key}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+        } else if (currentTab === 'cookies') {
+          document.cookie = `${key}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
         }
+        renderTable();
+      }
 
-        refreshStorage();
-        showToast("删除成功");
-      };
+      function clearStorage() {
+        if (!confirm(`确定清空当前所有的 ${currentTab} 吗？此操作不可逆！`)) return;
 
-      window.copyValue = function (storage, key) {
-        let value = "";
-        if (storage === "local") {
-          value = localStorage.getItem(key) || "";
-        } else if (storage === "session") {
-          value = sessionStorage.getItem(key) || "";
-        } else if (storage === "cookie") {
-          const cookies = document.cookie.split(";");
-          for (const cookie of cookies) {
-            const [name, ...valueParts] = cookie.trim().split("=");
-            if (name === key) {
-              value = valueParts.join("=");
-              break;
-            }
-          }
-        }
-
-        navigator.clipboard.writeText(value).then(() => {
-          showToast("已复制到剪贴�?);
-        });
-      };
-
-      window.clearAllStorage = function () {
-        if (!confirm("确定要清空当前存储类型的所有数据吗�?)) return;
-
-        if (currentStorage === "local") {
+        if (currentTab === 'localStorage') {
           localStorage.clear();
-        } else if (currentStorage === "session") {
+        } else if (currentTab === 'sessionStorage') {
           sessionStorage.clear();
-        } else if (currentStorage === "cookie") {
-          const cookies = document.cookie.split(";");
-          cookies.forEach((cookie) => {
-            const name = cookie.split("=")[0].trim();
-            document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+        } else if (currentTab === 'cookies') {
+          const cookies = document.cookie.split(';');
+          cookies.forEach(c => {
+            const key = c.split('=')[0].trim();
+            document.cookie = `${key}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
           });
         }
-
-        refreshStorage();
-        showToast("已清�?);
-      };
-
-      window.exportStorage = function () {
-        let data = {};
-
-        if (currentStorage === "local") {
-          for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            data[key] = localStorage.getItem(key);
-          }
-        } else if (currentStorage === "session") {
-          for (let i = 0; i < sessionStorage.length; i++) {
-            const key = sessionStorage.key(i);
-            data[key] = sessionStorage.getItem(key);
-          }
-        } else if (currentStorage === "cookie") {
-          const cookies = document.cookie.split(";");
-          cookies.forEach((cookie) => {
-            const [name, ...valueParts] = cookie.trim().split("=");
-            if (name) {
-              data[name] = valueParts.join("=");
-            }
-          });
-        }
-
-        const json = JSON.stringify(data, null, 2);
-        const blob = new Blob([json], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `${currentStorage}-storage-${Date.now()}.json`;
-        a.click();
-
-        URL.revokeObjectURL(url);
-        showToast("导出成功");
-      };
-
-      window.importStorage = function () {
-        document.getElementById("importData").value = "";
-        document.getElementById("importModalOverlay").classList.add("active");
-      };
-
-      function closeImportModal() {
-        document.getElementById("importModalOverlay").classList.remove("active");
+        renderTable();
       }
 
-      window.doImport = function () {
-        const jsonStr = document.getElementById("importData").value.trim();
-
-        try {
-          const data = JSON.parse(jsonStr);
-
-          if (typeof data !== "object" || Array.isArray(data)) {
-            throw new Error("数据格式错误");
-          }
-
-          Object.entries(data).forEach(([key, value]) => {
-            const strValue = typeof value === "string" ? value : JSON.stringify(value);
-
-            if (currentStorage === "local") {
-              localStorage.setItem(key, strValue);
-            } else if (currentStorage === "session") {
-              sessionStorage.setItem(key, strValue);
-            } else if (currentStorage === "cookie") {
-              document.cookie = `${key}=${strValue};path=/`;
-            }
-          });
-
-          closeImportModal();
-          refreshStorage();
-          showToast(`导入成功: ${Object.keys(data).length} 项`);
-        } catch (err) {
-          showToast("导入失败: " + err.message, true);
-        }
-      };
-
-      function showToast(message, isError = false) {
-        const toast = document.getElementById("toast");
-        toast.textContent = message;
-        toast.className = "toast" + (isError ? " error" : "");
-        toast.classList.add("show");
-
-        setTimeout(() => {
-          toast.classList.remove("show");
-        }, 3000);
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
       }
 
-      // Initial load
-      refreshStorage();
+      function escapeJs(text) {
+        return text.replace(/'/g, "\\'");
+      }
+
+      function toggleTheme() {
+        const html = document.documentElement;
+        const current = html.getAttribute("data-theme");
+        const next = current === "dark" ? "light" : "dark";
+        html.setAttribute("data-theme", next);
+        localStorage.setItem("theme", next);
+      }
+
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme) document.documentElement.setAttribute("data-theme", savedTheme);
+
+      renderTable();
     </script>
   </body>
 </html>
-

@@ -1,532 +1,379 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>字符集转换器 - WebUtils</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>字符集转换器 - 在线 Unicode, UTF-8, UTF-16 编码分析工具 | WebUtils</title>
+
     <!-- SEO Meta Tags -->
-    <meta name="description" content="字符集转换器 - WebUtils" />
-    <meta name="keywords" content="charset-converter,dev,tools,webutils" />
+    <meta
+      name="description"
+      content="免费在线字符集转换器。实时分析字符串的 Unicode 码点、UTF-8 和 UTF-16 编码序列。支持十六进制、十进制和二进制显示。解决开发中常见的乱码分析、编码转换和字符详情查询问题。"
+    />
+    <meta
+      name="keywords"
+      content="字符集转换, Unicode 转换, UTF-8 编码, UTF-16 编码, 乱码分析, 字节序列, 码点查询, 十六进制转换, 开发者工具"
+    />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/dev/charset-converter.html" />
 
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-################" crossorigin="anonymous"></script>
+
     <!-- Open Graph -->
-    <meta property="og:title" content="字符集转换器 - WebUtils" />
-    <meta property="og:description" content="字符集转换器 - WebUtils" />
+    <meta property="og:title" content="字符集转换器 - 深入洞察字符背后的二进制世界" />
+    <meta property="og:description" content="可视化展示每个字符在不同编码下的字节分布，助你彻底解决乱码烦恼。" />
     <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/dev/charset-converter.html"
-    />
+    <meta property="og:url" content="https://essays4u.net/tools/dev/charset-converter.html" />
     <meta property="og:site_name" content="WebUtils" />
     <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="字符集转换器 - WebUtils" />
-    <meta name="twitter:description" content="字符集转换器 - WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--color-bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
-
-      :root {
-        --primary: #06b6d4;
-      }
-      body {
-        padding: 1rem;
-      }
-      .container {
-        max-width: 1000px;
-        margin: 0 auto;
-      }
-      header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-      }
-      h1 {
-        margin: 0;
-        font-size: 1.5rem;
-      }
-      .panel {
-        background: var(--pico-card-background-color);
-        border-radius: 8px;
-        padding: 1.5rem;
-        margin-bottom: 1rem;
-      }
-      .grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-      }
-      @media (max-width: 768px) {
-        .grid {
-          grid-template-columns: 1fr;
-        }
-      }
-      .input-group {
-        margin-bottom: 1rem;
-      }
-      .input-group label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 500;
-      }
-      .input-group .row {
-        display: flex;
-        gap: 0.5rem;
-      }
-      textarea {
-        width: 100%;
-        min-height: 150px;
-        font-family: var(--font-mono);
-        resize: vertical;
-      }
-      select {
-        padding: 0.5rem;
-      }
-      .btn-row {
-        display: flex;
-        gap: 0.5rem;
-        margin: 1rem 0;
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-      .hex-display {
-        margin-top: 1rem;
-        padding: 1rem;
-        background: var(--pico-background-color);
-        border-radius: 6px;
-      }
-      .hex-display h4 {
-        margin: 0 0 0.5rem;
-        font-size: 0.9rem;
-      }
-      .hex-bytes {
-        font-family: var(--font-mono);
-        word-break: break-all;
-        font-size: 0.9rem;
-      }
-      .byte {
-        display: inline-block;
-        padding: 0.15rem 0.3rem;
-        margin: 1px;
-        background: var(--pico-card-background-color);
-        border-radius: 3px;
-      }
-      .info-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 1rem;
-        margin-top: 1rem;
-      }
-      .info-card {
-        padding: 0.75rem;
-        background: var(--pico-background-color);
-        border-radius: 6px;
-        text-align: center;
-      }
-      .info-card .label {
-        font-size: 0.8rem;
-        color: var(--pico-muted-color);
-      }
-      .info-card .value {
-        font-size: 1.25rem;
-        font-weight: 600;
-      }
-      .encoding-table {
-        margin-top: 1rem;
-      }
-      .encoding-table table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 0.9rem;
-      }
-      .encoding-table th,
-      .encoding-table td {
-        padding: 0.5rem;
-        border: 1px solid var(--pico-muted-border-color);
-        text-align: left;
-      }
-      .encoding-table th {
-        background: var(--pico-background-color);
-      }
-      .encoding-table code {
-        background: var(--pico-muted-border-color);
-        padding: 0.1rem 0.3rem;
-        border-radius: 3px;
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-    </style>
-    <!-- Google Fonts -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
+
+    <style>
+      :root {
+        --bg-deep: #0f172a;
+        --bg-surface: #1e293b;
+        --bg-card: #334155;
+        --bg-input: #0f172a;
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+        --text-muted: #64748b;
+        --border-subtle: #475569;
+        --border-strong: #64748b;
+        --accent-primary: #38bdf8;
+        --accent-secondary: #f472b6;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
+        --font-mono: "JetBrains Mono", "Courier New", monospace;
+        --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      }
+
+      [data-theme="light"] {
+        --bg-deep: #f8fafc;
+        --bg-surface: #ffffff;
+        --bg-card: #f1f5f9;
+        --bg-input: #ffffff;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-muted: #94a3b8;
+        --border-subtle: #e2e8f0;
+        --border-strong: #cbd5e1;
+        --accent-primary: #0ea5e9;
+        --accent-secondary: #db2777;
+        --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: var(--font-sans);
+        background: var(--bg-deep);
+        color: var(--text-primary);
+        min-height: 100vh;
+        line-height: 1.6;
+      }
+
+      .container { max-width: 1000px; margin: 0 auto; padding: 40px 20px; }
+
+      header { text-align: center; margin-bottom: 40px; }
+      .header-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 12px;
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .header-desc { color: var(--text-secondary); font-size: 1.1rem; max-width: 700px; margin: 0 auto; }
+
+      .ads-slot {
+        background: var(--bg-surface);
+        border: 1px dashed var(--border-subtle);
+        border-radius: var(--radius-md);
+        padding: 20px;
+        margin: 20px 0;
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        min-height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        box-shadow: var(--shadow);
+        margin-bottom: 24px;
+      }
+
+      .card-title {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      /* Input/Output */
+      .io-group { display: flex; flex-direction: column; gap: 20px; margin-bottom: 24px; }
+      .input-box { width: 100%; height: 120px; padding: 16px; background: var(--bg-deep); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); color: var(--text-primary); font-size: 1.1rem; resize: none; transition: border-color 0.2s; }
+      .input-box:focus { outline: none; border-color: var(--accent-primary); }
+
+      .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 24px; }
+      .stat-item { background: var(--bg-deep); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); text-align: center; }
+      .stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; display: block; }
+      .stat-value { font-family: var(--font-mono); font-size: 1.25rem; color: var(--accent-primary); font-weight: 700; }
+
+      /* Table */
+      .table-container { overflow-x: auto; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); margin-top: 24px; }
+      table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+      th { background: var(--bg-deep); text-align: left; padding: 12px 16px; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--border-subtle); }
+      td { padding: 12px 16px; border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); font-family: var(--font-mono); }
+      tr:last-child td { border-bottom: none; }
+      .char-cell { font-family: var(--font-sans); font-size: 1.25rem; color: var(--text-primary); font-weight: 700; }
+      .hex-cell { color: var(--accent-primary); }
+
+      /* Article */
+      .article-section { margin-top: 60px; border-top: 1px solid var(--border-subtle); padding-top: 60px; }
+      .article-content { max-width: 850px; margin: 0 auto; }
+      .article-content h2 { font-size: 2rem; margin: 40px 0 20px; color: var(--text-primary); border-left: 4px solid var(--accent-primary); padding-left: 15px; }
+      .article-content p { margin-bottom: 20px; color: var(--text-secondary); font-size: 1.1rem; line-height: 1.8; }
+      .problem-box { background: rgba(56, 189, 248, 0.05); border: 1px solid var(--accent-primary); border-radius: var(--radius-md); padding: 24px; margin: 24px 0; }
+      .problem-box h4 { color: var(--accent-primary); margin-bottom: 12px; }
+
+      .theme-toggle {
+        position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px;
+        border-radius: 25px; background: var(--accent-primary); color: #000;
+        border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem; z-index: 100;
+      }
+
+      footer { text-align: center; margin-top: 80px; padding: 40px 0; border-top: 1px solid var(--border-subtle); color: var(--text-muted); }
+      footer a { color: var(--accent-primary); text-decoration: none; }
+    </style>
   </head>
   <body>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
-      <span id="theme-icon">🌙</span>
-    </button>
+    <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
 
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      字符集转换器
-    </nav>
     <div class="container">
       <header>
-        <h1>🔤 字符集转换器</h1>
-        <button id="themeToggle" class="outline">🌙</button>
+        <h1 class="header-title">字符集转换器</h1>
+        <p class="header-desc">
+          深入洞察每个字符背后的字节序列。
+          无论是调试乱码、分析二进制数据，还是研究编码原理，这里都能为你提供最详尽的数据。
+        </p>
       </header>
 
-      <div class="panel">
-        <div class="grid">
-          <div class="input-group">
-            <label>输入文本</label>
-            <textarea id="input" placeholder="输入要转换的文本...">
-你好，世界！Hello, World!</textarea
-            >
-          </div>
-          <div class="input-group">
-            <label>转换结果</label>
-            <textarea id="output" readonly></textarea>
-          </div>
-        </div>
-
-        <div class="btn-row">
-          <select id="outputFormat">
-            <option value="hex">十六进制 (Hex)</option>
-            <option value="decimal">十进�?/option>
-            <option value="binary">二进�?/option>
-            <option value="octal">八进�?/option>
-            <option value="utf8">UTF-8 字节</option>
-            <option value="utf16">UTF-16 码元</option>
-            <option value="codepoint">Unicode 码点</option>
-            <option value="escape-js">JS 转义</option>
-            <option value="escape-url">URL 编码</option>
-            <option value="escape-html">HTML 实体</option>
-          </select>
-          <button onclick="convert()">转换</button>
-          <button onclick="copyResult()" class="outline">📋 复制</button>
-          <button onclick="swap()" class="outline">🔄 交换</button>
-        </div>
-
-        <div class="hex-display">
-          <h4>UTF-8 字节序列</h4>
-          <div class="hex-bytes" id="hexBytes"></div>
-        </div>
-
-        <div class="info-grid">
-          <div class="info-card">
-            <div class="label">字符�?/div>
-            <div class="value" id="charCount">0</div>
-          </div>
-          <div class="info-card">
-            <div class="label">UTF-8 字节</div>
-            <div class="value" id="byteCount">0</div>
-          </div>
-          <div class="info-card">
-            <div class="label">UTF-16 码元</div>
-            <div class="value" id="utf16Count">0</div>
-          </div>
-          <div class="info-card">
-            <div class="label">码点�?/div>
-            <div class="value" id="codepointCount">0</div>
-          </div>
-        </div>
+      <div class="ads-slot">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-################"
+             data-ad-slot="########"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <p>广告占位符 - 支撑免费工具运行</p>
       </div>
 
-      <div class="panel encoding-table">
-        <h3 style="margin: 0 0 1rem; font-size: 1rem">字符详情</h3>
-        <div style="overflow-x: auto">
-          <table>
+      <main class="card">
+        <div class="card-title">⌨️ 输入文本</div>
+        <textarea class="input-box" id="inputText" placeholder="输入任意字符，例如：Hello 世界 🌍" oninput="analyze()"></textarea>
+
+        <div class="stats-grid">
+          <div class="stat-item">
+            <span class="stat-label">字符数</span>
+            <div class="stat-value" id="charCount">0</div>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">UTF-8 字节</span>
+            <div class="stat-value" id="utf8Bytes">0</div>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">UTF-16 码元</span>
+            <div class="stat-value" id="utf16Units">0</div>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">最大码点</span>
+            <div class="stat-value" id="maxCodepoint">0</div>
+          </div>
+        </div>
+
+        <div class="card-title">🔍 字符详情分析 (逐字符)</div>
+        <div class="table-container">
+          <table id="detailsTable">
             <thead>
               <tr>
                 <th>字符</th>
-                <th>Unicode</th>
-                <th>UTF-8</th>
-                <th>UTF-16</th>
-                <th>名称</th>
+                <th>Unicode 码点</th>
+                <th>UTF-8 (十六进制)</th>
+                <th>UTF-16 (十六进制)</th>
+                <th>名称/范围</th>
               </tr>
             </thead>
-            <tbody id="charTable"></tbody>
+            <tbody id="tableBody"></tbody>
           </table>
         </div>
+      </main>
+
+      <!-- Middle Ad Slot -->
+      <div class="ads-slot">
+        <p>赞助商广告</p>
       </div>
+
+      <section class="article-section">
+        <div class="article-content">
+          <h2>为什么我的网页会出现乱码？</h2>
+          <p>
+            乱码是 Web 开发中最令人头疼的问题之一。它通常发生在<strong>读取字节序列时使用了错误的解码方案</strong>。
+            要彻底解决乱码，必须理解 <strong>Unicode</strong> 和 <strong>UTF-8</strong> 之间的关系。
+          </p>
+
+          <div class="problem-box">
+            <h4>🚨 场景 1：数据库存入正常，读取出来是“??”或“锟斤拷”</h4>
+            <p>
+              <strong>原因分析：</strong> 
+              “锟斤拷”是由于 UTF-8 编码的字符被错误地用 GBK 解码，然后再转回 UTF-8 导致的。
+              通过本工具，你可以输入原本的文字，查看它在 UTF-8 下真实的十六进制字节。
+              如果数据库中存的字节与此不符，说明在<strong>写入阶段</strong>就已经发生了编码转换错误。
+            </p>
+          </div>
+
+          <div class="problem-box">
+            <h4>🚨 场景 2：Emoji 表情导致后端报错或截断</h4>
+            <p>
+              <strong>原因分析：</strong> 
+              传统的 MySQL `utf8` 编码其实只能存储最多 3 字节的字符，而像 🌍 (U+1F30D) 这样的 Emoji 在 UTF-8 下需要 4 字节。
+              使用本工具分析 Emoji，你会发现它的 UTF-8 序列是 4 组十六进制数。这提醒你必须将数据库编码改为 `utf8mb4`。
+            </p>
+          </div>
+
+          <h3>核心术语科普</h3>
+          <ul>
+            <li><strong>Unicode</strong>：一套标准，为世界上几乎所有字符分配了一个唯一的数字（称为“码点”，如 U+4E2D）。</li>
+            <li><strong>UTF-8</strong>：一种变长的编码实现。它使用 1 到 4 个字节来表示一个码点。它是目前互联网上最通用的编码。</li>
+            <li><strong>UTF-16</strong>：JavaScript 引擎内部使用的编码方式。普通字符占 2 字节，特殊字符（如 Emoji）占 4 字节（代理对）。</li>
+          </ul>
+
+          <h3>如何使用本工具进行调试？</h3>
+          <ol>
+            <li>在上方框内输入你怀疑有问题的字符。</li>
+            <li>在下表中观察其 **UTF-8 十六进制** 序列。</li>
+            <li>对比你的后端日志、数据库原始二进制数据或抓包结果中的十六进制，寻找不一致的地方。</li>
+          </ol>
+        </div>
+      </section>
+
+      <footer>
+        <p>© 2026 WebUtils · 编码专家工具 · 纯前端实现</p>
+        <div style="margin-top: 10px;">
+          <a href="../../index.html">返回首页</a> · 
+          <a href="https://github.com/chicogong/html-tools" target="_blank">GitHub 源码</a>
+        </div>
+      </footer>
     </div>
 
     <script>
-      function textToUtf8Bytes(text) {
-        return new TextEncoder().encode(text);
+      const $ = (id) => document.getElementById(id);
+
+      function analyze() {
+        const text = $('inputText').value;
+        const chars = Array.from(text); // Supports Surrogate Pairs (Emoji)
+        
+        $('charCount').textContent = chars.length;
+        
+        let totalUtf8 = 0;
+        let totalUtf16 = 0;
+        let maxCP = 0;
+        
+        const tbody = $('tableBody');
+        tbody.innerHTML = '';
+        
+        chars.forEach(char => {
+          const cp = char.codePointAt(0);
+          maxCP = Math.max(maxCP, cp);
+          
+          const utf8 = encodeUtf8(char);
+          totalUtf8 += utf8.length;
+          
+          const utf16 = encodeUtf16(char);
+          totalUtf16 += utf16.length / 2;
+
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="char-cell">${escapeHtml(char)}</td>
+            <td>U+${cp.toString(16).toUpperCase().padStart(4, '0')}</td>
+            <td class="hex-cell">${bytesToHex(utf8)}</td>
+            <td class="hex-cell">${bytesToHex(utf16)}</td>
+            <td>${getCharRange(cp)}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+        
+        $('utf8Bytes').textContent = totalUtf8;
+        $('utf16Units').textContent = totalUtf16;
+        $('maxCodepoint').textContent = 'U+' + maxCP.toString(16).toUpperCase();
       }
 
-      function utf8BytesToHex(bytes) {
-        return Array.from(bytes).map((b) => b.toString(16).padStart(2, "0").toUpperCase());
+      function encodeUtf8(str) {
+        return new TextEncoder().encode(str);
       }
 
-      function convert() {
-        const input = document.getElementById("input").value;
-        const format = document.getElementById("outputFormat").value;
-        let output = "";
-
-        const chars = [...input];
-        const utf8Bytes = textToUtf8Bytes(input);
-
-        switch (format) {
-          case "hex":
-            output = utf8BytesToHex(utf8Bytes).join(" ");
-            break;
-          case "decimal":
-            output = Array.from(utf8Bytes).join(" ");
-            break;
-          case "binary":
-            output = Array.from(utf8Bytes)
-              .map((b) => b.toString(2).padStart(8, "0"))
-              .join(" ");
-            break;
-          case "octal":
-            output = Array.from(utf8Bytes)
-              .map((b) => b.toString(8).padStart(3, "0"))
-              .join(" ");
-            break;
-          case "utf8":
-            output = utf8BytesToHex(utf8Bytes)
-              .map((h) => "\\x" + h)
-              .join("");
-            break;
-          case "utf16":
-            output = chars
-              .map((c) => {
-                const code = c.charCodeAt(0);
-                return "\\u" + code.toString(16).padStart(4, "0").toUpperCase();
-              })
-              .join("");
-            break;
-          case "codepoint":
-            output = chars
-              .map((c) => "U+" + c.codePointAt(0).toString(16).toUpperCase().padStart(4, "0"))
-              .join(" ");
-            break;
-          case "escape-js":
-            output = chars
-              .map((c) => {
-                const cp = c.codePointAt(0);
-                if (cp < 128 && /[\w\s]/.test(c)) return c;
-                if (cp > 0xffff) return "\\u{" + cp.toString(16).toUpperCase() + "}";
-                return "\\u" + cp.toString(16).padStart(4, "0").toUpperCase();
-              })
-              .join("");
-            break;
-          case "escape-url":
-            output = encodeURIComponent(input);
-            break;
-          case "escape-html":
-            output = chars.map((c) => "&#" + c.codePointAt(0) + ";").join("");
-            break;
+      function encodeUtf16(str) {
+        const buf = new ArrayBuffer(str.length * 2);
+        const view = new Uint16Array(buf);
+        for (let i = 0; i < str.length; i++) {
+          view[i] = str.charCodeAt(i);
         }
-
-        document.getElementById("output").value = output;
-        updateInfo(input, utf8Bytes, chars);
-        updateHexDisplay(utf8Bytes);
-        updateCharTable(chars);
+        return new Uint8Array(buf);
       }
 
-      function updateInfo(input, utf8Bytes, chars) {
-        document.getElementById("charCount").textContent = chars.length;
-        document.getElementById("byteCount").textContent = utf8Bytes.length;
-        document.getElementById("utf16Count").textContent = input.length;
-        document.getElementById("codepointCount").textContent = chars.length;
+      function bytesToHex(bytes) {
+        return Array.from(bytes).map(b => b.toString(16).toUpperCase().padStart(2, '0')).join(' ');
       }
 
-      function updateHexDisplay(bytes) {
-        const hexBytes = Array.from(bytes)
-          .map((b) => `<span class="byte">${b.toString(16).padStart(2, "0").toUpperCase()}</span>`)
-          .join("");
-        document.getElementById("hexBytes").innerHTML = hexBytes;
+      function getCharRange(cp) {
+        if (cp <= 0x7F) return "Basic Latin";
+        if (cp <= 0x07FF) return "Latin Extended / Greek";
+        if (cp <= 0xFFFF) return "CJK Unified Ideographs / Symbols";
+        return "Supplementary Planes (Emoji/Rare)";
       }
 
-      function updateCharTable(chars) {
-        const tbody = document.getElementById("charTable");
-        const rows = chars
-          .slice(0, 20)
-          .map((c) => {
-            const cp = c.codePointAt(0);
-            const utf8 = utf8BytesToHex(textToUtf8Bytes(c)).join(" ");
-            const utf16 =
-              c.length === 2
-                ? c.charCodeAt(0).toString(16).toUpperCase() +
-                  " " +
-                  c.charCodeAt(1).toString(16).toUpperCase()
-                : c.charCodeAt(0).toString(16).toUpperCase().padStart(4, "0");
-            const name = getCharName(cp);
-            return `<tr>
-                    <td><code>${c === " " ? "�? : c}</code></td>
-                    <td>U+${cp.toString(16).toUpperCase().padStart(4, "0")}</td>
-                    <td><code>${utf8}</code></td>
-                    <td><code>${utf16}</code></td>
-                    <td>${name}</td>
-                </tr>`;
-          })
-          .join("");
-        tbody.innerHTML =
-          rows + (chars.length > 20 ? '<tr><td colspan="5">... 更多字符省略</td></tr>' : "");
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
       }
 
-      function getCharName(cp) {
-        if (cp >= 0x4e00 && cp <= 0x9fff) return "CJK 统一汉字";
-        if (cp >= 0x3040 && cp <= 0x309f) return "平假�?;
-        if (cp >= 0x30a0 && cp <= 0x30ff) return "片假�?;
-        if (cp >= 0xac00 && cp <= 0xd7af) return "韩文音节";
-        if (cp >= 0x0400 && cp <= 0x04ff) return "西里尔字�?;
-        if (cp >= 0x0600 && cp <= 0x06ff) return "阿拉伯字�?;
-        if (cp >= 0x0041 && cp <= 0x005a) return "拉丁大写字母";
-        if (cp >= 0x0061 && cp <= 0x007a) return "拉丁小写字母";
-        if (cp >= 0x0030 && cp <= 0x0039) return "数字";
-        if (cp === 0x0020) return "空格";
-        if (cp === 0x000a) return "换行�?;
-        if (cp >= 0x1f600 && cp <= 0x1f64f) return "Emoji 表情";
-        if (cp >= 0x1f300 && cp <= 0x1f5ff) return "Emoji 符号";
-        return "其他字符";
-      }
-
-      window.copyResult = function () {
-        navigator.clipboard.writeText(document.getElementById("output").value);
-        event.target.textContent = "�?已复�?;
-        setTimeout(() => (event.target.textContent = "📋 复制"), 2000);
-      };
-
-      window.swap = function () {
-        const output = document.getElementById("output").value;
-        document.getElementById("input").value = output;
-        convert();
-      };
-
-      // Event listeners
-      document.getElementById("input").addEventListener("input", convert);
-      document.getElementById("outputFormat").addEventListener("change", convert);
-
-      // Theme toggle
-      const theme = localStorage.getItem("theme") || "light";
-      document.documentElement.setAttribute("data-theme", theme);
-      document.getElementById("themeToggle").textContent = theme === "dark" ? "☀�? : "🌙";
-      document.getElementById("themeToggle").onclick = () => {
-        const next =
-          document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
-        document.documentElement.setAttribute("data-theme", next);
-        localStorage.setItem("theme", next);
-        document.getElementById("themeToggle").textContent = next === "dark" ? "☀�? : "🌙";
-      };
-
-      // Initialize
-      convert();
-
-      // Theme toggle
       function toggleTheme() {
         const html = document.documentElement;
-        const currentTheme = html.getAttribute("data-theme");
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        document.getElementById("theme-icon").textContent = newTheme === "light" ? "☀�? : "🌙";
-        localStorage.setItem("theme", newTheme);
+        const current = html.getAttribute("data-theme");
+        const next = current === "dark" ? "light" : "dark";
+        html.setAttribute("data-theme", next);
+        localStorage.setItem("theme", next);
       }
 
-      // Load saved theme
-      const savedTheme = localStorage.getItem("theme") || "dark";
-      if (savedTheme === "light") {
-        document.documentElement.setAttribute("data-theme", "light");
-        document.getElementById("theme-icon").textContent = "☀�?;
-      }
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme) document.documentElement.setAttribute("data-theme", savedTheme);
+
+      // Initial
+      analyze();
     </script>
   </body>
 </html>
-
