@@ -1,378 +1,242 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="light">
+<html lang="zh">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CSS 选择器测试器 - WebUtils</title>
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="CSS 选择器测试器 - WebUtils" />
-    <meta name="keywords" content="css-selector-test,dev,tools,webutils" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/dev/css-selector-test.html" />
-
-    <!-- Open Graph -->
-    <meta property="og:title" content="CSS 选择器测试器 - WebUtils" />
-    <meta property="og:description" content="CSS 选择器测试器 - WebUtils" />
-    <meta property="og:type" content="website" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CSS 选择器测试器 - 实时在线 CSS Selector 调试与匹配工具 - WebUtils</title>
     <meta
-      property="og:url"
-      content="https://essays4u.net/tools/dev/css-selector-test.html"
+      name="description"
+      content="免费在线 CSS 选择器测试工具。实时输入 HTML 代码与 CSS 选择器，瞬间查看匹配结果与高亮效果。支持伪类、伪元素及复杂组合选择器调试，前端开发必备调试神器。"
     />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="CSS 选择器测试器 - WebUtils" />
-    <meta name="twitter:description" content="CSS 选择器测试器 - WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      :root {
-        --highlight-bg: #fef08a;
-        --highlight-border: #eab308;
-      }
-
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        z-index: 1000;
-      }
-      .editor-container {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-        margin-bottom: 1rem;
-      }
-      @media (max-width: 768px) {
-        .editor-container {
-          grid-template-columns: 1fr;
-        }
-      }
-      .editor-panel {
-        display: flex;
-        flex-direction: column;
-      }
-      .editor-panel label {
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-      }
-      .editor-panel textarea {
-        font-family: var(--font-mono);
-        font-size: 0.875rem;
-        min-height: 200px;
-        resize: vertical;
-      }
-      .selector-input {
-        display: flex;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-      }
-      .selector-input input {
-        flex: 1;
-        font-family: var(--font-mono);
-      }
-      .result-panel {
-        border: 1px solid var(--pico-muted-border-color);
-        border-radius: 0.5rem;
-        padding: 1rem;
-        min-height: 200px;
-      }
-      .result-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 1px solid var(--pico-muted-border-color);
-      }
-      .match-count {
-        font-size: 0.875rem;
-        padding: 0.25rem 0.75rem;
-        background: var(--pico-primary);
-        color: white;
-        border-radius: 1rem;
-      }
-      .preview-container {
-        border: 1px dashed var(--pico-muted-border-color);
-        padding: 1rem;
-        border-radius: 0.5rem;
-        background: var(--pico-background-color);
-        min-height: 150px;
-      }
-      .preview-container .matched {
-        background: var(--highlight-bg) !important;
-        outline: 2px solid var(--highlight-border) !important;
-        outline-offset: 2px;
-      }
-      .error-message {
-        color: var(--pico-del-color);
-        font-size: 0.875rem;
-        margin-top: 0.5rem;
-      }
-      .examples {
-        margin-top: 1rem;
-      }
-      .example-btn {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
-        margin-right: 0.5rem;
-        margin-bottom: 0.5rem;
-      }
-      .matched-list {
-        margin-top: 1rem;
-        max-height: 200px;
-        overflow-y: auto;
-      }
-      .matched-item {
-        font-family: var(--font-mono);
-        font-size: 0.75rem;
-        padding: 0.5rem;
-        background: var(--pico-code-background-color);
-        border-radius: 0.25rem;
-        margin-bottom: 0.5rem;
-        white-space: pre-wrap;
-        word-break: break-all;
-      }
-      .help-section {
-        margin-top: 2rem;
-        padding: 1rem;
-        background: var(--pico-card-background-color);
-        border-radius: 0.5rem;
-      }
-      .help-section h3 {
-        margin-bottom: 1rem;
-      }
-      .help-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 0.5rem;
-      }
-      .help-item {
-        font-size: 0.875rem;
-      }
-      .help-item code {
-        font-size: 0.75rem;
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-    </style>
-    <!-- Google Fonts -->
+    <meta
+      name="keywords"
+      content="CSS选择器测试,CSS Selector Tester,在线调试工具,前端开发,CSS匹配,伪类测试,属性选择器"
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
+    <style>
+      :root {
+        --bg-body: #0a0a0a;
+        --bg-card: #111;
+        --bg-input: #0d0d0d;
+        --bg-hover: #1a1a1a;
+        --text-primary: #e5e5e5;
+        --text-secondary: #737373;
+        --text-muted: #525252;
+        --border-color: #252525;
+        --border-focus: #404040;
+        --accent: #10b981;
+        --accent-hover: #059669;
+        --accent-glow: rgba(16, 185, 129, 0.15);
+        --accent-secondary: #f472b6;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 14px;
+        --font-sans: "Inter", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+        
+        --highlight-bg: rgba(16, 185, 129, 0.2);
+        --highlight-border: #10b981;
+      }
+
+      [data-theme="light"] {
+        --bg-body: #fafafa;
+        --bg-card: #fff;
+        --bg-input: #f5f5f5;
+        --bg-hover: #f0f0f0;
+        --text-primary: #171717;
+        --text-secondary: #525252;
+        --text-muted: #a3a3a3;
+        --border-color: #e5e5e5;
+        --border-focus: #d4d4d4;
+        --accent: #059669;
+        --accent-hover: #047857;
+        --accent-glow: rgba(5, 150, 105, 0.15);
+        --accent-secondary: #db2777;
+        
+        --highlight-bg: rgba(5, 150, 105, 0.15);
+        --highlight-border: #059669;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.25rem; font-weight: 600; letter-spacing: -0.02em; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; }
+      .theme-btn { padding: 8px 12px; font-size: 0.75rem; font-family: var(--font-mono); background: transparent; border: none; color: var(--text-muted); cursor: pointer; transition: all 0.2s; }
+      .theme-btn.active { background: var(--accent); color: #fff; }
+
+      .ads-placeholder { margin: 24px 0; padding: 20px; background: var(--bg-card); border: 1px dashed var(--border-color); border-radius: var(--radius-lg); text-align: center; color: var(--text-muted); font-size: 0.8125rem; }
+
+      .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+      @media (max-width: 850px) { .main-grid { grid-template-columns: 1fr; } }
+
+      .panel { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; display: flex; flex-direction: column; }
+      .panel-header { padding: 12px 16px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); }
+      .panel-title { font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
+      
+      .editor-wrapper { position: relative; flex: 1; }
+      textarea { width: 100%; height: 350px; background: var(--bg-input); border: none; color: var(--text-primary); padding: 16px; font-family: var(--font-mono); font-size: 0.875rem; resize: none; outline: none; }
+      
+      .preview-area { height: 350px; background: var(--bg-input); padding: 16px; overflow-y: auto; position: relative; }
+      .preview-content { all: revert; } /* Reset for preview */
+      .preview-content * { transition: all 0.2s; }
+      .preview-content .matched {
+        background-color: var(--highlight-bg) !important;
+        outline: 2px solid var(--highlight-border) !important;
+        outline-offset: 2px;
+      }
+
+      .selector-bar { margin-bottom: 24px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; }
+      .input-group { display: flex; gap: 12px; }
+      .input-group input { flex: 1; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text-primary); padding: 10px 16px; font-family: var(--font-mono); font-size: 0.9375rem; outline: none; transition: border-color 0.2s; }
+      .input-group input:focus { border-color: var(--accent); }
+      
+      .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-md); font-size: 0.8125rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+      .btn:hover { background: var(--accent-hover); transform: translateY(-1px); }
+      .btn-secondary { background: var(--bg-hover); color: var(--text-primary); border: 1px solid var(--border-color); }
+
+      .examples { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+      .example-tag { font-size: 0.75rem; color: var(--text-secondary); background: var(--bg-hover); padding: 4px 10px; border-radius: 4px; border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s; }
+      .example-tag:hover { border-color: var(--accent); color: var(--accent); }
+
+      .results-panel { margin-top: 24px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px; }
+      .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+      .match-badge { background: var(--accent-glow); color: var(--accent); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; border: 1px solid var(--accent); }
+      .error-badge { background: rgba(244, 63, 94, 0.1); color: #f43f5e; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; border: 1px solid #f43f5e; }
+      
+      .matched-list { display: grid; grid-template-columns: 1fr; gap: 8px; max-height: 250px; overflow-y: auto; padding-right: 8px; }
+      .matched-item { padding: 10px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary); word-break: break-all; }
+      .matched-item b { color: var(--accent); margin-right: 8px; }
+
+      .article-section { margin-top: 40px; padding-top: 40px; border-top: 1px solid var(--border-color); }
+      .prose { max-width: 100%; color: var(--text-secondary); }
+      .prose h2 { color: var(--text-primary); font-size: 1.5rem; margin-top: 2rem; margin-bottom: 1rem; }
+      .prose h3 { color: var(--text-primary); font-size: 1.25rem; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+      .prose p { margin-bottom: 1rem; line-height: 1.8; }
+      .prose ul { margin-bottom: 1.5rem; padding-left: 1.5rem; }
+      .prose li { margin-bottom: 0.5rem; }
+      .prose code { font-family: var(--font-mono); background: var(--bg-input); padding: 0.2rem 0.4rem; border-radius: 4px; font-size: 0.9em; }
+
+      #toast { position: fixed; bottom: 24px; right: 24px; background: var(--accent); color: #fff; padding: 12px 24px; border-radius: var(--radius-md); font-size: 0.875rem; font-weight: 600; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); transform: translateY(100px); opacity: 0; transition: all 0.3s; z-index: 1000; }
+      #toast.show { transform: translateY(0); opacity: 1; }
+    </style>
   </head>
   <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      CSS 选择器测试器
-    </nav>
-    <button class="theme-toggle" onclick="toggleTheme()">切换主题</button>
-
-    <main class="container">
-      <h1>CSS 选择器测试器</h1>
-      <p>输入 HTML 代码�?CSS 选择器，实时查看匹配的元�?/p>
-
-      <div class="editor-container">
-        <div class="editor-panel">
-          <label for="htmlInput">HTML 代码</label>
-          <textarea id="htmlInput" placeholder="在此输入 HTML 代码..."></textarea>
+    <div class="container">
+      <header class="header">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn" title="返回首页">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          </a>
+          <div class="title-group">
+            <h1>CSS 选择器测试器</h1>
+            <p>实时调试 CSS 选择器，精准定位 DOM 元素</p>
+          </div>
         </div>
-        <div class="editor-panel">
-          <label>预览与匹配结�?/label>
-          <div class="preview-container" id="previewContainer"></div>
+        <div class="header-right">
+          <div class="theme-toggle">
+            <button class="theme-btn" id="theme-dark" onclick="setTheme('dark')">DARK</button>
+            <button class="theme-btn" id="theme-light" onclick="setTheme('light')">LIGHT</button>
+          </div>
+        </div>
+      </header>
+
+      <div class="ads-placeholder">广告位 (Google AdSense)</div>
+
+      <div class="selector-bar">
+        <div class="input-group">
+          <input type="text" id="selectorInput" placeholder="输入 CSS 选择器 (例如: .card > .title, li:nth-child(2)...)" spellcheck="false">
+          <button class="btn" onclick="testSelector()">🔍 测试匹配</button>
+        </div>
+        <div class="examples">
+          <span style="font-size: 0.75rem; color: var(--text-muted); align-self: center; margin-right: 4px;">常用示例:</span>
+          <span class="example-tag" onclick="setSelector('div')">div</span>
+          <span class="example-tag" onclick="setSelector('.item')">.item</span>
+          <span class="example-tag" onclick="setSelector('#main')">#main</span>
+          <span class="example-tag" onclick="setSelector('ul > li')">ul > li</span>
+          <span class="example-tag" onclick="setSelector('a[href]')">a[href]</span>
+          <span class="example-tag" onclick="setSelector(':first-child')">:first-child</span>
+          <span class="example-tag" onclick="setSelector('p + p')">p + p</span>
+          <span class="example-tag" onclick="setSelector('[class*=btn]')">[class*=btn]</span>
         </div>
       </div>
 
-      <div class="selector-input">
-        <input
-          type="text"
-          id="selectorInput"
-          placeholder="输入 CSS 选择器（如：div.class, #id, ul > li�?
-          autofocus
-        />
-        <button onclick="testSelector()">测试</button>
-      </div>
-
-      <div class="examples">
-        <small>示例选择器：</small>
-        <button class="example-btn secondary outline" onclick="setSelector('div')">div</button>
-        <button class="example-btn secondary outline" onclick="setSelector('.item')">
-          `.item`
-        </button>
-        <button class="example-btn secondary outline" onclick="setSelector('#main')">#main</button>
-        <button class="example-btn secondary outline" onclick="setSelector('ul > li')">
-          ul &gt; li
-        </button>
-        <button class="example-btn secondary outline" onclick="setSelector('a[href]')">
-          a[href]
-        </button>
-        <button class="example-btn secondary outline" onclick="setSelector(':first-child')">
-          :first-child
-        </button>
-        <button class="example-btn secondary outline" onclick="setSelector('p + p')">p + p</button>
-        <button class="example-btn secondary outline" onclick="setSelector('[class*=btn]')">
-          [class*=btn]
-        </button>
-      </div>
-
-      <div id="errorMessage" class="error-message"></div>
-
-      <div class="result-panel">
-        <div class="result-header">
-          <span>匹配结果</span>
-          <span class="match-count" id="matchCount">0 个匹�?/span>
+      <div class="main-grid">
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">HTML 源码输入</span>
+            <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.7rem;" onclick="resetHtml()">重置默认</button>
+          </div>
+          <div class="editor-wrapper">
+            <textarea id="htmlInput" placeholder="请在此输入或粘贴您的 HTML 代码..." spellcheck="false"></textarea>
+          </div>
         </div>
-        <div class="matched-list" id="matchedList"></div>
-      </div>
-
-      <div class="help-section">
-        <h3>CSS 选择器参�?/h3>
-        <div class="help-grid">
-          <div class="help-item">
-            <code>element</code>
-            元素选择�?
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">实时匹配预览</span>
+            <span id="matchStatus"></span>
           </div>
-          <div class="help-item">
-            <code>.class</code>
-            类选择�?
-          </div>
-          <div class="help-item">
-            <code>#id</code>
-            ID选择�?
-          </div>
-          <div class="help-item">
-            <code>*</code>
-            通配选择�?
-          </div>
-          <div class="help-item">
-            <code>A B</code>
-            后代选择�?
-          </div>
-          <div class="help-item">
-            <code>A &gt; B</code>
-            子选择�?
-          </div>
-          <div class="help-item">
-            <code>A + B</code>
-            相邻兄弟
-          </div>
-          <div class="help-item">
-            <code>A ~ B</code>
-            通用兄弟
-          </div>
-          <div class="help-item">
-            <code>[attr]</code>
-            属性存�?
-          </div>
-          <div class="help-item">
-            <code>[attr=val]</code>
-            属性等�?
-          </div>
-          <div class="help-item">
-            <code>[attr^=val]</code>
-            属性开�?
-          </div>
-          <div class="help-item">
-            <code>[attr$=val]</code>
-            属性结�?
-          </div>
-          <div class="help-item">
-            <code>[attr*=val]</code>
-            属性包�?
-          </div>
-          <div class="help-item">
-            <code>:first-child</code>
-            第一个子元素
-          </div>
-          <div class="help-item">
-            <code>:last-child</code>
-            最后子元素
-          </div>
-          <div class="help-item">
-            <code>:nth-child(n)</code>
-            第n个子元素
-          </div>
-          <div class="help-item">
-            <code>:not(sel)</code>
-            否定选择�?
-          </div>
-          <div class="help-item">
-            <code>:hover</code>
-            鼠标悬停
+          <div class="preview-area">
+            <div id="previewContainer" class="preview-content"></div>
           </div>
         </div>
       </div>
-    </main>
+
+      <div class="results-panel">
+        <div class="results-header">
+          <span style="font-size: 0.875rem; font-weight: 600;">匹配元素列表</span>
+          <div id="matchCountBadge"></div>
+        </div>
+        <div id="matchedList" class="matched-list">
+          <div style="color: var(--text-muted); font-size: 0.8125rem; text-align: center; padding: 20px;">等待输入选择器...</div>
+        </div>
+      </div>
+
+      <div class="ads-placeholder">广告位 (Google AdSense)</div>
+
+      <section class="article-section">
+        <article class="prose">
+          <h2>精通 CSS 选择器：从基础到高级调试全攻略</h2>
+          <p>
+            在前端开发中，编写准确的选择器是样式生效的前提。随着项目复杂度的增加，层级深、结构杂的 HTML 往往让选择器变得难以驾驭。尤其是当你面对第三方库生成的 HTML 或者复杂的伪类逻辑（如 <code>:nth-child</code>）时，肉眼判断往往容易出错。通过实时测试工具，你可以立即验证选择器的有效性，避免频繁刷新浏览器。
+          </p>
+
+          <h3>1. 核心选择器深度解析</h3>
+          <ul>
+            <li><strong>基础选择器：</strong> 标签（<code>div</code>）、类（<code>.class</code>）、ID（<code>#id</code>）。</li>
+            <li><strong>组合选择器：</strong> 后代（<code>空格</code>）、子代（<code>&gt;</code>）、相邻兄弟（<code>+</code>）、通用兄弟（<code>~</code>）。</li>
+            <li><strong>属性选择器：</strong> <code>[attr]</code>、<code>[attr=val]</code>、<code>[attr^=val]</code>（开头）、<code>[attr$=val]</code>（结尾）、<code>[attr*=val]</code>（包含）。</li>
+            <li><strong>伪类与伪元素：</strong> <code>:hover</code>、<code>:focus</code>、<code>:not()</code>、<code>:first-child</code>、<code>:last-child</code>、<code>:nth-child(n)</code>、<code>::before</code>、<code>::after</code>。</li>
+          </ul>
+
+          <h3>2. 解决具体问题：常见调试场景</h3>
+          <p><strong>场景一：层级嵌套过深。</strong> 当你发现 <code>.nav .item a</code> 不生效时，可以用本工具粘贴 HTML 结构，测试是否因为中间缺了某个类名或者 HTML 结构不符合预期。</p>
+          <p><strong>场景二：伪类匹配失败。</strong> 很多开发者分不清 <code>:nth-child</code> 和 <code>:nth-of-type</code>。在工具中切换这两个选择器，观察匹配到的元素差异，能帮你快速理解其背后的逻辑。</p>
+          <p><strong>场景三：属性选择器匹配。</strong> 比如你想匹配所有以 <code>https</code> 开头的链接：<code>a[href^="https"]</code>，可以在这里输入多组链接实时验证。</p>
+
+          <h3>3. 调试技巧与建议</h3>
+          <ul>
+            <li><strong>保持简洁：</strong> 尽量避免过于深长的选择器（如 <code>body div section ul li a</code>），这会降低渲染性能。</li>
+            <li><strong>利用优先级：</strong> 如果选择器匹配正确但样式不生效，通常是 CSS 权重（Specificity）的问题，本工具可以帮你确认选择器是否真的“选中”了目标。</li>
+            <li><strong>安全性：</strong> 本工具所有计算均在您的浏览器本地完成，不会将您的 HTML 代码上传到任何服务器。</li>
+          </ul>
+        </article>
+      </section>
+    </div>
+
+    <div id="toast"></div>
 
     <script>
       const defaultHtml = `<div id="main" class="container">
@@ -389,8 +253,8 @@
     <main class="content">
         <article class="post">
             <h2 class="title">文章标题</h2>
-            <p class="intro">这是第一段文字�?/p>
-            <p>这是第二段文字�?/p>
+            <p class="intro">这是第一段文字。</p>
+            <p>这是第二段文字。</p>
             <button class="btn btn-primary">主要按钮</button>
             <button class="btn btn-secondary">次要按钮</button>
         </article>
@@ -400,104 +264,106 @@
     </footer>
 </div>`;
 
-      // 初始�?
-      document.addEventListener("DOMContentLoaded", () => {
-        const savedTheme = localStorage.getItem("theme");
-        if (savedTheme) {
-          document.documentElement.setAttribute("data-theme", savedTheme);
-        }
+      function setTheme(t) { 
+        document.documentElement.setAttribute("data-theme", t); 
+        localStorage.setItem("theme", t); 
+        document.querySelectorAll(".theme-btn").forEach(b => b.classList.toggle("active", b.id === `theme-${t}`)); 
+      }
+      setTheme(localStorage.getItem("theme") || "dark");
 
+      function showToast(msg) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 2000);
+      }
+
+      function resetHtml() {
         document.getElementById("htmlInput").value = defaultHtml;
         updatePreview();
+        testSelector();
+        showToast("已重置为默认 HTML");
+      }
 
-        // 实时更新预览
-        document.getElementById("htmlInput").addEventListener("input", () => {
-          updatePreview();
-          testSelector();
-        });
-
-        // 实时测试选择�?
-        document.getElementById("selectorInput").addEventListener("input", testSelector);
-
-        // 回车测试
-        document.getElementById("selectorInput").addEventListener("keypress", (e) => {
-          if (e.key === "Enter") testSelector();
-        });
-      });
-
-      // 更新预览
-      window.updatePreview = function () {
+      function updatePreview() {
         const html = document.getElementById("htmlInput").value;
         const preview = document.getElementById("previewContainer");
+        preview.innerHTML = html;
+      }
 
-        // 安全地设置HTML内容
-        preview.textContent = "";
-        const wrapper = document.createElement("div");
-        wrapper.innerHTML = html;
-        preview.appendChild(wrapper);
-      };
-
-      // 测试选择�?
       function testSelector() {
         const selector = document.getElementById("selectorInput").value.trim();
         const preview = document.getElementById("previewContainer");
-        const errorMsg = document.getElementById("errorMessage");
-        const matchCount = document.getElementById("matchCount");
+        const status = document.getElementById("matchStatus");
+        const countBadge = document.getElementById("matchCountBadge");
         const matchedList = document.getElementById("matchedList");
 
-        // 清除之前的高�?
-        preview.querySelectorAll(".matched").forEach((el) => {
-          el.classList.remove("matched");
-        });
-
-        errorMsg.textContent = "";
-        matchedList.textContent = "";
-
+        // Clear previous highlights
+        preview.querySelectorAll(".matched").forEach(el => el.classList.remove("matched"));
+        
         if (!selector) {
-          matchCount.textContent = "0 个匹�?;
+          status.innerHTML = "";
+          countBadge.innerHTML = "";
+          matchedList.innerHTML = '<div style="color: var(--text-muted); font-size: 0.8125rem; text-align: center; padding: 20px;">等待输入选择器...</div>';
           return;
         }
 
         try {
           const matched = preview.querySelectorAll(selector);
-          matchCount.textContent = matched.length + " 个匹�?;
+          status.innerHTML = "";
+          countBadge.innerHTML = `<span class="match-badge">${matched.length} 个匹配</span>`;
+          matchedList.innerHTML = "";
+
+          if (matched.length === 0) {
+            matchedList.innerHTML = '<div style="color: var(--text-muted); font-size: 0.8125rem; text-align: center; padding: 20px;">未找到匹配元素</div>';
+          }
 
           matched.forEach((el, index) => {
             el.classList.add("matched");
-
-            // 显示匹配元素的外层HTML（截断）
-            const div = document.createElement("div");
-            div.className = "matched-item";
-
+            
+            const item = document.createElement("div");
+            item.className = "matched-item";
+            
             let outerHtml = el.outerHTML;
-            if (outerHtml.length > 200) {
-              // 只显示开标签
-              const tagMatch = outerHtml.match(/^<[^>]+>/);
-              outerHtml = tagMatch ? tagMatch[0] + "..." : outerHtml.substring(0, 200) + "...";
+            if (outerHtml.length > 150) {
+                // Get start tag only for long elements
+                const tagMatch = outerHtml.match(/^<[^>]+>/);
+                outerHtml = tagMatch ? tagMatch[0] + "..." : outerHtml.substring(0, 150) + "...";
             }
-            div.textContent = index + 1 + ". " + outerHtml;
-            matchedList.appendChild(div);
+            
+            item.innerHTML = `<b>#${index + 1}</b> <code>${escapeHtml(outerHtml)}</code>`;
+            matchedList.appendChild(item);
           });
         } catch (e) {
-          errorMsg.textContent = "无效的选择�? " + e.message;
-          matchCount.textContent = "错误";
+          status.innerHTML = `<span class="error-badge">选择器语法错误</span>`;
+          countBadge.innerHTML = "";
+          matchedList.innerHTML = `<div style="color: #f43f5e; font-size: 0.8125rem; padding: 10px; background: rgba(244,63,94,0.05); border-radius: 4px;">${e.message}</div>`;
         }
       }
 
-      // 设置示例选择�?
-      window.setSelector = function (selector) {
-        document.getElementById("selectorInput").value = selector;
-        testSelector();
-      };
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
 
-      // 主题切换
-      window.toggleTheme = function () {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute("data-theme");
-        html.setAttribute("data-theme", currentTheme === "light" ? "dark" : "light");
-        localStorage.setItem("theme", html.getAttribute("data-theme"));
-      };
+      function setSelector(s) {
+        document.getElementById("selectorInput").value = s;
+        testSelector();
+      }
+
+      // Initial Setup
+      document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("htmlInput").value = defaultHtml;
+        updatePreview();
+        
+        document.getElementById("htmlInput").addEventListener("input", () => {
+          updatePreview();
+          testSelector();
+        });
+        
+        document.getElementById("selectorInput").addEventListener("input", testSelector);
+      });
     </script>
   </body>
 </html>
-
