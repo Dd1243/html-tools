@@ -1,500 +1,668 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CSS圆角生成�?/title>
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="CSS圆角生成�? />
-    <meta name="keywords" content="css-border-radius,dev,tools" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/dev/css-border-radius.html" />
-
-    <!-- Open Graph -->
-    <meta property="og:title" content="CSS圆角生成�? />
-    <meta property="og:description" content="CSS圆角生成�? />
-    <meta property="og:type" content="website" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CSS 圆角生成器 - 可视化 Border Radius 调试工具 - WebUtils</title>
     <meta
-      property="og:url"
-      content="https://essays4u.net/tools/dev/css-border-radius.html"
+      name="description"
+      content="免费在线 CSS 圆角生成器，支持独立调整四个角的水平和垂直半径。实时预览效果，一键生成 border-radius 代码，适配各种现代网页设计需求。"
     />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="CSS圆角生成�? />
-    <meta name="twitter:description" content="CSS圆角生成�? />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--color-bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      body {
-        font-family: var(--font-sans);
-        font-size: 16px;
-        line-height: 1.6;
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        min-height: 100vh;
-        padding: 20px;
-      }
-      .container {
-        max-width: 800px;
-        margin: 0 auto;
-      }
-      h1 {
-        color: #333;
-        text-align: center;
-        margin-bottom: 20px;
-      }
-      .card {
-        background: white;
-        border-radius: 16px;
-        padding: 24px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-      }
-      .preview-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 40px;
-        background:
-          linear-gradient(45deg, #e0e0e0 25%, transparent 25%),
-          linear-gradient(-45deg, #e0e0e0 25%, transparent 25%),
-          linear-gradient(45deg, transparent 75%, #e0e0e0 75%),
-          linear-gradient(-45deg, transparent 75%, #e0e0e0 75%);
-        background-size: 20px 20px;
-        background-position:
-          0 0,
-          0 10px,
-          10px -10px,
-          -10px 0;
-        border-radius: 12px;
-        margin-bottom: 24px;
-      }
-      .preview-box {
-        width: 200px;
-        height: 200px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        transition: all 0.3s;
-      }
-      .controls {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-        margin-bottom: 20px;
-      }
-      @media (max-width: 600px) {
-        .controls {
-          grid-template-columns: 1fr;
-        }
-      }
-      .corner {
-        background: #f8f9fa;
-        padding: 16px;
-        border-radius: 12px;
-      }
-      .corner h4 {
-        margin-bottom: 12px;
-        color: #333;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .corner-icon {
-        width: 24px;
-        height: 24px;
-        border: 3px solid #667eea;
-      }
-      .tl .corner-icon {
-        border-radius: 12px 0 0;
-        border-right: none;
-        border-bottom: none;
-      }
-      .tr .corner-icon {
-        border-radius: 0 12px 0 0;
-        border-left: none;
-        border-bottom: none;
-      }
-      .bl .corner-icon {
-        border-radius: 0 0 0 12px;
-        border-right: none;
-        border-top: none;
-      }
-      .br .corner-icon {
-        border-radius: 0 0 12px;
-        border-left: none;
-        border-top: none;
-      }
-      .slider-row {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 8px;
-      }
-      .slider-row label {
-        min-width: 20px;
-        color: #666;
-      }
-      .slider-row input[type="range"] {
-        flex: 1;
-      }
-      .slider-row .value {
-        min-width: 50px;
-        text-align: right;
-        color: #333;
-        font-weight: 600;
-      }
-      .link-toggle {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        margin-bottom: 20px;
-      }
-      .link-toggle input {
-        width: 20px;
-        height: 20px;
-      }
-      .output {
-        background: #1e1e1e;
-        color: #9cdcfe;
-        padding: 16px;
-        border-radius: 8px;
-        font-family: var(--font-mono);
-        font-size: 13px;
-        margin-bottom: 16px;
-      }
-      .btn {
-        padding: 12px 24px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: 600;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: white;
-        transition: all 0.3s;
-      }
-      .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-      }
-      .presets {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-bottom: 20px;
-      }
-      .preset {
-        padding: 8px 16px;
-        background: #f0f0f0;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 13px;
-        transition: all 0.3s;
-      }
-      .preset:hover {
-        background: #667eea;
-        color: white;
-      }
-
-      .breadcrumb {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        padding: 8px 14px;
-        background: var(--color-bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        margin-bottom: 20px;
-      }
-      .breadcrumb a {
-        color: var(--color-text-secondary);
-        text-decoration: none;
-        transition: color 0.2s ease;
-      }
-
-      .breadcrumb a:hover {
-        color: var(--color-accent-cyan);
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-      .visually-hidden {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        margin: -1px;
-        padding: 0;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0;
-      }
-    </style>
-    <!-- Google Fonts -->
+    <meta
+      name="keywords"
+      content="CSS圆角生成器,border-radius,圆角调试,前端工具,CSS代码生成,网页设计"
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
+    <style>
+      /* ===== CSS 变量 ===== */
+      :root {
+        --bg-body: #0a0a0a;
+        --bg-card: #111;
+        --bg-input: #0d0d0d;
+        --bg-hover: #1a1a1a;
+        --text-primary: #e5e5e5;
+        --text-secondary: #737373;
+        --text-muted: #525252;
+        --border-color: #252525;
+        --border-focus: #404040;
+        --accent: #00f5d4;
+        --accent-hover: #00dfc4;
+        --accent-glow: rgba(0, 245, 212, 0.15);
+        --accent-secondary: #f472b6;
+        --success: #10b981;
+        --error: #ef4444;
+        --warning: #f59e0b;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 14px;
+        --font-sans: "Inter", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+
+      [data-theme="light"] {
+        --bg-body: #fafafa;
+        --bg-card: #fff;
+        --bg-input: #f5f5f5;
+        --bg-hover: #f0f0f0;
+        --text-primary: #171717;
+        --text-secondary: #525252;
+        --text-muted: #a3a3a3;
+        --border-color: #e5e5e5;
+        --border-focus: #d4d4d4;
+        --accent: #10b981;
+        --accent-hover: #059669;
+        --accent-glow: rgba(16, 185, 129, 0.15);
+        --accent-secondary: #ec4899;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: var(--font-sans);
+        background: var(--bg-body);
+        color: var(--text-primary);
+        line-height: 1.6;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 32px 24px;
+      }
+
+      /* ===== 头部 ===== */
+      .header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .back-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        background: transparent;
+        border: none;
+        border-radius: var(--radius-sm);
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: all 0.2s;
+      }
+
+      .back-btn:hover {
+        background: var(--bg-hover);
+        color: var(--text-primary);
+      }
+
+      .title-group h1 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+      }
+
+      .title-group p {
+        font-size: 0.8125rem;
+        color: var(--text-secondary);
+        margin-top: 2px;
+      }
+
+      .header-right {
+        display: flex;
+        gap: 8px;
+      }
+
+      .theme-toggle {
+        display: flex;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+      }
+
+      .theme-btn {
+        padding: 8px 12px;
+        font-size: 0.75rem;
+        font-family: var(--font-mono);
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .theme-btn:hover {
+        color: var(--text-secondary);
+      }
+      .theme-btn.active {
+        background: var(--accent);
+        color: #000;
+      }
+
+      /* ===== 主布局 ===== */
+      .main-grid {
+        display: grid;
+        grid-template-columns: 360px 1fr;
+        gap: 24px;
+      }
+
+      @media (max-width: 900px) {
+        .main-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ===== 配置面板 ===== */
+      .config-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+      }
+
+      .card-header {
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .card-body {
+        padding: 20px;
+      }
+
+      /* ===== 预览面板 ===== */
+      .preview-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .preview-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        height: 340px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        background-image: 
+          linear-gradient(45deg, var(--bg-input) 25%, transparent 25%),
+          linear-gradient(-45deg, var(--bg-input) 25%, transparent 25%),
+          linear-gradient(45deg, transparent 75%, var(--bg-input) 75%),
+          linear-gradient(-45deg, transparent 75%, var(--bg-input) 75%);
+        background-size: 20px 20px;
+        background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+      }
+
+      .preview-element {
+        width: 200px;
+        height: 200px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        transition: border-radius 0.2s ease;
+      }
+
+      /* ===== 控件样式 ===== */
+      .corner-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+
+      .corner-item {
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 12px;
+      }
+
+      .corner-title {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .slider-group {
+        margin-bottom: 8px;
+      }
+
+      .slider-group:last-child {
+        margin-bottom: 0;
+      }
+
+      .slider-header {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        margin-bottom: 4px;
+        font-family: var(--font-mono);
+      }
+
+      input[type="range"] {
+        width: 100%;
+        height: 4px;
+        background: var(--border-color);
+        border-radius: 2px;
+        appearance: none;
+        outline: none;
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+        appearance: none;
+        width: 12px;
+        height: 12px;
+        background: var(--accent);
+        border-radius: 50%;
+        cursor: pointer;
+        transition: transform 0.1s;
+      }
+
+      input[type="range"]::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+      }
+
+      .link-control {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 16px;
+        font-size: 0.8125rem;
+        color: var(--text-secondary);
+        cursor: pointer;
+      }
+
+      /* ===== 预设 & 代码 ===== */
+      .preset-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 8px;
+      }
+
+      .preset-btn {
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 8px;
+        font-size: 0.7rem;
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: center;
+      }
+
+      .preset-btn:hover {
+        border-color: var(--accent);
+        background: var(--bg-hover);
+      }
+
+      .code-block {
+        margin: 0;
+        padding: 20px;
+        background: var(--bg-input);
+        color: var(--accent);
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+        word-break: break-all;
+      }
+
+      /* ===== 广告占位符 ===== */
+      .ads-placeholder {
+        margin: 24px 0;
+        padding: 20px;
+        background: var(--bg-card);
+        border: 1px dashed var(--border-color);
+        border-radius: var(--radius-lg);
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.8125rem;
+      }
+
+      /* ===== 文章内容 ===== */
+      .article-section {
+        margin-top: 40px;
+        padding-top: 40px;
+        border-top: 1px solid var(--border-color);
+      }
+
+      .prose {
+        max-width: 100%;
+        color: var(--text-secondary);
+      }
+
+      .prose h2 {
+        color: var(--text-primary);
+        font-size: 1.5rem;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+      }
+
+      .prose h3 {
+        color: var(--text-primary);
+        font-size: 1.25rem;
+        margin-top: 1.5rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .prose p {
+        margin-bottom: 1rem;
+        line-height: 1.8;
+      }
+
+      .prose ul,
+      .prose ol {
+        margin-bottom: 1rem;
+        padding-left: 1.5rem;
+      }
+
+      .prose li {
+        margin-bottom: 0.5rem;
+      }
+
+      .prose code {
+        font-family: var(--font-mono);
+        background: var(--bg-input);
+        padding: 0.2rem 0.4rem;
+        border-radius: 4px;
+        font-size: 0.9em;
+      }
+
+      .prose strong {
+        color: var(--text-primary);
+        font-weight: 600;
+      }
+
+      /* ===== Toast ===== */
+      #toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: var(--accent);
+        color: #000;
+        padding: 12px 24px;
+        border-radius: var(--radius-md);
+        font-size: 0.875rem;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        transform: translateY(100px);
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1000;
+      }
+
+      #toast.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: var(--accent);
+        color: #000;
+        border: none;
+        border-radius: var(--radius-md);
+        font-size: 0.8125rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .btn:hover {
+        background: var(--accent-hover);
+        transform: translateY(-1px);
+      }
+    </style>
   </head>
   <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      Border Radius 生成�?
-    </nav>
     <div class="container">
-      <h1>📐 CSS圆角生成�?/h1>
-      <div class="card">
-        <div class="presets">
-          <button class="preset" onclick="applyPreset(0, 0, 0, 0)" aria-label="方形">方形</button>
-          <button class="preset" onclick="applyPreset(8, 8, 8, 8)" aria-label="小圆�?>
-            小圆�?
-          </button>
-          <button class="preset" onclick="applyPreset(16, 16, 16, 16)" aria-label="中圆�?>
-            中圆�?
-          </button>
-          <button class="preset" onclick="applyPreset(50, 50, 50, 50)" aria-label="大圆�?>
-            大圆�?
-          </button>
-          <button class="preset" onclick="applyPreset(100, 100, 100, 100)" aria-label="圆形">
-            圆形
-          </button>
-          <button class="preset" onclick="applyPreset(50, 0, 50, 0)" aria-label="对角">对角</button>
-          <button class="preset" onclick="applyPreset(100, 0, 100, 0)" aria-label="叶子">
-            叶子
-          </button>
-          <button class="preset" onclick="applyPreset(0, 100, 0, 100)" aria-label="反叶�?>
-            反叶�?
-          </button>
-          <button class="preset" onclick="applyPreset(100, 100, 0, 0)" aria-label="顶部�?>
-            顶部�?
-          </button>
-          <button class="preset" onclick="applyPreset(0, 0, 100, 100)" aria-label="底部�?>
-            底部�?
-          </button>
-        </div>
-        <div class="preview-container">
-          <div class="preview-box" id="preview"></div>
-        </div>
-        <div class="link-toggle">
-          <input type="checkbox" id="linked" checked onchange="toggleLink()" />
-          <label for="linked">🔗 同步所有圆�?/label>
-        </div>
-        <div class="controls">
-          <div class="corner tl">
-            <h4>
-              <span class="corner-icon"></span>
-              左上�?
-            </h4>
-            <div class="slider-row">
-              <label for="input-h">H</label>
-              <input
-                type="range"
-                id="tl-h"
-                min="0"
-                max="100"
-                value="16"
-                oninput="updateRadius('tl-h')"
-              />
-              <span class="value" id="tl-h-val">16px</span>
-            </div>
-            <div class="slider-row">
-              <label for="input-v">V</label>
-              <input
-                type="range"
-                id="tl-v"
-                min="0"
-                max="100"
-                value="16"
-                oninput="updateRadius('tl-v')"
-              />
-              <span class="value" id="tl-v-val">16px</span>
-            </div>
-          </div>
-          <div class="corner tr">
-            <h4>
-              <span class="corner-icon"></span>
-              右上�?
-            </h4>
-            <div class="slider-row">
-              <label for="input-h">H</label>
-              <input
-                type="range"
-                id="tr-h"
-                min="0"
-                max="100"
-                value="16"
-                oninput="updateRadius('tr-h')"
-              />
-              <span class="value" id="tr-h-val">16px</span>
-            </div>
-            <div class="slider-row">
-              <label for="input-v">V</label>
-              <input
-                type="range"
-                id="tr-v"
-                min="0"
-                max="100"
-                value="16"
-                oninput="updateRadius('tr-v')"
-              />
-              <span class="value" id="tr-v-val">16px</span>
-            </div>
-          </div>
-          <div class="corner bl">
-            <h4>
-              <span class="corner-icon"></span>
-              左下�?
-            </h4>
-            <div class="slider-row">
-              <label for="input-h">H</label>
-              <input
-                type="range"
-                id="bl-h"
-                min="0"
-                max="100"
-                value="16"
-                oninput="updateRadius('bl-h')"
-              />
-              <span class="value" id="bl-h-val">16px</span>
-            </div>
-            <div class="slider-row">
-              <label for="input-v">V</label>
-              <input
-                type="range"
-                id="bl-v"
-                min="0"
-                max="100"
-                value="16"
-                oninput="updateRadius('bl-v')"
-              />
-              <span class="value" id="bl-v-val">16px</span>
-            </div>
-          </div>
-          <div class="corner br">
-            <h4>
-              <span class="corner-icon"></span>
-              右下�?
-            </h4>
-            <div class="slider-row">
-              <label for="input-h">H</label>
-              <input
-                type="range"
-                id="br-h"
-                min="0"
-                max="100"
-                value="16"
-                oninput="updateRadius('br-h')"
-              />
-              <span class="value" id="br-h-val">16px</span>
-            </div>
-            <div class="slider-row">
-              <label for="input-v">V</label>
-              <input
-                type="range"
-                id="br-v"
-                min="0"
-                max="100"
-                value="16"
-                oninput="updateRadius('br-v')"
-              />
-              <span class="value" id="br-v-val">16px</span>
-            </div>
+      <header class="header">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn" title="返回首页">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+          </a>
+          <div class="title-group">
+            <h1>CSS 圆角生成器</h1>
+            <p>可视化调试 Border Radius，支持独立半径控制</p>
           </div>
         </div>
-        <div class="output" id="output">border-radius: 16px;</div>
-        <button class="btn" onclick="copyCSS()" aria-label="📋 复制CSS">📋 复制CSS</button>
+        <div class="header-right">
+          <div class="theme-toggle">
+            <button class="theme-btn" id="theme-dark" onclick="setTheme('dark')">DARK</button>
+            <button class="theme-btn" id="theme-light" onclick="setTheme('light')">LIGHT</button>
+          </div>
+        </div>
+      </header>
+
+      <div class="ads-placeholder">
+        <!-- Google AdSense Placeholder -->
+        广告位 (Google AdSense)
       </div>
+
+      <div class="main-grid">
+        <!-- 配置列 -->
+        <aside class="config-panel">
+          <div class="card">
+            <div class="card-header">圆角配置</div>
+            <div class="card-body">
+              <label class="link-control">
+                <input type="checkbox" id="linked" checked onchange="toggleLink()" />
+                同步所有圆角
+              </label>
+
+              <div class="corner-grid">
+                <!-- 左上 -->
+                <div class="corner-item">
+                  <div class="corner-title">左上角</div>
+                  <div class="slider-group">
+                    <div class="slider-header"><span>水平</span><span id="tl-h-val">16px</span></div>
+                    <input type="range" id="tl-h" min="0" max="100" value="16" oninput="updateRadius('tl-h')" />
+                  </div>
+                  <div class="slider-group">
+                    <div class="slider-header"><span>垂直</span><span id="tl-v-val">16px</span></div>
+                    <input type="range" id="tl-v" min="0" max="100" value="16" oninput="updateRadius('tl-v')" />
+                  </div>
+                </div>
+                <!-- 右上 -->
+                <div class="corner-item">
+                  <div class="corner-title">右上角</div>
+                  <div class="slider-group">
+                    <div class="slider-header"><span>水平</span><span id="tr-h-val">16px</span></div>
+                    <input type="range" id="tr-h" min="0" max="100" value="16" oninput="updateRadius('tr-h')" />
+                  </div>
+                  <div class="slider-group">
+                    <div class="slider-header"><span>垂直</span><span id="tr-v-val">16px</span></div>
+                    <input type="range" id="tr-v" min="0" max="100" value="16" oninput="updateRadius('tr-v')" />
+                  </div>
+                </div>
+                <!-- 左下 -->
+                <div class="corner-item">
+                  <div class="corner-title">左下角</div>
+                  <div class="slider-group">
+                    <div class="slider-header"><span>水平</span><span id="bl-h-val">16px</span></div>
+                    <input type="range" id="bl-h" min="0" max="100" value="16" oninput="updateRadius('bl-h')" />
+                  </div>
+                  <div class="slider-group">
+                    <div class="slider-header"><span>垂直</span><span id="bl-v-val">16px</span></div>
+                    <input type="range" id="bl-v" min="0" max="100" value="16" oninput="updateRadius('bl-v')" />
+                  </div>
+                </div>
+                <!-- 右下 -->
+                <div class="corner-item">
+                  <div class="corner-title">右下角</div>
+                  <div class="slider-group">
+                    <div class="slider-header"><span>水平</span><span id="br-h-val">16px</span></div>
+                    <input type="range" id="br-h" min="0" max="100" value="16" oninput="updateRadius('br-h')" />
+                  </div>
+                  <div class="slider-group">
+                    <div class="slider-header"><span>垂直</span><span id="br-v-val">16px</span></div>
+                    <input type="range" id="br-v" min="0" max="100" value="16" oninput="updateRadius('br-v')" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">快速预设</div>
+            <div class="card-body">
+              <div class="preset-grid">
+                <div class="preset-btn" onclick="applyPreset(0,0,0,0)">直角</div>
+                <div class="preset-btn" onclick="applyPreset(8,8,8,8)">微圆</div>
+                <div class="preset-btn" onclick="applyPreset(16,16,16,16)">标准</div>
+                <div class="preset-btn" onclick="applyPreset(50,50,50,50)">超圆</div>
+                <div class="preset-btn" onclick="applyPreset(100,100,100,100)">圆形</div>
+                <div class="preset-btn" onclick="applyPreset(100,0,100,0)">叶子</div>
+                <div class="preset-btn" onclick="applyPreset(100,100,0,0)">顶部</div>
+                <div class="preset-btn" onclick="applyPreset(0,0,100,100)">底部</div>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- 预览列 -->
+        <main class="preview-panel">
+          <div class="preview-card">
+            <div class="preview-element" id="preview"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              CSS 代码
+              <button class="btn" style="padding: 4px 10px; font-size: 0.7rem;" onclick="copyCSS()">复制代码</button>
+            </div>
+            <div class="code-block" id="output">border-radius: 16px;</div>
+          </div>
+        </main>
+      </div>
+
+      <div class="ads-placeholder">
+        <!-- Google AdSense Placeholder -->
+        广告位 (Google AdSense)
+      </div>
+
+      <section class="article-section">
+        <article class="prose">
+          <h2>CSS 圆角 (Border Radius) 深度解析：从基础到高级创意</h2>
+          <p>
+            在 Web 开发中，<code>border-radius</code> 属性已经从简单的圆角按钮演变成了构建复杂形状和现代 UI 的核心工具。
+          </p>
+
+          <h3>1. 基础语法：不只是四个角</h3>
+          <p>
+            虽然大多数人习惯使用 <code>border-radius: 8px;</code> 这种简写，但 CSS 实际上允许我们为每个角定义不同的半径。
+          </p>
+          <ul>
+            <li><strong>单值：</strong> 四个角半径相同。</li>
+            <li><strong>多值：</strong> 按照“左上、右上、右下、左下”的顺序分别设置。</li>
+            <li><strong>斜杠语法：</strong> <code>水平半径 / 垂直半径</code>。这是创建不规则形状（如椭圆或有机形状）的关键。</li>
+          </ul>
+
+          <h3>2. 常见设计场景与解决方案</h3>
+          
+          <h4>场景一：创建完美的圆形</h4>
+          <p>
+            当元素的宽高相等（正方形）且圆角设置为 <code>50%</code> 或更大时，元素将呈现为正圆形。这常用于用户头像。
+          </p>
+
+          <h4>场景二：现代感十足的“药丸”按钮</h4>
+          <p>
+            对于长方形按钮，将圆角值设置为高度的一半以上，可以获得平滑的半圆两端。
+          </p>
+
+          <h4>场景三：有机的“液态”形状</h4>
+          <p>
+            通过独立控制每个角的水平和垂直半径，例如 <code>60% 40% 30% 70% / 60% 30% 70% 40%</code>，可以创建看起来非常自然的、非对称的有机形状。
+          </p>
+
+          <h3>3. 浏览器兼容性与性能</h3>
+          <p>
+            <code>border-radius</code> 在所有现代浏览器中都有极好的支持。从性能角度看，它比使用背景图片来实现圆角要高效得多，因为它由浏览器的渲染引擎直接处理，支持硬件加速。
+          </p>
+
+          <p>
+            使用我们的<strong>可视化 CSS 圆角生成器</strong>，您可以直观地拖动滑块，实时观察形状变化，并直接复制生成的标准 CSS 代码到您的项目中。
+          </p>
+        </article>
+      </section>
     </div>
+
+    <div id="toast"></div>
+
     <script>
+      // 主题管理
+      function setTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        localStorage.setItem("theme", theme);
+        document.querySelectorAll(".theme-btn").forEach((btn) => {
+          btn.classList.toggle("active", btn.id === `theme-${theme}`);
+        });
+      }
+
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      setTheme(savedTheme);
+
+      // 圆角逻辑
       const corners = ["tl", "tr", "bl", "br"];
       const dirs = ["h", "v"];
 
       function updateRadius(changed) {
         const linked = document.getElementById("linked").checked;
+        const value = document.getElementById(changed).value;
 
         if (linked) {
-          const value = document.getElementById(changed).value;
           corners.forEach((c) => {
             dirs.forEach((d) => {
               document.getElementById(`${c}-${d}`).value = value;
@@ -502,8 +670,7 @@
             });
           });
         } else {
-          document.getElementById(changed + "-val").textContent =
-            document.getElementById(changed).value + "px";
+          document.getElementById(changed + "-val").textContent = value + "px";
         }
 
         render();
@@ -568,12 +735,20 @@
       }
 
       function copyCSS() {
-        navigator.clipboard.writeText(document.getElementById("output").textContent);
-        alert("已复制到剪贴�?");
+        const code = document.getElementById("output").textContent;
+        navigator.clipboard.writeText(code).then(() => {
+          showToast("代码已复制到剪贴板");
+        });
+      }
+
+      function showToast(message) {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 2000);
       }
 
       render();
     </script>
   </body>
 </html>
-
