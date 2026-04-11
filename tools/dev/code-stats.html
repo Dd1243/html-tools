@@ -1,1201 +1,794 @@
-<!doctype html>
-<html lang="zh-CN" data-theme="light">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>代码统计�?- 在线代码行数与字符统计工�?| WebUtils</title>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>代码统计工具 - 在线代码行数与字符统计 - WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="免费在线代码统计器，支持多种编程语言的代码统计。快速统计代码行数、字符数、单词数、注释行数、空白行数等。支持批量文件分析，实时统计结果，适用于代码审查、项目统计、代码质量分析等场景�? />
-    <meta name="keywords" content="代码统计, 代码行数, 字符统计, 代码分析, 代码审查, 代码质量, 代码行数统计, 代码字符�? 注释统计, 空白行统�? code statistics, code counter, lines of code, 代码分析工具" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/dev/code-stats.html" />
-
+    <meta name="description" content="功能强大的在线代码统计工具，支持 JavaScript, Python, Java, C++, Go 等多种语言。快速统计代码行数、注释行、空行、字符数及基础复杂度指标。">
+    <meta name="keywords" content="代码统计,代码行数,LOC统计,注释率,代码分析,在线开发工具,字符统计">
+    <meta name="author" content="WebUtils">
+    <link rel="canonical" href="https://essays4u.net/tools/dev/code-stats.html">
+    
     <!-- Open Graph -->
-    <meta property="og:title" content="代码统计�?- 在线代码行数与字符统计工�? />
-    <meta property="og:description" content="免费在线代码统计器，支持多种编程语言的代码统计。快速统计代码行数、字符数、单词数、注释行数、空白行数等�? />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/dev/code-stats.html" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="代码统计�?- 在线代码行数与字符统计工�? />
-    <meta name="twitter:description" content="免费在线代码统计器，支持多种编程语言的代码统计。快速统计代码行数、字符数、单词数、注释行数、空白行数等�? />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        z-index: 1000;
-      }
-      .main-container {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
-      }
-      @media (max-width: 768px) {
-        .main-container {
-          grid-template-columns: 1fr;
+    <meta property="og:title" content="代码统计工具 - 在线代码行数与字符统计">
+    <meta property="og:description" content="深入分析代码构成。支持多种编程语言，实时生成统计报表。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://essays4u.net/tools/dev/code-stats.html">
+    
+    <!-- JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "代码统计工具",
+        "operatingSystem": "Web",
+        "applicationCategory": "DeveloperApplication",
+        "description": "在线统计代码的各种指标，包括行数、注释、空行和复杂度。",
+        "offers": {
+            "@type": "Offer",
+            "price": "0"
         }
-      }
-      .input-panel {
-        display: flex;
-        flex-direction: column;
-      }
-      .input-panel label {
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-      }
-      .input-panel textarea {
-        font-family: var(--font-mono);
-        font-size: 0.875rem;
-        min-height: 400px;
-        resize: vertical;
-        tab-size: 4;
-      }
-      .controls {
-        display: flex;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-        flex-wrap: wrap;
-      }
-      .controls select {
-        width: auto;
-        min-width: 150px;
-      }
-      .stats-panel {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-      }
-      .stat-card {
-        background: var(--pico-card-background-color);
-        border-radius: 0.5rem;
-        padding: 1rem;
-        border: 1px solid var(--pico-muted-border-color);
-      }
-      .stat-card h3 {
-        margin: 0 0 1rem;
-        font-size: 1rem;
-        color: var(--pico-muted-color);
-      }
-      .stat-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
-      }
-      .stat-item {
-        text-align: center;
-      }
-      .stat-value {
-        font-size: 2rem;
-        font-weight: bold;
-        color: var(--pico-primary);
-      }
-      .stat-label {
-        font-size: 0.75rem;
-        color: var(--pico-muted-color);
-        margin-top: 0.25rem;
-      }
-      .progress-bar {
-        height: 8px;
-        background: var(--pico-secondary-background);
-        border-radius: 4px;
-        overflow: hidden;
-        margin: 0.5rem 0;
-      }
-      .progress-fill {
-        height: 100%;
-        transition: width 0.3s ease;
-      }
-      .progress-code {
-        background: #22c55e;
-      }
-      .progress-comment {
-        background: #3b82f6;
-      }
-      .progress-blank {
-        background: #9ca3af;
-      }
-      .legend {
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-        margin-top: 0.5rem;
-      }
-      .legend-item {
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-        font-size: 0.75rem;
-      }
-      .legend-color {
-        width: 12px;
-        height: 12px;
-        border-radius: 2px;
-      }
-      .char-stats {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 0.5rem;
-        font-size: 0.875rem;
-      }
-      .char-stat {
-        background: var(--pico-code-background-color);
-        padding: 0.5rem;
-        border-radius: 0.25rem;
-        text-align: center;
-      }
-      .char-stat-value {
-        font-weight: bold;
-        font-size: 1.25rem;
-      }
-      .complexity-meter {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-top: 0.5rem;
-      }
-      .complexity-bar {
-        flex: 1;
-        height: 20px;
-        background: linear-gradient(to right, #22c55e, #eab308, #ef4444);
-        border-radius: 10px;
-        position: relative;
-      }
-      .complexity-indicator {
-        position: absolute;
-        width: 4px;
-        height: 24px;
-        background: var(--pico-contrast);
-        top: -2px;
-        border-radius: 2px;
-        transition: left 0.3s ease;
-      }
-      .complexity-label {
-        font-size: 0.875rem;
-        min-width: 60px;
-      }
-      .file-drop {
-        border: 2px dashed var(--pico-muted-border-color);
-        border-radius: 0.5rem;
-        padding: 1rem;
-        text-align: center;
-        margin-bottom: 1rem;
-        transition: all 0.3s ease;
-      }
-      .file-drop.dragover {
-        border-color: var(--pico-primary);
-        background: var(--pico-primary-background);
-      }
-      .file-drop input {
-        display: none;
-      }
-      .top-items {
-        font-size: 0.875rem;
-      }
-      .top-item {
-        display: flex;
-        justify-content: space-between;
-        padding: 0.25rem 0;
-        border-bottom: 1px solid var(--pico-muted-border-color);
-      }
-      .top-item:last-child {
-        border-bottom: none;
-      }
+    }
+    </script>
 
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
+    <!-- Google AdSense Placeholder -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-################" crossorigin="anonymous"></script>
+
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --primary-hover: #2563eb;
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #0f172a;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --accent-color: #60a5fa;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --warning-color: #f59e0b;
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="light"] {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-input: #f1f5f9;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            transition: var(--transition);
+            padding-top: 60px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 10px 20px;
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-home {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 25px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        select {
+            background: var(--bg-input);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        textarea {
+            width: 100%;
+            height: 500px;
+            background: var(--bg-input);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            resize: vertical;
+            transition: var(--transition);
+        }
+
+        textarea:focus {
+            border-color: var(--primary-color);
+        }
+
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-box {
+            background: var(--bg-input);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .chart-container {
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            height: 12px;
+            background: var(--bg-input);
+            border-radius: 6px;
+            overflow: hidden;
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .progress-segment {
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            font-size: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .details-list {
+            margin-top: 25px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .complexity-meter {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .complexity-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .ad-container {
+            margin: 40px 0;
+            text-align: center;
+            min-height: 90px;
+            background: rgba(255, 255, 255, 0.02);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px dashed var(--border-color);
+        }
+
+        .article-section {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .article-section h2 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .article-section h3 {
+            margin: 25px 0 15px;
+        }
+
+        .article-section p {
+            margin-bottom: 15px;
+            color: var(--text-muted);
+        }
+
+        .problem-solution {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .ps-card {
+            background: rgba(59, 130, 246, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .ps-card.solution {
+            background: rgba(16, 185, 129, 0.05);
+            border-left-color: var(--success-color);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 40px 0;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+        }
+
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .stats-summary {
+                grid-template-columns: 1fr;
+            }
+            .problem-solution {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      代码统计�?
+</head>
+<body data-theme="dark">
+    <nav>
+        <div class="nav-content">
+            <a href="../../index.html" class="back-home">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                返回首页
+            </a>
+            <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                <svg class="sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </button>
+        </div>
     </nav>
-    <button class="theme-toggle" onclick="toggleTheme()">切换主题</button>
 
-    <main class="container">
-      <h1>代码统计�?/h1>
-      <p>统计代码行数、空行、注释行等详细信�?/p>
+    <div class="container">
+        <header>
+            <h1>代码统计工具</h1>
+            <p class="subtitle">全方位分析代码行数、注释分布及复杂度指标</p>
+        </header>
 
-      <div class="controls">
-        <select id="languageSelect">
-          <option value="auto">自动检测语言</option>
-          <option value="javascript">JavaScript</option>
-          <option value="typescript">TypeScript</option>
-          <option value="python">Python</option>
-          <option value="java">Java</option>
-          <option value="c">C/C++</option>
-          <option value="csharp">C#</option>
-          <option value="go">Go</option>
-          <option value="rust">Rust</option>
-          <option value="php">PHP</option>
-          <option value="ruby">Ruby</option>
-          <option value="swift">Swift</option>
-          <option value="kotlin">Kotlin</option>
-          <option value="html">HTML</option>
-          <option value="css">CSS</option>
-          <option value="sql">SQL</option>
-          <option value="shell">Shell</option>
-        </select>
-        <button onclick="analyzeCode()">分析代码</button>
-        <button class="secondary" onclick="clearCode()">清空</button>
-        <button class="secondary" onclick="loadSample()">加载示例</button>
-      </div>
-
-      <div class="file-drop" id="fileDrop">
-        <p>
-          拖放文件到此处，�?
-          <label for="fileInput" style="color: var(--pico-primary); cursor: pointer">
-            点击选择文件
-          </label>
-        </p>
-        <input
-          type="file"
-          id="fileInput"
-          accept=".js,.ts,.jsx,.tsx,.py,.java,.c,.cpp,.h,.cs,.go,.rs,.php,.rb,.swift,.kt,.html,.css,.sql,.sh"
-        />
-      </div>
-
-      <div class="main-container">
-        <div class="input-panel">
-          <label for="codeInput">代码内容</label>
-          <textarea id="codeInput" placeholder="在此粘贴代码..."></textarea>
-        </div>
-
-        <div class="stats-panel">
-          <div class="stat-card">
-            <h3>行数统计</h3>
-            <div class="stat-grid">
-              <div class="stat-item">
-                <div class="stat-value" id="totalLines">0</div>
-                <div class="stat-label">总行�?/div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-value" id="codeLines">0</div>
-                <div class="stat-label">代码�?/div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-value" id="commentLines">0</div>
-                <div class="stat-label">注释�?/div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-value" id="blankLines">0</div>
-                <div class="stat-label">空白�?/div>
-              </div>
-            </div>
-            <div class="progress-bar">
-              <div
-                class="progress-fill progress-code"
-                id="codeProgress"
-                style="width: 0%; display: inline-block"
-              ></div>
-              <div
-                class="progress-fill progress-comment"
-                id="commentProgress"
-                style="width: 0%; display: inline-block"
-              ></div>
-              <div
-                class="progress-fill progress-blank"
-                id="blankProgress"
-                style="width: 0%; display: inline-block"
-              ></div>
-            </div>
-            <div class="legend">
-              <div class="legend-item">
-                <div class="legend-color" style="background: #22c55e"></div>
-                代码
-              </div>
-              <div class="legend-item">
-                <div class="legend-color" style="background: #3b82f6"></div>
-                注释
-              </div>
-              <div class="legend-item">
-                <div class="legend-color" style="background: #9ca3af"></div>
-                空白
-              </div>
-            </div>
-          </div>
-
-          <div class="stat-card">
-            <h3>字符统计</h3>
-            <div class="char-stats">
-              <div class="char-stat">
-                <div class="char-stat-value" id="totalChars">0</div>
-                <div>总字�?/div>
-              </div>
-              <div class="char-stat">
-                <div class="char-stat-value" id="nonSpaceChars">0</div>
-                <div>非空字符</div>
-              </div>
-              <div class="char-stat">
-                <div class="char-stat-value" id="wordCount">0</div>
-                <div>单词�?/div>
-              </div>
-              <div class="char-stat">
-                <div class="char-stat-value" id="avgLineLength">0</div>
-                <div>平均行长</div>
-              </div>
-              <div class="char-stat">
-                <div class="char-stat-value" id="maxLineLength">0</div>
-                <div>最长行</div>
-              </div>
-              <div class="char-stat">
-                <div class="char-stat-value" id="indentSpaces">0</div>
-                <div>缩进空格</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="stat-card">
-            <h3>代码复杂度指�?/h3>
-            <div class="complexity-meter">
-              <span class="complexity-label">简�?/span>
-              <div class="complexity-bar">
-                <div class="complexity-indicator" id="complexityIndicator" style="left: 0%"></div>
-              </div>
-              <span class="complexity-label">复杂</span>
-            </div>
-            <div style="margin-top: 1rem">
-              <div class="char-stats">
-                <div class="char-stat">
-                  <div class="char-stat-value" id="functionCount">0</div>
-                  <div>函数/方法</div>
+        <main>
+            <div class="main-grid">
+                <div class="card">
+                    <div class="editor-header">
+                        <select id="langSelect">
+                            <option value="auto">自动检测语言</option>
+                            <option value="javascript">JavaScript / TypeScript</option>
+                            <option value="python">Python</option>
+                            <option value="java">Java / C# / Kotlin</option>
+                            <option value="c">C / C++</option>
+                            <option value="go">Go</option>
+                            <option value="rust">Rust</option>
+                            <option value="php">PHP</option>
+                            <option value="html">HTML</option>
+                            <option value="css">CSS</option>
+                            <option value="sql">SQL</option>
+                        </select>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="action-btn" onclick="document.getElementById('codeInput').value=''; updateStats();">清空</button>
+                            <button class="action-btn" onclick="loadSample()">示例</button>
+                        </div>
+                    </div>
+                    <textarea id="codeInput" placeholder="在此粘贴代码内容，或拖放文件到此处..."></textarea>
                 </div>
-                <div class="char-stat">
-                  <div class="char-stat-value" id="classCount">0</div>
-                  <div>�?接口</div>
-                </div>
-                <div class="char-stat">
-                  <div class="char-stat-value" id="importCount">0</div>
-                  <div>导入语句</div>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          <div class="stat-card">
-            <h3>常用关键�?Top 5</h3>
-            <div class="top-items" id="topKeywords">
-              <div class="top-item">
-                <span>-</span>
-                <span>0</span>
-              </div>
+                <div class="card">
+                    <div class="stats-summary">
+                        <div class="stat-box">
+                            <span class="stat-value" id="totalLines">0</span>
+                            <span class="stat-label">总行数</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-value" id="codeLines">0</span>
+                            <span class="stat-label">有效代码</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-value" id="commentLines">0</span>
+                            <span class="stat-label">注释行</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-value" id="blankLines">0</span>
+                            <span class="stat-label">空行</span>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <div class="progress-bar">
+                            <div id="barCode" class="progress-segment" style="width: 0%; background: var(--success-color);"></div>
+                            <div id="barComment" class="progress-segment" style="width: 0%; background: var(--primary-color);"></div>
+                            <div id="barBlank" class="progress-segment" style="width: 0%; background: var(--text-muted);"></div>
+                        </div>
+                        <div class="legend">
+                            <div class="legend-item"><span class="dot" style="background: var(--success-color);"></span> 代码 (<span id="perCode">0</span>%)</div>
+                            <div class="legend-item"><span class="dot" style="background: var(--primary-color);"></span> 注释 (<span id="perComment">0</span>%)</div>
+                            <div class="legend-item"><span class="dot" style="background: var(--text-muted);"></span> 空行 (<span id="perBlank">0</span>%)</div>
+                        </div>
+                    </div>
+
+                    <div class="details-list">
+                        <div class="detail-item"><span>总字符数</span><span id="totalChars">0</span></div>
+                        <div class="detail-item"><span>非空字符</span><span id="nonSpaceChars">0</span></div>
+                        <div class="detail-item"><span>单词总数</span><span id="wordCount">0</span></div>
+                        <div class="detail-item"><span>平均行长度</span><span id="avgLineLen">0</span></div>
+                        <div class="detail-item"><span>最长行长度</span><span id="maxLineLen">0</span></div>
+                    </div>
+
+                    <div class="complexity-meter">
+                        <div class="complexity-title">
+                            <span>基础复杂度指标</span>
+                            <span id="complexityLevel" style="color: var(--success-color);">简单</span>
+                        </div>
+                        <div class="detail-item"><span>函数/方法数</span><span id="funcCount">0</span></div>
+                        <div class="detail-item"><span>类/结构体数</span><span id="classCount">0</span></div>
+                        <div class="detail-item"><span>模块导入数</span><span id="importCount">0</span></div>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </main>
+
+            <div class="ad-container">
+                <!-- AdSense Placeholder -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-################"
+                     data-ad-slot="################"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+            </div>
+
+            <section class="article-section">
+                <h2>为什么要关注代码统计数据？</h2>
+                
+                <div class="problem-solution">
+                    <div class="ps-card">
+                        <h3>常见困惑</h3>
+                        <p>如何客观衡量一个项目的规模？代码写得越多就代表工作量越大吗？为什么有些代码虽然短却极难维护？</p>
+                    </div>
+                    <div class="ps-card solution">
+                        <h3>统计的意义</h3>
+                        <p>代码行数（LOC）虽然不能完全代表质量，但它是评估项目规模、预估维护成本的重要基准。通过分析注释率和复杂度，我们可以发现潜在的“代码债”。</p>
+                    </div>
+                </div>
+
+                <h3>核心指标解析</h3>
+                <p>本工具提供的不仅是简单的数字，更是对代码健康度的初步体检：</p>
+                <ul>
+                    <li><strong>SLOC (Source Lines of Code)</strong>: 剔除空行和注释后的纯代码行，是衡量逻辑复杂度的核心指标。</li>
+                    <li><strong>注释率 (Comment Density)</strong>: 通常建议保持在 15%-30% 之间。过低意味着代码难以理解，过高可能意味着代码冗余或存在大量废弃代码。</li>
+                    <li><strong>空行比例</strong>: 合理的空行能提高代码的可读性，起到逻辑分块的作用。</li>
+                    <li><strong>基础复杂度</strong>: 通过扫描函数定义、类声明和导入语句，初步评估代码的模块化程度。</li>
+                </ul>
+
+                <h3>各语言统计逻辑</h3>
+                <p>不同编程语言的注释语法差异巨大。本工具内置了多种语言的解析引擎：</p>
+                <ul>
+                    <li><strong>C风格 (JS, Java, C++, Go, Rust)</strong>: 识别 <code>//</code> 和 <code>/* ... */</code>。</li>
+                    <li><strong>脚本风格 (Python, Ruby, Shell)</strong>: 识别 <code>#</code>。</li>
+                    <li><strong>HTML/XML</strong>: 识别 <code>&lt;!-- ... --&gt;</code>。</li>
+                    <li><strong>SQL</strong>: 识别 <code>--</code> 和 <code>/* ... */</code>。</li>
+                </ul>
+
+                <h3>关于隐私</h3>
+                <p>所有的分析计算均在您的浏览器本地完成。您的源代码不会被上传到后台服务器，您可以放心地统计涉及商业机密或隐私的代码。本工具旨在为开发者提供一个快速、安全、免费的代码审计助手。</p>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 WebUtils - 你的全能在线开发工具箱</p>
+        </footer>
+    </div>
 
     <script>
-      // 语言配置
-      const langConfig = {
-        javascript: {
-          singleComment: "//",
-          multiCommentStart: "/*",
-          multiCommentEnd: "*/",
-          functions: /\b(function|const|let|var)\s+\w+\s*[=]?\s*(\(|async|function)/g,
-          classes: /\bclass\s+\w+/g,
-          imports: /\b(import|require)\b/g,
-          keywords: [
-            "function",
-            "const",
-            "let",
-            "var",
-            "if",
-            "else",
-            "for",
-            "while",
-            "return",
-            "async",
-            "await",
-            "class",
-            "export",
-            "import",
-            "try",
-            "catch"
-          ]
-        },
-        typescript: {
-          singleComment: "//",
-          multiCommentStart: "/*",
-          multiCommentEnd: "*/",
-          functions: /\b(function|const|let|var)\s+\w+\s*[=:]?\s*(\(|async|function)/g,
-          classes: /\b(class|interface|type)\s+\w+/g,
-          imports: /\b(import|require)\b/g,
-          keywords: [
-            "function",
-            "const",
-            "let",
-            "var",
-            "if",
-            "else",
-            "for",
-            "while",
-            "return",
-            "async",
-            "await",
-            "class",
-            "interface",
-            "type",
-            "export",
-            "import"
-          ]
-        },
-        python: {
-          singleComment: "#",
-          multiCommentStart: '"""',
-          multiCommentEnd: '"""',
-          functions: /\bdef\s+\w+/g,
-          classes: /\bclass\s+\w+/g,
-          imports: /\b(import|from)\b/g,
-          keywords: [
-            "def",
-            "class",
-            "if",
-            "elif",
-            "else",
-            "for",
-            "while",
-            "return",
-            "import",
-            "from",
-            "try",
-            "except",
-            "with",
-            "as",
-            "lambda",
-            "yield"
-          ]
-        },
-        java: {
-          singleComment: "//",
-          multiCommentStart: "/*",
-          multiCommentEnd: "*/",
-          functions:
-            /\b(public|private|protected|static)?\s*(void|int|String|boolean|\w+)\s+\w+\s*\(/g,
-          classes: /\b(class|interface|enum)\s+\w+/g,
-          imports: /\bimport\b/g,
-          keywords: [
-            "public",
-            "private",
-            "protected",
-            "class",
-            "interface",
-            "void",
-            "int",
-            "String",
-            "if",
-            "else",
-            "for",
-            "while",
-            "return",
-            "new",
-            "static",
-            "final"
-          ]
-        },
-        c: {
-          singleComment: "//",
-          multiCommentStart: "/*",
-          multiCommentEnd: "*/",
-          functions: /\b(void|int|char|float|double|\w+)\s+\w+\s*\([^)]*\)\s*\{/g,
-          classes: /\bstruct\s+\w+/g,
-          imports: /\#include/g,
-          keywords: [
-            "int",
-            "char",
-            "void",
-            "float",
-            "double",
-            "if",
-            "else",
-            "for",
-            "while",
-            "return",
-            "struct",
-            "typedef",
-            "sizeof",
-            "switch",
-            "case",
-            "break"
-          ]
-        },
-        go: {
-          singleComment: "//",
-          multiCommentStart: "/*",
-          multiCommentEnd: "*/",
-          functions: /\bfunc\s+(\(\w+\s+\*?\w+\)\s+)?\w+/g,
-          classes: /\btype\s+\w+\s+(struct|interface)/g,
-          imports: /\bimport\b/g,
-          keywords: [
-            "func",
-            "type",
-            "struct",
-            "interface",
-            "if",
-            "else",
-            "for",
-            "range",
-            "return",
-            "go",
-            "defer",
-            "chan",
-            "select",
-            "package",
-            "import",
-            "var",
-            "const"
-          ]
-        },
-        rust: {
-          singleComment: "//",
-          multiCommentStart: "/*",
-          multiCommentEnd: "*/",
-          functions: /\bfn\s+\w+/g,
-          classes: /\b(struct|enum|trait|impl)\s+\w+/g,
-          imports: /\buse\b/g,
-          keywords: [
-            "fn",
-            "let",
-            "mut",
-            "struct",
-            "enum",
-            "impl",
-            "trait",
-            "if",
-            "else",
-            "for",
-            "while",
-            "loop",
-            "match",
-            "return",
-            "use",
-            "mod",
-            "pub"
-          ]
-        },
-        php: {
-          singleComment: "//",
-          multiCommentStart: "/*",
-          multiCommentEnd: "*/",
-          functions: /\bfunction\s+\w+/g,
-          classes: /\b(class|interface|trait)\s+\w+/g,
-          imports: /\b(use|require|include)\b/g,
-          keywords: [
-            "function",
-            "class",
-            "public",
-            "private",
-            "protected",
-            "if",
-            "else",
-            "for",
-            "foreach",
-            "while",
-            "return",
-            "echo",
-            "use",
-            "namespace",
-            "new",
-            "static"
-          ]
-        },
-        ruby: {
-          singleComment: "#",
-          multiCommentStart: "=begin",
-          multiCommentEnd: "=end",
-          functions: /\bdef\s+\w+/g,
-          classes: /\bclass\s+\w+/g,
-          imports: /\b(require|include)\b/g,
-          keywords: [
-            "def",
-            "class",
-            "module",
-            "if",
-            "elsif",
-            "else",
-            "unless",
-            "while",
-            "until",
-            "for",
-            "do",
-            "end",
-            "return",
-            "require",
-            "attr_accessor",
-            "self"
-          ]
-        },
-        html: {
-          singleComment: null,
-          multiCommentStart: "<!--",
-          multiCommentEnd: "-->",
-          functions: null,
-          classes: /\bclass\s*=\s*["'][^"']+["']/g,
-          imports: /<link|<script/g,
-          keywords: [
-            "div",
-            "span",
-            "p",
-            "a",
-            "img",
-            "ul",
-            "li",
-            "table",
-            "form",
-            "input",
-            "button",
-            "head",
-            "body",
-            "html",
-            "meta",
-            "title"
-          ]
-        },
-        css: {
-          singleComment: null,
-          multiCommentStart: "/*",
-          multiCommentEnd: "*/",
-          functions: /@(media|keyframes|import)/g,
-          classes: /\.[a-zA-Z][\w-]*/g,
-          imports: /@import/g,
-          keywords: [
-            "display",
-            "position",
-            "margin",
-            "padding",
-            "color",
-            "background",
-            "font",
-            "width",
-            "height",
-            "border",
-            "flex",
-            "grid",
-            "transform",
-            "transition",
-            "animation"
-          ]
-        },
-        sql: {
-          singleComment: "--",
-          multiCommentStart: "/*",
-          multiCommentEnd: "*/",
-          functions: /\b(CREATE|ALTER)\s+(FUNCTION|PROCEDURE)/gi,
-          classes: /\b(CREATE|ALTER)\s+TABLE/gi,
-          imports: null,
-          keywords: [
-            "SELECT",
-            "FROM",
-            "WHERE",
-            "INSERT",
-            "UPDATE",
-            "DELETE",
-            "JOIN",
-            "LEFT",
-            "RIGHT",
-            "INNER",
-            "GROUP",
-            "ORDER",
-            "BY",
-            "HAVING",
-            "CREATE",
-            "TABLE"
-          ]
-        },
-        shell: {
-          singleComment: "#",
-          multiCommentStart: null,
-          multiCommentEnd: null,
-          functions: /\b\w+\s*\(\)\s*\{/g,
-          classes: null,
-          imports: /\b(source|\.)\s+/g,
-          keywords: [
-            "if",
-            "then",
-            "else",
-            "elif",
-            "fi",
-            "for",
-            "while",
-            "do",
-            "done",
-            "case",
-            "esac",
-            "function",
-            "return",
-            "exit",
-            "echo",
-            "export"
-          ]
-        }
-      };
+        const codeInput = document.getElementById('codeInput');
+        const langSelect = document.getElementById('langSelect');
+        const themeToggle = document.getElementById('themeToggle');
 
-      // 别名
-      langConfig.csharp = langConfig.java;
-      langConfig.swift = langConfig.java;
-      langConfig.kotlin = langConfig.java;
-
-      let currentLang = "auto";
-
-      // 初始�?
-      document.addEventListener("DOMContentLoaded", () => {
-        const savedTheme = localStorage.getItem("theme");
-        if (savedTheme) {
-          document.documentElement.setAttribute("data-theme", savedTheme);
-        }
-
-        setupFileDrop();
-
-        document.getElementById("codeInput").addEventListener("input", analyzeCode);
-        document.getElementById("languageSelect").addEventListener("change", (e) => {
-          currentLang = e.target.value;
-          analyzeCode();
-        });
-      });
-
-      // 设置文件拖放
-      function setupFileDrop() {
-        const dropZone = document.getElementById("fileDrop");
-        const fileInput = document.getElementById("fileInput");
-
-        dropZone.addEventListener("dragover", (e) => {
-          e.preventDefault();
-          dropZone.classList.add("dragover");
-        });
-
-        dropZone.addEventListener("dragleave", () => {
-          dropZone.classList.remove("dragover");
-        });
-
-        dropZone.addEventListener("drop", (e) => {
-          e.preventDefault();
-          dropZone.classList.remove("dragover");
-          const file = e.dataTransfer.files[0];
-          if (file) loadFile(file);
-        });
-
-        fileInput.addEventListener("change", (e) => {
-          const file = e.target.files[0];
-          if (file) loadFile(file);
-        });
-      }
-
-      // 加载文件
-      window.loadFile = function (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          document.getElementById("codeInput").value = e.target.result;
-          detectLanguage(file.name);
-          analyzeCode();
-        };
-        reader.readAsText(file);
-      };
-
-      // 检测语言
-      function detectLanguage(filename) {
-        const ext = filename.split(".").pop().toLowerCase();
-        const extMap = {
-          js: "javascript",
-          jsx: "javascript",
-          ts: "typescript",
-          tsx: "typescript",
-          py: "python",
-          java: "java",
-          c: "c",
-          cpp: "c",
-          h: "c",
-          hpp: "c",
-          cs: "csharp",
-          go: "go",
-          rs: "rust",
-          php: "php",
-          rb: "ruby",
-          swift: "swift",
-          kt: "kotlin",
-          html: "html",
-          htm: "html",
-          css: "css",
-          scss: "css",
-          less: "css",
-          sql: "sql",
-          sh: "shell",
-          bash: "shell"
+        // Language Configurations
+        const configs = {
+            javascript: {
+                single: /^\s*\/\//,
+                multiStart: /\/\*/,
+                multiEnd: /\*\//,
+                funcs: /\b(function|const|let|var)\s+\w+\s*=\s*(\(|async|function)|\bfunction\s+\w+\s*\(|\b\w+\s*\([^)]*\)\s*\{/g,
+                classes: /\bclass\s+\w+|\binterface\s+\w+/g,
+                imports: /\b(import|require)\b/g
+            },
+            python: {
+                single: /^\s*#/,
+                multiStart: /'''|"""/,
+                multiEnd: /'''|"""/,
+                funcs: /\bdef\s+\w+/g,
+                classes: /\bclass\s+\w+/g,
+                imports: /\b(import|from)\b/g
+            },
+            java: {
+                single: /^\s*\/\//,
+                multiStart: /\/\*/,
+                multiEnd: /\*\//,
+                funcs: /\b(public|private|protected|static)?\s*[\w<>]+\s+\w+\s*\([^)]*\)\s*\{/g,
+                classes: /\b(class|interface|enum)\s+\w+/g,
+                imports: /\bimport\b/g
+            },
+            c: {
+                single: /^\s*\/\//,
+                multiStart: /\/\*/,
+                multiEnd: /\*\//,
+                funcs: /\b\w+\s+\w+\s*\([^)]*\)\s*\{/g,
+                classes: /\bstruct\s+\w+/g,
+                imports: /#include/g
+            },
+            go: {
+                single: /^\s*\/\//,
+                multiStart: /\/\*/,
+                multiEnd: /\*\//,
+                funcs: /\bfunc\s+(\([^)]+\)\s+)?\w+/g,
+                classes: /\btype\s+\w+\s+(struct|interface)/g,
+                imports: /\bimport\b/g
+            },
+            rust: {
+                single: /^\s*\/\//,
+                multiStart: /\/\*/,
+                multiEnd: /\*\//,
+                funcs: /\bfn\s+\w+/g,
+                classes: /\b(struct|enum|trait|impl)\s+\w+/g,
+                imports: /\buse\b/g
+            },
+            php: {
+                single: /^\s*(\/\/|#)/,
+                multiStart: /\/\*/,
+                multiEnd: /\*\//,
+                funcs: /\bfunction\s+\w+/g,
+                classes: /\bclass\s+\w+/g,
+                imports: /\b(use|require|include)\b/g
+            },
+            html: {
+                single: null,
+                multiStart: /<!--/,
+                multiEnd: /-->/,
+                funcs: /<script/g,
+                classes: /class=["']/g,
+                imports: /<(link|script|img|iframe)/g
+            },
+            css: {
+                single: null,
+                multiStart: /\/\*/,
+                multiEnd: /\*\//,
+                funcs: /@media|@keyframes/g,
+                classes: /\.[a-zA-Z][\w-]*/g,
+                imports: /@import/g
+            },
+            sql: {
+                single: /^\s*--/,
+                multiStart: /\/\*/,
+                multiEnd: /\*\//,
+                funcs: /\b(CREATE|ALTER)\s+(FUNCTION|PROCEDURE)/gi,
+                classes: /\bCREATE\s+TABLE/gi,
+                imports: null
+            }
         };
 
-        if (extMap[ext]) {
-          currentLang = extMap[ext];
-          document.getElementById("languageSelect").value = currentLang;
-        }
-      }
-
-      // 自动检测语言
-      function autoDetectLanguage(code) {
-        if (/\bdef\s+\w+.*:\s*$/m.test(code) || /^import\s+\w+$/m.test(code)) return "python";
-        if (/\bfunc\s+\w+.*\{/m.test(code) || /^package\s+\w+$/m.test(code)) return "go";
-        if (/\bfn\s+\w+.*->/m.test(code) || /^use\s+\w+::/m.test(code)) return "rust";
-        if (/<\?php/i.test(code)) return "php";
-        if (/^#!.*\/(ba)?sh/m.test(code)) return "shell";
-        if (/<html|<div|<body/i.test(code)) return "html";
-        if (/^\s*\{[\s\S]*\}[\s\S]*\{/m.test(code) || /@media|@keyframes/i.test(code)) return "css";
-        if (/\bSELECT\b.*\bFROM\b/i.test(code)) return "sql";
-        if (/\bpublic\s+class\b/i.test(code)) return "java";
-        if (/\binterface\s+\w+\s*\{|:\s*\w+\s*[=;]/m.test(code)) return "typescript";
-        return "javascript";
-      }
-
-      // 分析代码
-      function analyzeCode() {
-        const code = document.getElementById("codeInput").value;
-
-        if (!code.trim()) {
-          resetStats();
-          return;
+        function detectLang(code) {
+            if (/^\s*import\s+.*from|^\s*const\s+.*=|^\s*function\s+\w+/.test(code)) return 'javascript';
+            if (/^\s*def\s+\w+\(|^\s*import\s+\w+|^if\s+__name__\s*==/.test(code)) return 'python';
+            if (/^\s*public\s+class\s+|^\s*package\s+/.test(code)) return 'java';
+            if (/^#include|^int\s+main\(/.test(code)) return 'c';
+            if (/^package\s+main|^func\s+/.test(code)) return 'go';
+            if (/^fn\s+main|^use\s+std::/.test(code)) return 'rust';
+            if (/^<\?php/.test(code)) return 'php';
+            if (/<html|<body|<div/i.test(code)) return 'html';
+            if (/@media|\.[\w-]+\s*\{/.test(code)) return 'css';
+            if (/SELECT\s+.*\s+FROM/i.test(code)) return 'sql';
+            return 'javascript';
         }
 
-        const lang = currentLang === "auto" ? autoDetectLanguage(code) : currentLang;
-        const config = langConfig[lang] || langConfig.javascript;
-
-        const lines = code.split("\n");
-        const stats = {
-          total: lines.length,
-          code: 0,
-          comment: 0,
-          blank: 0,
-          chars: code.length,
-          nonSpaceChars: code.replace(/\s/g, "").length,
-          words: (code.match(/\b\w+\b/g) || []).length,
-          functions: 0,
-          classes: 0,
-          imports: 0
-        };
-
-        // 统计�?
-        let inMultiComment = false;
-        const lineLengths = [];
-        let indentSpaces = 0;
-
-        lines.forEach((line) => {
-          const trimmed = line.trim();
-          lineLengths.push(line.length);
-
-          // 统计缩进
-          const leadingSpaces = line.match(/^\s*/)[0];
-          indentSpaces += leadingSpaces.length;
-
-          if (!trimmed) {
-            stats.blank++;
-            return;
-          }
-
-          // 多行注释检�?
-          if (
-            config.multiCommentStart &&
-            !inMultiComment &&
-            trimmed.includes(config.multiCommentStart)
-          ) {
-            inMultiComment = true;
-            if (
-              !trimmed.includes(config.multiCommentEnd) ||
-              trimmed.indexOf(config.multiCommentStart) > trimmed.indexOf(config.multiCommentEnd)
-            ) {
-              stats.comment++;
-              return;
+        function updateStats() {
+            const code = codeInput.value;
+            if (!code) {
+                resetUI();
+                return;
             }
-          }
 
-          if (inMultiComment) {
-            stats.comment++;
-            if (config.multiCommentEnd && trimmed.includes(config.multiCommentEnd)) {
-              inMultiComment = false;
-            }
-            return;
-          }
+            let lang = langSelect.value;
+            if (lang === 'auto') lang = detectLang(code);
+            const config = configs[lang] || configs.javascript;
 
-          // 单行注释检�?
-          if (config.singleComment && trimmed.startsWith(config.singleComment)) {
-            stats.comment++;
-            return;
-          }
+            const lines = code.split('\n');
+            let stats = {
+                total: lines.length,
+                code: 0,
+                comment: 0,
+                blank: 0,
+                chars: code.length,
+                nonSpace: code.replace(/\s/g, '').length,
+                words: (code.match(/\b\w+\b/g) || []).length,
+                maxLen: 0,
+                totalLen: 0
+            };
 
-          stats.code++;
-        });
+            let inMulti = false;
+            lines.forEach(line => {
+                const trimmed = line.trim();
+                stats.totalLen += line.length;
+                if (line.length > stats.maxLen) stats.maxLen = line.length;
 
-        // 统计函数/�?导入
-        if (config.functions) {
-          stats.functions = (code.match(config.functions) || []).length;
+                if (!trimmed) {
+                    stats.blank++;
+                    return;
+                }
+
+                if (config.multiStart && !inMulti && config.multiStart.test(trimmed)) {
+                    inMulti = true;
+                    stats.comment++;
+                    if (config.multiEnd && config.multiEnd.test(trimmed)) {
+                        const startIdx = trimmed.search(config.multiStart);
+                        const endIdx = trimmed.search(config.multiEnd);
+                        if (endIdx > startIdx) inMulti = false;
+                    }
+                    return;
+                }
+
+                if (inMulti) {
+                    stats.comment++;
+                    if (config.multiEnd && config.multiEnd.test(trimmed)) inMulti = false;
+                    return;
+                }
+
+                if (config.single && config.single.test(line)) {
+                    stats.comment++;
+                    return;
+                }
+
+                stats.code++;
+            });
+
+            // Complexity
+            const funcs = (code.match(config.funcs) || []).length;
+            const classes = (code.match(config.classes) || []).length;
+            const imports = config.imports ? (code.match(config.imports) || []).length : 0;
+
+            updateUI(stats, funcs, classes, imports);
         }
-        if (config.classes) {
-          stats.classes = (code.match(config.classes) || []).length;
+
+        function updateUI(stats, funcs, classes, imports) {
+            document.getElementById('totalLines').textContent = stats.total;
+            document.getElementById('codeLines').textContent = stats.code;
+            document.getElementById('commentLines').textContent = stats.comment;
+            document.getElementById('blankLines').textContent = stats.blank;
+
+            const pCode = stats.total ? Math.round((stats.code / stats.total) * 100) : 0;
+            const pComment = stats.total ? Math.round((stats.comment / stats.total) * 100) : 0;
+            const pBlank = stats.total ? (100 - pCode - pComment) : 0;
+
+            document.getElementById('barCode').style.width = pCode + '%';
+            document.getElementById('barComment').style.width = pComment + '%';
+            document.getElementById('barBlank').style.width = pBlank + '%';
+
+            document.getElementById('perCode').textContent = pCode;
+            document.getElementById('perComment').textContent = pComment;
+            document.getElementById('perBlank').textContent = pBlank;
+
+            document.getElementById('totalChars').textContent = stats.chars.toLocaleString();
+            document.getElementById('nonSpaceChars').textContent = stats.nonSpace.toLocaleString();
+            document.getElementById('wordCount').textContent = stats.words.toLocaleString();
+            document.getElementById('avgLineLen').textContent = Math.round(stats.totalLen / (stats.total || 1));
+            document.getElementById('maxLineLen').textContent = stats.maxLen;
+
+            document.getElementById('funcCount').textContent = funcs;
+            document.getElementById('classCount').textContent = classes;
+            document.getElementById('importCount').textContent = imports;
+
+            const complexity = funcs + classes * 2 + Math.floor(stats.code / 50);
+            const level = document.getElementById('complexityLevel');
+            if (complexity < 10) { level.textContent = '简单'; level.style.color = 'var(--success-color)'; }
+            else if (complexity < 30) { level.textContent = '适中'; level.style.color = 'var(--warning-color)'; }
+            else { level.textContent = '复杂'; level.style.color = 'var(--error-color)'; }
         }
-        if (config.imports) {
-          stats.imports = (code.match(config.imports) || []).length;
+
+        function resetUI() {
+            const keys = ['totalLines', 'codeLines', 'commentLines', 'blankLines', 'perCode', 'perComment', 'perBlank', 'totalChars', 'nonSpaceChars', 'wordCount', 'avgLineLen', 'maxLineLen', 'funcCount', 'classCount', 'importCount'];
+            keys.forEach(id => document.getElementById(id).textContent = '0');
+            document.getElementById('barCode').style.width = '0%';
+            document.getElementById('barComment').style.width = '0%';
+            document.getElementById('barBlank').style.width = '0%';
+            document.getElementById('complexityLevel').textContent = '简单';
         }
 
-        // 计算关键字频�?
-        const keywordCounts = {};
-        if (config.keywords) {
-          config.keywords.forEach((kw) => {
-            const regex = new RegExp("\\b" + kw + "\\b", "gi");
-            const count = (code.match(regex) || []).length;
-            if (count > 0) {
-              keywordCounts[kw] = count;
-            }
-          });
-        }
-
-        // 更新 UI
-        updateUI(stats, lineLengths, indentSpaces, keywordCounts);
-      }
-
-      // 更新 UI
-      window.updateUI = function (stats, lineLengths, indentSpaces, keywordCounts) {
-        // 行数
-        document.getElementById("totalLines").textContent = stats.total;
-        document.getElementById("codeLines").textContent = stats.code;
-        document.getElementById("commentLines").textContent = stats.comment;
-        document.getElementById("blankLines").textContent = stats.blank;
-
-        // 进度�?
-        const total = stats.total || 1;
-        document.getElementById("codeProgress").style.width = (stats.code / total) * 100 + "%";
-        document.getElementById("commentProgress").style.width =
-          (stats.comment / total) * 100 + "%";
-        document.getElementById("blankProgress").style.width = (stats.blank / total) * 100 + "%";
-
-        // 字符统计
-        document.getElementById("totalChars").textContent = stats.chars.toLocaleString();
-        document.getElementById("nonSpaceChars").textContent = stats.nonSpaceChars.toLocaleString();
-        document.getElementById("wordCount").textContent = stats.words.toLocaleString();
-        document.getElementById("avgLineLength").textContent =
-          Math.round(lineLengths.reduce((a, b) => a + b, 0) / lineLengths.length) || 0;
-        document.getElementById("maxLineLength").textContent = Math.max(...lineLengths) || 0;
-        document.getElementById("indentSpaces").textContent = indentSpaces.toLocaleString();
-
-        // 复杂�?
-        document.getElementById("functionCount").textContent = stats.functions;
-        document.getElementById("classCount").textContent = stats.classes;
-        document.getElementById("importCount").textContent = stats.imports;
-
-        // 复杂度指标计�?
-        const complexity = Math.min(
-          100,
-          stats.functions * 5 + stats.classes * 10 + stats.total / 10
-        );
-        document.getElementById("complexityIndicator").style.left = complexity + "%";
-
-        // Top 关键�?
-        const topKeywords = Object.entries(keywordCounts)
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 5);
-
-        const keywordsContainer = document.getElementById("topKeywords");
-        keywordsContainer.textContent = "";
-
-        if (topKeywords.length === 0) {
-          const div = document.createElement("div");
-          div.className = "top-item";
-          div.innerHTML = "<span>-</span><span>0</span>";
-          keywordsContainer.appendChild(div);
-        } else {
-          topKeywords.forEach(([kw, count]) => {
-            const div = document.createElement("div");
-            div.className = "top-item";
-
-            const kwSpan = document.createElement("code");
-            kwSpan.textContent = kw;
-
-            const countSpan = document.createElement("span");
-            countSpan.textContent = count;
-
-            div.appendChild(kwSpan);
-            div.appendChild(countSpan);
-            keywordsContainer.appendChild(div);
-          });
-        }
-      };
-
-      // 重置统计
-      window.resetStats = function () {
-        const ids = [
-          "totalLines",
-          "codeLines",
-          "commentLines",
-          "blankLines",
-          "totalChars",
-          "nonSpaceChars",
-          "wordCount",
-          "avgLineLength",
-          "maxLineLength",
-          "indentSpaces",
-          "functionCount",
-          "classCount",
-          "importCount"
-        ];
-        ids.forEach((id) => (document.getElementById(id).textContent = "0"));
-
-        document.getElementById("codeProgress").style.width = "0%";
-        document.getElementById("commentProgress").style.width = "0%";
-        document.getElementById("blankProgress").style.width = "0%";
-        document.getElementById("complexityIndicator").style.left = "0%";
-
-        document.getElementById("topKeywords").innerHTML =
-          '<div class="top-item"><span>-</span><span>0</span></div>';
-      };
-
-      // 清空
-      window.clearCode = function () {
-        document.getElementById("codeInput").value = "";
-        resetStats();
-      };
-
-      // 加载示例
-      window.loadSample = function () {
-        const sampleCode = `// 示例 JavaScript 代码
-import React, { useState, useEffect } from 'react';
-import { fetchData } from './api';
-
-/**
- * 用户列表组件
- * @param {Object} props - 组件属�?
+        function loadSample() {
+            const sample = `/**
+ * 代码统计示例
+ * 这是一个简单的 JavaScript 演示
  */
-function UserList({ initialUsers = [] }) {
-    const [users, setUsers] = useState(initialUsers);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+import { analyze } from './utils';
 
-    // 加载用户数据
-    useEffect(() => {
-        const loadUsers = async () => {
-            setLoading(true);
-            try {
-                const data = await fetchData('/api/users');
-                setUsers(data);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loadUsers();
-    }, []);
-
-    // 渲染加载状�?
-    if (loading) {
-        return <div className="loading">加载�?..</div>;
+class CodeAnalyzer {
+    constructor(code) {
+        this.code = code;
     }
 
-    // 渲染错误状�?
-    if (error) {
-        return <div className="error">错误: {error}</div>;
+    // 执行统计逻辑
+    async run() {
+        const result = await analyze(this.code);
+        console.log("统计结果:", result);
+        return result;
     }
-
-    // 渲染用户列表
-    return (
-        <ul className="user-list">
-            {users.map(user => (
-                <li key={user.id} className="user-item">
-                    <span className="user-name">{user.name}</span>
-                    <span className="user-email">{user.email}</span>
-                </li>
-            ))}
-        </ul>
-    );
 }
 
-export default UserList;`;
+const instance = new CodeAnalyzer("print('hello')");
+instance.run();`;
+            codeInput.value = sample;
+            updateStats();
+        }
 
-        document.getElementById("codeInput").value = sampleCode;
-        document.getElementById("languageSelect").value = "javascript";
-        currentLang = "javascript";
-        analyzeCode();
-      };
+        // Events
+        codeInput.addEventListener('input', updateStats);
+        langSelect.addEventListener('change', updateStats);
+        
+        // Theme
+        function initTheme() {
+            const saved = localStorage.getItem('theme') || 'dark';
+            document.body.setAttribute('data-theme', saved);
+        }
+        themeToggle.addEventListener('click', () => {
+            const current = document.body.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+        });
+        initTheme();
 
-      // 主题切换
-      window.toggleTheme = function () {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute("data-theme");
-        html.setAttribute("data-theme", currentTheme === "light" ? "dark" : "light");
-        localStorage.setItem("theme", html.getAttribute("data-theme"));
-      };
+        // Drag & Drop
+        codeInput.addEventListener('dragover', e => e.preventDefault());
+        codeInput.addEventListener('drop', e => {
+            e.preventDefault();
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = ev => {
+                    codeInput.value = ev.target.result;
+                    updateStats();
+                };
+                reader.readAsText(file);
+            }
+        });
     </script>
-  </body>
+</body>
 </html>
-

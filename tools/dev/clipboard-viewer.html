@@ -1,903 +1,601 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>剪贴板查看器 - WebUtils</title>
-
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>剪贴板查看器 - 在线查看剪贴板内容与格式 - WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="查看剪贴板中的各种格式数据，支持文本、HTML、图片、文件等" />
-    <meta name="keywords" content="剪贴�?clipboard 查看 格式 文件" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/dev/clipboard-viewer.html" />
-
+    <meta name="description" content="功能强大的在线剪贴板查看工具，支持查看剪贴板中的多种MIME类型数据，如纯文本、HTML、图片及文件元数据。帮助开发者调试复制粘贴逻辑，分析剪贴板内容构成。">
+    <meta name="keywords" content="剪贴板查看器,clipboard viewer,MIME类型,在线调试工具,剪贴板内容分析,开发者工具">
+    <meta name="author" content="WebUtils">
+    <link rel="canonical" href="https://essays4u.net/tools/dev/clipboard-viewer.html">
+    
     <!-- Open Graph -->
-    <meta property="og:title" content="剪贴板查看器 - WebUtils" />
-    <meta
-      property="og:description"
-      content="查看剪贴板中的各种格式数据，支持文本、HTML、图片、文件等"
-    />
-    <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/dev/clipboard-viewer.html"
-    />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="剪贴板查看器 - WebUtils" />
-    <meta
-      name="twitter:description"
-      content="查看剪贴板中的各种格式数据，支持文本、HTML、图片、文件等"
-    />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-
-    <!-- JSON-LD BreadcrumbList Schema -->
+    <meta property="og:title" content="剪贴板查看器 - 在线查看剪贴板内容与格式">
+    <meta property="og:description" content="深入分析剪贴板中的数据。支持文本、富文本、图片及多种MIME类型查看。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://essays4u.net/tools/dev/clipboard-viewer.html">
+    <meta property="og:image" content="https://essays4u.net/assets/img/og-clipboard.png">
+    
+    <!-- JSON-LD -->
     <script type="application/ld+json">
-      {
+    {
         "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "首页",
-            "item": "https://essays4u.net/"
-          },
-          {
-            "@type": "ListItem",
-            "position": 2,
-            "name": "开发工�?,
-            "item": "https://essays4u.net/#dev"
-          },
-          {
-            "@type": "ListItem",
-            "position": 3,
-            "name": "剪贴板查看器",
-            "item": "https://essays4u.net/tools/dev/clipboard-viewer.html"
-          }
-        ]
-      }
+        "@type": "SoftwareApplication",
+        "name": "剪贴板查看器",
+        "operatingSystem": "Web",
+        "applicationCategory": "DeveloperApplication",
+        "description": "在线查看和分析剪贴板中的多种数据格式，包括文本、HTML和图像。",
+        "offers": {
+            "@type": "Offer",
+            "price": "0"
+        }
+    }
     </script>
 
-    <!-- Preload fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
+    <!-- Google AdSense Placeholder -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-################" crossorigin="anonymous"></script>
 
     <style>
-      /* ============================================
-         Design System - CSS Variables
-         ============================================ */
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      /* Light Theme */
-
-      /* ============================================
-         Base Styles
-         ============================================ */
-      *,
-      *::before,
-      *::after {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      html {
-        font-size: 16px;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-      }
-
-      body {
-        font-family: var(--font-sans);
-        background: var(--color-bg-deep);
-        color: var(--color-text-primary);
-        min-height: 100vh;
-        min-height: 100dvh;
-        line-height: 1.5;
-        transition:
-          background-color var(--transition-normal),
-          color var(--transition-normal);
-      }
-
-      /* Subtle background gradient */
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        z-index: 0;
-        background:
-          radial-gradient(circle at 20% 20%, rgba(0, 212, 170, 0.03) 0%, transparent 50%),
-          radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.03) 0%, transparent 50%);
-      }
-
-      [data-theme="light"] body::before {
-        background:
-          radial-gradient(circle at 20% 20%, rgba(0, 184, 148, 0.05) 0%, transparent 50%),
-          radial-gradient(circle at 80% 80%, rgba(124, 58, 237, 0.05) 0%, transparent 50%);
-      }
-
-      /* ============================================
-         Navigation Bar
-         ============================================ */
-      .nav-bar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 1000;
-        height: calc(var(--nav-height) + var(--safe-area-top));
-        padding-top: var(--safe-area-top);
-        background: var(--glass-bg);
-        backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-        -webkit-backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-        border-bottom: 1px solid var(--glass-border);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: background var(--transition-normal);
-      }
-
-      .nav-content {
-        width: 100%;
-        max-width: var(--container-max);
-        height: var(--nav-height);
-        padding: 0 var(--space-6);
-        display: grid;
-        grid-template-columns: 1fr auto 1fr;
-        align-items: center;
-        gap: var(--space-4);
-      }
-
-      /* Back Button */
-      .nav-back {
-        display: flex;
-        align-items: center;
-        gap: var(--space-1);
-        color: var(--color-accent-primary);
-        text-decoration: none;
-        font-size: 0.9375rem;
-        font-weight: 500;
-        padding: var(--space-2) var(--space-1);
-        margin-left: calc(var(--space-2) * -1);
-        border-radius: var(--radius-sm);
-        transition: all var(--transition-fast);
-        justify-self: start;
-      }
-
-      .nav-back:hover {
-        background: var(--color-border-subtle);
-      }
-
-      .nav-back-icon {
-        width: 20px;
-        height: 20px;
-        stroke-width: 2.5;
-      }
-
-      .nav-back-text {
-        display: inline;
-      }
-
-      /* Nav Title */
-      .nav-title {
-        font-size: 1rem;
-        font-weight: 600;
-        color: var(--color-text-primary);
-        text-align: center;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      /* Nav Actions */
-      .nav-actions {
-        display: flex;
-        align-items: center;
-        gap: var(--space-2);
-        justify-self: end;
-      }
-
-      /* Theme Toggle */
-      .theme-toggle {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 36px;
-        height: 36px;
-        border: none;
-        border-radius: var(--radius-full);
-        background: var(--color-bg-subtle);
-        color: var(--color-text-secondary);
-        cursor: pointer;
-        transition: all var(--transition-fast);
-      }
-
-      .theme-toggle:hover {
-        background: var(--color-border-strong);
-        color: var(--color-text-primary);
-        transform: scale(1.05);
-      }
-
-      .theme-toggle svg {
-        width: 18px;
-        height: 18px;
-      }
-
-      .theme-icon-dark,
-      .theme-icon-light {
-        display: none;
-      }
-
-      [data-theme="dark"] .theme-icon-light,
-      :root:not([data-theme]) .theme-icon-light {
-        display: block;
-      }
-
-      [data-theme="light"] .theme-icon-dark {
-        display: block;
-      }
-
-      /* ============================================
-         Main Content
-         ============================================ */
-      .main-content {
-        position: relative;
-        z-index: 1;
-        min-height: 100vh;
-        min-height: 100dvh;
-        padding-top: calc(var(--nav-height) + var(--safe-area-top) + var(--space-6));
-        padding-bottom: calc(var(--space-8) + var(--safe-area-bottom));
-        padding-left: var(--space-6);
-        padding-right: var(--space-6);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .container {
-        width: 100%;
-        max-width: var(--container-max);
-      }
-
-      /* ============================================
-         Card Styles
-         ============================================ */
-      .card {
-        background: var(--glass-bg);
-        backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-        -webkit-backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-        border: 1px solid var(--color-border-default);
-        border-radius: var(--radius-lg);
-        padding: var(--space-6);
-        margin-bottom: var(--space-5);
-        box-shadow: var(--shadow-md);
-      }
-
-      .card-title {
-        font-size: 1.125rem;
-        font-weight: 600;
-        margin-bottom: var(--space-5);
-        color: var(--color-text-primary);
-      }
-
-      /* ============================================
-         Paste Zone
-         ============================================ */
-      .paste-zone {
-        border: 2px dashed var(--color-border-default);
-        border-radius: var(--radius-lg);
-        padding: var(--space-8);
-        text-align: center;
-        cursor: pointer;
-        transition: all var(--transition-normal);
-        background: var(--color-bg-subtle);
-      }
-
-      .paste-zone:hover,
-      .paste-zone.dragover {
-        border-color: var(--color-accent-primary);
-        background: rgba(0, 212, 170, 0.05);
-        box-shadow: var(--shadow-glow);
-      }
-
-      .paste-zone h3 {
-        margin: 0 0 var(--space-2);
-        color: var(--color-text-primary);
-        font-size: 1.125rem;
-      }
-
-      .paste-zone p {
-        margin: 0;
-        color: var(--color-text-secondary);
-        font-size: 0.9375rem;
-      }
-
-      /* ============================================
-         Result Items
-         ============================================ */
-      .result-item {
-        background: var(--color-bg-subtle);
-        border-radius: var(--radius-md);
-        padding: var(--space-4);
-        margin-bottom: var(--space-4);
-        border: 1px solid var(--color-border-subtle);
-      }
-
-      .result-item:last-child {
-        margin-bottom: 0;
-      }
-
-      .result-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: var(--space-3);
-      }
-
-      .result-type {
-        font-weight: 600;
-        font-size: 0.9375rem;
-        color: var(--color-accent-primary);
-        font-family: var(--font-mono);
-      }
-
-      .result-size {
-        font-size: 0.8125rem;
-        color: var(--text-muted);
-      }
-
-      .result-content {
-        background: var(--color-bg-input);
-        border: 1px solid var(--color-border-subtle);
-        border-radius: var(--radius-md);
-        padding: var(--space-3);
-        font-family: var(--font-mono);
-        font-size: 0.8125rem;
-        white-space: pre-wrap;
-        word-break: break-all;
-        max-height: 300px;
-        overflow: auto;
-        color: var(--color-text-secondary);
-      }
-
-      .result-image {
-        max-width: 100%;
-        max-height: 300px;
-        border-radius: var(--radius-md);
-        border: 1px solid var(--color-border-subtle);
-      }
-
-      .btn-row {
-        display: flex;
-        gap: var(--space-2);
-        margin-top: var(--space-3);
-        flex-wrap: wrap;
-      }
-
-      /* ============================================
-         Buttons
-         ============================================ */
-      button {
-        padding: var(--space-2) var(--space-4);
-        font-size: 0.8875rem;
-        font-weight: 500;
-        border: 1px solid var(--color-border-default);
-        border-radius: var(--radius-md);
-        background: var(--color-bg-subtle);
-        color: var(--color-text-primary);
-        cursor: pointer;
-        transition: all var(--transition-fast);
-        font-family: var(--font-sans);
-      }
-
-      button:hover {
-        border-color: var(--color-accent-primary);
-        background: var(--color-bg-surface);
-        transform: translateY(-1px);
-      }
-
-      button:active {
-        transform: translateY(0);
-      }
-
-      button.primary {
-        background: var(--color-accent-primary);
-        border-color: var(--color-accent-primary);
-        color: #fff;
-        font-weight: 600;
-      }
-
-      button.primary:hover {
-        background: #00c299;
-        border-color: #00c299;
-        box-shadow: var(--shadow-glow);
-      }
-
-      /* ============================================
-         Empty State
-         ============================================ */
-      .empty-state {
-        text-align: center;
-        color: var(--text-muted);
-        padding: var(--space-6);
-        font-size: 0.9375rem;
-      }
-
-      /* ============================================
-         Mobile Responsive
-         ============================================ */
-      @media (max-width: 480px) {
         :root {
-          --nav-height: 52px;
+            --primary-color: #3b82f6;
+            --primary-hover: #2563eb;
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #0f172a;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --accent-color: #60a5fa;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="light"] {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-input: #f1f5f9;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            transition: var(--transition);
+            padding-top: 60px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 10px 20px;
         }
 
         .nav-content {
-          padding: 0 var(--space-4);
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .nav-back-text {
-          display: none;
+        .back-home {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .main-content {
-          padding-top: calc(var(--nav-height) + var(--safe-area-top) + var(--space-4));
-          padding-left: var(--space-4);
-          padding-right: var(--space-4);
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .card {
-          padding: var(--space-4);
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .main-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 30px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
         }
 
         .paste-zone {
-          padding: var(--space-6);
+            border: 2px dashed var(--primary-color);
+            border-radius: var(--radius);
+            padding: 60px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--bg-input);
+            margin-bottom: 20px;
+        }
+
+        .paste-zone:hover, .paste-zone.dragover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: var(--accent-color);
+        }
+
+        .paste-zone h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .paste-zone p {
+            color: var(--text-muted);
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .result-item {
-          padding: var(--space-3);
+            background: var(--bg-input);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
         }
 
-        .btn-row {
-          flex-direction: column;
+        .result-item-header {
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        button {
-          width: 100%;
+        .mime-type {
+            font-family: monospace;
+            font-weight: 600;
+            color: var(--accent-color);
+            font-size: 0.9rem;
         }
-      }
 
-      /* Desktop */
-      @media (min-width: 768px) {
-        .nav-back-text {
-          display: inline;
+        .data-size {
+            font-size: 0.8rem;
+            color: var(--text-muted);
         }
-      }
 
-      @media (min-width: 1024px) {
-        .main-content {
-          padding-top: calc(var(--nav-height) + var(--safe-area-top) + var(--space-8));
+        .result-content {
+            padding: 15px;
+            max-height: 400px;
+            overflow: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            word-break: break-all;
         }
-      }
 
-      /* ============================================
-         Accessibility
-         ============================================ */
-      @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.01ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.01ms !important;
+        .result-image {
+            max-width: 100%;
+            display: block;
+            margin: 0 auto;
+            border-radius: 4px;
         }
-      }
 
-      :focus-visible {
-        outline: 2px solid var(--color-accent-primary);
-        outline-offset: 2px;
-      }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
 
-      button:focus:not(:focus-visible),
-      a:focus:not(:focus-visible),
-      input:focus:not(:focus-visible) {
-        outline: none;
-      }
+        button.action-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 5px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: var(--transition);
+        }
+
+        button.action-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .ad-container {
+            margin: 40px 0;
+            text-align: center;
+            min-height: 90px;
+            background: rgba(255, 255, 255, 0.02);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px dashed var(--border-color);
+        }
+
+        .article-section {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .article-section h2 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .article-section h3 {
+            margin: 25px 0 15px;
+        }
+
+        .article-section p {
+            margin-bottom: 15px;
+            color: var(--text-muted);
+        }
+
+        .article-section ul {
+            margin-bottom: 20px;
+            padding-left: 20px;
+            color: var(--text-muted);
+        }
+
+        .article-section li {
+            margin-bottom: 8px;
+        }
+
+        .problem-solution {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .ps-card {
+            background: rgba(59, 130, 246, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .ps-card.solution {
+            background: rgba(16, 185, 129, 0.05);
+            border-left-color: var(--success-color);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 40px 0;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+        }
+
+        @media (max-width: 768px) {
+            .problem-solution {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+        }
     </style>
-  </head>
-  <body>
-    <!-- Navigation Bar -->
-    <nav class="nav-bar">
-      <div class="nav-content">
-        <a href="../../index.html" class="nav-back" aria-label="返回首页">
-          <svg
-            class="nav-back-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polyline points="15 18 9 12 15 6"></polyline>
-          </svg>
-          <span class="nav-back-text">首页</span>
-        </a>
-
-        <h1 class="nav-title">剪贴板查看器</h1>
-
-        <div class="nav-actions">
-          <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
-            <svg
-              class="theme-icon-light"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-            </svg>
-            <svg
-              class="theme-icon-dark"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <circle cx="12" cy="12" r="5"></circle>
-              <line x1="12" y1="1" x2="12" y2="3"></line>
-              <line x1="12" y1="21" x2="12" y2="23"></line>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-              <line x1="1" y1="12" x2="3" y2="12"></line>
-              <line x1="21" y1="12" x2="23" y2="12"></line>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-            </svg>
-          </button>
+</head>
+<body data-theme="dark">
+    <nav>
+        <div class="nav-content">
+            <a href="../../index.html" class="back-home">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                返回首页
+            </a>
+            <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                <svg class="sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </button>
         </div>
-      </div>
     </nav>
 
-    <!-- Main Content -->
-    <main class="main-content">
-      <div class="container">
-        <!-- Paste Zone Card -->
-        <div class="card">
-          <div class="paste-zone" id="pasteZone" tabindex="0">
-            <h3>📋 点击或按 Ctrl+V 粘贴</h3>
-            <p>支持粘贴文本、富文本、图片、文件等任何内容</p>
-          </div>
-        </div>
+    <div class="container">
+        <header>
+            <h1>剪贴板查看器</h1>
+            <p class="subtitle">实时查看剪贴板中的各种 MIME 类型数据和原始内容</p>
+        </header>
 
-        <!-- Results Card -->
-        <div class="card" id="resultsCard" style="display: none">
-          <h2 class="card-title">剪贴板内�?/h2>
-          <div id="results"></div>
-        </div>
-      </div>
-    </main>
+        <main>
+            <div class="main-card">
+                <div class="paste-zone" id="pasteZone" tabindex="0">
+                    <h2>📋 点击此处或直接按 Ctrl+V 粘贴</h2>
+                    <p>支持粘贴纯文本、富文本(HTML)、图片、文件等任何内容</p>
+                </div>
+
+                <div id="resultsWrapper" style="display: none;">
+                    <div class="results-header">
+                        <h3>检测到 <span id="itemCount">0</span> 个数据格式</h3>
+                        <button class="action-btn" id="clearBtn">清除结果</button>
+                    </div>
+                    <div id="resultsList"></div>
+                </div>
+            </div>
+
+            <div class="ad-container">
+                <!-- AdSense Placeholder -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-################"
+                     data-ad-slot="################"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+            </div>
+
+            <section class="article-section">
+                <h2>深入了解剪贴板工作原理</h2>
+                
+                <div class="problem-solution">
+                    <div class="ps-card">
+                        <h3>常见问题</h3>
+                        <p>为什么从网页复制的内容粘贴到 Word 里有格式，但粘贴到记事本里就变成了纯文本？</p>
+                    </div>
+                    <div class="ps-card solution">
+                        <h3>解决方案</h3>
+                        <p>剪贴板并不是只存储一种内容，它同时保存了多种格式（MIME 类型）。目标程序会根据自己的处理能力选择最合适的格式读取。</p>
+                    </div>
+                </div>
+
+                <h3>什么是剪贴板 MIME 类型？</h3>
+                <p>当你执行“复制”操作时，操作系统（Windows, macOS, Linux）会在内存中创建一个剪贴板对象。这个对象就像一个容器，里面可以同时装着不同“版本”的数据。例如：</p>
+                <ul>
+                    <li><strong>text/plain</strong>: 没有任何格式的纯文本。</li>
+                    <li><strong>text/html</strong>: 带有 HTML 标签的富文本。</li>
+                    <li><strong>image/png</strong>: 如果你复制了图片，它会以二进制位图形式存储。</li>
+                    <li><strong>text/rtf</strong>: 微软定义的富文本格式。</li>
+                </ul>
+
+                <h3>为什么需要剪贴板查看器？</h3>
+                <p>对于开发者来说，理解剪贴板内容至关重要：</p>
+                <ul>
+                    <li><strong>调试 Web 应用</strong>: 如果你正在开发一个富文本编辑器（如 CKEditor 或 TinyMCE），你需要知道浏览器在 <code>onpaste</code> 事件中收到了什么样的数据。</li>
+                    <li><strong>分析格式丢失</strong>: 找出为什么某些元数据（如链接、加粗、表格）在跨应用粘贴时会消失。</li>
+                    <li><strong>安全审计</strong>: 剪贴板可能包含敏感的元数据（如文件路径、作者信息）。通过查看器，你可以确认复制操作是否泄露了额外信息。</li>
+                </ul>
+
+                <h3>技术实现：DataTransfer API</h3>
+                <p>本工具使用了现代浏览器的 <code>DataTransfer</code> API。在 <code>paste</code> 事件触发时，我们可以通过 <code>event.clipboardData</code> 获取到所有可用的数据项。通过遍历这些项，我们可以读取它们的 <code>type</code>（MIME 类型）并提取对应的 <code>string</code> 或 <code>file</code> 内容。</p>
+                <p>注意：出于安全考虑，浏览器不允许网页在没有用户操作的情况下静默读取剪贴板。本工具必须在你点击页面或按下粘贴快捷键后才能获取内容。</p>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 WebUtils - 你的全能在线开发工具箱</p>
+        </footer>
+    </div>
 
     <script>
-      // ============================================
-      // Elements
-      // ============================================
-      const pasteZone = document.getElementById("pasteZone");
-      const resultsCard = document.getElementById("resultsCard");
-      const resultsEl = document.getElementById("results");
+        const pasteZone = document.getElementById('pasteZone');
+        const resultsWrapper = document.getElementById('resultsWrapper');
+        const resultsList = document.getElementById('resultsList');
+        const itemCount = document.getElementById('itemCount');
+        const clearBtn = document.getElementById('clearBtn');
+        const themeToggle = document.getElementById('themeToggle');
 
-      // ============================================
-      // Utility Functions
-      // ============================================
-      function formatSize(bytes) {
-        if (bytes < 1024) return bytes + " B";
-        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
-        return (bytes / (1024 * 1024)).toFixed(1) + " MB";
-      }
-
-      // ============================================
-      // Result Item Creation
-      // ============================================
-      function createResultItem(type, content, isImage) {
-        const item = document.createElement("div");
-        item.className = "result-item";
-
-        const header = document.createElement("div");
-        header.className = "result-header";
-
-        const typeSpan = document.createElement("span");
-        typeSpan.className = "result-type";
-        typeSpan.textContent = type;
-
-        const sizeSpan = document.createElement("span");
-        sizeSpan.className = "result-size";
-        sizeSpan.textContent = isImage ? "" : formatSize(content.length);
-
-        header.appendChild(typeSpan);
-        header.appendChild(sizeSpan);
-        item.appendChild(header);
-
-        if (isImage) {
-          const img = document.createElement("img");
-          img.className = "result-image";
-          img.src = content;
-          img.alt = "粘贴的图�?;
-          item.appendChild(img);
-        } else {
-          const contentDiv = document.createElement("div");
-          contentDiv.className = "result-content";
-          const displayContent =
-            content.length > 5000
-              ? content.substring(0, 5000) + "\n\n... (截断显示，共 " + content.length + " 字符)"
-              : content;
-          contentDiv.textContent = displayContent;
-          item.appendChild(contentDiv);
+        // Theme Management
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.body.setAttribute('data-theme', savedTheme);
         }
 
-        const btnRow = document.createElement("div");
-        btnRow.className = "btn-row";
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
 
-        const copyBtn = document.createElement("button");
-        copyBtn.textContent = "复制";
-        copyBtn.onclick = async () => {
-          try {
-            await navigator.clipboard.writeText(content);
-            copyBtn.textContent = "已复�?;
-            setTimeout(() => {
-              copyBtn.textContent = "复制";
-            }, 1500);
-          } catch (e) {
-            alert("复制失败");
-          }
-        };
+        initTheme();
 
-        btnRow.appendChild(copyBtn);
-        item.appendChild(btnRow);
-
-        return item;
-      }
-
-      function showEmpty(msg) {
-        const empty = document.createElement("div");
-        empty.className = "empty-state";
-        empty.textContent = msg;
-        resultsEl.appendChild(empty);
-      }
-
-      // ============================================
-      // Paste Handler
-      // ============================================
-      async function handlePaste(e) {
-        e.preventDefault();
-        resultsEl.textContent = "";
-
-        const clipboardData = e.clipboardData || window.clipboardData;
-        if (!clipboardData) {
-          showEmpty("无法访问剪贴�?);
-          resultsCard.style.display = "block";
-          return;
+        // Utility: Format bytes
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
 
-        const types = clipboardData.types;
-        let hasContent = false;
+        // Create result item
+        function createResultItem(type, content, isImage, fileName = '') {
+            const item = document.createElement('div');
+            item.className = 'result-item';
 
-        for (const type of types) {
-          if (type === "Files") {
-            const files = clipboardData.files;
-            for (let i = 0; i < files.length; i++) {
-              const file = files[i];
-              hasContent = true;
+            const header = document.createElement('div');
+            header.className = 'result-item-header';
+            
+            const title = fileName ? `${type} (${fileName})` : type;
+            header.innerHTML = `
+                <span class="mime-type">${title}</span>
+                <div class="btn-group">
+                    <span class="data-size">${isImage ? '' : formatBytes(new Blob([content]).size)}</span>
+                    ${!isImage ? '<button class="action-btn copy-btn">复制</button>' : ''}
+                </div>
+            `;
 
-              if (file.type.startsWith("image/")) {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                  resultsEl.appendChild(
-                    createResultItem(
-                      "File: " + file.name + " (" + file.type + ")",
-                      ev.target.result,
-                      true
-                    )
-                  );
-                };
-                reader.readAsDataURL(file);
-              } else {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                  resultsEl.appendChild(
-                    createResultItem(
-                      "File: " + file.name + " (" + file.type + ")",
-                      ev.target.result,
-                      false
-                    )
-                  );
-                };
-                reader.readAsText(file);
-              }
+            const contentArea = document.createElement('div');
+            contentArea.className = 'result-content';
+
+            if (isImage) {
+                const img = document.createElement('img');
+                img.src = content;
+                img.className = 'result-image';
+                contentArea.appendChild(img);
+            } else {
+                contentArea.textContent = content;
             }
-          } else {
-            const data = clipboardData.getData(type);
-            if (data) {
-              hasContent = true;
-              resultsEl.appendChild(createResultItem(type, data, false));
+
+            item.appendChild(header);
+            item.appendChild(contentArea);
+
+            if (!isImage) {
+                const copyBtn = header.querySelector('.copy-btn');
+                copyBtn.addEventListener('click', () => {
+                    navigator.clipboard.writeText(content).then(() => {
+                        const originalText = copyBtn.textContent;
+                        copyBtn.textContent = '已复制!';
+                        setTimeout(() => copyBtn.textContent = originalText, 2000);
+                    });
+                });
             }
-          }
+
+            return item;
         }
 
-        if (clipboardData.items) {
-          for (const item of clipboardData.items) {
-            if (item.type.startsWith("image/") && item.kind === "file") {
-              const file = item.getAsFile();
-              if (file) {
-                hasContent = true;
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                  const existing = resultsEl.querySelector("img");
-                  if (!existing) {
-                    resultsEl.appendChild(
-                      createResultItem("image (" + item.type + ")", ev.target.result, true)
-                    );
-                  }
-                };
-                reader.readAsDataURL(file);
-              }
+        async function handlePaste(e) {
+            e.preventDefault();
+            const clipboardData = e.clipboardData || window.clipboardData;
+            
+            if (!clipboardData) return;
+
+            resultsList.innerHTML = '';
+            let count = 0;
+
+            // Handle standard types
+            const types = clipboardData.types;
+            for (const type of types) {
+                if (type === 'Files') continue; // Files handled separately
+                
+                const data = clipboardData.getData(type);
+                if (data) {
+                    resultsList.appendChild(createResultItem(type, data, false));
+                    count++;
+                }
             }
-          }
+
+            // Handle items (Files/Images)
+            const items = clipboardData.items;
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                if (item.kind === 'file') {
+                    const file = item.getAsFile();
+                    if (file) {
+                        if (file.type.startsWith('image/')) {
+                            const reader = new FileReader();
+                            reader.onload = (event) => {
+                                resultsList.appendChild(createResultItem(file.type, event.target.result, true, file.name));
+                            };
+                            reader.readAsDataURL(file);
+                        } else {
+                            // For non-image files, we just show metadata or small text content
+                            const reader = new FileReader();
+                            reader.onload = (event) => {
+                                resultsList.appendChild(createResultItem(file.type, event.target.result, false, file.name));
+                            };
+                            if (file.size < 1024 * 100) { // Only read if < 100KB
+                                reader.readAsText(file);
+                            } else {
+                                resultsList.appendChild(createResultItem(file.type, `[文件太大无法直接预览: ${file.name}]`, false, file.name));
+                            }
+                        }
+                        count++;
+                    }
+                }
+            }
+
+            itemCount.textContent = count;
+            resultsWrapper.style.display = 'block';
         }
 
-        if (!hasContent) {
-          showEmpty("剪贴板为空或无法读取");
-        }
+        // Events
+        document.addEventListener('paste', handlePaste);
+        pasteZone.addEventListener('click', () => pasteZone.focus());
+        
+        clearBtn.addEventListener('click', () => {
+            resultsList.innerHTML = '';
+            resultsWrapper.style.display = 'none';
+        });
 
-        resultsCard.style.display = "block";
-      }
+        // Drag and Drop
+        pasteZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            pasteZone.classList.add('dragover');
+        });
 
-      // ============================================
-      // Drag and Drop Handlers
-      // ============================================
-      pasteZone.onclick = () => {
-        pasteZone.focus();
-      };
+        pasteZone.addEventListener('dragleave', () => {
+            pasteZone.classList.remove('dragover');
+        });
 
-      pasteZone.ondragover = (e) => {
-        e.preventDefault();
-        pasteZone.classList.add("dragover");
-      };
-
-      pasteZone.ondragleave = () => {
-        pasteZone.classList.remove("dragover");
-      };
-
-      pasteZone.ondrop = (e) => {
-        e.preventDefault();
-        pasteZone.classList.remove("dragover");
-
-        resultsEl.textContent = "";
-        const files = e.dataTransfer.files;
-
-        if (files.length === 0) {
-          showEmpty("没有检测到文件");
-          resultsCard.style.display = "block";
-          return;
-        }
-
-        for (const file of files) {
-          if (file.type.startsWith("image/")) {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-              resultsEl.appendChild(
-                createResultItem(
-                  "File: " + file.name + " (" + file.type + ")",
-                  ev.target.result,
-                  true
-                )
-              );
-            };
-            reader.readAsDataURL(file);
-          } else {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-              resultsEl.appendChild(
-                createResultItem(
-                  "File: " + file.name + " (" + file.type + ")",
-                  ev.target.result,
-                  false
-                )
-              );
-            };
-            reader.readAsText(file);
-          }
-        }
-
-        resultsCard.style.display = "block";
-      };
-
-      // ============================================
-      // Event Listeners
-      // ============================================
-      document.addEventListener("paste", handlePaste);
-
-      // ============================================
-      // Theme Management
-      // ============================================
-      function toggleTheme() {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute("data-theme") || "dark";
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-
-        html.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
-      }
-
-      function initTheme() {
-        const savedTheme = localStorage.getItem("theme");
-        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        const theme = savedTheme || (prefersDark ? "dark" : "light");
-
-        document.documentElement.setAttribute("data-theme", theme);
-      }
-
-      // ============================================
-      // Initialize
-      // ============================================
-      initTheme();
-
-      window.toggleTheme = toggleTheme;
+        pasteZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            pasteZone.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                resultsList.innerHTML = '';
+                let count = 0;
+                for (const file of files) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        resultsList.appendChild(createResultItem(file.type || 'unknown', event.target.result, file.type.startsWith('image/'), file.name));
+                    };
+                    if (file.type.startsWith('image/')) {
+                        reader.readAsDataURL(file);
+                    } else {
+                        reader.readAsText(file);
+                    }
+                    count++;
+                }
+                itemCount.textContent = count;
+                resultsWrapper.style.display = 'block';
+            }
+        });
     </script>
-  </body>
+</body>
 </html>
-

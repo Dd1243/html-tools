@@ -1,508 +1,667 @@
-<!doctype html>
-<html lang="zh-CN" data-theme="light">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>颜色混合�?- WebUtils</title>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>颜色混合器 - 在线调色与色彩合成工具 - WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="颜色混合�?- WebUtils" />
-    <meta name="keywords" content="color-mixer,dev,tools,webutils" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/dev/color-mixer.html" />
-
+    <meta name="description" content="专业的在线颜色混合工具，支持RGB、HSL、正片叠底及滤色等多种混合模式。实时调整颜色混合比例，预览渐变效果，生成精准的合成色代码。">
+    <meta name="keywords" content="颜色混合器,色彩合成,调色工具,RGB混合,HSL混合,正片叠底,滤色,在线设计工具">
+    <meta name="author" content="WebUtils">
+    <link rel="canonical" href="https://essays4u.net/tools/dev/color-mixer.html">
+    
     <!-- Open Graph -->
-    <meta property="og:title" content="颜色混合�?- WebUtils" />
-    <meta property="og:description" content="颜色混合�?- WebUtils" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/dev/color-mixer.html" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="颜色混合�?- WebUtils" />
-    <meta name="twitter:description" content="颜色混合�?- WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      :root {
-        --primary: #8b5cf6;
-      }
-      body {
-        padding: 1rem;
-        min-height: 100vh;
-      }
-      .container {
-        max-width: 900px;
-        margin: 0 auto;
-      }
-      header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-      }
-      header h1 {
-        margin: 0;
-        font-size: 1.5rem;
-      }
-      .mixer-section {
-        display: grid;
-        grid-template-columns: 1fr auto 1fr;
-        gap: 1rem;
-        align-items: center;
-        margin-bottom: 1.5rem;
-      }
-      @media (max-width: 700px) {
-        .mixer-section {
-          grid-template-columns: 1fr;
+    <meta property="og:title" content="颜色混合器 - 在线调色与色彩合成工具">
+    <meta property="og:description" content="实时混合两种颜色，支持多种数学算法和比例调节。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://essays4u.net/tools/dev/color-mixer.html">
+    
+    <!-- JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "颜色混合器",
+        "operatingSystem": "Web",
+        "applicationCategory": "DeveloperApplication",
+        "description": "在线混合两种颜色并计算结果，支持多种混合模式。",
+        "offers": {
+            "@type": "Offer",
+            "price": "0"
         }
-      }
-      .color-input {
-        background: var(--pico-card-background-color);
-        border-radius: 10px;
-        padding: 1rem;
-        text-align: center;
-      }
-      .color-input h3 {
-        margin: 0 0 0.75rem;
-        font-size: 0.9rem;
-      }
-      .color-preview {
-        width: 100%;
-        height: 80px;
-        border-radius: 8px;
-        margin-bottom: 0.75rem;
-        border: 2px solid var(--pico-muted-border-color);
-      }
-      .color-input input[type="color"] {
-        width: 60px;
-        height: 40px;
-        padding: 0;
-        border: none;
-        cursor: pointer;
-      }
-      .color-input input[type="text"] {
-        margin: 0.5rem 0 0;
-        font-family: var(--font-mono);
-        text-align: center;
-      }
-      .mix-controls {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      .mix-controls .icon {
-        font-size: 2rem;
-      }
-      .mix-controls select {
-        margin: 0;
-        width: auto;
-      }
-      .result-section {
-        background: var(--pico-card-background-color);
-        border-radius: 10px;
-        padding: 1.5rem;
-      }
-      .result-section h3 {
-        margin: 0 0 1rem;
-        font-size: 1rem;
-      }
-      .result-preview {
-        height: 100px;
-        border-radius: 8px;
-        margin-bottom: 1rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.25rem;
-        font-weight: 600;
-      }
-      .result-values {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 0.75rem;
-      }
-      .value-item {
-        background: var(--pico-muted-border-color);
-        padding: 0.75rem;
-        border-radius: 6px;
-        text-align: center;
-      }
-      .value-item .label {
-        font-size: 0.75rem;
-        color: var(--pico-muted-color);
-        margin-bottom: 0.25rem;
-      }
-      .value-item .value {
-        font-family: var(--font-mono);
-        font-weight: 500;
-        cursor: pointer;
-      }
-      .value-item .value:hover {
-        text-decoration: underline;
-      }
-      .ratio-slider {
-        margin: 1rem 0;
-      }
-      .ratio-slider label {
-        display: flex;
-        justify-content: space-between;
-        font-size: 0.85rem;
-        margin-bottom: 0.25rem;
-      }
-      .ratio-slider input {
-        margin: 0;
-        width: 100%;
-      }
-      .presets {
-        margin-top: 1rem;
-      }
-      .presets h4 {
-        margin: 0 0 0.5rem;
-        font-size: 0.85rem;
-      }
-      .preset-colors {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.25rem;
-      }
-      .preset-color {
-        width: 28px;
-        height: 28px;
-        border-radius: 4px;
-        cursor: pointer;
-        border: 2px solid transparent;
-      }
-      .preset-color:hover {
-        border-color: var(--accent-cyan);
-      }
-      .gradient-preview {
-        height: 40px;
-        border-radius: 6px;
-        margin-top: 1rem;
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-    </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      颜色混合�?
-    </nav>
-    <div class="container">
-      <header>
-        <h1>🎨 颜色混合�?/h1>
-        <button id="themeToggle" class="outline">🌙</button>
-      </header>
-      <div class="mixer-section">
-        <div class="color-input">
-          <h3>颜色 A</h3>
-          <div class="color-preview" id="previewA"></div>
-          <input type="color" id="colorA" value="#3b82f6" />
-          <input type="text" id="hexA" value="#3b82f6" placeholder="#000000" />
-          <div class="presets">
-            <h4>预设�?/h4>
-            <div class="preset-colors" id="presetsA"></div>
-          </div>
-        </div>
-        <div class="mix-controls">
-          <div class="icon">�?/div>
-          <select id="mixMode">
-            <option value="rgb">RGB 混合</option>
-            <option value="hsl">HSL 混合</option>
-            <option value="multiply">正片叠底</option>
-            <option value="screen">滤色</option>
-          </select>
-        </div>
-        <div class="color-input">
-          <h3>颜色 B</h3>
-          <div class="color-preview" id="previewB"></div>
-          <input type="color" id="colorB" value="#22c55e" />
-          <input type="text" id="hexB" value="#22c55e" placeholder="#000000" />
-          <div class="presets">
-            <h4>预设�?/h4>
-            <div class="preset-colors" id="presetsB"></div>
-          </div>
-        </div>
-      </div>
-      <div class="result-section">
-        <h3>混合结果</h3>
-        <div class="ratio-slider">
-          <label>
-            <span>颜色 A</span>
-            <span id="ratioLabel">50%</span>
-            <span>颜色 B</span>
-          </label>
-          <input type="range" id="ratio" min="0" max="100" value="50" />
-        </div>
-        <div class="result-preview" id="resultPreview"></div>
-        <div class="result-values">
-          <div class="value-item">
-            <div class="label">HEX</div>
-            <div class="value" id="resultHex" onclick="copyValue(this)">#000000</div>
-          </div>
-          <div class="value-item">
-            <div class="label">RGB</div>
-            <div class="value" id="resultRgb" onclick="copyValue(this)">rgb(0,0,0)</div>
-          </div>
-          <div class="value-item">
-            <div class="label">HSL</div>
-            <div class="value" id="resultHsl" onclick="copyValue(this)">hsl(0,0%,0%)</div>
-          </div>
-        </div>
-        <div class="gradient-preview" id="gradientPreview"></div>
-      </div>
-    </div>
-    <script>
-      const $ = (id) => document.getElementById(id);
-      const presetColors = [
-        "#ef4444",
-        "#f97316",
-        "#eab308",
-        "#22c55e",
-        "#14b8a6",
-        "#3b82f6",
-        "#8b5cf6",
-        "#ec4899",
-        "#000000",
-        "#ffffff",
-        "#6b7280",
-        "#1f2937"
-      ];
-      function hexToRgb(hex) {
-        const r = parseInt(hex.slice(1, 3), 16),
-          g = parseInt(hex.slice(3, 5), 16),
-          b = parseInt(hex.slice(5, 7), 16);
-        return { r, g, b };
-      }
-      function rgbToHex(r, g, b) {
-        return "#" + [r, g, b].map((x) => Math.round(x).toString(16).padStart(2, "0")).join("");
-      }
-      function rgbToHsl(r, g, b) {
-        r /= 255;
-        g /= 255;
-        b /= 255;
-        const max = Math.max(r, g, b),
-          min = Math.min(r, g, b),
-          l = (max + min) / 2;
-        let h = 0,
-          s = 0;
-        if (max !== min) {
-          const d = max - min;
-          s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-          switch (max) {
-            case r:
-              h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
-              break;
-            case g:
-              h = ((b - r) / d + 2) / 6;
-              break;
-            case b:
-              h = ((r - g) / d + 4) / 6;
-              break;
-          }
-        }
-        return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
-      }
-      function hslToRgb(h, s, l) {
-        h /= 360;
-        s /= 100;
-        l /= 100;
-        let r, g, b;
-        if (s === 0) {
-          r = g = b = l;
-        } else {
-          const hue2rgb = (p, q, t) => {
-            if (t < 0) t += 1;
-            if (t > 1) t -= 1;
-            if (t < 1 / 6) return p + (q - p) * 6 * t;
-            if (t < 1 / 2) return q;
-            if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-            return p;
-          };
-          const q = l < 0.5 ? l * (1 + s) : l + s - l * s,
-            p = 2 * l - q;
-          r = hue2rgb(p, q, h + 1 / 3);
-          g = hue2rgb(p, q, h);
-          b = hue2rgb(p, q, h - 1 / 3);
-        }
-        return { r: Math.round(r * 255), g: Math.round(g * 255), b: Math.round(b * 255) };
-      }
-      function mixColors() {
-        const hexA = $("hexA").value,
-          hexB = $("hexB").value;
-        const ratio = $("ratio").value / 100;
-        const rgbA = hexToRgb(hexA),
-          rgbB = hexToRgb(hexB);
-        const mode = $("mixMode").value;
-        let result;
-        if (mode === "rgb") {
-          result = {
-            r: rgbA.r * (1 - ratio) + rgbB.r * ratio,
-            g: rgbA.g * (1 - ratio) + rgbB.g * ratio,
-            b: rgbA.b * (1 - ratio) + rgbB.b * ratio
-          };
-        } else if (mode === "hsl") {
-          const hslA = rgbToHsl(rgbA.r, rgbA.g, rgbA.b),
-            hslB = rgbToHsl(rgbB.r, rgbB.g, rgbB.b);
-          let h = hslA.h * (1 - ratio) + hslB.h * ratio;
-          if (Math.abs(hslA.h - hslB.h) > 180) {
-            h = ((hslA.h + 360) * (1 - ratio) + hslB.h * ratio) % 360;
-          }
-          const s = hslA.s * (1 - ratio) + hslB.s * ratio,
-            l = hslA.l * (1 - ratio) + hslB.l * ratio;
-          result = hslToRgb(h, s, l);
-        } else if (mode === "multiply") {
-          result = {
-            r: (rgbA.r * rgbB.r) / 255,
-            g: (rgbA.g * rgbB.g) / 255,
-            b: (rgbA.b * rgbB.b) / 255
-          };
-        } else if (mode === "screen") {
-          result = {
-            r: 255 - ((255 - rgbA.r) * (255 - rgbB.r)) / 255,
-            g: 255 - ((255 - rgbA.g) * (255 - rgbB.g)) / 255,
-            b: 255 - ((255 - rgbA.b) * (255 - rgbB.b)) / 255
-          };
-        }
-        const hex = rgbToHex(result.r, result.g, result.b);
-        const hsl = rgbToHsl(Math.round(result.r), Math.round(result.g), Math.round(result.b));
-        $("resultPreview").style.background = hex;
-        $("resultPreview").textContent = hex;
-        $("resultPreview").style.color = hsl.l > 50 ? "#000" : "#fff";
-        $("resultHex").textContent = hex;
-        $("resultRgb").textContent =
-          `rgb(${Math.round(result.r)},${Math.round(result.g)},${Math.round(result.b)})`;
-        $("resultHsl").textContent = `hsl(${hsl.h},${hsl.s}%,${hsl.l}%)`;
-        $("gradientPreview").style.background =
-          `linear-gradient(to right, ${hexA}, ${hex}, ${hexB})`;
-        $("ratioLabel").textContent = Math.round(ratio * 100) + "%";
-      }
-      window.updatePreview = function (id, color) {
-        $(id).style.background = color;
-      };
-      function setupColorInput(colorId, hexId, previewId, presetsId) {
-        const colorInput = $(colorId),
-          hexInput = $(hexId);
-        colorInput.oninput = () => {
-          hexInput.value = colorInput.value;
-          updatePreview(previewId, colorInput.value);
-          mixColors();
-        };
-        hexInput.oninput = () => {
-          if (/^#[0-9a-fA-F]{6}$/.test(hexInput.value)) {
-            colorInput.value = hexInput.value;
-            updatePreview(previewId, hexInput.value);
-            mixColors();
-          }
-        };
-        $(presetsId).innerHTML = presetColors
-          .map(
-            (c) =>
-              `<div class="preset-color" style="background:${c}" onclick="document.getElementById('${colorId}').value='${c}';document.getElementById('${hexId}').value='${c}';updatePreview('${previewId}','${c}');mixColors();"></div>`
-          )
-          .join("");
-        updatePreview(previewId, colorInput.value);
-      }
-      window.copyValue = function (el) {
-        navigator.clipboard.writeText(el.textContent);
-        alert("已复�? " + el.textContent);
-      };
-      setupColorInput("colorA", "hexA", "previewA", "presetsA");
-      setupColorInput("colorB", "hexB", "previewB", "presetsB");
-      $("ratio").oninput = mixColors;
-      $("mixMode").onchange = mixColors;
-      function loadTheme() {
-        const t = localStorage.getItem("theme") || "light";
-        document.documentElement.setAttribute("data-theme", t);
-        $("themeToggle").textContent = t === "dark" ? "☀�? : "🌙";
-      }
-      window.toggleTheme = function () {
-        const c = document.documentElement.getAttribute("data-theme");
-        const n = c === "dark" ? "light" : "dark";
-        document.documentElement.setAttribute("data-theme", n);
-        localStorage.setItem("theme", n);
-        $("themeToggle").textContent = n === "dark" ? "☀�? : "🌙";
-      };
-      $("themeToggle").onclick = toggleTheme;
-      loadTheme();
-      mixColors();
+    }
     </script>
-  </body>
-</html>
 
+    <!-- Google AdSense Placeholder -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-################" crossorigin="anonymous"></script>
+
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --primary-hover: #2563eb;
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #0f172a;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --accent-color: #60a5fa;
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="light"] {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-input: #f1f5f9;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            transition: var(--transition);
+            padding-top: 60px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 10px 20px;
+        }
+
+        .nav-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-home {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .mixer-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 30px;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .color-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 25px;
+            text-align: center;
+        }
+
+        .color-preview {
+            width: 100%;
+            height: 100px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 4px solid rgba(255,255,255,0.1);
+        }
+
+        .color-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        input[type="color"] {
+            width: 100%;
+            height: 45px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: none;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            background: var(--bg-input);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            border-radius: 8px;
+            font-family: monospace;
+            text-align: center;
+            outline: none;
+        }
+
+        .mix-icon {
+            font-size: 2rem;
+            color: var(--text-muted);
+        }
+
+        .result-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 30px;
+            margin-top: 30px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .ratio-control {
+            margin-bottom: 30px;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-input);
+            border-radius: 4px;
+            appearance: none;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: var(--primary-color);
+            border: 3px solid white;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .mode-selector {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        select {
+            background: var(--bg-input);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .result-preview {
+            width: 100%;
+            height: 120px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.5rem;
+            font-family: monospace;
+            border: 4px solid rgba(255,255,255,0.1);
+        }
+
+        .result-outputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .output-box {
+            background: var(--bg-input);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .output-box:hover {
+            border-color: var(--primary-color);
+        }
+
+        .output-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .output-value {
+            font-family: monospace;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .gradient-bar {
+            height: 40px;
+            border-radius: 20px;
+            margin-top: 30px;
+            border: 2px solid var(--border-color);
+        }
+
+        .ad-container {
+            margin: 40px 0;
+            text-align: center;
+            min-height: 90px;
+            background: rgba(255, 255, 255, 0.02);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px dashed var(--border-color);
+        }
+
+        .article-section {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .article-section h2 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .article-section h3 {
+            margin: 25px 0 15px;
+        }
+
+        .article-section p {
+            margin-bottom: 15px;
+            color: var(--text-muted);
+        }
+
+        .problem-solution {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .ps-card {
+            background: rgba(59, 130, 246, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .ps-card.solution {
+            background: rgba(16, 185, 129, 0.05);
+            border-left-color: #10b981;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 40px 0;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+        }
+
+        @media (max-width: 768px) {
+            .mixer-grid {
+                grid-template-columns: 1fr;
+            }
+            .mix-icon {
+                transform: rotate(90deg);
+            }
+            .problem-solution {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <nav>
+        <div class="nav-content">
+            <a href="../../index.html" class="back-home">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                返回首页
+            </a>
+            <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                <svg class="sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>颜色混合器</h1>
+            <p class="subtitle">通过多种算法完美混合两种色彩，生成精准的过渡色</p>
+        </header>
+
+        <main>
+            <div class="mixer-grid">
+                <div class="color-card">
+                    <div id="previewA" class="color-preview" style="background: #3b82f6;"></div>
+                    <div class="color-controls">
+                        <input type="color" id="colorA" value="#3b82f6">
+                        <input type="text" id="hexA" value="#3B82F6">
+                    </div>
+                </div>
+
+                <div class="mix-icon">＋</div>
+
+                <div class="color-card">
+                    <div id="previewB" class="color-preview" style="background: #22c55e;"></div>
+                    <div class="color-controls">
+                        <input type="color" id="colorB" value="#22c55e">
+                        <input type="text" id="hexB" value="#22C55E">
+                    </div>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <div class="mode-selector">
+                    <label style="display: block; margin-bottom: 10px;">混合模式</label>
+                    <select id="mixMode">
+                        <option value="rgb">RGB 线性混合 (标准)</option>
+                        <option value="hsl">HSL 空间混合 (鲜艳)</option>
+                        <option value="multiply">正片叠底 (变暗)</option>
+                        <option value="screen">滤色 (变亮)</option>
+                    </select>
+                </div>
+
+                <div class="ratio-control">
+                    <div class="label-row">
+                        <span>颜色 A</span>
+                        <span id="ratioLabel">50%</span>
+                        <span>颜色 B</span>
+                    </div>
+                    <input type="range" id="ratio" min="0" max="100" value="50">
+                </div>
+
+                <div id="resultPreview" class="result-preview">#2EAC8F</div>
+
+                <div class="result-outputs">
+                    <div class="output-box" onclick="copyText('resultHex')">
+                        <div class="output-label">HEX</div>
+                        <div class="output-value" id="resultHex">#2EAC8F</div>
+                    </div>
+                    <div class="output-box" onclick="copyText('resultRgb')">
+                        <div class="output-label">RGB</div>
+                        <div class="output-value" id="resultRgb">rgb(46, 172, 143)</div>
+                    </div>
+                    <div class="output-box" onclick="copyText('resultHsl')">
+                        <div class="output-label">HSL</div>
+                        <div class="output-value" id="resultHsl">hsl(166, 58%, 43%)</div>
+                    </div>
+                </div>
+
+                <div id="gradientBar" class="gradient-bar"></div>
+            </div>
+
+            <div class="ad-container">
+                <!-- AdSense Placeholder -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-################"
+                     data-ad-slot="################"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+            </div>
+
+            <section class="article-section">
+                <h2>深入了解颜色混合技术</h2>
+                
+                <div class="problem-solution">
+                    <div class="ps-card">
+                        <h3>常见难题</h3>
+                        <p>为什么手动混合出的颜色往往显得灰暗、不自然？如何生成符合品牌调性的过渡色阶？</p>
+                    </div>
+                    <div class="ps-card solution">
+                        <h3>算法的力量</h3>
+                        <p>通过数学模型精确计算各颜色通道的权重。不同的混合空间（如 RGB 或 HSL）会产生截然不同的视觉效果，满足不同的审美需求。</p>
+                    </div>
+                </div>
+
+                <h3>主流混合模式解析</h3>
+                <ul>
+                    <li><strong>RGB 线性混合</strong>: 最基础的混合方式。将两个颜色的 R、G、B 分量分别按比例加权平均。这种方式模拟了光学的叠加，但在某些色相下可能会产生略显灰暗的中间色。</li>
+                    <li><strong>HSL 空间混合</strong>: 在色相、饱和度、亮度空间内进行插值。这种方式生成的中间色通常比 RGB 混合更加饱满、鲜艳，非常适合 UI 设计中的渐变效果。</li>
+                    <li><strong>正片叠底 (Multiply)</strong>: 模拟绘画中的颜料混合。将两个颜色的分量相乘并除以 255。结果总是比原始颜色更暗，常用于模拟阴影或滤镜。</li>
+                    <li><strong>滤色 (Screen)</strong>: 与正片叠底相反。它通过反转、相乘再反转的操作，模拟多台投影仪重叠照射的效果。结果总是比原始颜色更亮。</li>
+                </ul>
+
+                <h3>应用场景</h3>
+                <ol>
+                    <li><strong>品牌调色板生成</strong>: 通过混合主品牌色与白色或黑色，生成不同深浅的辅助色阶。</li>
+                    <li><strong>UI 状态过渡</strong>: 计算按钮从 Normal 状态到 Hover 状态的精确中间色。</li>
+                    <li><strong>数据可视化</strong>: 为热力图或图表生成平滑的颜色映射（Colormap）。</li>
+                    <li><strong>设计模拟</strong>: 模拟叠加半透明层后的最终视觉呈现。</li>
+                </ol>
+
+                <h3>使用小贴士</h3>
+                <p>尝试切换不同的混合模式！你会发现，对于同样的两种颜色，HSL 模式下的 50% 混合点往往比 RGB 模式看起来更有“生机”。此外，下方的渐变条展示了从颜色 A 到颜色 B 的完整过渡路径，点击任意输出框即可快速复制合成后的代码。</p>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 WebUtils - 你的全能在线开发工具箱</p>
+        </footer>
+    </div>
+
+    <script>
+        const colorA = document.getElementById('colorA');
+        const hexA = document.getElementById('hexA');
+        const previewA = document.getElementById('previewA');
+        const colorB = document.getElementById('colorB');
+        const hexB = document.getElementById('hexB');
+        const previewB = document.getElementById('previewB');
+        const mixMode = document.getElementById('mixMode');
+        const ratio = document.getElementById('ratio');
+        const ratioLabel = document.getElementById('ratioLabel');
+        const resultPreview = document.getElementById('resultPreview');
+        const resultHex = document.getElementById('resultHex');
+        const resultRgb = document.getElementById('resultRgb');
+        const resultHsl = document.getElementById('resultHsl');
+        const gradientBar = document.getElementById('gradientBar');
+        const themeToggle = document.getElementById('themeToggle');
+
+        // Helpers
+        function hexToRgb(hex) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return { r, g, b };
+        }
+
+        function rgbToHex(r, g, b) {
+            const f = (n) => Math.max(0, Math.min(255, Math.round(n))).toString(16).padStart(2, '0');
+            return `#${f(r)}${f(g)}${f(b)}`.toUpperCase();
+        }
+
+        function rgbToHsl(r, g, b) {
+            r /= 255; g /= 255; b /= 255;
+            const max = Math.max(r, g, b), min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+            if (max === min) h = s = 0;
+            else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                h /= 6;
+            }
+            return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
+        }
+
+        function hslToRgb(h, s, l) {
+            h /= 360; s /= 100; l /= 100;
+            let r, g, b;
+            if (s === 0) r = g = b = l;
+            else {
+                const hue2rgb = (p, q, t) => {
+                    if (t < 0) t += 1; if (t > 1) t -= 1;
+                    if (t < 1/6) return p + (q - p) * 6 * t;
+                    if (t < 1/2) return q;
+                    if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                    return p;
+                };
+                const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                const p = 2 * l - q;
+                r = hue2rgb(p, q, h + 1/3); g = hue2rgb(p, q, h); b = hue2rgb(p, q, h - 1/3);
+            }
+            return { r: Math.round(r * 255), g: Math.round(g * 255), b: Math.round(b * 255) };
+        }
+
+        function update() {
+            const rgbA = hexToRgb(colorA.value);
+            const rgbB = hexToRgb(colorB.value);
+            const p = ratio.value / 100;
+            const mode = mixMode.value;
+            let res;
+
+            if (mode === 'rgb') {
+                res = {
+                    r: rgbA.r * (1 - p) + rgbB.r * p,
+                    g: rgbA.g * (1 - p) + rgbB.g * p,
+                    b: rgbA.b * (1 - p) + rgbB.b * p
+                };
+            } else if (mode === 'hsl') {
+                const hslA = rgbToHsl(rgbA.r, rgbA.g, rgbA.b);
+                const hslB = rgbToHsl(rgbB.r, rgbB.g, rgbB.b);
+                let hA = hslA.h, hB = hslB.h;
+                // Hue interpolation
+                if (Math.abs(hA - hB) > 180) {
+                    if (hA > hB) hB += 360; else hA += 360;
+                }
+                const h = (hA * (1 - p) + hB * p) % 360;
+                const s = hslA.s * (1 - p) + hslB.s * p;
+                const l = hslA.l * (1 - p) + hslB.l * p;
+                res = hslToRgb(h, s, l);
+            } else if (mode === 'multiply') {
+                res = {
+                    r: (rgbA.r * rgbB.r / 255) * (p) + rgbA.r * (1-p), // simplified blend
+                    g: (rgbA.g * rgbB.g / 255) * (p) + rgbA.g * (1-p),
+                    b: (rgbA.b * rgbB.b / 255) * (p) + rgbA.b * (1-p)
+                };
+            } else if (mode === 'screen') {
+                const screen = (a, b) => 255 - ((255 - a) * (255 - b) / 255);
+                res = {
+                    r: screen(rgbA.r, rgbB.r) * p + rgbA.r * (1-p),
+                    g: screen(rgbA.g, rgbB.g) * p + rgbA.g * (1-p),
+                    b: screen(rgbA.b, rgbB.b) * p + rgbA.b * (1-p)
+                };
+            }
+
+            const hex = rgbToHex(res.r, res.g, res.b);
+            const hsl = rgbToHsl(res.r, res.g, res.b);
+
+            resultPreview.style.backgroundColor = hex;
+            resultPreview.innerText = hex;
+            resultPreview.style.color = (res.r * 0.299 + res.g * 0.587 + res.b * 0.114) > 150 ? '#000' : '#fff';
+
+            resultHex.innerText = hex;
+            resultRgb.innerText = `rgb(${Math.round(res.r)}, ${Math.round(res.g)}, ${Math.round(res.b)})`;
+            resultHsl.innerText = `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
+            
+            ratioLabel.innerText = `${ratio.value}%`;
+            gradientBar.style.background = `linear-gradient(to right, ${colorA.value}, ${colorB.value})`;
+        }
+
+        // Listeners
+        colorA.oninput = () => { hexA.value = colorA.value.toUpperCase(); previewA.style.backgroundColor = colorA.value; update(); };
+        colorB.oninput = () => { hexB.value = colorB.value.toUpperCase(); previewB.style.backgroundColor = colorB.value; update(); };
+        hexA.oninput = () => { if(/^#[0-9A-F]{6}$/i.test(hexA.value)) { colorA.value = hexA.value; previewA.style.backgroundColor = hexA.value; update(); } };
+        hexB.oninput = () => { if(/^#[0-9A-F]{6}$/i.test(hexB.value)) { colorB.value = hexB.value; previewB.style.backgroundColor = hexB.value; update(); } };
+        ratio.oninput = update;
+        mixMode.onchange = update;
+
+        window.copyText = (id) => {
+            navigator.clipboard.writeText(document.getElementById(id).innerText).then(() => {
+                const el = document.getElementById(id).parentElement;
+                const oldBg = el.style.backgroundColor;
+                el.style.backgroundColor = 'var(--primary-color)';
+                setTimeout(() => el.style.backgroundColor = oldBg, 500);
+            });
+        };
+
+        // Theme
+        function initTheme() {
+            const saved = localStorage.getItem('theme') || 'dark';
+            document.body.setAttribute('data-theme', saved);
+        }
+        themeToggle.onclick = () => {
+            const cur = document.body.getAttribute('data-theme');
+            const next = cur === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+        };
+
+        initTheme();
+        update();
+    </script>
+</body>
+</html>
