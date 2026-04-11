@@ -1,858 +1,645 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>配色方案生成�?- WebUtils</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>配色方案生成器 - 在线调色板与色彩平衡工具 - WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="生成配色方案和调色板" />
-    <meta name="keywords" content="配色方案生成�? />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/dev/color-palette.html" />
-
+    <meta name="description" content="专业的在线配色方案生成器，基于色相、饱和度和亮度（HSL）模型生成和谐的调色板。支持类似色、互补色、三色、四色等多种经典配色模式，提供一键导出 CSS 代码功能。">
+    <meta name="keywords" content="配色方案生成器,在线调色板,色彩平衡,HSL配色,类似色,互补色,网页配色工具,UI设计辅助">
+    <meta name="author" content="WebUtils">
+    <link rel="canonical" href="https://essays4u.net/tools/dev/color-palette.html">
+    
     <!-- Open Graph -->
-    <meta property="og:title" content="配色方案生成�?- WebUtils" />
-    <meta property="og:description" content="生成配色方案和调色板" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/dev/color-palette.html" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:title" content="配色方案生成器 - 在线调色板与色彩平衡工具">
+    <meta property="og:description" content="利用色彩几何原理快速创建完美的配色方案。支持多种调和模式与实时预览。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://essays4u.net/tools/dev/color-palette.html">
+    
+    <!-- JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "配色方案生成器",
+        "operatingSystem": "Web",
+        "applicationCategory": "DesignApplication",
+        "description": "在线生成和谐的配色方案，基于 HSL 模型支持多种色彩调和算法。",
+        "offers": {
+            "@type": "Offer",
+            "price": "0"
+        }
+    }
+    </script>
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="配色方案生成�?- WebUtils" />
-    <meta name="twitter:description" content="生成配色方案和调色板" />
-    <!-- OG Image -->
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+    <!-- Google AdSense Placeholder -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-################" crossorigin="anonymous"></script>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
     <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
+        :root {
+            --primary-color: #3b82f6;
+            --primary-hover: #2563eb;
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #0f172a;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --accent-color: #60a5fa;
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
 
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
+        [data-theme="light"] {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-input: #f1f5f9;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
 
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--color-bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-      }
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            transition: var(--transition);
+            padding-top: 60px;
+        }
 
-      body {
-        font-family: var(--font-sans);
-        background: var(--color-bg-deep);
-        color: var(--color-text-primary);
-        min-height: 100vh;
-        font-size: 16px;
-        line-height: 1.6;
-      }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
 
-      .bg-grid {
-        position: fixed;
-        inset: 0;
-        background-image:
-          linear-gradient(rgb(0, 245, 212, 0.02) 1px, transparent 1px),
-          linear-gradient(90deg, rgb(0, 245, 212, 0.02) 1px, transparent 1px);
-        background-size: 40px 40px;
-        pointer-events: none;
-        z-index: 0;
-      }
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 10px 20px;
+        }
 
-      .container {
-        position: relative;
-        z-index: 1;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 24px;
-        min-height: 100vh;
-      }
+        .nav-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-      .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        color: var(--color-text-secondary);
-        text-decoration: none;
-        padding: 8px 14px;
-        background: var(--color-bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        transition: all 0.2s ease;
-        margin-bottom: 24px;
-      }
+        .back-home {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-      .back-link:hover {
-        border-color: var(--color-accent-cyan);
-        color: var(--color-accent-cyan);
-      }
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-      h1 {
-        font-family: var(--font-mono);
-        font-size: 1.5rem;
-        margin-bottom: 8px;
-      }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
 
-      .desc {
-        font-size: 0.9rem;
-        color: var(--color-text-secondary);
-        margin-bottom: 24px;
-      }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-      .card {
-        background: var(--color-bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-lg);
-        padding: 24px;
-        margin-bottom: 20px;
-      }
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
 
-      .color-picker-section {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
-        margin-bottom: 24px;
-      }
+        .main-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 30px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
 
-      .color-input-group {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+        }
 
-      .color-input-group label {
-        font-family: var(--font-mono);
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        text-transform: uppercase;
-      }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
 
-      .color-input {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
+        label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
 
-      input[type="color"] {
-        width: 60px;
-        height: 60px;
-        border: 2px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        cursor: pointer;
-        background: transparent;
-      }
+        .input-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
 
-      input[type="text"] {
-        flex: 1;
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-        padding: 10px 12px;
-        background: var(--color-bg-surface);
-        border: 2px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        color: var(--color-text-primary);
-      }
+        input[type="color"] {
+            width: 50px;
+            height: 45px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: none;
+        }
 
-      input:focus {
-        outline: none;
-        border-color: var(--color-accent-cyan);
-      }
+        input[type="text"], 
+        input[type="number"], 
+        select {
+            flex: 1;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 10px;
+            border-radius: 8px;
+            font-family: monospace;
+            outline: none;
+        }
 
-      .options-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 16px;
-        margin-bottom: 24px;
-      }
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
 
-      .option-group {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
+        .btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-      .option-group label {
-        font-family: var(--font-mono);
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        text-transform: uppercase;
-      }
+        .btn:hover {
+            background: var(--primary-hover);
+        }
 
-      select,
-      input[type="number"] {
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-        padding: 10px 12px;
-        background: var(--color-bg-surface);
-        border: 2px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        color: var(--color-text-primary);
-      }
+        .btn-secondary {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
 
-      .palette-display {
-        margin-bottom: 24px;
-      }
+        .palette-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
 
-      .palette-display h3 {
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-        color: var(--text-muted);
-        margin-bottom: 12px;
-        text-transform: uppercase;
-      }
+        .palette-color {
+            height: 120px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            position: relative;
+        }
 
-      .palette-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 12px;
-      }
+        .palette-color:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
 
-      .palette-color {
-        height: 120px;
-        border-radius: var(--radius-md);
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-        padding: 12px;
-        position: relative;
-        transition: all 0.2s ease;
-        cursor: pointer;
-        border: 2px solid transparent;
-      }
+        .palette-color.active {
+            border-color: var(--primary-color);
+        }
 
-      .palette-color:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 16px rgb(0, 0, 0, 0.3);
-      }
+        .hex-label {
+            font-weight: 700;
+            font-family: monospace;
+            font-size: 0.9rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: rgba(0,0,0,0.15);
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
 
-      .palette-color.active {
-        border-color: var(--color-accent-cyan);
-      }
+        .name-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            margin-top: 5px;
+            color: white;
+            opacity: 0.8;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
 
-      .color-hex {
-        font-family: var(--font-mono);
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: white;
-        text-shadow: 0 1px 2px rgb(0, 0, 0, 0.5);
-        background: rgb(0, 0, 0, 0.3);
-        padding: 4px 8px;
-        border-radius: var(--radius-sm);
-        backdrop-filter: blur(4px);
-      }
+        .output-section {
+            margin-top: 30px;
+        }
 
-      .color-name {
-        font-size: 0.7rem;
-        color: rgb(255, 255, 255, 0.8);
-        margin-top: 4px;
-        text-shadow: 0 1px 2px rgb(0, 0, 0, 0.5);
-      }
+        textarea {
+            width: 100%;
+            height: 120px;
+            background: #000;
+            color: #10b981;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            resize: none;
+            margin-top: 10px;
+        }
 
-      .code-output {
-        margin-bottom: 20px;
-      }
+        .ad-container {
+            margin: 40px 0;
+            text-align: center;
+            min-height: 90px;
+            background: rgba(255, 255, 255, 0.02);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px dashed var(--border-color);
+        }
 
-      .code-output label {
-        display: block;
-        font-family: var(--font-mono);
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        margin-bottom: 10px;
-      }
+        .article-section {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border-color);
+        }
 
-      textarea {
-        width: 100%;
-        min-height: 100px;
-        padding: 16px;
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        background: var(--color-bg-surface);
-        border: 2px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        color: var(--color-text-primary);
-        resize: vertical;
-      }
+        .article-section h2 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
 
-      textarea:focus {
-        outline: none;
-        border-color: var(--color-accent-cyan);
-        box-shadow: 0 0 0 4px var(--glow-cyan);
-      }
+        .article-section h3 {
+            margin: 25px 0 15px;
+        }
 
-      .actions {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-      }
+        .article-section p {
+            margin-bottom: 15px;
+            color: var(--text-muted);
+        }
 
-      button {
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        padding: 10px 16px;
-        background: var(--color-bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        color: var(--color-text-secondary);
-        cursor: pointer;
-        transition: all 0.2s;
-      }
+        .problem-solution {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
 
-      button:hover {
-        border-color: var(--color-accent-cyan);
-        color: var(--color-accent-cyan);
-      }
+        .ps-card {
+            background: rgba(59, 130, 246, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-color);
+        }
 
-      button.primary {
-        background: var(--color-accent-cyan);
-        border-color: var(--color-accent-cyan);
-        color: var(--color-bg-deep);
-      }
+        .ps-card.solution {
+            background: rgba(16, 185, 129, 0.05);
+            border-left-color: #10b981;
+        }
 
-      button.primary:hover {
-        background: #00dfc4;
-      }
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 40px 0;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+        }
 
-      .status {
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        color: var(--text-muted);
-        margin-top: 16px;
-      }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
 
-      .status.success {
-        color: var(--accent-green);
-      }
-
-      .status.success::before {
-        content: "�?";
-      }
-
-      footer {
-        text-align: center;
-        margin-top: 32px;
-        padding-top: 16px;
-        border-top: 1px solid var(--border-subtle);
-        font-family: var(--font-mono);
-        font-size: 0.8rem;
-        color: var(--text-muted);
-      }
-
-      footer a {
-        color: var(--color-accent-cyan);
-        text-decoration: none;
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
+        @media (max-width: 768px) {
+            .problem-solution {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
-  </head>
-  <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      配色方案生成�?
+</head>
+<body data-theme="dark">
+    <nav>
+        <div class="nav-content">
+            <a href="../../index.html" class="back-home">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                返回首页
+            </a>
+            <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                <svg class="sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </button>
+        </div>
     </nav>
-    <div class="bg-grid"></div>
 
     <div class="container">
-      <a href="../../index.html" class="back-link">�?返回</a>
-      <button class="theme-toggle" onclick="toggleTheme()" title="切换主题" aria-label="🌙">
-        🌙
-      </button>
+        <header>
+            <h1>配色方案生成器</h1>
+            <p class="subtitle">基于 HSL 色彩几何模型生成和谐、专业的网页调色板</p>
+        </header>
 
-      <h1>配色方案生成�?/h1>
-      <p class="desc">基于色相、饱和度、亮度生成协调的配色方案</p>
+        <main>
+            <div class="main-card">
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label>主色调</label>
+                        <div class="input-row">
+                            <input type="color" id="primaryColor" value="#3b82f6">
+                            <input type="text" id="primaryHex" value="#3B82F6">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label>调和模式</label>
+                        <select id="schemeType">
+                            <option value="analogous">类似色 (Analogous)</option>
+                            <option value="complementary">互补色 (Complementary)</option>
+                            <option value="triadic">三角色 (Triadic)</option>
+                            <option value="tetradic">四角色 (Tetradic)</option>
+                            <option value="monochromatic">单色系 (Monochromatic)</option>
+                            <option value="shades">渐变色 (Shades)</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>颜色数量</label>
+                        <input type="number" id="colorCount" value="5" min="2" max="12">
+                    </div>
+                    <div class="control-group">
+                        <label>全局饱和度 / 亮度 (%)</label>
+                        <div class="input-row">
+                            <input type="number" id="saturation" value="70" min="0" max="100">
+                            <input type="number" id="lightness" value="50" min="0" max="100">
+                        </div>
+                    </div>
+                </div>
 
-      <div class="card">
-        <div class="color-picker-section">
-          <div class="color-input-group">
-            <label>主色�?/label>
-            <div class="color-input">
-              <input type="color" id="primaryColor" value="#00f5d4" aria-label="颜色选择�? />
-              <input
-                type="text"
-                id="primaryHex"
-                value="#00f5d4"
-                aria-label="文本输入�?
-                placeholder="请输入文本输入框"
-              />
+                <div class="palette-grid" id="paletteGrid">
+                    <!-- Palette items injected by JS -->
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn" id="btnGenerate">⚡ 生成配色</button>
+                    <button class="btn btn-secondary" id="btnRandom">🎲 随机配色</button>
+                    <button class="btn btn-secondary" id="btnCopy">📋 复制代码</button>
+                    <button class="btn btn-secondary" id="btnClear">🔄 重置</button>
+                </div>
+
+                <div class="output-section">
+                    <label>CSS 变量代码</label>
+                    <textarea id="outputCode" readonly></textarea>
+                </div>
             </div>
-          </div>
-          <div class="color-input-group">
-            <label>副色�?/label>
-            <div class="color-input">
-              <input type="color" id="secondaryColor" value="#4cc9f0" aria-label="颜色选择�? />
-              <input
-                type="text"
-                id="secondaryHex"
-                value="#4cc9f0"
-                aria-label="文本输入�?
-                placeholder="请输入文本输入框"
-              />
+
+            <div class="ad-container">
+                <!-- AdSense Placeholder -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-################"
+                     data-ad-slot="################"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
             </div>
-          </div>
-        </div>
 
-        <div class="options-grid">
-          <div class="option-group">
-            <label>配色方案</label>
-            <select id="schemeType">
-              <option value="analogous">类似�?/option>
-              <option value="complementary">互补�?/option>
-              <option value="triadic">三色</option>
-              <option value="tetradic">四色</option>
-              <option value="monochromatic">单色</option>
-              <option value="shades">渐变�?/option>
-            </select>
-          </div>
-          <div class="option-group">
-            <label for="input-----">颜色数量</label>
-            <input
-              type="number"
-              id="colorCount"
-              value="5"
-              min="2"
-              max="12"
-              aria-label="数字输入�?
-              placeholder="请输入数字输入框"
-            />
-          </div>
-          <div class="option-group">
-            <label for="input----">饱和�?/label>
-            <input
-              type="number"
-              id="saturation"
-              value="70"
-              min="0"
-              max="100"
-              aria-label="数字输入�?
-              placeholder="请输入数字输入框"
-            />
-          </div>
-          <div class="option-group">
-            <label for="input---">亮度</label>
-            <input
-              type="number"
-              id="lightness"
-              value="50"
-              min="0"
-              max="100"
-              aria-label="数字输入�?
-              placeholder="请输入数字输入框"
-            />
-          </div>
-        </div>
+            <section class="article-section">
+                <h2>为什么科学的配色对 UI 设计至关重要？</h2>
+                
+                <div class="problem-solution">
+                    <div class="ps-card">
+                        <h3>常见困扰</h3>
+                        <p>设计师经常会遇到这种尴尬：选取的几个颜色单独看都不错，但组合在一起后，要么显得刺眼不适，要么显得平庸杂乱，缺乏视觉层级感。</p>
+                    </div>
+                    <div class="ps-card solution">
+                        <h3>色彩调和的方案</h3>
+                        <p>通过使用色相环上的几何规则（如 180 度的互补关系或 30 度的类比关系），我们可以利用数学上的严谨性来确保视觉上的和谐。本工具正是基于此原理开发。</p>
+                    </div>
+                </div>
 
-        <div class="palette-display">
-          <h3>配色方案</h3>
-          <div class="palette-grid" id="paletteGrid"></div>
-        </div>
+                <h3>主流配色模式深度解析</h3>
+                <ul>
+                    <li><strong>类似色 (Analogous)</strong>: 在色相环上选取相邻的颜色。这种模式能营造出极佳的统一感，视觉上非常柔和、平衡，最适合构建内容驱动型网站的基础色调。</li>
+                    <li><strong>互补色 (Complementary)</strong>: 选取色相环上正对面的两个颜色。这种模式产生的视觉冲击力最强，对比鲜明，非常适合用于“行动召唤”按钮（CTA）或需要强调的重要提示。</li>
+                    <li><strong>三角色 (Triadic)</strong>: 将色相环三等分。这种配色既保留了色彩的丰富性，又通过等距分布保持了平衡，是创建活泼、多元 UI 风格的理想选择。</li>
+                    <li><strong>单色系 (Monochromatic)</strong>: 固定色相，仅通过调整亮度和饱和度来生成色彩。这是目前极简主义（Minimalism）设计的首选，能自动形成完美的视觉层级。</li>
+                </ul>
 
-        <div class="code-output">
-          <label>CSS 代码</label>
-          <textarea id="output" readonly></textarea>
-        </div>
+                <h3>HSL 模型 vs RGB 模型的优势</h3>
+                <p>传统的 RGB 模型对人类直觉并不友好（你很难立刻说出 R:59, G:130, B:246 是什么颜色）。相比之下，HSL（色相、饱和度、亮度）模型更符合人类对色彩的认知。在 HSL 空间内，我们可以通过简单的角度偏移（如 +180 度生成互补色）来完成复杂的调色任务，这也是本工具核心算法的基础。</p>
 
-        <div class="actions">
-          <button id="btnGenerate" class="primary">生成配色</button>
-          <button id="btnCopy">复制代码</button>
-          <button id="btnRandom">随机配色</button>
-          <button id="btnClear">重置</button>
-        </div>
+                <h3>使用小贴士</h3>
+                <p>在设计系统时，建议将生成的调色板导出为 CSS 变量。这样在需要微调品牌色时，只需修改 <code>:root</code> 下的一个变量值，整个应用的配色都会根据数学比例自动同步更新，极大地提升了前端开发效率和代码的可维护性。</p>
+            </section>
+        </main>
 
-        <div id="status" class="status"></div>
-      </div>
-
-      <footer>
-        <a href="https://github.com/chicogong/html-tools" target="_blank">GitHub</a>
-        · 纯前�?· 无服务器 ·
-        <a href="../../index.html">WebUtils</a>
-      </footer>
+        <footer>
+            <p>&copy; 2026 WebUtils - 你的全能在线开发工具箱</p>
+        </footer>
     </div>
 
+    <div class="toast" id="toast">已复制!</div>
+
     <script>
-      const primaryColorEl = document.getElementById("primaryColor");
-      const primaryHexEl = document.getElementById("primaryHex");
-      const secondaryColorEl = document.getElementById("secondaryColor");
-      const secondaryHexEl = document.getElementById("secondaryHex");
-      const schemeTypeEl = document.getElementById("schemeType");
-      const colorCountEl = document.getElementById("colorCount");
-      const saturationEl = document.getElementById("saturation");
-      const lightnessEl = document.getElementById("lightness");
-      const paletteGridEl = document.getElementById("paletteGrid");
-      const outputEl = document.getElementById("output");
-      const statusEl = document.getElementById("status");
+        const primaryColorEl = document.getElementById("primaryColor");
+        const primaryHexEl = document.getElementById("primaryHex");
+        const schemeTypeEl = document.getElementById("schemeType");
+        const colorCountEl = document.getElementById("colorCount");
+        const saturationEl = document.getElementById("saturation");
+        const lightnessEl = document.getElementById("lightness");
+        const paletteGridEl = document.getElementById("paletteGrid");
+        const outputCodeEl = document.getElementById("outputCode");
+        const themeToggle = document.getElementById('themeToggle');
+        const toast = document.getElementById('toast');
 
-      function hexToHSL(hex) {
-        let r = 0,
-          g = 0,
-          b = 0;
-        if (hex.length === 4) {
-          r = parseInt(hex[1] + hex[1], 16);
-          g = parseInt(hex[2] + hex[2], 16);
-          b = parseInt(hex[3] + hex[3], 16);
-        } else if (hex.length === 7) {
-          r = parseInt(hex[1] + hex[2], 16);
-          g = parseInt(hex[3] + hex[4], 16);
-          b = parseInt(hex[5] + hex[6], 16);
-        }
-        r /= 255;
-        g /= 255;
-        b /= 255;
-        const max = Math.max(r, g, b);
-        const min = Math.min(r, g, b);
-        let h,
-          s,
-          l = (max + min) / 2;
-
-        if (max === min) {
-          h = s = 0;
-        } else {
-          const d = max - min;
-          s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-          switch (max) {
-            case r:
-              h = (g - b) / d + (g < b ? 6 : 0);
-              break;
-            case g:
-              h = (b - r) / d + 2;
-              break;
-            case b:
-              h = (r - g) / d + 4;
-              break;
-          }
-          h /= 6;
+        // Color conversion
+        function hexToHSL(hex) {
+            let r = 0, g = 0, b = 0;
+            if (hex.length === 4) {
+                r = parseInt(hex[1] + hex[1], 16);
+                g = parseInt(hex[2] + hex[2], 16);
+                b = parseInt(hex[3] + hex[3], 16);
+            } else if (hex.length === 7) {
+                r = parseInt(hex[1] + hex[2], 16);
+                g = parseInt(hex[3] + hex[4], 16);
+                b = parseInt(hex[5] + hex[6], 16);
+            }
+            r /= 255; g /= 255; b /= 255;
+            const max = Math.max(r, g, b), min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+            if (max === min) h = s = 0;
+            else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                h /= 6;
+            }
+            return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
         }
 
-        return {
-          h: Math.round(h * 360),
-          s: Math.round(s * 100),
-          l: Math.round(l * 100)
-        };
-      }
-
-      function HSLToHex(h, s, l) {
-        s /= 100;
-        l /= 100;
-
-        const c = (1 - Math.abs(2 * l - 1)) * s;
-        const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
-        const m = l - c / 2;
-        let r = 0,
-          g = 0,
-          b = 0;
-
-        if (h >= 0 && h < 60) {
-          r = c;
-          g = x;
-          b = 0;
-        } else if (h >= 60 && h < 120) {
-          r = x;
-          g = c;
-          b = 0;
-        } else if (h >= 120 && h < 180) {
-          r = 0;
-          g = c;
-          b = x;
-        } else if (h >= 180 && h < 240) {
-          r = 0;
-          g = x;
-          b = c;
-        } else if (h >= 240 && h < 300) {
-          r = x;
-          g = 0;
-          b = c;
-        } else if (h >= 300 && h < 360) {
-          r = c;
-          g = 0;
-          b = x;
+        function HSLToHex(h, s, l) {
+            s /= 100; l /= 100;
+            const c = (1 - Math.abs(2 * l - 1)) * s;
+            const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+            const m = l - c / 2;
+            let r = 0, g = 0, b = 0;
+            if (h >= 0 && h < 60) { r = c; g = x; b = 0; }
+            else if (h >= 60 && h < 120) { r = x; g = c; b = 0; }
+            else if (h >= 120 && h < 180) { r = 0; g = c; b = x; }
+            else if (h >= 180 && h < 240) { r = 0; g = x; b = c; }
+            else if (h >= 240 && h < 300) { r = x; g = 0; b = c; }
+            else if (h >= 300 && h < 360) { r = c; g = 0; b = x; }
+            const toHex = (x) => Math.round((x + m) * 255).toString(16).padStart(2, '0');
+            return `#${toHex(r)}${toHex(g)}${toHex(b)}`.toUpperCase();
         }
 
-        r = Math.round((r + m) * 255);
-        g = Math.round((g + m) * 255);
-        b = Math.round((b + m) * 255);
+        function generate() {
+            const hex = primaryHexEl.value;
+            if (!/^#[0-9A-Fa-f]{3,6}$/.test(hex)) return;
+            
+            const baseHSL = hexToHSL(hex);
+            const scheme = schemeTypeEl.value;
+            const count = parseInt(colorCountEl.value);
+            const s = parseInt(saturationEl.value);
+            const l = parseInt(lightnessEl.value);
+            
+            let colors = [];
+            for (let i = 0; i < count; i++) {
+                let h;
+                let curS = s;
+                let curL = l;
 
-        return (
-          "#" +
-          [r, g, b]
-            .map((x) => {
-              const hex = x.toString(16);
-              return hex.length === 1 ? "0" + hex : hex;
-            })
-            .join("")
-        );
-      }
+                switch (scheme) {
+                    case "analogous": h = (baseHSL.h + (i - Math.floor(count/2)) * 30 + 360) % 360; break;
+                    case "complementary": h = (baseHSL.h + (i % 2 === 0 ? 0 : 180)) % 360; break;
+                    case "triadic": h = (baseHSL.h + i * 120) % 360; break;
+                    case "tetradic": h = (baseHSL.h + i * 90) % 360; break;
+                    case "monochromatic": h = baseHSL.h; curL = 20 + i * (60 / (count-1)); break;
+                    case "shades": h = baseHSL.h; curL = 10 + i * (80 / (count-1)); break;
+                    default: h = baseHSL.h;
+                }
+                colors.push(HSLToHex(h, curS, curL));
+            }
 
-      function generateColorScheme(baseHSL, schemeType, count) {
-        const s = parseInt(saturationEl.value) || 70;
-        const l = parseInt(lightnessEl.value) || 50;
-        const colors = [];
-        const baseH = baseHSL.h;
+            // Render
+            paletteGridEl.innerHTML = colors.map((c, idx) => `
+                <div class="palette-color" style="background: ${c}" onclick="selectColor('${c}')">
+                    <span class="hex-label">${c}</span>
+                    <span class="name-label">Color ${idx + 1}</span>
+                </div>
+            `).join('');
 
-        for (let i = 0; i < count; i++) {
-          let h;
-          switch (schemeType) {
-            case "analogous":
-              h = (baseH + (i - Math.floor(count / 2)) * 30 + 360) % 360;
-              break;
-            case "complementary":
-              h = (baseH + (i % 2 === 0 ? 0 : 180)) % 360;
-              break;
-            case "triadic":
-              h = (baseH + i * 120) % 360;
-              break;
-            case "tetradic":
-              h = (baseH + i * 90) % 360;
-              break;
-            case "monochromatic":
-              h = baseH;
-              break;
-            case "shades":
-              h = baseH;
-              break;
-            default:
-              h = (baseH + i * (360 / count)) % 360;
-          }
-
-          let colorS = s;
-          let colorL = l;
-
-          if (schemeType === "shades") {
-            colorL = 10 + i * (80 / (count - 1));
-          } else if (schemeType === "monochromatic") {
-            colorL = 30 + i * (50 / (count - 1));
-          }
-
-          colors.push(HSLToHex(h, colorS, colorL));
+            // Code
+            outputCodeEl.value = `:root {\n${colors.map((c, i) => `  --color-palette-${i + 1}: ${c};`).join("\n")}\n}`;
         }
 
-        return colors;
-      }
-
-      function generatePalette() {
-        const primaryHex = primaryHexEl.value;
-        const schemeType = schemeTypeEl.value;
-        const count = parseInt(colorCountEl.value) || 5;
-
-        if (!/^#[0-9A-Fa-f]{3,6}$/.test(primaryHex)) {
-          showStatus("颜色格式无效", "error");
-          return;
-        }
-
-        const baseHSL = hexToHSL(primaryHex);
-        const colors = generateColorScheme(baseHSL, schemeType, count);
-
-        paletteGridEl.innerHTML = "";
-        colors.forEach(function (hex, index) {
-          const colorDiv = document.createElement("div");
-          colorDiv.className = "palette-color";
-          colorDiv.style.backgroundColor = hex;
-          colorDiv.innerHTML =
-            '<div class="color-hex">' +
-            hex +
-            "</div>" +
-            '<div class="color-name">颜色 ' +
-            (index + 1) +
-            "</div>";
-          paletteGridEl.appendChild(colorDiv);
-
-          colorDiv.addEventListener("click", function () {
-            document.querySelectorAll(".palette-color").forEach(function (c) {
-              c.classList.remove("active");
-            });
-            colorDiv.classList.add("active");
-            primaryColorEl.value = hex;
+        window.selectColor = (hex) => {
             primaryHexEl.value = hex;
-            updateHexInputs();
-          });
-        });
+            primaryColorEl.value = hex;
+            generate();
+        };
 
-        // Generate CSS code
-        const css =
-          ":root {\n" +
-          colors
-            .map(function (hex, index) {
-              return `  --color-${index + 1}: ${hex};`;
-            })
-            .join("\n") +
-          "\n}";
-        outputEl.value = css;
+        // Events
+        primaryColorEl.oninput = (e) => { primaryHexEl.value = e.target.value.toUpperCase(); generate(); };
+        primaryHexEl.oninput = (e) => { if(/^#[0-9A-F]{6}$/i.test(e.target.value)) { primaryColorEl.value = e.target.value; generate(); } };
+        
+        [schemeTypeEl, colorCountEl, saturationEl, lightnessEl].forEach(el => el.onchange = generate);
+        
+        document.getElementById('btnGenerate').onclick = generate;
+        document.getElementById('btnRandom').onclick = () => {
+            const hex = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0').toUpperCase();
+            primaryHexEl.value = hex;
+            primaryColorEl.value = hex;
+            generate();
+        };
+        document.getElementById('btnClear').onclick = () => {
+            primaryHexEl.value = "#3B82F6";
+            primaryColorEl.value = "#3B82F6";
+            schemeTypeEl.value = "analogous";
+            colorCountEl.value = "5";
+            saturationEl.value = "70";
+            lightnessEl.value = "50";
+            generate();
+        };
+        document.getElementById('btnCopy').onclick = () => {
+            navigator.clipboard.writeText(outputCodeEl.value).then(() => {
+                toast.style.display = 'block';
+                setTimeout(() => toast.style.display = 'none', 2000);
+            });
+        };
 
-        showStatus("配色方案已生�?, "success");
-      }
-
-      function updateHexInputs() {
-        primaryColorEl.value = primaryHexEl.value;
-        secondaryColorEl.value = secondaryHexEl.value;
-      }
-
-      function showStatus(msg, type) {
-        statusEl.textContent = msg;
-        statusEl.className = "status " + (type || "");
-      }
-
-      window.randomColor = function () {
-        const hex =
-          "#" +
-          Math.floor(Math.random() * 0x1000000)
-            .toString(16)
-            .padStart(6, "0");
-        primaryHexEl.value = hex;
-        updateHexInputs();
-        generatePalette();
-      };
-
-      function reset() {
-        primaryHexEl.value = "#00f5d4";
-        secondaryHexEl.value = "#4cc9f0";
-        schemeTypeEl.value = "analogous";
-        colorCountEl.value = "5";
-        saturationEl.value = "70";
-        lightnessEl.value = "50";
-        updateHexInputs();
-        generatePalette();
-      }
-
-      primaryColorEl.addEventListener("input", function () {
-        primaryHexEl.value = this.value;
-        generatePalette();
-      });
-
-      primaryHexEl.addEventListener("input", function () {
-        primaryColorEl.value = this.value;
-        if (this.value.length === 7 || this.value.length === 4) {
-          generatePalette();
+        // Theme
+        function initTheme() {
+            const saved = localStorage.getItem('theme') || 'dark';
+            document.body.setAttribute('data-theme', saved);
         }
-      });
+        themeToggle.onclick = () => {
+            const cur = document.body.getAttribute('data-theme');
+            const next = cur === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+        };
 
-      secondaryColorEl.addEventListener("input", function () {
-        secondaryHexEl.value = this.value;
-      });
-
-      secondaryHexEl.addEventListener("input", function () {
-        secondaryColorEl.value = this.value;
-      });
-
-      document.getElementById("btnGenerate").onclick = generatePalette;
-      document.getElementById("btnRandom").onclick = randomColor;
-      document.getElementById("btnClear").onclick = reset;
-
-      document.getElementById("btnCopy").onclick = async function () {
-        try {
-          await navigator.clipboard.writeText(outputEl.value);
-          showStatus("已复�?, "success");
-        } catch (e) {
-          showStatus("复制失败");
-        }
-      };
-
-      [schemeTypeEl, colorCountEl, saturationEl, lightnessEl].forEach(function (el) {
-        el.addEventListener("change", generatePalette);
-      });
-
-      // Initial generation
-      updateHexInputs();
-      generatePalette();
-
-      window.toggleTheme = function () {
-        const html = document.documentElement;
-        const btn = document.querySelector(".theme-toggle");
-        const next = html.getAttribute("data-theme") === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", next);
-        btn.textContent = next === "light" ? "☀�? : "🌙";
-        localStorage.setItem("theme", next);
-      };
-      (function () {
-        const saved = localStorage.getItem("theme");
-        if (saved) {
-          document.documentElement.setAttribute("data-theme", saved);
-          const btn = document.querySelector(".theme-toggle");
-          if (btn) btn.textContent = saved === "light" ? "☀�? : "🌙";
-        }
-      })();
+        initTheme();
+        generate();
     </script>
-  </body>
+</body>
 </html>
-
