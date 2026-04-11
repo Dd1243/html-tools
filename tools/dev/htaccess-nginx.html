@@ -1,674 +1,382 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>htaccess转Nginx - WebUtils</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>.htaccess 转 Nginx 配置转换器 - 在线伪静态规则转换工具 - WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="htaccess转Nginx - WebUtils" />
-    <meta name="keywords" content="htaccess-nginx,dev,tools,webutils" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/dev/htaccess-nginx.html" />
+    <meta name="description" content="专业的在线 .htaccess 转 Nginx 配置转换工具。支持将 Apache 的 RewriteRule, RewriteCond, ErrorDocument 等伪静态规则一键转换为 Nginx 语法。涵盖 WordPress, ThinkPHP, Laravel 等主流框架规则转换，助力开发者快速迁移 Web 服务器配置。">
+    <meta name="keywords" content="htaccess转nginx,伪静态转换,Apache规则转Nginx,RewriteRule转换,Nginx配置生成,服务器迁移工具,PHP项目部署">
+    <meta name="author" content="WebUtils">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://essays4u.net/tools/dev/htaccess-nginx.html">
 
     <!-- Open Graph -->
-    <meta property="og:title" content="htaccess转Nginx - WebUtils" />
-    <meta property="og:description" content="htaccess转Nginx - WebUtils" />
-    <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/dev/htaccess-nginx.html"
-    />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://essays4u.net/tools/dev/htaccess-nginx.html">
+    <meta property="og:title" content=".htaccess 转 Nginx 配置转换器 - 在线伪静态规则转换工具">
+    <meta property="og:description" content="一键将 Apache .htaccess 规则转换为 Nginx 配置，简单、准确、高效。">
+    <meta property="og:image" content="https://essays4u.net/social-preview.png">
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="htaccess转Nginx - WebUtils" />
-    <meta name="twitter:description" content="htaccess转Nginx - WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content=".htaccess 转 Nginx 配置转换器 - 在线伪静态规则转换工具">
+    <meta property="twitter:description" content="一键将 Apache .htaccess 规则转换为 Nginx 配置，简单、准确、高效。">
+    <meta property="twitter:image" content="https://essays4u.net/social-preview.png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 
     <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      :root {
-        --bg-primary: #0a0a0f;
-        --bg-secondary: #12121a;
-        --bg-tertiary: #1a1a25;
-        --color-text-primary: #fff;
-        --color-text-secondary: #88a;
-        --accent: #6366f1;
-        --border: #2a2a3a;
-        --success: #22c55e;
-      }
-      [data-theme="light"] {
-        --bg-primary: #f8fafc;
-        --bg-secondary: #fff;
-        --bg-tertiary: #f1f5f9;
-        --color-text-primary: #1e293b;
-        --color-text-secondary: #64748b;
-        --border: #e2e8f0;
-      }
-      body {
-        font-family: var(--font-sans);
-        background: var(--bg-deep);
-        color: var(--color-text-primary);
-        min-height: 100vh;
-      }
-      .header {
-        background: linear-gradient(135deg, #f97316, #ea580c);
-        padding: 2rem;
-        text-align: center;
-      }
-      .header h1 {
-        font-size: 1.8rem;
-        margin-bottom: 0.5rem;
-      }
-      .nav {
-        display: flex;
-        justify-content: space-between;
-        max-width: 1200px;
-        margin: 0 auto 1rem;
-      }
-      .back-link {
-        color: rgba(255, 255, 255, 0.9);
-        text-decoration: none;
-      }
-      .theme-toggle {
-        background: rgba(255, 255, 255, 0.2);
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
-        color: white;
-        cursor: pointer;
-      }
-      .container {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 2rem;
-      }
-      .card {
-        background: var(--bg-secondary);
-        border: 1px solid var(--border-subtle);
-        border-radius: 1rem;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-      }
-      .editor-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
-      }
-      @media (max-width: 900px) {
-        .editor-grid {
-          grid-template-columns: 1fr;
+        :root {
+            --bg-deep: #0a0a0f;
+            --bg-surface: #12121a;
+            --bg-card: #1a1a24;
+            --bg-input: #0e0e14;
+            --text-primary: #e8e8ed;
+            --text-secondary: #8888a0;
+            --text-muted: #55556a;
+            --border-subtle: #2a2a3a;
+            --border-strong: #3a3a4a;
+            --accent-nginx: #009639;
+            --accent-nginx-glow: rgba(0, 150, 57, 0.15);
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --font-sans: 'Inter', -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-display: 'Space Grotesk', sans-serif;
         }
-      }
-      .editor-box {
-        display: flex;
-        flex-direction: column;
-      }
-      .editor-box h3 {
-        margin-bottom: 0.75rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .editor-box h3 img {
-        height: 24px;
-      }
-      textarea {
-        width: 100%;
-        min-height: 400px;
-        padding: 1rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: 0.5rem;
-        background: var(--bg-tertiary);
-        color: var(--color-text-primary);
-        font-family: Monaco, Menlo, monospace;
-        font-size: 0.85rem;
-        resize: vertical;
-      }
-      .btn {
-        padding: 0.75rem 1.5rem;
-        border: none;
-        border-radius: 0.5rem;
-        cursor: pointer;
-        font-size: 1rem;
-        transition: all 0.2s;
-      }
-      .btn-primary {
-        background: var(--accent-cyan);
-        color: white;
-      }
-      .btn-success {
-        background: var(--accent-green);
-        color: white;
-      }
-      .btn-secondary {
-        background: var(--bg-tertiary);
-        color: var(--color-text-primary);
-        border: 1px solid var(--border-subtle);
-      }
-      .btn-row {
-        display: flex;
-        gap: 1rem;
-        justify-content: center;
-        margin: 1rem 0;
-        flex-wrap: wrap;
-      }
-      .examples {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-      }
-      .example-btn {
-        padding: 0.5rem 0.75rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: 0.25rem;
-        background: var(--bg-tertiary);
-        color: var(--color-text-primary);
-        cursor: pointer;
-        font-size: 0.85rem;
-      }
-      .example-btn:hover {
-        border-color: var(--accent-cyan);
-      }
-      .warning {
-        background: rgba(245, 158, 11, 0.1);
-        border: 1px solid #f59e0b;
-        border-radius: 0.5rem;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        font-size: 0.9rem;
-        color: #f59e0b;
-      }
-      .toast {
-        position: fixed;
-        bottom: 2rem;
-        left: 50%;
-        transform: translateX(-50%);
-        background: var(--accent-green);
-        color: white;
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.5rem;
-        opacity: 0;
-        transition: opacity 0.3s;
-      }
-      .toast.show {
-        opacity: 1;
-      }
 
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
+        [data-theme="light"] {
+            --bg-deep: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-card: #ffffff;
+            --bg-input: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border-subtle: #e2e8f0;
+            --border-strong: #cbd5e1;
+            --accent-nginx: #009639;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-deep);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s;
+            min-height: 100vh;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        
+        header { margin-bottom: 2.5rem; text-align: center; position: relative; }
+        .breadcrumb { display: flex; gap: 0.5rem; font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem; justify-content: center; }
+        .breadcrumb a { color: var(--accent-nginx); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        
+        h1 { font-family: var(--font-display); font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--accent-nginx); }
+        .subtitle { color: var(--text-secondary); font-size: 1.1rem; }
+
+        .theme-toggle { position: absolute; top: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 0.5rem 1rem; border-radius: var(--radius-md); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
+
+        .main-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+        @media (max-width: 968px) { .main-layout { grid-template-columns: 1fr; } }
+
+        .panel { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .panel-header { padding: 1rem 1.5rem; background: var(--bg-surface); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; }
+        .panel-title { font-size: 0.85rem; font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+        .panel-content { flex: 1; padding: 1.5rem; }
+
+        textarea {
+            width: 100%;
+            height: 450px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            resize: none;
+            outline: none;
+            line-height: 1.5;
+            transition: border-color 0.2s;
+        }
+        textarea:focus { border-color: var(--accent-nginx); }
+
+        .btn-group { display: flex; gap: 0.75rem; margin-top: 1rem; }
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-surface);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn:hover { background: var(--border-subtle); transform: translateY(-1px); }
+        .btn-primary { background: var(--accent-nginx); color: #fff; border: none; font-weight: 600; }
+        .btn-primary:hover { opacity: 0.9; box-shadow: 0 4px 12px var(--accent-nginx-glow); }
+
+        .presets { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+        .preset-btn {
+            padding: 0.3rem 0.75rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .preset-btn:hover { border-color: var(--accent-nginx); color: var(--accent-nginx); }
+
+        /* AdSense Placeholders */
+        .ads-placeholder { margin: 2rem 0; background: var(--bg-card); border: 1px dashed var(--border-subtle); height: 100px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem; border-radius: var(--radius-lg); }
+
+        /* Article Content */
+        article { margin-top: 4rem; max-width: 900px; margin-left: auto; margin-right: auto; }
+        article h2 { font-family: var(--font-display); font-size: 1.75rem; margin: 2.5rem 0 1rem; color: var(--accent-nginx); }
+        article h3 { font-size: 1.25rem; margin: 1.5rem 0 0.75rem; }
+        article p { margin-bottom: 1.25rem; color: var(--text-secondary); }
+        article ul, article ol { margin-bottom: 1.5rem; padding-left: 1.5rem; color: var(--text-secondary); }
+        article li { margin-bottom: 0.5rem; }
+        code { background: var(--bg-input); padding: 0.2rem 0.4rem; border-radius: 4px; font-family: var(--font-mono); font-size: 0.9em; }
+
+        .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--accent-nginx); color: #fff; padding: 0.75rem 1.5rem; border-radius: var(--radius-md); font-weight: 600; transform: translateY(100px); transition: transform 0.3s; z-index: 1000; }
+        .toast.show { transform: translateY(0); }
+
+        footer { margin-top: 4rem; padding: 2rem; border-top: 1px solid var(--border-subtle); text-align: center; color: var(--text-muted); font-size: 0.875rem; }
+        footer a { color: var(--text-secondary); text-decoration: none; margin: 0 0.5rem; }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      htaccess转Nginx
-    </nav>
-    <div class="header">
-      <div class="nav">
-        <button class="theme-toggle" onclick="toggleTheme()">🌓 主题</button>
-      </div>
-      <h1>🔄 htaccess转Nginx</h1>
-      <p>将Apache .htaccess规则转换为Nginx配置</p>
-    </div>
+</head>
+<body>
     <div class="container">
-      <div class="card">
-        <div class="warning">
-          ⚠️ 注意：此工具提供基础转换，复杂规则可能需要手动调整。建议转换后仔细检查并测试�?
-        </div>
+        <nav class="breadcrumb">
+            <a href="../../index.html">首页</a> / <span>开发工具</span> / <span>htaccess 转 Nginx</span>
+        </nav>
 
-        <div class="examples">
-          <span style="color: var(--color-text-secondary); margin-right: 0.5rem">示例:</span>
-          <button class="example-btn" onclick="loadExample('rewrite')">URL重写</button>
-          <button class="example-btn" onclick="loadExample('redirect')">重定�?/button>
-          <button class="example-btn" onclick="loadExample('auth')">访问控制</button>
-          <button class="example-btn" onclick="loadExample('cache')">缓存设置</button>
-          <button class="example-btn" onclick="loadExample('gzip')">Gzip压缩</button>
-        </div>
-
-        <div class="btn-row">
-          <button class="btn btn-primary" onclick="convert()">🔄 转换</button>
-        </div>
-      </div>
-
-      <div class="editor-grid">
-        <div class="card editor-box">
-          <h3>Apache .htaccess</h3>
-          <textarea id="htaccessInput" placeholder="粘贴.htaccess内容...">
-RewriteEngine On
-RewriteBase /
-
-# Redirect to HTTPS
-RewriteCond %{HTTPS} off
-RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-
-# Remove trailing slash
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)/$ /$1 [L,R=301]
-
-# Front controller
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.php [L,QSA]
-
-# Cache static files
-&lt;FilesMatch "\.(jpg|jpeg|png|gif|ico|css|js)$"&gt;
-    Header set Cache-Control "max-age=31536000, public"
-&lt;/FilesMatch&gt;</textarea
-          >
-        </div>
-
-        <div class="card editor-box">
-          <h3>
-            Nginx配置
-            <button
-              class="btn btn-secondary"
-              style="padding: 0.25rem 0.5rem; font-size: 0.85rem"
-              onclick="copyOutput()"
-            >
-              复制
+        <header>
+            <h1>.htaccess 转 Nginx 转换器</h1>
+            <p class="subtitle">快速将 Apache 伪静态规则转换为 Nginx 配置，助力服务器迁移</p>
+            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">
+                <span>🌙</span> 暗色模式
             </button>
-          </h3>
-          <textarea id="nginxOutput" placeholder="转换后的Nginx配置..." readonly></textarea>
+        </header>
+
+        <!-- Google AdSense Top -->
+        <div class="ads-placeholder">
+            广告占位符 - Google AdSense (Top)
         </div>
-      </div>
+
+        <main class="main-layout">
+            <!-- Apache Input -->
+            <section class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">Apache .htaccess 源码</span>
+                    <span style="font-size: 0.7rem; color: var(--text-muted);">输入规则自动转换</span>
+                </div>
+                <div class="panel-content">
+                    <div class="presets">
+                        <button class="preset-btn" onclick="loadPreset('wordpress')">WordPress</button>
+                        <button class="preset-btn" onclick="loadPreset('thinkphp')">ThinkPHP</button>
+                        <button class="preset-btn" onclick="loadPreset('laravel')">Laravel</button>
+                        <button class="preset-btn" onclick="loadPreset('spa')">SPA (Vue/React)</button>
+                    </div>
+                    <textarea id="htaccessInput" placeholder="# 粘贴您的 .htaccess 内容...&#10;&#10;RewriteEngine On&#10;RewriteCond %{REQUEST_FILENAME} !-f&#10;RewriteRule ^(.*)$ index.php/$1 [QSA,PT,L]" oninput="convert()"></textarea>
+                    <div class="btn-group">
+                        <button class="btn" onclick="clearInput()">清空输入</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Nginx Output -->
+            <section class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">Nginx 配置结果</span>
+                    <button class="btn btn-primary" style="padding: 0.2rem 0.6rem; font-size: 0.75rem;" onclick="copyResult()">复制配置</button>
+                </div>
+                <div class="panel-content">
+                    <textarea id="nginxOutput" readonly placeholder="# Nginx 转换结果将显示在这里..."></textarea>
+                    <div class="btn-group">
+                        <p style="font-size: 0.75rem; color: var(--text-muted);">
+                            💡 提示：转换结果仅供参考，生产环境部署前请务必进行测试。
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Google AdSense Bottom -->
+        <div class="ads-placeholder">
+            广告占位符 - Google AdSense (Bottom)
+        </div>
+
+        <!-- SEO Content -->
+        <article>
+            <h2>从 Apache 迁移到 Nginx：为什么要转换配置？</h2>
+            <p>在高性能 Web 服务领域，Nginx 已逐渐取代 Apache 成为首选。它以高并发、低内存占用和强大的静态文件处理能力著称。然而，Apache 使用 <code>.htaccess</code> 文件来管理分布式配置，而 Nginx 则采用中心化的主配置文件。将 Apache 的伪静态规则（Rewrite Rules）迁移到 Nginx 是服务器迁移过程中最关键的一步。</p>
+            
+            <h3>Apache 与 Nginx 配置的核心差异</h3>
+            <ul>
+                <li><strong>分布式 vs 中心化：</strong> Apache 在每个目录下查找 <code>.htaccess</code>，这会带来性能损耗。Nginx 则在启动时加载配置，效率更高。</li>
+                <li><strong>语法逻辑：</strong> Apache 的 <code>RewriteRule</code> 基于标志位（Flags，如 [L, QSA]），而 Nginx 采用更接近编程语言的 <code>if</code> 指令和 <code>rewrite/try_files</code> 指令。</li>
+                <li><strong>性能：</strong> Nginx 的正则匹配速度极快，且 <code>try_files</code> 指令比 Apache 的文件存在性检查（-f, -d）更简洁。</li>
+            </ul>
+
+            <h3>本转换工具能解决哪些具体问题？</h3>
+            <p><strong>1. 常见的伪静态规则迁移：</strong><br>无论是 WordPress 的永久链接、Laravel 的单一入口，还是 ThinkPHP 的路由模式，本工具都能准确识别 <code>RewriteRule</code> 并转换为对应的 <code>location</code> 块或 <code>rewrite</code> 指令。</p>
+            
+            <p><strong>2. 条件判断（RewriteCond）：</strong><br>Apache 中常见的“如果文件不存在则转发到 index.php”逻辑，在 Nginx 中最优雅的实现是 <code>try_files $uri $uri/ /index.php?$query_string;</code>。本工具会自动进行这种“最佳实践”式的转换，而非生硬的正则翻译。</p>
+
+            <p><strong>3. 错误页面定制：</strong><br>一键将 <code>ErrorDocument 404 /404.html</code> 转换为 Nginx 的 <code>error_page 404 /404.html;</code>。</p>
+
+            <h3>迁移后的测试建议</h3>
+            <ol>
+                <li><strong>检查语法：</strong> 部署转换后的配置后，务必运行 <code>nginx -t</code> 检查是否存在语法错误。</li>
+                <li><strong>处理查询字符串：</strong> Nginx 默认会自动透传查询参数，除非你在 rewrite 末尾加上了 <code>?</code>。本工具已处理了大部分常见情况。</li>
+                <li><strong>根目录权限：</strong> Nginx 不会自动处理 <code>Deny from all</code>，你需要将其转换为 <code>location ~ /\.ht { deny all; }</code>。</li>
+            </ol>
+
+            <h3>如何使用本工具？</h3>
+            <p>1. <strong>粘贴源码：</strong> 将您的 <code>.htaccess</code> 文件内容全部粘贴到左侧输入框。</p>
+            <p>2. <strong>使用预设：</strong> 如果您不确定如何编写，可以点击顶部的“WordPress”或“Laravel”预设按钮查看标准示例。</p>
+            <p>3. <strong>获取配置：</strong> 右侧会实时生成转换后的 Nginx 语法。点击“复制配置”并将其粘贴到您的 <code>nginx.conf</code> 或虚拟主机配置文件中的 <code>server</code> 块内。</p>
+        </article>
+
+        <footer>
+            <p>&copy; 2026 WebUtils. 基于 MIT 协议开源。 <a href="https://github.com/nicepkg/html-tools">GitHub</a> | <a href="../../index.html">更多工具</a></p>
+        </footer>
     </div>
 
-    <div class="toast" id="toast">已复制到剪贴�?/div>
+    <div id="toast" class="toast">配置已复制到剪贴板</div>
 
     <script>
-      const examples = {
-        rewrite: `RewriteEngine On
-RewriteBase /
+        const htInput = document.getElementById('htaccessInput');
+        const ngOutput = document.getElementById('nginxOutput');
+        const toast = document.getElementById('toast');
 
-# Pretty URLs
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.php?url=$1 [L,QSA]
+        // Theme Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const btn = document.getElementById('themeBtn');
+            const isDark = html.getAttribute('data-theme') !== 'light';
+            if (isDark) {
+                html.setAttribute('data-theme', 'light');
+                btn.innerHTML = '<span>☀️</span> 亮色模式';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.removeAttribute('data-theme');
+                btn.innerHTML = '<span>🌙</span> 暗色模式';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
 
-# Remove .php extension
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_FILENAME}.php -f
-RewriteRule ^([^.]+)$ $1.php [NC,L]`,
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+            document.getElementById('themeBtn').innerHTML = '<span>☀️</span> 亮色模式';
+        }
 
-        redirect: `# Redirect old URLs to new
-Redirect 301 /old-page /new-page
-Redirect 301 /blog/old-post /articles/new-post
+        function convert() {
+            const input = htInput.value;
+            if (!input.trim()) {
+                ngOutput.value = '';
+                return;
+            }
 
-# Redirect entire domain
-RewriteCond %{HTTP_HOST} ^old-domain.com$ [NC]
-RewriteRule ^(.*)$ https://new-domain.com/$1 [R=301,L]
+            let lines = input.split('\n');
+            let result = "# Generated by WebUtils htaccess-to-nginx converter\n\n";
+            let currentConds = [];
 
-# Force HTTPS
-RewriteCond %{HTTPS} off
-RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]`,
+            lines.forEach(line => {
+                line = line.trim();
+                if (!line || line.startsWith('#')) return;
 
-        auth: `# Block specific IPs
-Order Allow,Deny
-Allow from all
-Deny from 123.456.789.0
+                // ErrorDocument
+                if (line.match(/^ErrorDocument\s+(\d+)\s+(.+)$/i)) {
+                    const m = line.match(/^ErrorDocument\s+(\d+)\s+(.+)$/i);
+                    result += `error_page ${m[1]} ${m[2]};\n`;
+                }
 
-# Password protect directory
-AuthType Basic
-AuthName "Restricted Area"
-AuthUserFile /path/to/.htpasswd
-Require valid-user
+                // RewriteCond
+                else if (line.match(/^RewriteCond\s+(.+)$/i)) {
+                    currentConds.push(line.match(/^RewriteCond\s+(.+)$/i)[1]);
+                }
 
-# Block bad bots
-RewriteCond %{HTTP_USER_AGENT} (bot|crawler|spider) [NC]
-RewriteRule .* - [F,L]`,
+                // RewriteRule
+                else if (line.match(/^RewriteRule\s+(.+)$/i)) {
+                    const parts = line.split(/\s+/);
+                    const pattern = parts[1];
+                    const substitution = parts[2];
+                    const flags = parts[3] || '';
 
-        cache: `# Cache static files
-<FilesMatch "\.(jpg|jpeg|png|gif|ico)$">
-    Header set Cache-Control "max-age=31536000, public"
-</FilesMatch>
+                    // Try to simplify common patterns like WordPress/Laravel try_files
+                    if (currentConds.some(c => c.includes('!-f')) && currentConds.some(c => c.includes('!-d'))) {
+                        result += `location / {\n    try_files $uri $uri/ /${substitution.replace(/^index\.php\/?/, 'index.php')}${substitution.includes('?') ? '' : '?$query_string'};\n}\n`;
+                    } else {
+                        let rewrite = `rewrite ${pattern} /${substitution}`;
+                        if (flags.includes('L')) rewrite += ' break;';
+                        else if (flags.includes('R')) rewrite += ' redirect;';
+                        
+                        if (currentConds.length > 0) {
+                            result += "# Warning: complex RewriteCond found, check logic\n";
+                            currentConds.forEach(c => result += `# Condition: ${c}\n`);
+                        }
+                        result += rewrite + '\n';
+                    }
+                    currentConds = [];
+                }
 
-<FilesMatch "\.(css|js)$">
-    Header set Cache-Control "max-age=604800, public"
-</FilesMatch>
+                // Deny/Allow
+                else if (line.match(/^Deny\s+from\s+all/i)) {
+                    result += "location / {\n    deny all;\n}\n";
+                }
+            });
 
-<FilesMatch "\.(html|htm)$">
-    Header set Cache-Control "max-age=3600, public"
-</FilesMatch>`,
+            if (result === "# Generated by WebUtils htaccess-to-nginx converter\n\n") {
+                result += "# No rules detected or unsupported format.\n# Please check your input.";
+            }
 
-        gzip: `# Enable compression
-<IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/html
-    AddOutputFilterByType DEFLATE text/css
-    AddOutputFilterByType DEFLATE text/javascript
-    AddOutputFilterByType DEFLATE application/javascript
-    AddOutputFilterByType DEFLATE application/json
-    AddOutputFilterByType DEFLATE application/xml
-</IfModule>`
-      };
+            ngOutput.value = result;
+        }
 
-      window.loadExample = function (name) {
-        document.getElementById("htaccessInput").value = examples[name];
+        const presets = {
+            wordpress: "RewriteEngine On\nRewriteBase /\nRewriteRule ^index\\.php$ - [L]\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteCond %{REQUEST_FILENAME} !-d\nRewriteRule . /index.php [L]",
+            thinkphp: "RewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !-d\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteRule ^(.*)$ index.php/$1 [QSA,PT,L]",
+            laravel: "RewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !-d\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteRule ^ index.php [L]",
+            spa: "RewriteEngine On\nRewriteBase /\nRewriteRule ^index\\.html$ - [L]\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteCond %{REQUEST_FILENAME} !-d\nRewriteRule . /index.html [L]"
+        };
+
+        function loadPreset(name) {
+            htInput.value = presets[name];
+            convert();
+        }
+
+        function clearInput() {
+            htInput.value = '';
+            ngOutput.value = '';
+        }
+
+        function copyResult() {
+            if (!ngOutput.value) return;
+            navigator.clipboard.writeText(ngOutput.value).then(() => {
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2000);
+            });
+        }
+
+        // Init
         convert();
-      };
-
-      function convert() {
-        const htaccess = document.getElementById("htaccessInput").value;
-        const nginx = convertToNginx(htaccess);
-        document.getElementById("nginxOutput").value = nginx;
-      }
-
-      function convertToNginx(htaccess) {
-        const lines = htaccess.split("\n");
-        let nginx = [];
-        let inLocationBlock = false;
-        let rewriteConditions = [];
-
-        nginx.push("# Converted from .htaccess");
-        nginx.push("# Please review and adjust as needed");
-        nginx.push("");
-
-        for (let i = 0; i < lines.length; i++) {
-          let line = lines[i].trim();
-
-          // Skip empty lines and comments
-          if (!line || line.startsWith("#")) {
-            if (line.startsWith("#")) {
-              nginx.push(line);
-            }
-            continue;
-          }
-
-          // Skip RewriteEngine and RewriteBase
-          if (line.startsWith("RewriteEngine") || line.startsWith("RewriteBase")) {
-            continue;
-          }
-
-          // Handle RewriteCond
-          if (line.startsWith("RewriteCond")) {
-            rewriteConditions.push(parseRewriteCond(line));
-            continue;
-          }
-
-          // Handle RewriteRule
-          if (line.startsWith("RewriteRule")) {
-            const rule = parseRewriteRule(line, rewriteConditions);
-            nginx.push(...rule);
-            rewriteConditions = [];
-            continue;
-          }
-
-          // Handle Redirect
-          if (line.startsWith("Redirect")) {
-            const match = line.match(/Redirect\s+(\d+)?\s*([^\s]+)\s+([^\s]+)/i);
-            if (match) {
-              const code = match[1] || "301";
-              nginx.push(`rewrite ^${match[2]}$ ${match[3]} permanent;`);
-            }
-            continue;
-          }
-
-          // Handle FilesMatch for caching
-          if (line.startsWith("<FilesMatch")) {
-            const match = line.match(/<FilesMatch\s+"([^"]+)">/i);
-            if (match) {
-              const extensions = match[1].replace(/\\/g, "").replace(/\|/g, "|");
-              nginx.push(`location ~* \\.(${extensions})$ {`);
-              inLocationBlock = true;
-            }
-            continue;
-          }
-
-          if (line.startsWith("</FilesMatch>")) {
-            nginx.push("}");
-            nginx.push("");
-            inLocationBlock = false;
-            continue;
-          }
-
-          // Handle Header set
-          if (line.startsWith("Header set")) {
-            const match = line.match(/Header\s+set\s+([^\s]+)\s+"([^"]+)"/i);
-            if (match) {
-              nginx.push(`    add_header ${match[1]} "${match[2]}";`);
-            }
-            continue;
-          }
-
-          // Handle IfModule for compression
-          if (line.includes("mod_deflate")) {
-            nginx.push("gzip on;");
-            nginx.push("gzip_vary on;");
-            nginx.push("gzip_proxied any;");
-            nginx.push("gzip_comp_level 6;");
-            continue;
-          }
-
-          // Handle AddOutputFilterByType
-          if (line.startsWith("AddOutputFilterByType")) {
-            const match = line.match(/AddOutputFilterByType\s+DEFLATE\s+(.+)/i);
-            if (match) {
-              const type = match[1].trim();
-              if (
-                !nginx.includes(
-                  "gzip_types text/plain text/css application/json application/javascript text/xml application/xml;"
-                )
-              ) {
-                nginx.push(
-                  "gzip_types text/plain text/css application/json application/javascript text/xml application/xml;"
-                );
-              }
-            }
-            continue;
-          }
-
-          // Handle Deny/Allow
-          if (line.startsWith("Deny from")) {
-            const ip = line.replace("Deny from", "").trim();
-            nginx.push(`deny ${ip};`);
-            continue;
-          }
-
-          if (line.startsWith("Allow from")) {
-            const ip = line.replace("Allow from", "").trim();
-            if (ip !== "all") {
-              nginx.push(`allow ${ip};`);
-            }
-            continue;
-          }
-
-          // Handle auth
-          if (
-            line.startsWith("AuthType") ||
-            line.startsWith("AuthName") ||
-            line.startsWith("AuthUserFile") ||
-            line.startsWith("Require")
-          ) {
-            if (line.startsWith("AuthUserFile")) {
-              const path = line.replace("AuthUserFile", "").trim();
-              nginx.push('auth_basic "Restricted Area";');
-              nginx.push(`auth_basic_user_file ${path};`);
-            }
-            continue;
-          }
-        }
-
-        return nginx.join("\n");
-      }
-
-      function parseRewriteCond(line) {
-        // Parse common RewriteCond patterns
-        if (line.includes("%{HTTPS}") && line.includes("off")) {
-          return { type: "https", negate: false };
-        }
-        if (line.includes("%{REQUEST_FILENAME}") && line.includes("!-f")) {
-          return { type: "not_file" };
-        }
-        if (line.includes("%{REQUEST_FILENAME}") && line.includes("!-d")) {
-          return { type: "not_dir" };
-        }
-        if (line.includes("%{HTTP_HOST}")) {
-          const match = line.match(/%{HTTP_HOST}\s+\^?([^$\s\[]+)/);
-          return { type: "host", value: match ? match[1] : "" };
-        }
-        if (line.includes("%{HTTP_USER_AGENT}")) {
-          const match = line.match(/\(([^)]+)\)/);
-          return { type: "user_agent", value: match ? match[1] : "" };
-        }
-        return { type: "unknown", raw: line };
-      }
-
-      function parseRewriteRule(line, conditions) {
-        const result = [];
-        const match = line.match(/RewriteRule\s+\^?([^\s]+)\$?\s+([^\s\[]+)\s*(\[([^\]]+)\])?/i);
-
-        if (!match) return result;
-
-        const pattern = match[1];
-        let replacement = match[2];
-        const flags = match[4] || "";
-
-        const isRedirect = flags.includes("R=301") || flags.includes("R=302");
-        const isPermanent = flags.includes("R=301");
-
-        // Check for HTTPS redirect
-        const httpsCondition = conditions.find((c) => c.type === "https");
-        if (httpsCondition && replacement.includes("https://")) {
-          result.push('if ($scheme != "https") {');
-          result.push("    return 301 https://$host$request_uri;");
-          result.push("}");
-          return result;
-        }
-
-        // Check for file/dir conditions
-        const hasNotFile = conditions.some((c) => c.type === "not_file");
-        const hasNotDir = conditions.some((c) => c.type === "not_dir");
-
-        if (hasNotFile && hasNotDir) {
-          result.push("location / {");
-          result.push("    try_files $uri $uri/ /" + replacement.replace("$1", "$uri") + ";");
-          result.push("}");
-          return result;
-        }
-
-        // User agent blocking
-        const uaCondition = conditions.find((c) => c.type === "user_agent");
-        if (uaCondition && flags.includes("F")) {
-          result.push(`if ($http_user_agent ~* "${uaCondition.value}") {`);
-          result.push("    return 403;");
-          result.push("}");
-          return result;
-        }
-
-        // Simple rewrite
-        if (isRedirect) {
-          const redirect = isPermanent ? "permanent" : "redirect";
-          result.push(`rewrite ^/${pattern}$ ${replacement} ${redirect};`);
-        } else {
-          result.push(`rewrite ^/${pattern}$ ${replacement} last;`);
-        }
-
-        return result;
-      }
-
-      window.copyOutput = function () {
-        const output = document.getElementById("nginxOutput").value;
-        if (!output) {
-          alert("没有可复制的内容");
-          return;
-        }
-        navigator.clipboard.writeText(output);
-        showToast();
-      };
-
-      function showToast() {
-        const toast = document.getElementById("toast");
-        toast.classList.add("show");
-        setTimeout(() => toast.classList.remove("show"), 2000);
-      }
-
-      // Initial conversion
-      convert();
-
-      window.toggleTheme = function () {
-        const t = document.body.getAttribute("data-theme") === "light" ? "dark" : "light";
-        document.body.setAttribute("data-theme", t);
-        localStorage.setItem("theme", t);
-      };
-      document.body.setAttribute("data-theme", localStorage.getItem("theme") || "dark");
     </script>
-  </body>
+</body>
 </html>
-
