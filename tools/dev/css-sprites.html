@@ -1,584 +1,309 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CSS雪碧图生成器 - WebUtils</title>
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="CSS雪碧图生成器 - WebUtils" />
-    <meta name="keywords" content="css-sprites,dev,tools,webutils" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/dev/css-sprites.html" />
-
-    <!-- Open Graph -->
-    <meta property="og:title" content="CSS雪碧图生成器 - WebUtils" />
-    <meta property="og:description" content="CSS雪碧图生成器 - WebUtils" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/dev/css-sprites.html" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="CSS雪碧图生成器 - WebUtils" />
-    <meta name="twitter:description" content="CSS雪碧图生成器 - WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      :root {
-        --bg-primary: #0a0a0f;
-        --bg-secondary: #12121a;
-        --bg-tertiary: #1a1a25;
-        --color-text-primary: #fff;
-        --color-text-secondary: #88a;
-        --accent: #06b6d4;
-        --border: #2a2a3a;
-        --success: #22c55e;
-      }
-      [data-theme="light"] {
-        --bg-primary: #f8fafc;
-        --bg-secondary: #fff;
-        --bg-tertiary: #f1f5f9;
-        --color-text-primary: #1e293b;
-        --color-text-secondary: #64748b;
-        --border: #e2e8f0;
-      }
-      body {
-        font-family: var(--font-sans);
-        font-size: 16px;
-        line-height: 1.6;
-        background: var(--bg-deep);
-        color: var(--color-text-primary);
-        min-height: 100vh;
-      }
-      .header {
-        background: linear-gradient(135deg, #06b6d4, #0891b2);
-        padding: 2rem;
-        text-align: center;
-      }
-      .nav {
-        max-width: 1400px;
-        margin: 0 auto 1rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .back-link {
-        color: rgba(255, 255, 255, 0.9);
-        text-decoration: none;
-        font-size: 0.9rem;
-      }
-      .theme-toggle {
-        background: rgba(255, 255, 255, 0.2);
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
-        color: white;
-        cursor: pointer;
-      }
-      .header h1 {
-        font-size: 2rem;
-        margin-bottom: 0.5rem;
-      }
-      .header p {
-        opacity: 0.9;
-      }
-      .container {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 2rem;
-      }
-      .upload-section {
-        background: var(--bg-secondary);
-        border-radius: 1rem;
-        border: 2px dashed var(--border-subtle);
-        padding: 3rem;
-        text-align: center;
-        margin-bottom: 1.5rem;
-        cursor: pointer;
-        transition: all 0.3s;
-      }
-      .upload-section:hover {
-        border-color: var(--accent-cyan);
-        background: var(--bg-tertiary);
-      }
-      .upload-section.dragover {
-        border-color: var(--accent-cyan);
-        background: rgba(6, 182, 212, 0.1);
-      }
-      .upload-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-      }
-      .upload-text {
-        color: var(--color-text-secondary);
-        margin-bottom: 0.5rem;
-      }
-      .upload-hint {
-        font-size: 0.85rem;
-        color: var(--color-text-secondary);
-      }
-      input[type="file"] {
-        display: none;
-      }
-      .settings-section {
-        background: var(--bg-secondary);
-        border-radius: 1rem;
-        border: 1px solid var(--border-subtle);
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-      }
-      .settings-section h3 {
-        font-size: 1rem;
-        margin-bottom: 1rem;
-      }
-      .settings-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 1rem;
-      }
-      .setting-item {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-      .setting-item label {
-        font-size: 0.85rem;
-        color: var(--color-text-secondary);
-      }
-      input[type="number"],
-      select {
-        padding: 0.75rem;
-        background: var(--bg-tertiary);
-        border: 1px solid var(--border-subtle);
-        border-radius: 0.5rem;
-        color: var(--color-text-primary);
-        font-size: 0.95rem;
-      }
-      .images-section {
-        background: var(--bg-secondary);
-        border-radius: 1rem;
-        border: 1px solid var(--border-subtle);
-        overflow: hidden;
-        margin-bottom: 1.5rem;
-      }
-      .images-header {
-        padding: 1rem 1.5rem;
-        background: var(--bg-tertiary);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .images-header h3 {
-        font-size: 1rem;
-      }
-      .images-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 1rem;
-        padding: 1.5rem;
-        max-height: 300px;
-        overflow-y: auto;
-      }
-      .image-item {
-        position: relative;
-        background: var(--bg-tertiary);
-        border-radius: 0.5rem;
-        padding: 0.5rem;
-        text-align: center;
-      }
-      .image-item img {
-        max-width: 100%;
-        max-height: 80px;
-        object-fit: contain;
-      }
-      .image-name {
-        font-size: 0.75rem;
-        color: var(--color-text-secondary);
-        margin-top: 0.5rem;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-      .image-remove {
-        position: absolute;
-        top: 0.25rem;
-        right: 0.25rem;
-        width: 20px;
-        height: 20px;
-        background: #ef4444;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        cursor: pointer;
-        font-size: 0.75rem;
-        line-height: 1;
-      }
-      .btn {
-        padding: 0.75rem 1.5rem;
-        background: var(--accent-cyan);
-        color: white;
-        border: none;
-        border-radius: 0.5rem;
-        cursor: pointer;
-        font-size: 0.95rem;
-        font-weight: 500;
-      }
-      .btn:hover {
-        opacity: 0.9;
-      }
-      .btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-      .btn-secondary {
-        background: var(--bg-tertiary);
-        color: var(--color-text-primary);
-        border: 1px solid var(--border-subtle);
-      }
-      .output-section {
-        background: var(--bg-secondary);
-        border-radius: 1rem;
-        border: 1px solid var(--border-subtle);
-        overflow: hidden;
-        display: none;
-      }
-      .output-section.visible {
-        display: block;
-      }
-      .output-header {
-        padding: 1rem 1.5rem;
-        background: var(--bg-tertiary);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .output-tabs {
-        display: flex;
-        gap: 0.5rem;
-      }
-      .tab-btn {
-        padding: 0.5rem 1rem;
-        background: transparent;
-        border: none;
-        color: var(--color-text-secondary);
-        cursor: pointer;
-        font-size: 0.9rem;
-        border-radius: 0.375rem;
-      }
-      .tab-btn.active {
-        background: var(--accent-cyan);
-        color: white;
-      }
-      .output-content {
-        padding: 1.5rem;
-      }
-      .sprite-preview {
-        background: repeating-conic-gradient(#808080 0% 25%, transparent 0% 50%) 50% / 20px 20px;
-        border: 1px solid var(--border-subtle);
-        border-radius: 0.5rem;
-        padding: 1rem;
-        text-align: center;
-        overflow: auto;
-        max-height: 400px;
-      }
-      .sprite-preview img {
-        max-width: 100%;
-      }
-      .code-block {
-        background: var(--bg-tertiary);
-        border-radius: 0.5rem;
-        padding: 1rem;
-        font-family: Monaco, Menlo, monospace;
-        font-size: 0.85rem;
-        overflow-x: auto;
-        white-space: pre-wrap;
-        max-height: 400px;
-        overflow-y: auto;
-      }
-      .tab-content {
-        display: none;
-      }
-      .tab-content.active {
-        display: block;
-      }
-      .actions {
-        display: flex;
-        gap: 1rem;
-        justify-content: center;
-        margin-top: 1rem;
-      }
-      .empty-state {
-        padding: 2rem;
-        text-align: center;
-        color: var(--color-text-secondary);
-      }
-      @media (max-width: 768px) {
-        .container {
-          padding: 1rem;
-        }
-        .settings-grid {
-          grid-template-columns: 1fr 1fr;
-        }
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-    </style>
-    <!-- Google Fonts -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CSS 雪碧图生成器 - 在线图片合并与 CSS 代码生成工具 - WebUtils</title>
+    <meta
+      name="description"
+      content="免费在线 CSS 雪碧图（Sprite）生成工具。支持多图上传、自动排列（水平/垂直/紧凑）、自定义间距。一键合并图片并生成对应的 CSS 定位代码，显著减少 HTTP 请求，提升网页性能。"
+    />
+    <meta
+      name="keywords"
+      content="CSS雪碧图,Sprite生成器,图片合并,前端性能优化,CSS代码生成,在线工具,CSS精灵图"
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
+    <style>
+      :root {
+        --bg-body: #0a0a0a;
+        --bg-card: #111;
+        --bg-input: #0d0d0d;
+        --bg-hover: #1a1a1a;
+        --text-primary: #e5e5e5;
+        --text-secondary: #737373;
+        --text-muted: #525252;
+        --border-color: #252525;
+        --border-focus: #404040;
+        --accent: #00f5d4;
+        --accent-hover: #00dfc4;
+        --accent-glow: rgba(0, 245, 212, 0.15);
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 14px;
+        --font-sans: "Inter", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+
+      [data-theme="light"] {
+        --bg-body: #fafafa;
+        --bg-card: #fff;
+        --bg-input: #f5f5f5;
+        --bg-hover: #f0f0f0;
+        --text-primary: #171717;
+        --text-secondary: #525252;
+        --text-muted: #a3a3a3;
+        --border-color: #e5e5e5;
+        --border-focus: #d4d4d4;
+        --accent: #059669;
+        --accent-hover: #047857;
+        --accent-glow: rgba(5, 150, 105, 0.15);
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.25rem; font-weight: 600; letter-spacing: -0.02em; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; }
+      .theme-btn { padding: 8px 12px; font-size: 0.75rem; font-family: var(--font-mono); background: transparent; border: none; color: var(--text-muted); cursor: pointer; transition: all 0.2s; }
+      .theme-btn.active { background: var(--accent); color: #fff; }
+
+      .ads-placeholder { margin: 24px 0; padding: 20px; background: var(--bg-card); border: 1px dashed var(--border-color); border-radius: var(--radius-lg); text-align: center; color: var(--text-muted); font-size: 0.8125rem; }
+
+      .main-grid { display: grid; grid-template-columns: 1fr 340px; gap: 24px; }
+      @media (max-width: 950px) { .main-grid { grid-template-columns: 1fr; } }
+
+      .panel { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; }
+      .panel-header { padding: 14px 20px; border-bottom: 1px solid var(--border-color); font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; display: flex; justify-content: space-between; align-items: center; }
+      .panel-body { padding: 20px; }
+
+      .upload-zone { border: 2px dashed var(--border-color); border-radius: var(--radius-md); padding: 40px 20px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--bg-input); }
+      .upload-zone:hover { border-color: var(--accent); background: var(--bg-hover); }
+      .upload-zone.drag-over { border-color: var(--accent); background: var(--accent-glow); }
+      .upload-icon { font-size: 2rem; margin-bottom: 12px; display: block; }
+      .upload-text { font-size: 0.875rem; color: var(--text-secondary); }
+      #fileInput { display: none; }
+
+      .image-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 12px; margin-top: 20px; }
+      .image-thumb { position: relative; aspect-ratio: 1; background: var(--bg-hover); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; }
+      .image-thumb img { width: 100%; height: 100%; object-fit: contain; }
+      .remove-img { position: absolute; top: 4px; right: 4px; width: 18px; height: 18px; background: #ef4444; color: white; border: none; border-radius: 50%; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+      .control-group { margin-bottom: 16px; }
+      .label-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); }
+      .input-control { width: 100%; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text-primary); padding: 8px 12px; font-size: 0.875rem; outline: none; transition: border-color 0.2s; }
+      .input-control:focus { border-color: var(--accent); }
+
+      .preview-box { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px; overflow: auto; min-height: 200px; display: flex; align-items: center; justify-content: center; }
+      .checkerboard { background-image: linear-gradient(45deg, rgba(128,128,128,0.1) 25%, transparent 25%), linear-gradient(-45deg, rgba(128,128,128,0.1) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(128,128,128,0.1) 75%), linear-gradient(-45deg, transparent 75%, rgba(128,128,128,0.1) 75%); background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0; }
+      
+      .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-md); font-size: 0.8125rem; font-weight: 600; cursor: pointer; transition: all 0.2s; width: 100%; }
+      .btn:hover { background: var(--accent-hover); transform: translateY(-1px); }
+      .btn-secondary { background: var(--bg-hover); color: var(--text-primary); border: 1px solid var(--border-color); }
+      .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+      .code-section { margin-top: 24px; }
+      .code-header { display: flex; gap: 12px; margin-bottom: 12px; }
+      .tab-btn { padding: 6px 12px; font-size: 0.75rem; background: var(--bg-hover); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-secondary); cursor: pointer; }
+      .tab-btn.active { border-color: var(--accent); color: var(--accent); }
+      .code-block { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; font-family: var(--font-mono); font-size: 0.8125rem; color: var(--text-primary); white-space: pre-wrap; word-break: break-all; max-height: 300px; overflow-y: auto; }
+
+      .article-section { margin-top: 40px; padding-top: 40px; border-top: 1px solid var(--border-color); }
+      .prose { max-width: 100%; color: var(--text-secondary); }
+      .prose h2 { color: var(--text-primary); font-size: 1.5rem; margin-top: 2rem; margin-bottom: 1rem; }
+      .prose h3 { color: var(--text-primary); font-size: 1.25rem; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+      .prose p { margin-bottom: 1rem; line-height: 1.8; }
+      .prose ul { margin-bottom: 1.5rem; padding-left: 1.5rem; }
+      .prose li { margin-bottom: 0.5rem; }
+
+      #toast { position: fixed; bottom: 24px; right: 24px; background: var(--accent); color: #fff; padding: 12px 24px; border-radius: var(--radius-md); font-size: 0.875rem; font-weight: 600; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); transform: translateY(100px); opacity: 0; transition: all 0.3s; z-index: 1000; }
+      #toast.show { transform: translateY(0); opacity: 1; }
+    </style>
   </head>
   <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      CSS雪碧图生成器
-    </nav>
-    <div class="header">
-      <div class="nav">
-        <button class="theme-toggle" onclick="toggleTheme()" aria-label="🌓 主题">🌓 主题</button>
-      </div>
-      <h1>🎨 CSS雪碧图生成器</h1>
-      <p>将多张图片合并为雪碧图，自动生成CSS代码</p>
-    </div>
-
     <div class="container">
-      <div
-        class="upload-section"
-        id="uploadSection"
-        onclick="document.getElementById('fileInput').click()"
-      >
-        <div class="upload-icon">📁</div>
-        <div class="upload-text">点击或拖拽图片到这里</div>
-        <div class="upload-hint">支持 PNG、JPG、GIF、SVG 格式，可多�?/div>
-        <input type="file" id="fileInput" multiple accept="image/*" />
-      </div>
-
-      <div class="settings-section">
-        <h3>⚙️ 生成设置</h3>
-        <div class="settings-grid">
-          <div class="setting-item">
-            <label>排列方式</label>
-            <select id="layout">
-              <option value="horizontal">水平排列</option>
-              <option value="vertical">垂直排列</option>
-              <option value="packed">紧凑排列</option>
-            </select>
-          </div>
-          <div class="setting-item">
-            <label for="input-------px-">图片间距 (px)</label>
-            <input
-              type="number"
-              id="padding"
-              value="2"
-              min="0"
-              max="50"
-              aria-label="数字输入�?
-              placeholder="请输入数字输入框"
-            />
-          </div>
-          <div class="setting-item">
-            <label for="input-css----">CSS类名前缀</label>
-            <input
-              type="text"
-              id="prefix"
-              value="sprite"
-              style="
-                padding: 0.75rem;
-                background: var(--bg-tertiary);
-                border: 1px solid var(--border-subtle);
-                border-radius: 0.5rem;
-                color: var(--color-text-primary);
-              "
-              aria-label="文本输入�?
-              placeholder="请输入文本输入框"
-            />
-          </div>
-          <div class="setting-item">
-            <label>输出格式</label>
-            <select id="format">
-              <option value="png">PNG</option>
-              <option value="jpeg">JPEG</option>
-              <option value="webp">WebP</option>
-            </select>
+      <header class="header">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn" title="返回首页">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          </a>
+          <div class="title-group">
+            <h1>CSS 雪碧图生成器</h1>
+            <p>合并小图标，减少 HTTP 请求，加速网页加载</p>
           </div>
         </div>
-      </div>
-
-      <div class="images-section" id="imagesSection" style="display: none">
-        <div class="images-header">
-          <h3>
-            📷 已添加的图片 (
-            <span id="imageCount">0</span>
-            )
-          </h3>
-          <div>
-            <button class="btn btn-secondary" onclick="clearImages()" aria-label="清空">
-              清空
-            </button>
-            <button class="btn" onclick="generateSprite()" aria-label="生成雪碧�?>
-              生成雪碧�?
-            </button>
+        <div class="header-right">
+          <div class="theme-toggle">
+            <button class="theme-btn" id="theme-dark" onclick="setTheme('dark')">DARK</button>
+            <button class="theme-btn" id="theme-light" onclick="setTheme('light')">LIGHT</button>
           </div>
         </div>
-        <div class="images-grid" id="imagesGrid"></div>
-      </div>
+      </header>
 
-      <div class="output-section" id="outputSection">
-        <div class="output-header">
-          <h3>📤 输出结果</h3>
-          <div class="output-tabs">
-            <button class="tab-btn active" onclick="switchTab('preview')" aria-label="预览">
-              预览
-            </button>
-            <button class="tab-btn" onclick="switchTab('css')" aria-label="CSS代码">CSS代码</button>
-            <button class="tab-btn" onclick="switchTab('html')" aria-label="HTML示例">
-              HTML示例
-            </button>
-          </div>
-        </div>
-        <div class="output-content">
-          <div class="tab-content active" id="previewTab">
-            <div class="sprite-preview" id="spritePreview"></div>
-            <div class="actions">
-              <button class="btn" onclick="downloadSprite()" aria-label="下载雪碧�?>
-                下载雪碧�?
-              </button>
+      <div class="ads-placeholder">广告位 (Google AdSense)</div>
+
+      <div class="main-grid">
+        <div class="left-col">
+          <div class="panel">
+            <div class="panel-header">图片管理</div>
+            <div class="panel-body">
+              <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                <span class="upload-icon">📁</span>
+                <p class="upload-text">点击或拖拽图片到这里</p>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">支持 PNG, JPG, WebP, SVG (可多选)</p>
+                <input type="file" id="fileInput" multiple accept="image/*">
+              </div>
+              <div id="imageList" class="image-list"></div>
             </div>
           </div>
-          <div class="tab-content" id="cssTab">
-            <div class="code-block" id="cssCode"></div>
-            <div class="actions">
-              <button class="btn" onclick="copyCSS()" aria-label="复制CSS">复制CSS</button>
+
+          <div class="panel">
+            <div class="panel-header">预览结果</div>
+            <div class="panel-body">
+              <div id="previewBox" class="preview-box checkerboard">
+                <p id="emptyText" style="color: var(--text-muted); font-size: 0.875rem;">生成后的雪碧图将在此显示</p>
+              </div>
+              <div id="codeSection" class="code-section" style="display: none;">
+                <div class="code-header">
+                  <button class="tab-btn active" onclick="switchTab('css')">CSS</button>
+                  <button class="tab-btn" onclick="switchTab('html')">HTML</button>
+                  <button class="btn btn-secondary" style="width: auto; padding: 4px 12px; margin-left: auto;" onclick="copyCode()">复制代码</button>
+                </div>
+                <div id="codeBlock" class="code-block"></div>
+              </div>
             </div>
           </div>
-          <div class="tab-content" id="htmlTab">
-            <div class="code-block" id="htmlCode"></div>
-            <div class="actions">
-              <button class="btn" onclick="copyHTML()" aria-label="复制HTML">复制HTML</button>
+        </div>
+
+        <div class="right-col">
+          <div class="panel">
+            <div class="panel-header">生成选项</div>
+            <div class="panel-body">
+              <div class="control-group">
+                <div class="label-row">
+                  <label>排列方向</label>
+                </div>
+                <select id="layout" class="input-control">
+                  <option value="vertical">垂直排列 (Vertical)</option>
+                  <option value="horizontal">水平排列 (Horizontal)</option>
+                  <option value="packed">紧凑排列 (Packed)</option>
+                </select>
+              </div>
+
+              <div class="control-group">
+                <div class="label-row">
+                  <label>图片间距 (Padding)</label>
+                  <span id="paddingVal">2px</span>
+                </div>
+                <input type="range" id="padding" class="input-control" min="0" max="50" value="2" oninput="document.getElementById('paddingVal').textContent = this.value + 'px'">
+              </div>
+
+              <div class="control-group">
+                <div class="label-row">
+                  <label>CSS 类名前缀</label>
+                </div>
+                <input type="text" id="prefix" class="input-control" value="icon-" placeholder="例如: icon-">
+              </div>
+
+              <div class="control-group">
+                <div class="label-row">
+                  <label>输出格式</label>
+                </div>
+                <select id="format" class="input-control">
+                  <option value="image/png">PNG (透明)</option>
+                  <option value="image/webp">WebP (推荐)</option>
+                  <option value="image/jpeg">JPEG (无透明)</option>
+                </select>
+              </div>
+
+              <button class="btn" id="generateBtn" onclick="generateSprite()" disabled>✨ 生成并合并</button>
+              <button class="btn btn-secondary" style="margin-top: 12px;" onclick="downloadSprite()" id="downloadBtn" disabled>📥 下载雪碧图</button>
             </div>
           </div>
         </div>
       </div>
+
+      <div class="ads-placeholder">广告位 (Google AdSense)</div>
+
+      <section class="article-section">
+        <article class="prose">
+          <h2>什么是 CSS 雪碧图？为什么要使用它？</h2>
+          <p>
+            在 Web 性能优化的历史上，<strong>CSS 雪碧图（CSS Sprites）</strong> 是一项里程碑式的技术。简单来说，它将多个小图标或背景图合并到一张大图中，然后通过 CSS 的 <code>background-image</code> 和 <code>background-position</code> 属性来定位显示特定的部分。
+          </p>
+
+          <h3>1. 解决的具体问题：HTTP 请求瓶颈</h3>
+          <p>
+            在 HTTP/1.1 时代，浏览器对同一域名的并发请求数量有限制（通常为 6-8 个）。如果一个页面有 50 个小图标，浏览器需要分多批次请求，这会产生巨大的网络开销和延迟。
+          </p>
+          <ul>
+            <li><strong>减少连接数：</strong> 50 个请求变成 1 个请求，显著降低服务器压力。</li>
+            <li><strong>提升响应速度：</strong> 消除多次握手（Handshake）的时间消耗。</li>
+            <li><strong>体积优化：</strong> 单个合并后的图片通常比 50 个独立图片的体积总和更小，因为减少了重复的文件头信息。</li>
+          </ul>
+
+          <h3>2. 如何在现代开发中使用？</h3>
+          <p>
+            虽然 HTTP/2 引入了多路复用（Multiplexing），降低了多请求的惩罚，但雪碧图在某些场景下依然具有不可替代的优势：
+          </p>
+          <ul>
+            <li><strong>预加载优势：</strong> 一次性加载所有 UI 图标，避免用户在交互（如 Hover）时看到图片闪烁或空白。</li>
+            <li><strong>管理便捷：</strong> 对于不常更换的装饰性 UI 元素，统一管理比散落各处更容易维护。</li>
+            <li><strong>兼容性：</strong> 即使在极差的网络环境下，雪碧图也能保证 UI 的整体性。</li>
+          </ul>
+
+          <h3>3. 使用建议与技巧</h3>
+          <p>
+            在使用本工具生成代码后，建议为所有使用雪碧图的元素设置一个通用的基类：
+          </p>
+          <pre><code>.icon { 
+  display: inline-block; 
+  background-image: url('sprite.png'); 
+  background-repeat: no-repeat; 
+}</code></pre>
+          <p>
+            然后使用生成的特定类名（如 <code>.icon-home</code>）来控制位置。此外，对于 Retina 视网膜屏幕，建议生成 2 倍大小的雪碧图并使用 <code>background-size</code> 进行缩放。
+          </p>
+        </article>
+      </section>
     </div>
+    <div id="toast"></div>
 
     <script>
-      window.toggleTheme = function () {
-        const theme = document.body.getAttribute("data-theme") === "light" ? "dark" : "light";
-        document.body.setAttribute("data-theme", theme);
-        localStorage.setItem("theme", theme);
-      };
-      document.body.setAttribute("data-theme", localStorage.getItem("theme") || "dark");
-
       let images = [];
-      let spriteCanvas = null;
-      let spriteData = [];
+      let currentTab = 'css';
+      let generatedData = null;
 
-      // File input handling
-      document.getElementById("fileInput").addEventListener("change", handleFiles);
+      function setTheme(t) { document.documentElement.setAttribute("data-theme", t); localStorage.setItem("theme", t); document.querySelectorAll(".theme-btn").forEach(b => b.classList.toggle("active", b.id === `theme-${t}`)); }
+      setTheme(localStorage.getItem("theme") || "dark");
 
-      // Drag and drop
-      const uploadSection = document.getElementById("uploadSection");
-      uploadSection.addEventListener("dragover", (e) => {
+      function showToast(msg) {
+        const t = document.getElementById("toast");
+        t.textContent = msg; t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 2000);
+      }
+
+      const dropZone = document.getElementById('dropZone');
+      dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+      dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+      dropZone.addEventListener('drop', (e) => {
         e.preventDefault();
-        uploadSection.classList.add("dragover");
-      });
-      uploadSection.addEventListener("dragleave", () => {
-        uploadSection.classList.remove("dragover");
-      });
-      uploadSection.addEventListener("drop", (e) => {
-        e.preventDefault();
-        uploadSection.classList.remove("dragover");
-        handleFiles({ target: { files: e.dataTransfer.files } });
+        dropZone.classList.remove('drag-over');
+        handleFiles(e.dataTransfer.files);
       });
 
-      function handleFiles(e) {
-        const files = Array.from(e.target.files).filter((f) => f.type.startsWith("image/"));
+      document.getElementById('fileInput').addEventListener('change', (e) => handleFiles(e.target.files));
 
-        files.forEach((file) => {
+      function handleFiles(files) {
+        Array.from(files).forEach(file => {
+          if (!file.type.startsWith('image/')) return;
           const reader = new FileReader();
           reader.onload = (e) => {
             const img = new Image();
             img.onload = () => {
-              images.push({
-                name: file.name.replace(/\.[^/.]+$/, ""),
-                img: img,
-                width: img.width,
-                height: img.height
-              });
-              renderImages();
+              images.push({ name: file.name.split('.')[0].replace(/[^a-z0-9-_]/gi, ''), src: e.target.result, width: img.width, height: img.height, img: img });
+              updateImageList();
             };
             img.src = e.target.result;
           };
@@ -586,201 +311,122 @@
         });
       }
 
-      function renderImages() {
-        const section = document.getElementById("imagesSection");
-        const grid = document.getElementById("imagesGrid");
-        const count = document.getElementById("imageCount");
-
-        if (images.length === 0) {
-          section.style.display = "none";
-          return;
-        }
-
-        section.style.display = "block";
-        count.textContent = images.length;
-
-        grid.innerHTML = images
-          .map(
-            (img, i) => `
-                <div class="image-item">
-                    <button class="image-remove" onclick="removeImage(${i})" aria-label="×">×</button>
-                    <img src="${img.img.src}" alt="${img.name}">
-                    <div class="image-name">${img.name}</div>
-                </div>
-            `
-          )
-          .join("");
+      function updateImageList() {
+        const list = document.getElementById('imageList');
+        list.innerHTML = '';
+        images.forEach((img, index) => {
+          const div = document.createElement('div');
+          div.className = 'image-thumb';
+          div.innerHTML = `<img src="${img.src}"><button class="remove-img" onclick="removeImage(${index})">×</button>`;
+          list.appendChild(div);
+        });
+        document.getElementById('generateBtn').disabled = images.length === 0;
       }
 
-      window.removeImage = function (index) {
+      function removeImage(index) {
         images.splice(index, 1);
-        renderImages();
-      };
+        updateImageList();
+      }
 
-      window.clearImages = function () {
-        images = [];
-        renderImages();
-        document.getElementById("outputSection").classList.remove("visible");
-      };
+      function generateSprite() {
+        const layout = document.getElementById('layout').value;
+        const padding = parseInt(document.getElementById('padding').value);
+        const prefix = document.getElementById('prefix').value || 'icon-';
+        const format = document.getElementById('format').value;
 
-      window.generateSprite = function () {
-        if (images.length === 0) {
-          alert("请先添加图片");
-          return;
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        let totalW = 0, totalH = 0;
+        const positions = [];
+
+        if (layout === 'vertical') {
+          images.forEach(img => {
+            positions.push({ x: 0, y: totalH, w: img.width, h: img.height, name: img.name });
+            totalW = Math.max(totalW, img.width);
+            totalH += img.height + padding;
+          });
+          totalH -= padding;
+        } else if (layout === 'horizontal') {
+          images.forEach(img => {
+            positions.push({ x: totalW, y: 0, w: img.width, h: img.height, name: img.name });
+            totalH = Math.max(totalH, img.height);
+            totalW += img.width + padding;
+          });
+          totalW -= padding;
+        } else {
+          // Simple packed (sort by height)
+          const sorted = [...images].sort((a, b) => b.height - a.height);
+          let curX = 0, curY = 0, rowH = 0;
+          const maxW = Math.ceil(Math.sqrt(sorted.reduce((s, i) => s + (i.width + padding) * (i.height + padding), 0))) * 1.2;
+          
+          sorted.forEach(img => {
+            if (curX + img.width > maxW) {
+              curX = 0;
+              curY += rowH + padding;
+              rowH = 0;
+            }
+            positions.push({ x: curX, y: curY, w: img.width, h: img.height, name: img.name });
+            curX += img.width + padding;
+            rowH = Math.max(rowH, img.height);
+            totalW = Math.max(totalW, curX);
+            totalH = Math.max(totalH, curY + rowH);
+          });
         }
 
-        const layout = document.getElementById("layout").value;
-        const padding = parseInt(document.getElementById("padding").value) || 0;
-        const prefix = document.getElementById("prefix").value || "sprite";
-        const format = document.getElementById("format").value;
+        canvas.width = totalW;
+        canvas.height = totalH;
+        positions.forEach((pos, i) => {
+          const imgObj = images.find(img => img.name === pos.name);
+          ctx.drawImage(imgObj.img, pos.x, pos.y);
+        });
 
-        spriteData = [];
-        let canvas = document.createElement("canvas");
-        let ctx = canvas.getContext("2d");
+        const dataUrl = canvas.toDataURL(format);
+        generatedData = { url: dataUrl, positions, w: totalW, h: totalH, prefix };
+        
+        const previewBox = document.getElementById('previewBox');
+        previewBox.innerHTML = `<img src="${dataUrl}" style="max-width: 100%;">`;
+        document.getElementById('codeSection').style.display = 'block';
+        document.getElementById('downloadBtn').disabled = false;
+        updateCode();
+        showToast("雪碧图生成成功！");
+      }
 
-        if (layout === "horizontal") {
-          // Horizontal layout
-          let totalWidth = images.reduce((sum, img) => sum + img.width + padding, -padding);
-          let maxHeight = Math.max(...images.map((img) => img.height));
-
-          canvas.width = totalWidth;
-          canvas.height = maxHeight;
-
-          let x = 0;
-          images.forEach((img, i) => {
-            ctx.drawImage(img.img, x, 0);
-            spriteData.push({
-              name: img.name,
-              x: x,
-              y: 0,
-              width: img.width,
-              height: img.height
-            });
-            x += img.width + padding;
-          });
-        } else if (layout === "vertical") {
-          // Vertical layout
-          let maxWidth = Math.max(...images.map((img) => img.width));
-          let totalHeight = images.reduce((sum, img) => sum + img.height + padding, -padding);
-
-          canvas.width = maxWidth;
-          canvas.height = totalHeight;
-
-          let y = 0;
-          images.forEach((img, i) => {
-            ctx.drawImage(img.img, 0, y);
-            spriteData.push({
-              name: img.name,
-              x: 0,
-              y: y,
-              width: img.width,
-              height: img.height
-            });
-            y += img.height + padding;
+      function updateCode() {
+        if (!generatedData) return;
+        const { positions, prefix } = generatedData;
+        let code = '';
+        if (currentTab === 'css') {
+          code = `/* Base class */\n.${prefix.replace(/-$/, '')} {\n  display: inline-block;\n  background-image: url('sprite.png');\n  background-repeat: no-repeat;\n}\n\n`;
+          positions.forEach(pos => {
+            code += `.${prefix}${pos.name} {\n  width: ${pos.w}px;\n  height: ${pos.h}px;\n  background-position: -${pos.x}px -${pos.y}px;\n}\n\n`;
           });
         } else {
-          // Packed layout (simple row-based packing)
-          const maxWidth = 512;
-          let rows = [];
-          let currentRow = { images: [], width: 0, height: 0 };
-
-          images.forEach((img) => {
-            if (currentRow.width + img.width + padding > maxWidth && currentRow.images.length > 0) {
-              rows.push(currentRow);
-              currentRow = { images: [], width: 0, height: 0 };
-            }
-            currentRow.images.push(img);
-            currentRow.width += img.width + padding;
-            currentRow.height = Math.max(currentRow.height, img.height);
-          });
-          if (currentRow.images.length > 0) rows.push(currentRow);
-
-          let totalWidth = Math.max(...rows.map((r) => r.width - padding));
-          let totalHeight = rows.reduce((sum, r) => sum + r.height + padding, -padding);
-
-          canvas.width = totalWidth;
-          canvas.height = totalHeight;
-
-          let y = 0;
-          rows.forEach((row) => {
-            let x = 0;
-            row.images.forEach((img) => {
-              ctx.drawImage(img.img, x, y);
-              spriteData.push({
-                name: img.name,
-                x: x,
-                y: y,
-                width: img.width,
-                height: img.height
-              });
-              x += img.width + padding;
-            });
-            y += row.height + padding;
+          positions.forEach(pos => {
+            code += `<i class="${prefix.replace(/-$/, '')} ${prefix}${pos.name}"></i>\n`;
           });
         }
+        document.getElementById('codeBlock').textContent = code;
+      }
 
-        spriteCanvas = canvas;
+      function switchTab(tab) {
+        currentTab = tab;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.textContent.toLowerCase() === tab));
+        updateCode();
+      }
 
-        // Show output
-        const outputSection = document.getElementById("outputSection");
-        outputSection.classList.add("visible");
+      function copyCode() {
+        const code = document.getElementById('codeBlock').textContent;
+        navigator.clipboard.writeText(code).then(() => showToast("代码已复制到剪贴板"));
+      }
 
-        // Preview
-        document.getElementById("spritePreview").innerHTML =
-          `<img src="${canvas.toDataURL("image/" + format)}">`;
-
-        // Generate CSS
-        let css = `.${prefix} {\n  background-image: url('sprite.${format}');\n  background-repeat: no-repeat;\n}\n\n`;
-        spriteData.forEach((item) => {
-          const className = item.name.replace(/[^a-zA-Z0-9_-]/g, "-");
-          css += `.${prefix}-${className} {\n`;
-          css += `  width: ${item.width}px;\n`;
-          css += `  height: ${item.height}px;\n`;
-          css += `  background-position: -${item.x}px -${item.y}px;\n`;
-          css += "}\n\n";
-        });
-        document.getElementById("cssCode").textContent = css;
-
-        // Generate HTML
-        let html = "<!-- 使用示例 -->\n";
-        spriteData.forEach((item) => {
-          const className = item.name.replace(/[^a-zA-Z0-9_-]/g, "-");
-          html += `<span class="${prefix} ${prefix}-${className}"></span>\n`;
-        });
-        document.getElementById("htmlCode").textContent = html;
-
-        // Switch to preview tab
-        switchTab("preview");
-      };
-
-      window.switchTab = function (tab) {
-        document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
-        document.querySelectorAll(".tab-content").forEach((c) => c.classList.remove("active"));
-
-        document.querySelector(`.tab-btn[onclick="switchTab('${tab}')"]`).classList.add("active");
-        document.getElementById(tab + "Tab").classList.add("active");
-      };
-
-      window.downloadSprite = function () {
-        if (!spriteCanvas) return;
-
-        const format = document.getElementById("format").value;
-        const link = document.createElement("a");
-        link.download = `sprite.${format}`;
-        link.href = spriteCanvas.toDataURL("image/" + format);
+      function downloadSprite() {
+        if (!generatedData) return;
+        const link = document.createElement('a');
+        const ext = document.getElementById('format').value.split('/')[1];
+        link.download = `sprite.${ext}`;
+        link.href = generatedData.url;
         link.click();
-      };
-
-      window.copyCSS = function () {
-        navigator.clipboard.writeText(document.getElementById("cssCode").textContent);
-        alert("CSS代码已复�?);
-      };
-
-      window.copyHTML = function () {
-        navigator.clipboard.writeText(document.getElementById("htmlCode").textContent);
-        alert("HTML代码已复�?);
-      };
+      }
     </script>
   </body>
 </html>
-

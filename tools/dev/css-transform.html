@@ -1,954 +1,337 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="light">
+<html lang="zh">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CSS Transform 生成�?- WebUtils</title>
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="CSS Transform 生成�?- WebUtils" />
-    <meta name="keywords" content="css-transform,dev,tools" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/dev/css-transform.html" />
-
-    <!-- Open Graph -->
-    <meta property="og:title" content="CSS Transform 生成�?- WebUtils" />
-    <meta property="og:description" content="CSS Transform 生成�?- WebUtils" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/dev/css-transform.html" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="CSS Transform 生成�?- WebUtils" />
-    <meta name="twitter:description" content="CSS Transform 生成�?- WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--color-bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
-
-      .container {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 20px;
-      }
-      .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-      }
-      .main-grid {
-        display: grid;
-        grid-template-columns: 420px 1fr;
-        gap: 30px;
-      }
-      @media (max-width: 1024px) {
-        .main-grid {
-          grid-template-columns: 1fr;
-        }
-      }
-      .controls-panel {
-        padding: 20px;
-        border-radius: 8px;
-        background: var(--pico-card-background-color);
-        max-height: calc(100vh - 150px);
-        overflow-y: auto;
-      }
-      .section-title {
-        font-size: 16px;
-        font-weight: bold;
-        margin: 20px 0 15px;
-        padding-bottom: 8px;
-        border-bottom: 2px solid var(--pico-primary);
-        color: var(--pico-primary);
-      }
-      .section-title:first-child {
-        margin-top: 0;
-      }
-      .control-group {
-        margin-bottom: 15px;
-      }
-      .control-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 8px;
-      }
-      .control-header label {
-        font-weight: 600;
-        margin: 0;
-        font-size: 14px;
-      }
-      .control-value {
-        font-family: var(--font-mono);
-        background: var(--pico-code-background-color);
-        padding: 2px 8px;
-        border-radius: 4px;
-        font-size: 13px;
-      }
-      .slider-container {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-      .slider-container input[type="range"] {
-        flex: 1;
-        margin: 0;
-      }
-      .reset-btn {
-        padding: 4px 8px;
-        font-size: 11px;
-        background: var(--pico-secondary);
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-      }
-      .preview-area {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-      }
-      .preview-container {
-        background: var(--pico-card-background-color);
-        border-radius: 8px;
-        padding: 20px;
-        min-height: 400px;
-        display: flex;
-        flex-direction: column;
-      }
-      .preview-stage {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        perspective: 800px;
-        background:
-          linear-gradient(45deg, #f0f0f0 25%, transparent 25%),
-          linear-gradient(-45deg, #f0f0f0 25%, transparent 25%),
-          linear-gradient(45deg, transparent 75%, #f0f0f0 75%),
-          linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
-        background-size: 20px 20px;
-        background-position:
-          0 0,
-          0 10px,
-          10px -10px,
-          -10px 0;
-        border-radius: 8px;
-        min-height: 350px;
-        position: relative;
-        overflow: hidden;
-      }
-      [data-theme="dark"] .preview-stage {
-        background:
-          linear-gradient(45deg, #2a2a2a 25%, transparent 25%),
-          linear-gradient(-45deg, #2a2a2a 25%, transparent 25%),
-          linear-gradient(45deg, transparent 75%, #2a2a2a 75%),
-          linear-gradient(-45deg, transparent 75%, #2a2a2a 75%);
-        background-size: 20px 20px;
-        background-position:
-          0 0,
-          0 10px,
-          10px -10px,
-          -10px 0;
-        background-color: var(--color-text-primary);
-      }
-      .preview-box {
-        width: 150px;
-        height: 150px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: bold;
-        font-size: 18px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        transition: transform 0.1s ease-out;
-        transform-style: preserve-3d;
-      }
-      .origin-marker {
-        position: absolute;
-        width: 10px;
-        height: 10px;
-        background: #ff4757;
-        border-radius: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 10;
-        box-shadow: 0 0 0 3px rgba(255, 71, 87, 0.3);
-      }
-      .origin-controls {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        margin-top: 10px;
-      }
-      .origin-presets {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 5px;
-        margin-top: 10px;
-      }
-      .origin-preset-btn {
-        padding: 8px;
-        font-size: 11px;
-        border: 1px solid var(--pico-muted-border-color);
-        border-radius: 4px;
-        background: transparent;
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-      .origin-preset-btn:hover {
-        background: var(--pico-primary);
-        color: white;
-        border-color: var(--pico-primary);
-      }
-      .origin-preset-btn.active {
-        background: var(--pico-primary);
-        color: white;
-      }
-      .code-output {
-        background: var(--pico-card-background-color);
-        border-radius: 8px;
-        padding: 20px;
-      }
-      .code-block {
-        background: #1e1e1e;
-        color: #d4d4d4;
-        padding: 15px;
-        border-radius: 8px;
-        font-family: Consolas, Monaco, monospace;
-        font-size: 14px;
-        overflow-x: auto;
-        white-space: pre-wrap;
-        word-break: break-all;
-      }
-      .copy-btn {
-        margin-top: 10px;
-      }
-      .theme-toggle {
-        cursor: pointer;
-        background: none;
-        border: none;
-        font-size: 24px;
-      }
-      .reset-all-btn {
-        width: 100%;
-        margin-top: 20px;
-      }
-      .presets-section {
-        margin-bottom: 20px;
-      }
-      .presets-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
-        gap: 8px;
-      }
-      .preset-btn {
-        padding: 8px 10px;
-        font-size: 12px;
-        border: 2px solid var(--pico-primary);
-        border-radius: 6px;
-        background: transparent;
-        cursor: pointer;
-        transition: all 0.3s;
-      }
-      .preset-btn:hover {
-        background: var(--pico-primary);
-        color: white;
-      }
-
-      .breadcrumb {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        padding: 8px 14px;
-        background: var(--color-bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        margin-bottom: 20px;
-      }
-      .breadcrumb a {
-        color: var(--color-text-secondary);
-        text-decoration: none;
-        transition: color 0.2s ease;
-      }
-
-      .breadcrumb a:hover {
-        color: var(--color-accent-cyan);
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-    </style>
-    <!-- Google Fonts -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CSS Transform 生成器 - 可视化 2D/3D 变换调试工具 - WebUtils</title>
+    <meta
+      name="description"
+      content="免费在线 CSS Transform 生成工具。支持 2D/3D 变换：旋转（Rotate）、缩放（Scale）、位移（Translate）、倾斜（Skew）以及透视（Perspective）调试。实时可视化预览并生成 CSS 变换代码。"
+    />
+    <meta
+      name="keywords"
+      content="CSS Transform,CSS变换,2D变换,3D变换,CSS旋转,CSS缩放,可视化工具,前端开发,CSS动画"
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
+    <style>
+      :root {
+        --bg-body: #0a0a0a;
+        --bg-card: #111;
+        --bg-input: #0d0d0d;
+        --bg-hover: #1a1a1a;
+        --text-primary: #e5e5e5;
+        --text-secondary: #737373;
+        --text-muted: #525252;
+        --border-color: #252525;
+        --border-focus: #404040;
+        --accent: #4cc9f0;
+        --accent-hover: #3fb8dc;
+        --accent-glow: rgba(76, 201, 240, 0.15);
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 14px;
+        --font-sans: "Inter", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+
+      [data-theme="light"] {
+        --bg-body: #fafafa;
+        --bg-card: #fff;
+        --bg-input: #f5f5f5;
+        --bg-hover: #f0f0f0;
+        --text-primary: #171717;
+        --text-secondary: #525252;
+        --text-muted: #a3a3a3;
+        --border-color: #e5e5e5;
+        --border-focus: #d4d4d4;
+        --accent: #0284c7;
+        --accent-hover: #0369a1;
+        --accent-glow: rgba(2, 132, 199, 0.15);
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.25rem; font-weight: 600; letter-spacing: -0.02em; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; }
+      .theme-btn { padding: 8px 12px; font-size: 0.75rem; font-family: var(--font-mono); background: transparent; border: none; color: var(--text-muted); cursor: pointer; transition: all 0.2s; }
+      .theme-btn.active { background: var(--accent); color: #fff; }
+
+      .ads-placeholder { margin: 24px 0; padding: 20px; background: var(--bg-card); border: 1px dashed var(--border-color); border-radius: var(--radius-lg); text-align: center; color: var(--text-muted); font-size: 0.8125rem; }
+
+      .main-grid { display: grid; grid-template-columns: 420px 1fr; gap: 24px; }
+      @media (max-width: 950px) { .main-grid { grid-template-columns: 1fr; } }
+
+      .panel { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; }
+      .panel-header { padding: 14px 20px; border-bottom: 1px solid var(--border-color); font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; display: flex; justify-content: space-between; align-items: center; }
+      .panel-body { padding: 20px; }
+
+      .preview-area { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-lg); min-height: 400px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; perspective: 1000px; background-image: radial-gradient(var(--border-color) 1px, transparent 1px); background-size: 20px 20px; }
+      .preview-box { width: 150px; height: 150px; background: linear-gradient(135deg, var(--accent), #7b2cbf); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: transform 0.1s; transform-style: preserve-3d; }
+      .origin-marker { position: absolute; width: 10px; height: 10px; background: #ef4444; border-radius: 50%; pointer-events: none; z-index: 10; transform: translate(-50%, -50%); box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2); }
+
+      .control-section { margin-bottom: 20px; }
+      .section-title { font-size: 0.7rem; font-weight: 700; color: var(--accent); margin-bottom: 12px; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+      .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border-color); }
+
+      .control-group { margin-bottom: 12px; }
+      .label-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); }
+      .input-control { width: 100%; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text-primary); padding: 6px 10px; font-size: 0.8125rem; outline: none; }
+      .input-control:focus { border-color: var(--accent); }
+
+      .presets-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; margin-bottom: 20px; }
+      .preset-btn { padding: 6px; font-size: 0.7rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-secondary); cursor: pointer; text-align: center; }
+      .preset-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+      .code-block { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; font-family: var(--font-mono); font-size: 0.8125rem; color: var(--accent); white-space: pre-wrap; word-break: break-all; margin-top: 12px; }
+      
+      .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-md); font-size: 0.8125rem; font-weight: 600; cursor: pointer; transition: all 0.2s; width: 100%; }
+      .btn:hover { background: var(--accent-hover); transform: translateY(-1px); }
+      .btn-secondary { background: var(--bg-hover); color: var(--text-primary); border: 1px solid var(--border-color); }
+
+      .article-section { margin-top: 40px; padding-top: 40px; border-top: 1px solid var(--border-color); }
+      .prose { max-width: 100%; color: var(--text-secondary); }
+      .prose h2 { color: var(--text-primary); font-size: 1.5rem; margin-top: 2rem; margin-bottom: 1rem; }
+      .prose h3 { color: var(--text-primary); font-size: 1.25rem; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+      .prose p { margin-bottom: 1rem; line-height: 1.8; }
+      .prose ul { margin-bottom: 1.5rem; padding-left: 1.5rem; }
+
+      #toast { position: fixed; bottom: 24px; right: 24px; background: var(--accent); color: #fff; padding: 12px 24px; border-radius: var(--radius-md); font-size: 0.875rem; font-weight: 600; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); transform: translateY(100px); opacity: 0; transition: all 0.3s; z-index: 1000; }
+      #toast.show { transform: translateY(0); opacity: 1; }
+    </style>
   </head>
   <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      CSS Transform 生成�?
-    </nav>
     <div class="container">
-      <div class="header">
-        <h1>CSS Transform 生成�?/h1>
-        <button class="theme-toggle" onclick="toggleTheme()" title="切换主题" aria-label="🌓">
-          🌓
-        </button>
-      </div>
+      <header class="header">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn" title="返回首页">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          </a>
+          <div class="title-group">
+            <h1>CSS Transform 生成器</h1>
+            <p>可视化 2D/3D 变换调试，构建灵动的交互效果</p>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="theme-toggle">
+            <button class="theme-btn" id="theme-dark" onclick="setTheme('dark')">DARK</button>
+            <button class="theme-btn" id="theme-light" onclick="setTheme('light')">LIGHT</button>
+          </div>
+        </div>
+      </header>
+
+      <div class="ads-placeholder">广告位 (Google AdSense)</div>
 
       <div class="main-grid">
-        <div class="controls-panel">
-          <div class="presets-section">
-            <label>快速预�?/label>
-            <div class="presets-grid">
-              <button class="preset-btn" onclick="applyPreset('flip')" aria-label="水平翻转">
-                水平翻转
-              </button>
-              <button class="preset-btn" onclick="applyPreset('flipV')" aria-label="垂直翻转">
-                垂直翻转
-              </button>
-              <button class="preset-btn" onclick="applyPreset('rotate45')" aria-label="旋转45°">
-                旋转45°
-              </button>
-              <button class="preset-btn" onclick="applyPreset('scale2x')" aria-label="放大2�?>
-                放大2�?
-              </button>
-              <button class="preset-btn" onclick="applyPreset('skew')" aria-label="倾斜">
-                倾斜
-              </button>
-              <button class="preset-btn" onclick="applyPreset('perspective')" aria-label="透视">
-                透视
-              </button>
-              <button class="preset-btn" onclick="applyPreset('card3d')" aria-label="3D卡片">
-                3D卡片
-              </button>
-              <button class="preset-btn" onclick="applyPreset('swing')" aria-label="摆动">
-                摆动
-              </button>
+        <div class="left-col">
+          <div class="panel">
+            <div class="panel-header">快速预设</div>
+            <div class="panel-body">
+              <div class="presets-grid">
+                <div class="preset-btn" onclick="applyPreset('flipH')">水平翻转</div>
+                <div class="preset-btn" onclick="applyPreset('flipV')">垂直翻转</div>
+                <div class="preset-btn" onclick="applyPreset('card3d')">3D卡片</div>
+                <div class="preset-btn" onclick="applyPreset('skew')">倾斜投影</div>
+                <div class="preset-btn" onclick="applyPreset('perspective')">深远透视</div>
+                <div class="preset-btn" onclick="applyPreset('reset')">重置全部</div>
+              </div>
             </div>
           </div>
 
-          <div class="section-title">2D 变换</div>
+          <div class="panel" style="max-height: 600px; overflow-y: auto;">
+            <div class="panel-header">变换参数</div>
+            <div class="panel-body">
+              <div class="control-section">
+                <div class="section-title">2D 变换</div>
+                <div class="control-group">
+                  <div class="label-row"><span>translateX</span><span id="txVal">0px</span></div>
+                  <input type="range" id="tx" min="-200" max="200" value="0" class="input-control" oninput="updateAll()">
+                </div>
+                <div class="control-group">
+                  <div class="label-row"><span>translateY</span><span id="tyVal">0px</span></div>
+                  <input type="range" id="ty" min="-200" max="200" value="0" class="input-control" oninput="updateAll()">
+                </div>
+                <div class="control-group">
+                  <div class="label-row"><span>rotate</span><span id="rVal">0deg</span></div>
+                  <input type="range" id="r" min="-180" max="180" value="0" class="input-control" oninput="updateAll()">
+                </div>
+                <div class="control-group">
+                  <div class="label-row"><span>scale</span><span id="sVal">1</span></div>
+                  <input type="range" id="s" min="0" max="3" step="0.1" value="1" class="input-control" oninput="updateAll()">
+                </div>
+                <div class="control-group">
+                  <div class="label-row"><span>skewX</span><span id="sxVal">0deg</span></div>
+                  <input type="range" id="sx" min="-45" max="45" value="0" class="input-control" oninput="updateAll()">
+                </div>
+              </div>
 
-          <div class="control-group">
-            <div class="control-header">
-              <label>translateX (水平位移)</label>
-              <span class="control-value" id="translateXValue">0px</span>
-            </div>
-            <div class="slider-container">
-              <input
-                type="range"
-                id="translateX"
-                min="-200"
-                max="200"
-                value="0"
-                oninput="updateTransform()"
-              />
-              <button class="reset-btn" onclick="resetControl('translateX', 0)" aria-label="重置">
-                重置
-              </button>
+              <div class="control-section">
+                <div class="section-title">3D 变换</div>
+                <div class="control-group">
+                  <div class="label-row"><span>perspective</span><span id="pVal">1000px</span></div>
+                  <input type="range" id="p" min="100" max="2000" value="1000" class="input-control" oninput="updateAll()">
+                </div>
+                <div class="control-group">
+                  <div class="label-row"><span>rotateX</span><span id="rxVal">0deg</span></div>
+                  <input type="range" id="rx" min="-180" max="180" value="0" class="input-control" oninput="updateAll()">
+                </div>
+                <div class="control-group">
+                  <div class="label-row"><span>rotateY</span><span id="ryVal">0deg</span></div>
+                  <input type="range" id="ry" min="-180" max="180" value="0" class="input-control" oninput="updateAll()">
+                </div>
+              </div>
+
+              <div class="control-section">
+                <div class="section-title">变换原点 (Origin)</div>
+                <div class="control-grid">
+                  <div class="control-group">
+                    <div class="label-row"><span>X</span><span id="oxVal">50%</span></div>
+                    <input type="range" id="ox" min="0" max="100" value="50" class="input-control" oninput="updateAll()">
+                  </div>
+                  <div class="control-group">
+                    <div class="label-row"><span>Y</span><span id="oyVal">50%</span></div>
+                    <input type="range" id="oy" min="0" max="100" value="50" class="input-control" oninput="updateAll()">
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-
-          <div class="control-group">
-            <div class="control-header">
-              <label>translateY (垂直位移)</label>
-              <span class="control-value" id="translateYValue">0px</span>
-            </div>
-            <div class="slider-container">
-              <input
-                type="range"
-                id="translateY"
-                min="-200"
-                max="200"
-                value="0"
-                oninput="updateTransform()"
-              />
-              <button class="reset-btn" onclick="resetControl('translateY', 0)" aria-label="重置">
-                重置
-              </button>
-            </div>
-          </div>
-
-          <div class="control-group">
-            <div class="control-header">
-              <label>rotate (旋转)</label>
-              <span class="control-value" id="rotateValue">0deg</span>
-            </div>
-            <div class="slider-container">
-              <input
-                type="range"
-                id="rotate"
-                min="-180"
-                max="180"
-                value="0"
-                oninput="updateTransform()"
-              />
-              <button class="reset-btn" onclick="resetControl('rotate', 0)" aria-label="重置">
-                重置
-              </button>
-            </div>
-          </div>
-
-          <div class="control-group">
-            <div class="control-header">
-              <label>scaleX (水平缩放)</label>
-              <span class="control-value" id="scaleXValue">1</span>
-            </div>
-            <div class="slider-container">
-              <input
-                type="range"
-                id="scaleX"
-                min="0"
-                max="3"
-                value="1"
-                step="0.1"
-                oninput="updateTransform()"
-              />
-              <button class="reset-btn" onclick="resetControl('scaleX', 1)" aria-label="重置">
-                重置
-              </button>
-            </div>
-          </div>
-
-          <div class="control-group">
-            <div class="control-header">
-              <label>scaleY (垂直缩放)</label>
-              <span class="control-value" id="scaleYValue">1</span>
-            </div>
-            <div class="slider-container">
-              <input
-                type="range"
-                id="scaleY"
-                min="0"
-                max="3"
-                value="1"
-                step="0.1"
-                oninput="updateTransform()"
-              />
-              <button class="reset-btn" onclick="resetControl('scaleY', 1)" aria-label="重置">
-                重置
-              </button>
-            </div>
-          </div>
-
-          <div class="control-group">
-            <div class="control-header">
-              <label>skewX (水平倾斜)</label>
-              <span class="control-value" id="skewXValue">0deg</span>
-            </div>
-            <div class="slider-container">
-              <input
-                type="range"
-                id="skewX"
-                min="-60"
-                max="60"
-                value="0"
-                oninput="updateTransform()"
-              />
-              <button class="reset-btn" onclick="resetControl('skewX', 0)" aria-label="重置">
-                重置
-              </button>
-            </div>
-          </div>
-
-          <div class="control-group">
-            <div class="control-header">
-              <label>skewY (垂直倾斜)</label>
-              <span class="control-value" id="skewYValue">0deg</span>
-            </div>
-            <div class="slider-container">
-              <input
-                type="range"
-                id="skewY"
-                min="-60"
-                max="60"
-                value="0"
-                oninput="updateTransform()"
-              />
-              <button class="reset-btn" onclick="resetControl('skewY', 0)" aria-label="重置">
-                重置
-              </button>
-            </div>
-          </div>
-
-          <div class="section-title">3D 变换</div>
-
-          <div class="control-group">
-            <div class="control-header">
-              <label>perspective (透视距离)</label>
-              <span class="control-value" id="perspectiveValue">800px</span>
-            </div>
-            <div class="slider-container">
-              <input
-                type="range"
-                id="perspective"
-                min="100"
-                max="2000"
-                value="800"
-                oninput="updateTransform()"
-              />
-              <button
-                class="reset-btn"
-                onclick="resetControl('perspective', 800)"
-                aria-label="重置"
-              >
-                重置
-              </button>
-            </div>
-          </div>
-
-          <div class="control-group">
-            <div class="control-header">
-              <label>rotateX (X轴旋�?</label>
-              <span class="control-value" id="rotateXValue">0deg</span>
-            </div>
-            <div class="slider-container">
-              <input
-                type="range"
-                id="rotateX"
-                min="-180"
-                max="180"
-                value="0"
-                oninput="updateTransform()"
-              />
-              <button class="reset-btn" onclick="resetControl('rotateX', 0)" aria-label="重置">
-                重置
-              </button>
-            </div>
-          </div>
-
-          <div class="control-group">
-            <div class="control-header">
-              <label>rotateY (Y轴旋�?</label>
-              <span class="control-value" id="rotateYValue">0deg</span>
-            </div>
-            <div class="slider-container">
-              <input
-                type="range"
-                id="rotateY"
-                min="-180"
-                max="180"
-                value="0"
-                oninput="updateTransform()"
-              />
-              <button class="reset-btn" onclick="resetControl('rotateY', 0)" aria-label="重置">
-                重置
-              </button>
-            </div>
-          </div>
-
-          <div class="control-group">
-            <div class="control-header">
-              <label>rotateZ (Z轴旋�?</label>
-              <span class="control-value" id="rotateZValue">0deg</span>
-            </div>
-            <div class="slider-container">
-              <input
-                type="range"
-                id="rotateZ"
-                min="-180"
-                max="180"
-                value="0"
-                oninput="updateTransform()"
-              />
-              <button class="reset-btn" onclick="resetControl('rotateZ', 0)" aria-label="重置">
-                重置
-              </button>
-            </div>
-          </div>
-
-          <div class="control-group">
-            <div class="control-header">
-              <label>translateZ (Z轴位�?</label>
-              <span class="control-value" id="translateZValue">0px</span>
-            </div>
-            <div class="slider-container">
-              <input
-                type="range"
-                id="translateZ"
-                min="-300"
-                max="300"
-                value="0"
-                oninput="updateTransform()"
-              />
-              <button class="reset-btn" onclick="resetControl('translateZ', 0)" aria-label="重置">
-                重置
-              </button>
-            </div>
-          </div>
-
-          <div class="section-title">变换原点</div>
-
-          <div class="origin-presets">
-            <button class="origin-preset-btn" onclick="setOrigin('0%', '0%')" aria-label="左上">
-              左上
-            </button>
-            <button class="origin-preset-btn" onclick="setOrigin('50%', '0%')" aria-label="上中">
-              上中
-            </button>
-            <button class="origin-preset-btn" onclick="setOrigin('100%', '0%')" aria-label="右上">
-              右上
-            </button>
-            <button class="origin-preset-btn" onclick="setOrigin('0%', '50%')" aria-label="左中">
-              左中
-            </button>
-            <button
-              class="origin-preset-btn active"
-              onclick="setOrigin('50%', '50%')"
-              aria-label="中心"
-            >
-              中心
-            </button>
-            <button class="origin-preset-btn" onclick="setOrigin('100%', '50%')" aria-label="右中">
-              右中
-            </button>
-            <button class="origin-preset-btn" onclick="setOrigin('0%', '100%')" aria-label="左下">
-              左下
-            </button>
-            <button class="origin-preset-btn" onclick="setOrigin('50%', '100%')" aria-label="下中">
-              下中
-            </button>
-            <button class="origin-preset-btn" onclick="setOrigin('100%', '100%')" aria-label="右下">
-              右下
-            </button>
-          </div>
-
-          <div class="origin-controls">
-            <div>
-              <label style="font-size: 12px">
-                X:
-                <span id="originXValue">50%</span>
-              </label>
-              <input
-                type="range"
-                id="originX"
-                min="0"
-                max="100"
-                value="50"
-                oninput="updateOrigin()"
-              />
-            </div>
-            <div>
-              <label style="font-size: 12px">
-                Y:
-                <span id="originYValue">50%</span>
-              </label>
-              <input
-                type="range"
-                id="originY"
-                min="0"
-                max="100"
-                value="50"
-                oninput="updateOrigin()"
-              />
-            </div>
-          </div>
-
-          <button class="reset-all-btn" onclick="resetAll()" aria-label="重置所有变�?>
-            重置所有变�?
-          </button>
         </div>
 
-        <div class="preview-area">
-          <div class="preview-container">
-            <h3>预览</h3>
-            <div class="preview-stage" id="previewStage">
-              <div class="preview-box" id="previewBox">Transform</div>
+        <div class="right-col">
+          <div class="panel">
+            <div class="panel-header">实时预览</div>
+            <div class="panel-body">
+              <div class="preview-area" id="previewStage">
+                <div id="originMarker" class="origin-marker"></div>
+                <div id="previewBox" class="preview-box">3D BOX</div>
+              </div>
+              
+              <div class="code-block" id="codeOutput"></div>
+              <button class="btn" style="margin-top: 12px;" onclick="copyCode()">📋 复制代码</button>
             </div>
-          </div>
-
-          <div class="code-output">
-            <h3>CSS 代码</h3>
-            <div class="code-block" id="codeOutput"></div>
-            <button class="copy-btn" onclick="copyCode()" aria-label="复制代码">复制代码</button>
           </div>
         </div>
       </div>
+
+      <div class="ads-placeholder">广告位 (Google AdSense)</div>
+
+      <section class="article-section">
+        <article class="prose">
+          <h2>深入理解 CSS Transform：从平面到空间的魔法</h2>
+          <p>
+            <strong>CSS Transform（变换）</strong> 是现代网页动效的基石。它允许我们对元素进行旋转、缩放、倾斜和位移，而不会影响页面的正常文档流（Layout）。这意味着变换是在合成层完成的，性能极高。
+          </p>
+
+          <h3>1. 2D 与 3D 变换的区别</h3>
+          <ul>
+            <li><strong>2D 变换：</strong> 在 X 轴和 Y 轴构成的平面上操作。最常用的是 <code>translate</code>（位移）和 <code>rotate</code>（旋转）。</li>
+            <li><strong>3D 变换：</strong> 引入了 Z 轴（深度）。通过 <code>perspective</code>（透视）属性，我们可以创造出真实的近大远小效果。</li>
+          </ul>
+
+          <h3>2. 解决的具体问题：交互与性能</h3>
+          <p><strong>场景一：居中定位。</strong> 传统的 <code>margin: auto</code> 或百分比定位有时难以完美。使用 <code>position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);</code> 是实现全兼容完美居中的金标准。</p>
+          <p><strong>场景二：高性能动画。</strong> 改变 <code>width</code> 或 <code>top</code> 会触发浏览器重排（Reflow），而改变 <code>transform</code> 仅触发重绘（Repaint）或合成，能保证动画在移动端也能达到 60FPS。</p>
+          <p><strong>场景三：复杂的 3D 翻转。</strong> 比如卡片翻转效果。通过设置 <code>backface-visibility: hidden;</code> 和 <code>rotateY(180deg)</code>，你可以轻松构建出极具质感的 UI 交互。</p>
+
+          <h3>3. 变换原点（Transform Origin）的重要性</h3>
+          <p>
+            默认情况下，变换是围绕元素的中心点（50% 50%）进行的。改变 <code>transform-origin</code> 可以彻底改变变换的效果。例如，将原点设为左上角（0% 0%），旋转时元素会像挂在钉子上一样摆动，而不是原地自转。
+          </p>
+        </article>
+      </section>
     </div>
+    <div id="toast"></div>
 
     <script>
-      const defaults = {
-        translateX: 0,
-        translateY: 0,
-        rotate: 0,
-        scaleX: 1,
-        scaleY: 1,
-        skewX: 0,
-        skewY: 0,
-        perspective: 800,
-        rotateX: 0,
-        rotateY: 0,
-        rotateZ: 0,
-        translateZ: 0,
-        originX: 50,
-        originY: 50
-      };
+      function setTheme(t) { document.documentElement.setAttribute("data-theme", t); localStorage.setItem("theme", t); document.querySelectorAll(".theme-btn").forEach(b => b.classList.toggle("active", b.id === `theme-${t}`)); }
+      setTheme(localStorage.getItem("theme") || "dark");
 
-      function updateTransform() {
-        const translateX = document.getElementById("translateX").value;
-        const translateY = document.getElementById("translateY").value;
-        const rotate = document.getElementById("rotate").value;
-        const scaleX = document.getElementById("scaleX").value;
-        const scaleY = document.getElementById("scaleY").value;
-        const skewX = document.getElementById("skewX").value;
-        const skewY = document.getElementById("skewY").value;
-        const perspective = document.getElementById("perspective").value;
-        const rotateX = document.getElementById("rotateX").value;
-        const rotateY = document.getElementById("rotateY").value;
-        const rotateZ = document.getElementById("rotateZ").value;
-        const translateZ = document.getElementById("translateZ").value;
-
-        document.getElementById("translateXValue").textContent = translateX + "px";
-        document.getElementById("translateYValue").textContent = translateY + "px";
-        document.getElementById("rotateValue").textContent = rotate + "deg";
-        document.getElementById("scaleXValue").textContent = scaleX;
-        document.getElementById("scaleYValue").textContent = scaleY;
-        document.getElementById("skewXValue").textContent = skewX + "deg";
-        document.getElementById("skewYValue").textContent = skewY + "deg";
-        document.getElementById("perspectiveValue").textContent = perspective + "px";
-        document.getElementById("rotateXValue").textContent = rotateX + "deg";
-        document.getElementById("rotateYValue").textContent = rotateY + "deg";
-        document.getElementById("rotateZValue").textContent = rotateZ + "deg";
-        document.getElementById("translateZValue").textContent = translateZ + "px";
-
-        document.getElementById("previewStage").style.perspective = perspective + "px";
-
-        let transformParts = [];
-        if (translateX != 0 || translateY != 0 || translateZ != 0) {
-          transformParts.push(
-            "translate3d(" + translateX + "px, " + translateY + "px, " + translateZ + "px)"
-          );
-        }
-        if (rotateX != 0) transformParts.push("rotateX(" + rotateX + "deg)");
-        if (rotateY != 0) transformParts.push("rotateY(" + rotateY + "deg)");
-        if (rotateZ != 0) transformParts.push("rotateZ(" + rotateZ + "deg)");
-        if (rotate != 0) transformParts.push("rotate(" + rotate + "deg)");
-        if (scaleX != 1 || scaleY != 1) {
-          transformParts.push("scale(" + scaleX + ", " + scaleY + ")");
-        }
-        if (skewX != 0 || skewY != 0) {
-          transformParts.push("skew(" + skewX + "deg, " + skewY + "deg)");
-        }
-
-        const transformValue = transformParts.length > 0 ? transformParts.join(" ") : "none";
-        document.getElementById("previewBox").style.transform = transformValue;
-
-        generateCode(transformParts, perspective);
+      function showToast(msg) {
+        const t = document.getElementById("toast");
+        t.textContent = msg; t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 2000);
       }
 
-      function updateOrigin() {
-        const originX = document.getElementById("originX").value;
-        const originY = document.getElementById("originY").value;
+      function updateAll() {
+        const tx = document.getElementById('tx').value;
+        const ty = document.getElementById('ty').value;
+        const r = document.getElementById('r').value;
+        const s = document.getElementById('s').value;
+        const sx = document.getElementById('sx').value;
+        const p = document.getElementById('p').value;
+        const rx = document.getElementById('rx').value;
+        const ry = document.getElementById('ry').value;
+        const ox = document.getElementById('ox').value;
+        const oy = document.getElementById('oy').value;
 
-        document.getElementById("originXValue").textContent = originX + "%";
-        document.getElementById("originYValue").textContent = originY + "%";
+        document.getElementById('txVal').textContent = tx + 'px';
+        document.getElementById('tyVal').textContent = ty + 'px';
+        document.getElementById('rVal').textContent = r + 'deg';
+        document.getElementById('sVal').textContent = s;
+        document.getElementById('sxVal').textContent = sx + 'deg';
+        document.getElementById('pVal').textContent = p + 'px';
+        document.getElementById('rxVal').textContent = rx + 'deg';
+        document.getElementById('ryVal').textContent = ry + 'deg';
+        document.getElementById('oxVal').textContent = ox + '%';
+        document.getElementById('oyVal').textContent = oy + '%';
 
-        document.getElementById("previewBox").style.transformOrigin =
-          originX + "% " + originY + "%";
+        const box = document.getElementById('previewBox');
+        const stage = document.getElementById('previewStage');
+        const marker = document.getElementById('originMarker');
 
-        document
-          .querySelectorAll(".origin-preset-btn")
-          .forEach((btn) => btn.classList.remove("active"));
+        stage.style.perspective = p + 'px';
+        const transformStr = `translate(${tx}px, ${ty}px) rotate(${r}deg) scale(${s}) skewX(${sx}deg) rotateX(${rx}deg) rotateY(${ry}deg)`;
+        box.style.transform = transformStr;
+        box.style.transformOrigin = `${ox}% ${oy}%`;
+        
+        marker.style.left = `calc(50% + ${tx}px)`;
+        marker.style.top = `calc(50% + ${ty}px)`;
 
-        updateTransform();
+        document.getElementById('codeOutput').textContent = `transform: ${transformStr};\ntransform-origin: ${ox}% ${oy}%;`;
       }
 
-      function setOrigin(x, y) {
-        document.getElementById("originX").value = parseInt(x);
-        document.getElementById("originY").value = parseInt(y);
+      function applyPreset(type) {
+        const reset = () => {
+          document.getElementById('tx').value = 0;
+          document.getElementById('ty').value = 0;
+          document.getElementById('r').value = 0;
+          document.getElementById('s').value = 1;
+          document.getElementById('sx').value = 0;
+          document.getElementById('rx').value = 0;
+          document.getElementById('ry').value = 0;
+          document.getElementById('ox').value = 50;
+          document.getElementById('oy').value = 50;
+        };
 
-        document.querySelectorAll(".origin-preset-btn").forEach((btn) => {
-          btn.classList.remove("active");
-          if (btn.onclick.toString().includes(x) && btn.onclick.toString().includes(y)) {
-            btn.classList.add("active");
-          }
-        });
-
-        updateOrigin();
+        if (type === 'flipH') { reset(); document.getElementById('ry').value = 180; }
+        else if (type === 'flipV') { reset(); document.getElementById('rx').value = 180; }
+        else if (type === 'card3d') { reset(); document.getElementById('ry').value = 30; document.getElementById('rx').value = 10; }
+        else if (type === 'skew') { reset(); document.getElementById('sx').value = 20; }
+        else if (type === 'perspective') { reset(); document.getElementById('p').value = 200; document.getElementById('rx').value = 45; }
+        else { reset(); }
+        
+        updateAll();
       }
 
-      function generateCode(transformParts, perspective) {
-        const originX = document.getElementById("originX").value;
-        const originY = document.getElementById("originY").value;
-
-        let css = ".container {\n";
-        css += "  perspective: " + perspective + "px;\n";
-        css += "}\n\n";
-        css += ".element {\n";
-
-        if (transformParts.length > 0) {
-          css += "  transform: " + transformParts.join("\n             ") + ";\n";
-        } else {
-          css += "  transform: none;\n";
-        }
-
-        if (originX != 50 || originY != 50) {
-          css += "  transform-origin: " + originX + "% " + originY + "%;\n";
-        }
-
-        css += "  transform-style: preserve-3d;\n";
-        css += "}";
-
-        document.getElementById("codeOutput").textContent = css;
+      function copyCode() {
+        const code = document.getElementById('codeOutput').textContent;
+        navigator.clipboard.writeText(code).then(() => showToast("代码已复制到剪贴板"));
       }
 
-      window.resetControl = function (id, defaultValue) {
-        document.getElementById(id).value = defaultValue;
-        updateTransform();
-      };
-
-      window.resetAll = function () {
-        Object.keys(defaults).forEach((key) => {
-          const el = document.getElementById(key);
-          if (el) el.value = defaults[key];
-        });
-
-        document
-          .querySelectorAll(".origin-preset-btn")
-          .forEach((btn) => btn.classList.remove("active"));
-        document.querySelectorAll(".origin-preset-btn")[4].classList.add("active");
-
-        updateOrigin();
-        updateTransform();
-      };
-
-      window.applyPreset = function (preset) {
-        resetAll();
-
-        switch (preset) {
-          case "flip":
-            document.getElementById("scaleX").value = -1;
-            break;
-          case "flipV":
-            document.getElementById("scaleY").value = -1;
-            break;
-          case "rotate45":
-            document.getElementById("rotate").value = 45;
-            break;
-          case "scale2x":
-            document.getElementById("scaleX").value = 2;
-            document.getElementById("scaleY").value = 2;
-            break;
-          case "skew":
-            document.getElementById("skewX").value = 20;
-            document.getElementById("skewY").value = 10;
-            break;
-          case "perspective":
-            document.getElementById("perspective").value = 500;
-            document.getElementById("rotateY").value = 45;
-            break;
-          case "card3d":
-            document.getElementById("perspective").value = 600;
-            document.getElementById("rotateX").value = 20;
-            document.getElementById("rotateY").value = -30;
-            break;
-          case "swing":
-            document.getElementById("rotate").value = 15;
-            setOrigin("50%", "0%");
-            break;
-        }
-
-        updateTransform();
-      };
-
-      window.copyCode = function () {
-        const code = document.getElementById("codeOutput").textContent;
-        navigator.clipboard.writeText(code).then(() => {
-          const btn = document.querySelector(".copy-btn");
-          btn.textContent = "已复�?";
-          setTimeout(() => {
-            btn.textContent = "复制代码";
-          }, 2000);
-        });
-      };
-
-      window.toggleTheme = function () {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute("data-theme");
-        html.setAttribute("data-theme", currentTheme === "light" ? "dark" : "light");
-      };
-
-      updateTransform();
+      updateAll();
     </script>
   </body>
 </html>
-
