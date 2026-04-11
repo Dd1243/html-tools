@@ -1,732 +1,488 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>环境变量编辑�?- WebUtils</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线 .env 环境变量编辑器 - 可视化管理与格式转换工具 - WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="环境变量编辑�?- WebUtils" />
-    <meta name="keywords" content="env-editor,dev,tools,webutils" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/dev/env-editor.html" />
+    <meta name="description" content="功能强大的在线 .env 环境变量编辑器。支持可视化编辑、一键解析、格式转换（JSON/YAML/Docker/Shell）。提供安全、私密的本地浏览器端处理，助力开发者高效管理项目配置，避免密钥泄露。">
+    <meta name="keywords" content="env编辑器,环境变量管理,在线.env工具,dotenv,配置文件转换,Docker环境变量生成,环境变量最佳实践">
+    <meta name="author" content="WebUtils">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://essays4u.net/tools/dev/env-editor.html">
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="环境变量编辑�?- WebUtils" />
-    <meta property="og:description" content="环境变量编辑�?- WebUtils" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/dev/env-editor.html" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://essays4u.net/tools/dev/env-editor.html">
+    <meta property="og:title" content="在线 .env 环境变量编辑器 - 可视化管理与格式转换工具">
+    <meta property="og:description" content="可视化管理项目环境变量，支持多种格式导出，安全便捷的开发者利器。">
+    <meta property="og:image" content="https://essays4u.net/social-preview.png">
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="环境变量编辑�?- WebUtils" />
-    <meta name="twitter:description" content="环境变量编辑�?- WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://essays4u.net/tools/dev/env-editor.html">
+    <meta property="twitter:title" content="在线 .env 环境变量编辑器 - 可视化管理与格式转换工具">
+    <meta property="twitter:description" content="可视化管理项目环境变量，支持多种格式导出，安全便捷的开发者利器。">
+    <meta property="twitter:image" content="https://essays4u.net/social-preview.png">
+
+    <!-- Google AdSense Placeholder -->
+    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 
     <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      :root {
-        --bg-primary: #0a0a0f;
-        --bg-secondary: #12121a;
-        --bg-tertiary: #1a1a25;
-        --color-text-primary: #fff;
-        --color-text-secondary: #88a;
-        --accent: #6366f1;
-        --border: #2a2a3a;
-        --success: #22c55e;
-        --danger: #ef4444;
-      }
-      [data-theme="light"] {
-        --bg-primary: #f8fafc;
-        --bg-secondary: #fff;
-        --bg-tertiary: #f1f5f9;
-        --color-text-primary: #1e293b;
-        --color-text-secondary: #64748b;
-        --border: #e2e8f0;
-      }
-      body {
-        font-family: var(--font-sans);
-        font-size: 16px;
-        line-height: 1.6;
-        background: var(--bg-deep);
-        color: var(--color-text-primary);
-        min-height: 100vh;
-      }
-      .header {
-        background: linear-gradient(135deg, #10b981, #059669);
-        padding: 2rem;
-        text-align: center;
-      }
-      .header h1 {
-        font-size: 1.8rem;
-        margin-bottom: 0.5rem;
-      }
-      .nav {
-        display: flex;
-        justify-content: space-between;
-        max-width: 1200px;
-        margin: 0 auto 1rem;
-      }
-      .back-link {
-        color: rgba(255, 255, 255, 0.9);
-        text-decoration: none;
-      }
-      .theme-toggle {
-        background: rgba(255, 255, 255, 0.2);
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
-        color: white;
-        cursor: pointer;
-      }
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem;
-      }
-      .card {
-        background: var(--bg-secondary);
-        border: 1px solid var(--border-subtle);
-        border-radius: 1rem;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-      }
-      .editor-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
-      }
-      @media (max-width: 900px) {
-        .editor-grid {
-          grid-template-columns: 1fr;
+        :root {
+            --bg-deep: #0a0a0f;
+            --bg-surface: #12121a;
+            --bg-card: #1a1a24;
+            --bg-input: #0e0e14;
+            --text-primary: #e8e8ed;
+            --text-secondary: #8888a0;
+            --text-muted: #55556a;
+            --border-subtle: #2a2a3a;
+            --border-strong: #3a3a4a;
+            --accent-cyan: #00f5d4;
+            --accent-magenta: #f72585;
+            --accent-green: #10b981;
+            --accent-red: #f43f5e;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --font-sans: 'Inter', -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-display: 'Space Grotesk', sans-serif;
         }
-      }
-      .editor-box h3 {
-        margin-bottom: 1rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      textarea {
-        width: 100%;
-        min-height: 300px;
-        padding: 1rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: 0.5rem;
-        background: var(--bg-tertiary);
-        color: var(--color-text-primary);
-        font-family: Monaco, Menlo, monospace;
-        font-size: 0.9rem;
-        resize: vertical;
-      }
-      .btn {
-        padding: 0.5rem 1rem;
-        border: none;
-        border-radius: 0.5rem;
-        cursor: pointer;
-        font-size: 0.9rem;
-        transition: all 0.2s;
-      }
-      .btn-primary {
-        background: var(--accent-cyan);
-        color: white;
-      }
-      .btn-success {
-        background: var(--accent-green);
-        color: white;
-      }
-      .btn-danger {
-        background: var(--accent-red);
-        color: white;
-      }
-      .btn-secondary {
-        background: var(--bg-tertiary);
-        color: var(--color-text-primary);
-        border: 1px solid var(--border-subtle);
-      }
-      .btn-sm {
-        padding: 0.4rem 0.75rem;
-        font-size: 0.85rem;
-      }
-      .env-table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-      .env-table th,
-      .env-table td {
-        padding: 0.75rem;
-        text-align: left;
-        border-bottom: 1px solid var(--border-subtle);
-      }
-      .env-table th {
-        color: var(--color-text-secondary);
-        font-weight: 600;
-        font-size: 0.85rem;
-      }
-      .env-table input {
-        width: 100%;
-        padding: 0.5rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: 0.25rem;
-        background: var(--bg-tertiary);
-        color: var(--color-text-primary);
-        font-family: var(--font-mono);
-      }
-      .env-table .key-col {
-        width: 35%;
-      }
-      .env-table .value-col {
-        width: 55%;
-      }
-      .env-table .action-col {
-        width: 10%;
-        text-align: center;
-      }
-      .add-row {
-        display: flex;
-        gap: 0.5rem;
-        margin-top: 1rem;
-      }
-      .add-row input {
-        flex: 1;
-        padding: 0.5rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: 0.25rem;
-        background: var(--bg-tertiary);
-        color: var(--color-text-primary);
-        font-family: var(--font-mono);
-      }
-      .btn-row {
-        display: flex;
-        gap: 0.5rem;
-        margin-top: 1rem;
-        flex-wrap: wrap;
-      }
-      .format-options {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 1rem;
-        flex-wrap: wrap;
-      }
-      .format-option {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      .format-option input[type="radio"] {
-        accent-color: var(--accent-cyan);
-      }
-      .toast {
-        position: fixed;
-        bottom: 2rem;
-        left: 50%;
-        transform: translateX(-50%);
-        background: var(--accent-green);
-        color: white;
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.5rem;
-        opacity: 0;
-        transition: opacity 0.3s;
-      }
-      .toast.show {
-        opacity: 1;
-      }
-      .stats {
-        font-size: 0.85rem;
-        color: var(--color-text-secondary);
-        font-weight: normal;
-      }
 
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-      @media (max-width: 480px) {
+        [data-theme="light"] {
+            --bg-deep: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-card: #ffffff;
+            --bg-input: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border-subtle: #e2e8f0;
+            --border-strong: #cbd5e1;
+            --accent-cyan: #0891b2;
+            --accent-magenta: #db2777;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-          padding: 12px;
+            font-family: var(--font-sans);
+            background-color: var(--bg-deep);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s;
         }
-        .container {
-          padding: 12px;
-          max-width: 100%;
-          overflow-x: hidden;
-        }
-        h1 {
-          font-size: 1.3rem;
-        }
-        .header {
-          padding: 12px;
-        }
-        .header h1 {
-          font-size: 1.2rem;
-        }
-        .header p {
-          font-size: 0.8rem;
-        }
-        .card {
-          padding: 12px;
-        }
-        .editor-grid {
-          grid-template-columns: 1fr !important;
-          gap: 12px;
-        }
-        .editor-box {
-          min-width: 0;
-          max-width: 100%;
-          overflow: hidden;
-        }
-        .main-grid,
-        .grid {
-          grid-template-columns: 1fr !important;
-        }
-        .btn-row {
-          flex-direction: column;
-          gap: 8px;
-        }
-        .btn-row button,
-        .btn-row .btn {
-          width: 100%;
-        }
-        pre,
-        code,
-        textarea {
-          font-size: 0.7rem;
-          white-space: pre-wrap;
-          word-break: break-all;
-        }
-        .editor-panel,
-        .output-panel {
-          min-width: 0;
-          overflow: hidden;
-        }
-        .env-table {
-          display: block;
-          overflow-x: auto;
-          max-width: 100%;
-          font-size: 0.75rem;
-        }
-        .env-table th,
-        .env-table td {
-          padding: 0.5rem;
-          min-width: 60px;
-        }
-        .env-table input {
-          font-size: 0.75rem;
-          padding: 4px;
-        }
-      }
-      .visually-hidden {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        margin: -1px;
-        padding: 0;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0;
-      }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        
+        header { margin-bottom: 3rem; text-align: center; position: relative; }
+        .breadcrumb { display: flex; gap: 0.5rem; font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem; justify-content: center; }
+        .breadcrumb a { color: var(--accent-cyan); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        
+        h1 { font-family: var(--font-display); font-size: 2.5rem; margin-bottom: 0.5rem; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { color: var(--text-secondary); font-size: 1.1rem; }
+
+        .theme-toggle { position: absolute; top: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 0.5rem 1rem; border-radius: var(--radius-md); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
+
+        .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+        @media (max-width: 968px) { .main-grid { grid-template-columns: 1fr; } }
+
+        .card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .card-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; font-family: var(--font-display); }
+        .card-title h2 { font-size: 1.25rem; }
+        .stats { font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); }
+
+        textarea { width: 100%; height: 400px; background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); color: var(--text-primary); padding: 1rem; font-family: var(--font-mono); font-size: 0.9rem; resize: none; outline: none; }
+        textarea:focus { border-color: var(--accent-cyan); }
+
+        .toolbar { display: flex; gap: 0.75rem; margin-top: 1rem; flex-wrap: wrap; }
+        .btn { padding: 0.6rem 1.2rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); background: var(--bg-input); color: var(--text-primary); cursor: pointer; font-size: 0.875rem; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem; }
+        .btn:hover { background: var(--border-subtle); border-color: var(--border-strong); }
+        .btn-primary { background: var(--accent-cyan); color: #000; border: none; }
+        .btn-primary:hover { background: #00dbc0; transform: translateY(-1px); }
+        .btn-success { background: var(--accent-green); color: #000; border: none; }
+        .btn-danger { background: var(--accent-red); color: #fff; border: none; }
+
+        .table-container { height: 400px; overflow-y: auto; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-input); }
+        .env-table { width: 100%; border-collapse: collapse; }
+        .env-table th { position: sticky; top: 0; background: var(--bg-card); padding: 0.75rem; text-align: left; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border-subtle); z-index: 10; }
+        .env-table td { padding: 0.5rem; border-bottom: 1px solid var(--border-subtle); }
+        .env-table input { width: 100%; background: transparent; border: 1px solid transparent; color: var(--text-primary); padding: 0.4rem; font-family: var(--font-mono); font-size: 0.875rem; border-radius: 4px; }
+        .env-table input:focus { border-color: var(--accent-cyan); background: var(--bg-deep); }
+        
+        .add-row { display: grid; grid-template-columns: 1fr 1.5fr auto; gap: 0.5rem; margin-top: 1rem; }
+        .add-row input { background: var(--bg-input); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 0.6rem; border-radius: var(--radius-md); font-family: var(--font-mono); }
+
+        .export-section { margin-top: 2rem; }
+        .format-selector { display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .format-btn { padding: 0.5rem 1rem; border-radius: 20px; border: 1px solid var(--border-subtle); background: var(--bg-card); color: var(--text-secondary); cursor: pointer; font-size: 0.8rem; }
+        .format-btn.active { background: var(--accent-cyan); color: #000; border-color: var(--accent-cyan); }
+
+        .ads-placeholder { margin: 2rem 0; background: var(--bg-card); border: 1px dashed var(--border-subtle); height: 100px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem; border-radius: var(--radius-lg); }
+
+        article { margin-top: 4rem; max-width: 800px; margin-left: auto; margin-right: auto; }
+        article h2 { font-family: var(--font-display); font-size: 1.75rem; margin: 2rem 0 1rem; color: var(--accent-cyan); }
+        article h3 { font-size: 1.25rem; margin: 1.5rem 0 0.75rem; }
+        article p { margin-bottom: 1.25rem; color: var(--text-secondary); }
+        article ul { margin-bottom: 1.5rem; padding-left: 1.5rem; color: var(--text-secondary); }
+        article li { margin-bottom: 0.5rem; }
+
+        .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--accent-cyan); color: #000; padding: 0.75rem 1.5rem; border-radius: var(--radius-md); font-weight: 600; transform: translateY(100px); transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); z-index: 1000; }
+        .toast.show { transform: translateY(0); }
+
+        footer { margin-top: 4rem; padding: 2rem; border-top: 1px solid var(--border-subtle); text-align: center; color: var(--text-muted); font-size: 0.875rem; }
+        footer a { color: var(--text-secondary); text-decoration: none; margin: 0 0.5rem; }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      .env 文件编辑�?
-    </nav>
-    <div class="header">
-      <div class="nav">
-        <button class="theme-toggle" onclick="toggleTheme()" aria-label="🌓 主题">🌓 主题</button>
-      </div>
-      <h1>📝 环境变量编辑�?/h1>
-      <p>可视化编�?env环境变量文件</p>
-    </div>
+</head>
+<body>
     <div class="container">
-      <div class="editor-grid">
-        <div class="card editor-box">
-          <h3>
-            .env 文件内容
-            <span class="stats" id="textStats">0 变量</span>
-          </h3>
-          <textarea
-            id="envText"
-            placeholder="粘贴.env文件内容或手动输�?..
-# 数据库配�?
-DB_HOST=localhost
-DB_PORT=3306
-DB_NAME=myapp
+        <nav class="breadcrumb">
+            <a href="../../index.html">首页</a> / <span>开发工具</span> / <span>.env 编辑器</span>
+        </nav>
 
-# API配置  
-API_KEY=your_api_key_here
-API_SECRET=your_secret"
-            oninput="parseEnv()"
-          >
-DB_HOST=localhost
-DB_PORT=3306
-DB_USER=root
-DB_PASSWORD=secret123
-DB_NAME=myapp
-
-API_URL=https://api.example.com
-API_KEY=sk_test_abc123
-API_SECRET=your_secret_key
-
-NODE_ENV=development
-DEBUG=true
-PORT=3000</textarea
-          >
-          <div class="btn-row">
-            <button class="btn btn-primary" onclick="parseEnv()" aria-label="解析">解析</button>
-            <button class="btn btn-secondary" onclick="sortEnv()" aria-label="排序">排序</button>
-            <button class="btn btn-secondary" onclick="copyText()" aria-label="复制">复制</button>
-          </div>
-        </div>
-
-        <div class="card editor-box">
-          <h3>
-            可视化编�?
-            <span class="stats" id="tableStats">0 变量</span>
-          </h3>
-          <div style="max-height: 400px; overflow-y: auto">
-            <table class="env-table" id="envTable">
-              <thead>
-                <tr>
-                  <th class="key-col">变量�?/th>
-                  <th class="value-col">�?/th>
-                  <th class="action-col">操作</th>
-                </tr>
-              </thead>
-              <tbody id="envTableBody"></tbody>
-            </table>
-          </div>
-          <div class="add-row">
-            <input
-              type="text"
-              id="newKey"
-              placeholder="变量�?
-              onkeypress="if (event.key === 'Enter') addVar();"
-              aria-label="文本输入�?
-            />
-            <input
-              type="text"
-              id="newValue"
-              placeholder="�?
-              onkeypress="if (event.key === 'Enter') addVar();"
-              aria-label="文本输入�?
-            />
-            <button class="btn btn-success btn-sm" onclick="addVar()" aria-label="+ 添加">
-              + 添加
+        <header>
+            <h1>.env 环境变量编辑器</h1>
+            <p class="subtitle">可视化、安全的本地环境变量管理与格式转换工具</p>
+            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">
+                <span>🌙</span> 暗色模式
             </button>
-          </div>
-        </div>
-      </div>
+        </header>
 
-      <div class="card">
-        <h3 style="margin-bottom: 1rem">导出格式</h3>
-        <div class="format-options">
-          <label class="format-option">
-            <input type="radio" name="format" value="env" checked />
-            .env 格式
-          </label>
-          <label class="format-option">
-            <input type="radio" name="format" value="json" />
-            JSON 格式
-          </label>
-          <label class="format-option">
-            <input type="radio" name="format" value="yaml" />
-            YAML 格式
-          </label>
-          <label class="format-option">
-            <input type="radio" name="format" value="shell" />
-            Shell export
-          </label>
-          <label class="format-option">
-            <input type="radio" name="format" value="docker" />
-            Docker -e 参数
-          </label>
+        <!-- Google AdSense Top -->
+        <div class="ads-placeholder">
+            广告占位符 - Google AdSense (Top)
         </div>
-        <textarea
-          id="exportOutput"
-          style="min-height: 150px"
-          readonly
-          placeholder="选择格式后点击导�?
-        ></textarea>
-        <div class="btn-row">
-          <button class="btn btn-primary" onclick="exportEnv()" aria-label="导出">导出</button>
-          <button class="btn btn-success" onclick="copyExport()" aria-label="复制导出内容">
-            复制导出内容
-          </button>
-          <button class="btn btn-secondary" onclick="downloadExport()" aria-label="下载文件">
-            下载文件
-          </button>
+
+        <div class="main-grid">
+            <!-- Source Editor -->
+            <div class="card">
+                <div class="card-title">
+                    <h2>源代码视图</h2>
+                    <span class="stats" id="textStats">0 个变量</span>
+                </div>
+                <textarea id="envText" placeholder="# 粘贴 .env 文件内容...
+DB_HOST=localhost
+DB_PORT=5432
+API_KEY=sk_test_51Mz..."></textarea>
+                <div class="toolbar">
+                    <button class="btn btn-primary" onclick="parseEnv()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        立即解析
+                    </button>
+                    <button class="btn" onclick="sortEnv()">字母排序</button>
+                    <button class="btn" onclick="copySource()">一键复制</button>
+                    <button class="btn btn-danger" onclick="clearAll()">清空全部</button>
+                </div>
+            </div>
+
+            <!-- Visual Editor -->
+            <div class="card">
+                <div class="card-title">
+                    <h2>可视化管理</h2>
+                    <span class="stats" id="tableStats">0 个变量</span>
+                </div>
+                <div class="table-container">
+                    <table class="env-table" id="envTable">
+                        <thead>
+                            <tr>
+                                <th style="width: 40%;">变量名 (KEY)</th>
+                                <th style="width: 50%;">变量值 (VALUE)</th>
+                                <th style="width: 10%;">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="envTableBody">
+                            <!-- Rows dynamic -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="add-row">
+                    <input type="text" id="newKey" placeholder="NEW_KEY" onkeypress="handleEnter(event, addVar)">
+                    <input type="text" id="newValue" placeholder="new_value" onkeypress="handleEnter(event, addVar)">
+                    <button class="btn btn-success" onclick="addVar()">添加</button>
+                </div>
+            </div>
         </div>
-      </div>
+
+        <!-- Export Section -->
+        <div class="card export-section">
+            <div class="card-title">
+                <h2>导出与转换</h2>
+            </div>
+            <div class="format-selector" id="formatSelector">
+                <button class="format-btn active" data-format="env">.env 格式</button>
+                <button class="format-btn" data-format="json">JSON 对象</button>
+                <button class="format-btn" data-format="yaml">YAML 配置</button>
+                <button class="format-btn" data-format="shell">Shell Export</button>
+                <button class="format-btn" data-format="docker">Docker Flags</button>
+            </div>
+            <textarea id="exportOutput" style="height: 150px;" readonly placeholder="点击上方格式按钮进行转换..."></textarea>
+            <div class="toolbar">
+                <button class="btn btn-primary" onclick="copyExport()">复制结果</button>
+                <button class="btn" onclick="downloadFile()">下载文件</button>
+            </div>
+        </div>
+
+        <!-- Google AdSense Bottom -->
+        <div class="ads-placeholder">
+            广告占位符 - Google AdSense (Bottom)
+        </div>
+
+        <!-- Article Content for SEO -->
+        <article>
+            <h2>深入了解 .env 环境变量管理</h2>
+            <p>在现代软件开发中，<code>.env</code> 文件已成为管理环境特定配置的事实标准。无论是 Node.js、Python、Go 还是 PHP 项目，通过环境变量将代码与配置分离是遵循 <strong>Twelve-Factor App</strong> 原则的核心实践。</p>
+            
+            <h3>为什么要使用 .env 编辑器？</h3>
+            <p>直接手动编辑 <code>.env</code> 文件虽然简单，但在处理大规模配置时容易出错。我们的在线编辑器解决了以下具体问题：</p>
+            <ul>
+                <li><strong>格式标准化：</strong> 自动处理带空格的值、引号转义以及注释行，确保符合 <code>dotenv</code> 解析规范。</li>
+                <li><strong>格式快速转换：</strong> 在开发过程中，你可能需要将环境变量转换为 Docker 运行参数 (<code>-e KEY=VAL</code>) 或 Kubernetes 的 ConfigMap 格式。本工具支持一键跨格式转换。</li>
+                <li><strong>可视化校验：</strong> 通过表格视图，你可以清晰地查看到是否存在重复的 KEY，或者某些敏感变量是否遗漏了值。</li>
+                <li><strong>安全性保障：</strong> 所有的解析和编辑逻辑均在您的浏览器本地执行，数据不会上传到任何服务器。这对于处理包含 API 密钥和数据库密码的敏感文件至关重要。</li>
+            </ul>
+
+            <h3>.env 管理的最佳实践</h3>
+            <p>为了确保项目的安全性和可维护性，建议遵循以下原则：</p>
+            <ol>
+                <li><strong>永远不要提交 .env 到 Git：</strong> 将 <code>.env</code> 添加到 <code>.gitignore</code> 中。取而代之的是提交一个 <code>.env.example</code> 文件，列出所有需要的 KEY 但留空 VALUE。</li>
+                <li><strong>按模块分组：</strong> 使用注释（以 # 开头）为变量分组，例如 <code># Database</code>, <code># Auth</code>, <code># AWS S3</code>。</li>
+                <li><strong>使用全大写字母：</strong> 变量名建议使用 <code>UPPER_SNAKE_CASE</code> 格式，这在大多数开发工具链中都有良好的兼容性。</li>
+                <li><strong>环境隔离：</strong> 为不同的环境准备不同的文件，如 <code>.env.development</code>, <code>.env.staging</code>, <code>.env.production</code>。</li>
+            </ol>
+
+            <h3>如何使用此工具？</h3>
+            <p>1. <strong>粘贴：</strong> 将现有的 <code>.env</code> 内容粘贴到左侧“源代码视图”。</p>
+            <p>2. <strong>编辑：</strong> 右侧会自动同步为表格。你可以直接修改值、删除行或添加新变量。</p>
+            <p>3. <strong>转换：</strong> 选择底部的导出格式（如 JSON），工具会立即生成转换后的代码段。</p>
+            <p>4. <strong>下载：</strong> 完成编辑后，可以直接下载文件并重命名为 <code>.env</code> 放入项目根目录。</p>
+        </article>
+
+        <footer>
+            <p>&copy; 2026 WebUtils. 基于 MIT 协议开源。 <a href="https://github.com/nicepkg/html-tools">GitHub</a> | <a href="../../index.html">更多工具</a></p>
+        </footer>
     </div>
 
-    <div class="toast" id="toast">已复制到剪贴�?/div>
+    <div id="toast" class="toast">已复制到剪贴板</div>
 
     <script>
-      let envVars = [];
+        let envVars = [];
+        let currentFormat = 'env';
 
-      function parseEnv() {
-        const text = document.getElementById("envText").value;
-        envVars = [];
+        // DOM Elements
+        const envText = document.getElementById('envText');
+        const envTableBody = document.getElementById('envTableBody');
+        const exportOutput = document.getElementById('exportOutput');
+        const textStats = document.getElementById('textStats');
+        const tableStats = document.getElementById('tableStats');
+        const toast = document.getElementById('toast');
 
-        const lines = text.split("\n");
-        lines.forEach((line) => {
-          line = line.trim();
-          if (!line || line.startsWith("#")) return;
-
-          const eqIndex = line.indexOf("=");
-          if (eqIndex > 0) {
-            const key = line.substring(0, eqIndex).trim();
-            let value = line.substring(eqIndex + 1).trim();
-            // Remove surrounding quotes
-            if (
-              (value.startsWith('"') && value.endsWith('"')) ||
-              (value.startsWith("'") && value.endsWith("'"))
-            ) {
-              value = value.slice(1, -1);
+        // Theme Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const btn = document.getElementById('themeBtn');
+            const isDark = html.getAttribute('data-theme') !== 'light';
+            
+            if (isDark) {
+                html.setAttribute('data-theme', 'light');
+                btn.innerHTML = '<span>☀️</span> 亮色模式';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.removeAttribute('data-theme');
+                btn.innerHTML = '<span>🌙</span> 暗色模式';
+                localStorage.setItem('theme', 'dark');
             }
-            envVars.push({ key, value });
-          }
-        });
+        }
 
-        renderTable();
-        updateStats();
-      }
+        // Initialize Theme
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+            document.getElementById('themeBtn').innerHTML = '<span>☀️</span> 亮色模式';
+        }
 
-      function renderTable() {
-        const tbody = document.getElementById("envTableBody");
-        tbody.innerHTML = envVars
-          .map(
-            (v, i) => `
+        // Core Functions
+        function parseEnv() {
+            const text = envText.value;
+            envVars = [];
+            const lines = text.split('\n');
+            
+            lines.forEach(line => {
+                line = line.trim();
+                if (!line || line.startsWith('#')) return;
+
+                const eqIndex = line.indexOf('=');
+                if (eqIndex > 0) {
+                    const key = line.substring(0, eqIndex).trim();
+                    let value = line.substring(eqIndex + 1).trim();
+                    
+                    // Basic unquoting
+                    if ((value.startsWith('"') && value.endsWith('"')) || 
+                        (value.startsWith("'") && value.endsWith("'"))) {
+                        value = value.slice(1, -1);
+                    }
+                    envVars.push({ key, value });
+                }
+            });
+
+            renderTable();
+            updateStats();
+            updateExport();
+        }
+
+        function renderTable() {
+            envTableBody.innerHTML = envVars.map((v, i) => `
                 <tr>
-                    <td class="key-col">
-                        <input type="text" value="${escapeHtml(v.key)}" onchange="updateVar(${i}, 'key', this.value)" aria-label="文本输入�? placeholder="请输入文本输入框">
-                    </td>
-                    <td class="value-col">
-                        <input type="text" value="${escapeHtml(v.value)}" onchange="updateVar(${i}, 'value', this.value)" aria-label="文本输入�? placeholder="请输入文本输入框">
-                    </td>
-                    <td class="action-col">
-                        <button class="btn btn-danger btn-sm" onclick="removeVar(${i})" aria-label="×">×</button>
+                    <td><input type="text" value="${escapeHtml(v.key)}" oninput="updateVar(${i}, 'key', this.value)"></td>
+                    <td><input type="text" value="${escapeHtml(v.value)}" oninput="updateVar(${i}, 'value', this.value)"></td>
+                    <td style="text-align: center;">
+                        <button onclick="removeVar(${i})" style="background:none; border:none; cursor:pointer; color:var(--accent-red); font-size:1.2rem;">&times;</button>
                     </td>
                 </tr>
-            `
-          )
-          .join("");
-      }
-
-      window.escapeHtml = function (text) {
-        const div = document.createElement("div");
-        div.textContent = text;
-        return div.innerHTML;
-      };
-
-      window.updateVar = function (index, field, value) {
-        envVars[index][field] = value;
-        syncToText();
-      };
-
-      window.removeVar = function (index) {
-        envVars.splice(index, 1);
-        renderTable();
-        syncToText();
-      };
-
-      window.addVar = function () {
-        const key = document.getElementById("newKey").value.trim();
-        const value = document.getElementById("newValue").value.trim();
-
-        if (!key) {
-          alert("请输入变量名");
-          return;
+            `).join('');
         }
 
-        envVars.push({ key, value });
-        document.getElementById("newKey").value = "";
-        document.getElementById("newValue").value = "";
-        renderTable();
-        syncToText();
-      };
-
-      function syncToText() {
-        const text = envVars
-          .map((v) => {
-            const needsQuote = v.value.includes(" ") || v.value.includes("#");
-            const value = needsQuote ? `"${v.value}"` : v.value;
-            return `${v.key}=${value}`;
-          })
-          .join("\n");
-
-        document.getElementById("envText").value = text;
-        updateStats();
-      }
-
-      window.sortEnv = function () {
-        envVars.sort((a, b) => a.key.localeCompare(b.key));
-        renderTable();
-        syncToText();
-      };
-
-      function updateStats() {
-        const count = envVars.length;
-        document.getElementById("textStats").textContent = `${count} 变量`;
-        document.getElementById("tableStats").textContent = `${count} 变量`;
-      }
-
-      window.exportEnv = function () {
-        const format = document.querySelector('input[name="format"]:checked').value;
-        let output = "";
-
-        switch (format) {
-          case "env":
-            output = envVars.map((v) => `${v.key}=${v.value}`).join("\n");
-            break;
-          case "json":
-            const obj = {};
-            envVars.forEach((v) => (obj[v.key] = v.value));
-            output = JSON.stringify(obj, null, 2);
-            break;
-          case "yaml":
-            output = envVars.map((v) => `${v.key}: "${v.value}"`).join("\n");
-            break;
-          case "shell":
-            output = envVars.map((v) => `export ${v.key}="${v.value}"`).join("\n");
-            break;
-          case "docker":
-            output = envVars.map((v) => `-e ${v.key}="${v.value}"`).join(" \\\n  ");
-            break;
+        function updateVar(index, field, value) {
+            envVars[index][field] = value;
+            syncToSource();
+            updateExport();
         }
 
-        document.getElementById("exportOutput").value = output;
-      };
-
-      window.copyText = function () {
-        navigator.clipboard.writeText(document.getElementById("envText").value);
-        showToast();
-      };
-
-      window.copyExport = function () {
-        const output = document.getElementById("exportOutput").value;
-        if (!output) {
-          alert("请先点击导出");
-          return;
-        }
-        navigator.clipboard.writeText(output);
-        showToast();
-      };
-
-      window.downloadExport = function () {
-        const output = document.getElementById("exportOutput").value;
-        if (!output) {
-          alert("请先点击导出");
-          return;
+        function removeVar(index) {
+            envVars.splice(index, 1);
+            renderTable();
+            syncToSource();
+            updateStats();
+            updateExport();
         }
 
-        const format = document.querySelector('input[name="format"]:checked').value;
-        const extensions = {
-          env: ".env",
-          json: ".json",
-          yaml: ".yaml",
-          shell: ".sh",
-          docker: ".txt"
-        };
+        function addVar() {
+            const k = document.getElementById('newKey');
+            const v = document.getElementById('newValue');
+            if (!k.value.trim()) return showToast('请输入 KEY', 'warning');
+            
+            envVars.push({ key: k.value.trim(), value: v.value.trim() });
+            k.value = '';
+            v.value = '';
+            renderTable();
+            syncToSource();
+            updateStats();
+            updateExport();
+            k.focus();
+        }
 
-        const blob = new Blob([output], { type: "text/plain" });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "environment" + extensions[format];
-        link.click();
-      };
+        function syncToSource() {
+            envText.value = envVars.map(v => {
+                const needsQuotes = v.value.includes(' ') || v.value.includes('#');
+                return `${v.key}=${needsQuotes ? `"${v.value}"` : v.value}`;
+            }).join('\n');
+        }
 
-      function showToast() {
-        const toast = document.getElementById("toast");
-        toast.classList.add("show");
-        setTimeout(() => toast.classList.remove("show"), 2000);
-      }
+        function sortEnv() {
+            envVars.sort((a, b) => a.key.localeCompare(b.key));
+            renderTable();
+            syncToSource();
+            updateExport();
+        }
 
-      // Initialize
-      parseEnv();
+        function updateStats() {
+            const count = envVars.length;
+            textStats.textContent = `${count} 个变量`;
+            tableStats.textContent = `${count} 个变量`;
+        }
 
-      window.toggleTheme = function () {
-        const t = document.body.getAttribute("data-theme") === "light" ? "dark" : "light";
-        document.body.setAttribute("data-theme", t);
-        localStorage.setItem("theme", t);
-      };
-      document.body.setAttribute("data-theme", localStorage.getItem("theme") || "dark");
+        function updateExport() {
+            let output = "";
+            switch(currentFormat) {
+                case 'env':
+                    output = envVars.map(v => `${v.key}=${v.value}`).join('\n');
+                    break;
+                case 'json':
+                    const obj = {};
+                    envVars.forEach(v => obj[v.key] = v.value);
+                    output = JSON.stringify(obj, null, 2);
+                    break;
+                case 'yaml':
+                    output = envVars.map(v => `${v.key}: "${v.value.replace(/"/g, '\\"')}"`).join('\n');
+                    break;
+                case 'shell':
+                    output = envVars.map(v => `export ${v.key}="${v.value.replace(/"/g, '\\"')}"`).join('\n');
+                    break;
+                case 'docker':
+                    output = envVars.map(v => `-e ${v.key}="${v.value.replace(/"/g, '\\"')}"`).join(' ');
+                    break;
+            }
+            exportOutput.value = output;
+        }
+
+        // Event Handlers
+        document.getElementById('formatSelector').addEventListener('click', (e) => {
+            if (e.target.classList.contains('format-btn')) {
+                document.querySelectorAll('.format-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentFormat = e.target.dataset.format;
+                updateExport();
+            }
+        });
+
+        function copySource() {
+            navigator.clipboard.writeText(envText.value);
+            showToast('源码已复制');
+        }
+
+        function copyExport() {
+            navigator.clipboard.writeText(exportOutput.value);
+            showToast('结果已复制');
+        }
+
+        function clearAll() {
+            if(confirm('确定要清空所有变量吗？')) {
+                envText.value = '';
+                envVars = [];
+                renderTable();
+                updateStats();
+                updateExport();
+            }
+        }
+
+        function downloadFile() {
+            const content = exportOutput.value;
+            if (!content) return showToast('没有可导出的内容');
+            
+            const ext = { env: '.env', json: '.json', yaml: '.yaml', shell: '.sh', docker: '.txt' }[currentFormat];
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `environment${ext}`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function handleEnter(e, fn) {
+            if (e.key === 'Enter') fn();
+        }
+
+        function showToast(msg) {
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Init
+        envText.addEventListener('input', parseEnv);
+        parseEnv();
     </script>
-  </body>
+</body>
 </html>
-
