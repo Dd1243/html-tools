@@ -1,383 +1,300 @@
 <!doctype html>
 <html lang="zh-CN">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>端口扫描器 - WebUtils</title>
-    <meta property="og:title" content="端口扫描器 - WebUtils" />
-    <meta property="og:description" content="端口扫描器：在线实用工具，免费在线使用，无需安装" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>在线端口扫描器 - 网络服务与安全检测演示工具 | WebUtils</title>
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="免费在线端口扫描演示工具。了解常见网络服务（如 HTTP, FTP, SSH, MySQL）对应的端口号及其安全意义。学习如何在本地环境中使用 Nmap 等专业工具进行真实的端口扫描。" />
+    <meta name="keywords" content="端口扫描,常用端口,网络安全,Nmap,服务检测,在线工具" />
+    <meta name="author" content="WebUtils" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://essays4u.net/tools/network/port-scanner.html" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="在线端口扫描器 - 网络服务与安全检测演示工具" />
+    <meta property="og:description" content="免费在线端口扫描演示工具。探索常见网络端口及其背后的服务。" />
     <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/network/port-scanner.html"
-    />
+    <meta property="og:url" content="https://essays4u.net/tools/network/port-scanner.html" />
     <meta property="og:site_name" content="WebUtils" />
     <meta property="og:locale" content="zh_CN" />
-    <link rel="canonical" href="https://essays4u.net/tools/network/port-scanner.html" />
-    <meta name="description" content="检查常用端口状态和服务" />
-    <meta name="keywords" content="port scanner 端口 扫描 网络 服务 TCP" />
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
 
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        font-family: system-ui, sans-serif;
-        background: var(--bg-deep);
-        color: var(--text-primary);
-        margin: 0;
-        padding: 24px;
-        min-height: 100vh;
-      }
-      .container {
-        max-width: 800px;
-        margin: 0 auto;
-      }
-      .back-link {
-        display: inline-block;
-        margin-bottom: 16px;
-        color: var(--accent-cyan);
-        text-decoration: none;
-      }
-      h1 {
-        font-size: 1.75rem;
-        margin: 0 0 8px;
-      }
-      .desc {
-        color: var(--text-muted);
-        margin: 0 0 24px;
-      }
-      .card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        padding: 20px;
-        box-shadow: var(--shadow);
-        margin-bottom: 20px;
-      }
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-      }
-      .warning {
-        padding: 12px;
-        background: rgba(255, 193, 7, 0.15);
-        border-left: 3px solid var(--accent-yellow);
-        border-radius: var(--radius-md);
-        margin-bottom: 20px;
-        font-size: 0.9rem;
-      }
-      .port-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 12px;
-        margin-top: 20px;
-      }
-      .port-card {
-        padding: 16px;
-        background: var(--bg-deep);
-        border-radius: var(--radius-md);
-        border-left: 3px solid var(--border-subtle);
-      }
-      .port-card.open {
-        border-left-color: var(--accent-green);
-      }
-      .port-card.closed {
-        border-left-color: var(--accent-red);
-        opacity: 0.6;
-      }
-      .port-card.checking {
-        border-left-color: var(--accent-yellow);
-      }
-      .port-card .port-number {
-        font-size: 1.5rem;
-        font-weight: 700;
-        font-family: ui-monospace, monospace;
-      }
-      .port-card .service-name {
-        color: var(--text-muted);
-        font-size: 0.85rem;
-        margin-top: 4px;
-      }
-      .port-card .status {
-        display: inline-block;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 0.75rem;
-        margin-top: 8px;
-        font-weight: 600;
-      }
-      .port-card .status.open {
-        background: rgba(25, 135, 84, 0.15);
-        color: var(--accent-green);
-      }
-      .port-card .status.closed {
-        background: rgba(220, 53, 69, 0.15);
-        color: var(--accent-red);
-      }
-      .port-card .status.checking {
-        background: rgba(255, 193, 7, 0.15);
-        color: var(--accent-yellow);
-      }
-      .scan-btn {
-        width: 100%;
-        padding: 12px;
-        border: none;
-        border-radius: var(--radius-md);
-        background: var(--accent-cyan);
-        color: #fff;
-        cursor: pointer;
-        font-weight: 600;
-        font-size: 1rem;
-      }
-      .scan-btn:hover {
-        opacity: 0.9;
-      }
-      .scan-btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-      .filters {
-        display: flex;
-        gap: 8px;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-      }
-      .filter-btn {
-        padding: 6px 12px;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        background: var(--bg-card);
-        color: var(--text-primary);
-        cursor: pointer;
-        font-size: 0.85rem;
-      }
-      .filter-btn:hover {
-        border-color: var(--accent-cyan);
-      }
-      .filter-btn.active {
-        background: var(--accent-cyan);
-        border-color: var(--accent-cyan);
-        color: #fff;
-      }
-      footer {
-        text-align: center;
-        margin-top: 32px;
-        padding-top: 16px;
-        border-top: 1px solid var(--border-subtle);
-        color: var(--text-muted);
-        font-size: 0.85rem;
-      }
-      footer a {
-        color: var(--accent-cyan);
-        text-decoration: none;
-      }
-    </style>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+    <style>
+      :root {
+        --bg-body: #0a0a0a;
+        --bg-card: #111;
+        --bg-input: #0d0d0d;
+        --bg-hover: #1a1a1a;
+        --text-primary: #e5e5e5;
+        --text-secondary: #737373;
+        --text-muted: #525252;
+        --border-color: #252525;
+        --border-focus: #404040;
+        --accent: #00f5d4;
+        --accent-hover: #00dfc4;
+        --accent-glow: rgba(0, 245, 212, 0.15);
+        --success: #10b981;
+        --error: #ef4444;
+        --warning: #f59e0b;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 14px;
+        --font-sans: "Inter", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+
+      [data-theme="light"] {
+        --bg-body: #fafafa;
+        --bg-card: #fff;
+        --bg-input: #f5f5f5;
+        --bg-hover: #f0f0f0;
+        --text-primary: #171717;
+        --text-secondary: #525252;
+        --text-muted: #a3a3a3;
+        --border-color: #e5e5e5;
+        --border-focus: #d4d4d4;
+        --accent: #10b981;
+        --accent-hover: #059669;
+        --accent-glow: rgba(16, 185, 129, 0.15);
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: var(--font-sans);
+        background: var(--bg-body);
+        color: var(--text-primary);
+        line-height: 1.6;
+        min-height: 100vh;
+      }
+
+      .container { max-width: 1000px; margin: 0 auto; padding: 40px 20px; }
+      
+      .breadcrumb {
+        display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 24px;
+      }
+      .breadcrumb a { color: var(--text-secondary); text-decoration: none; }
+      .breadcrumb a:hover { color: var(--accent); }
+
+      .header { margin-bottom: 32px; text-align: center; }
+      .header h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.02em; }
+      .header p { color: var(--text-secondary); font-size: 1.1rem; }
+
+      .adsense-placeholder {
+        min-height: 90px; background: rgba(128,128,128,0.03); margin: 32px 0; border: 1px dashed var(--border-color); border-radius: var(--radius-md);
+        display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem;
+      }
+
+      .main-card {
+        background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 32px; margin-bottom: 40px; box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+      }
+
+      .controls { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 32px; align-items: center; justify-content: space-between; }
+      .filter-group { display: flex; gap: 8px; flex-wrap: wrap; }
+      .filter-btn {
+        padding: 6px 14px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 20px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; color: var(--text-secondary);
+      }
+      .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 600; }
+
+      .btn-scan {
+        background: var(--accent); color: #000; border: none; border-radius: var(--radius-sm); padding: 10px 24px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+      }
+      .btn-scan:hover:not(:disabled) { background: var(--accent-hover); box-shadow: 0 0 15px var(--accent-glow); }
+      .btn-scan:disabled { opacity: 0.5; cursor: not-allowed; }
+
+      .port-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+      .port-card { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; text-align: center; transition: all 0.2s; position: relative; }
+      .port-card.open { border-color: var(--success); box-shadow: 0 0 10px rgba(16, 185, 129, 0.1); }
+      .port-card.closed { opacity: 0.6; }
+      .port-card.checking { border-color: var(--warning); animation: pulse 1.5s infinite; }
+
+      @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+      .port-number { font-family: var(--font-mono); font-size: 1.5rem; font-weight: 700; margin-bottom: 4px; color: var(--text-primary); }
+      .service-name { font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
+      .port-status { position: absolute; top: 8px; right: 8px; font-size: 0.7rem; font-weight: 600; padding: 2px 6px; border-radius: 4px; }
+      .status-open { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+      .status-closed { background: rgba(239, 68, 68, 0.1); color: var(--error); }
+      .status-unknown { background: rgba(128, 128, 128, 0.1); color: var(--text-muted); }
+
+      .info-banner { background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: var(--radius-md); padding: 16px; margin-bottom: 32px; color: var(--warning); font-size: 0.9rem; display: flex; align-items: flex-start; gap: 12px; }
+
+      .article-section { margin-top: 64px; border-top: 1px solid var(--border-color); padding-top: 48px; }
+      .article-section h2 { font-size: 1.75rem; margin-bottom: 24px; color: var(--text-primary); }
+      .article-section h3 { font-size: 1.25rem; margin-top: 32px; margin-bottom: 16px; color: var(--text-primary); }
+      .article-section p { margin-bottom: 16px; color: var(--text-secondary); line-height: 1.8; }
+      .article-section ul { margin-bottom: 24px; padding-left: 20px; color: var(--text-secondary); }
+      .article-section li { margin-bottom: 12px; }
+
+      .theme-toggle {
+        position: fixed; top: 20px; right: 20px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 8px 12px; cursor: pointer; color: var(--text-secondary); font-size: 0.8rem; z-index: 100;
+      }
+    </style>
   </head>
   <body>
+    <button class="theme-toggle" id="themeToggle">切换主题</button>
+
     <div class="container">
-      <a href="../../index.html" class="back-link">← 返回工具列表</a>
-      <button class="theme-toggle" onclick="toggleTheme()">☀️</button>
-      <h1>端口扫描器</h1>
-      <p class="desc">检查常用端口状态（仅供学习和测试）</p>
+      <nav class="breadcrumb">
+        <a href="../../index.html">首页</a>
+        <span>/</span>
+        <a href="../index.html">网络工具</a>
+        <span>/</span>
+        <span>端口扫描演示</span>
+      </nav>
 
-      <div class="card">
-        <div class="warning">
-          ⚠️
-          注意：此工具仅用于检查公开的常用端口状态，不能进行真实的端口扫描。浏览器出于安全限制无法直接扫描端口。此工具仅显示常用端口及其服务说明。
-        </div>
+      <header class="header">
+        <h1>🔍 在线端口扫描器 (演示)</h1>
+        <p>了解常见网络服务端口及其安全意义</p>
+      </header>
 
-        <button class="scan-btn" id="scanBtn" onclick="simulateScan(this)">模拟扫描常用端口</button>
-
-        <div class="filters" style="margin-top: 20px">
-          <button class="filter-btn active" onclick="filterPorts('all', this)">全部</button>
-          <button class="filter-btn" onclick="filterPorts('web', this)">Web 服务</button>
-          <button class="filter-btn" onclick="filterPorts('database', this)">数据库</button>
-          <button class="filter-btn" onclick="filterPorts('other', this)">其他</button>
-        </div>
-
-        <div class="port-grid" id="portGrid"></div>
+      <!-- Google AdSense Placeholder - Top -->
+      <div class="adsense-placeholder">
+        <span>广告位 - 顶部</span>
       </div>
 
-      <footer>
-        纯前端工具 · 无服务器 ·
-        <a href="../../index.html">WebUtils</a>
-      </footer>
+      <main class="main-card">
+        <div class="info-banner">
+          <span>⚠️</span>
+          <p><strong>注意：</strong> 由于浏览器沙箱安全限制，纯前端网页无法直接对外部服务器进行真实的 TCP/UDP 端口扫描。此工具仅用于 <strong>模拟演示</strong> 常见端口及其对应的服务。如需进行真实扫描，请在本地使用 Nmap 等专业工具。</p>
+        </div>
+
+        <div class="controls">
+          <div class="filter-group" id="filterGroup">
+            <button class="filter-btn active" data-cat="all">全部端口</button>
+            <button class="filter-btn" data-cat="web">Web 服务</button>
+            <button class="filter-btn" data-cat="database">数据库</button>
+            <button class="filter-btn" data-cat="other">基础服务</button>
+          </div>
+          <button class="btn-scan" id="scanBtn">开始模拟扫描</button>
+        </div>
+
+        <div class="port-grid" id="portGrid">
+          <!-- 端口卡片动态生成 -->
+        </div>
+      </main>
+
+      <!-- Google AdSense Placeholder - Middle -->
+      <div class="adsense-placeholder">
+        <span>广告位 - 中部</span>
+      </div>
+
+      <section class="article-section">
+        <h2>深度解析：端口扫描与网络安全</h2>
+        <p>在网络通信中，端口（Port）是应用层服务与传输层协议之间的逻辑接口。如果把 IP 地址比作大厦的地址，那么端口就是进入不同房间的门。端口扫描是网络安全审计的第一步，用于发现目标主机上开放的服务。</p>
+        
+        <h3>常见端口及其对应的服务</h3>
+        <ul>
+          <li><strong>80 (HTTP) & 443 (HTTPS)：</strong> 网页服务的标准端口。443 端口通过 SSL/TLS 提供加密传输。</li>
+          <li><strong>22 (SSH)：</strong> 安全外壳协议，用于远程登录和管理 Linux 服务器。</li>
+          <li><strong>21 (FTP)：</strong> 文件传输协议，虽然古老但仍广泛用于某些场景。</li>
+          <li><strong>3306 (MySQL) & 5432 (PostgreSQL)：</strong> 常见的数据库服务端口。</li>
+          <li><strong>6379 (Redis)：</strong> 高性能的内存数据库，常用于缓存。</li>
+        </ul>
+
+        <h3>为什么端口扫描对安全至关重要？</h3>
+        <p><strong>暴露面分析：</strong> 开放的端口意味着开放的服务。每一个开放的服务都可能存在漏洞。通过端口扫描，管理员可以确认是否有不必要的服务暴露在公网上（如数据库端口），从而及时关闭它们以减少受攻击面。</p>
+        <p><strong>服务指纹识别：</strong> 专业扫描工具（如 Nmap）不仅能发现开放端口，还能识别出具体运行的服务版本。如果运行的是存在已知 CVE 漏洞的旧版本，管理员必须立即升级。</p>
+
+        <h3>如何进行真实的端口扫描？</h3>
+        <p>对于专业的渗透测试或系统维护，建议使用命令行工具 <strong>Nmap</strong>。例如，运行 <code>nmap -sV example.com</code> 可以扫描最常用的 1000 个端口并尝试识别服务版本。请注意：未经授权对他人的服务器进行扫描在许多国家和地区是违法的，请务必在合规前提下使用。</p>
+      </section>
+
+      <!-- Google AdSense Placeholder - Bottom -->
+      <div class="adsense-placeholder">
+        <span>广告位 - 底部</span>
+      </div>
     </div>
 
     <script>
+      // 主题切换
+      const themeToggle = document.getElementById('themeToggle');
+      const html = document.documentElement;
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      html.setAttribute('data-theme', savedTheme);
+      themeToggle.textContent = savedTheme === 'dark' ? '切换到亮色' : '切换到暗色';
+      themeToggle.addEventListener('click', () => {
+        const currentTheme = html.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        themeToggle.textContent = newTheme === 'dark' ? '切换到亮色' : '切换到暗色';
+      });
+
       const commonPorts = [
-        { port: 20, service: "FTP Data", category: "other" },
-        { port: 21, service: "FTP Control", category: "other" },
-        { port: 22, service: "SSH", category: "other" },
-        { port: 23, service: "Telnet", category: "other" },
-        { port: 25, service: "SMTP", category: "other" },
-        { port: 53, service: "DNS", category: "other" },
-        { port: 80, service: "HTTP", category: "web" },
-        { port: 110, service: "POP3", category: "other" },
-        { port: 143, service: "IMAP", category: "other" },
-        { port: 443, service: "HTTPS", category: "web" },
-        { port: 445, service: "SMB", category: "other" },
-        { port: 465, service: "SMTPS", category: "other" },
-        { port: 587, service: "SMTP", category: "other" },
-        { port: 993, service: "IMAPS", category: "other" },
-        { port: 995, service: "POP3S", category: "other" },
-        { port: 1433, service: "SQL Server", category: "database" },
-        { port: 3000, service: "Node.js Dev", category: "web" },
-        { port: 3306, service: "MySQL", category: "database" },
-        { port: 3389, service: "RDP", category: "other" },
-        { port: 5000, service: "Flask Dev", category: "web" },
-        { port: 5432, service: "PostgreSQL", category: "database" },
-        { port: 5900, service: "VNC", category: "other" },
-        { port: 6379, service: "Redis", category: "database" },
-        { port: 8000, service: "HTTP Alt", category: "web" },
-        { port: 8080, service: "HTTP Proxy", category: "web" },
-        { port: 8443, service: "HTTPS Alt", category: "web" },
-        { port: 9000, service: "PHP-FPM", category: "web" },
-        { port: 27017, service: "MongoDB", category: "database" }
+        { port: 21, service: "FTP", cat: "other" },
+        { port: 22, service: "SSH", cat: "other" },
+        { port: 23, service: "Telnet", cat: "other" },
+        { port: 25, service: "SMTP", cat: "other" },
+        { port: 53, service: "DNS", cat: "other" },
+        { port: 80, service: "HTTP", cat: "web" },
+        { port: 110, service: "POP3", cat: "other" },
+        { port: 143, service: "IMAP", cat: "other" },
+        { port: 443, service: "HTTPS", cat: "web" },
+        { port: 1433, service: "SQL Server", cat: "database" },
+        { port: 3306, service: "MySQL", cat: "database" },
+        { port: 3389, service: "RDP", cat: "other" },
+        { port: 5432, service: "PostgreSQL", cat: "database" },
+        { port: 6379, service: "Redis", cat: "database" },
+        { port: 8080, service: "HTTP Proxy", cat: "web" },
+        { port: 27017, service: "MongoDB", cat: "database" }
       ];
 
-      let currentFilter = "all";
+      const portGrid = document.getElementById('portGrid');
+      const scanBtn = document.getElementById('scanBtn');
+      const filterBtns = document.querySelectorAll('.filter-btn');
+      let currentCat = 'all';
 
-      function filterPorts(category, btn) {
-        currentFilter = category;
-        document.querySelectorAll(".filter-btn").forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        renderPorts();
+      function renderPorts(statusMap = {}) {
+        const filtered = currentCat === 'all' ? commonPorts : commonPorts.filter(p => p.cat === currentCat);
+        portGrid.innerHTML = filtered.map(p => {
+          const status = statusMap[p.port] || 'unknown';
+          return `
+            <div class="port-card ${status}">
+              <div class="port-number">${p.port}</div>
+              <div class="service-name">${p.service}</div>
+              <span class="port-status status-${status}">${status === 'open' ? '开放' : status === 'closed' ? '关闭' : status === 'checking' ? '正在扫描' : '待扫描'}</span>
+            </div>
+          `;
+        }).join('');
       }
 
-      function renderPorts(status = null) {
-        const grid = document.getElementById("portGrid");
-        const filtered =
-          currentFilter === "all"
-            ? commonPorts
-            : commonPorts.filter((p) => p.category === currentFilter);
+      filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          filterBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentCat = btn.dataset.cat;
+          renderPorts();
+        });
+      });
 
-        grid.innerHTML = filtered
-          .map((port) => {
-            const portStatus = status?.[port.port] || "unknown";
-            const statusClass =
-              portStatus === "checking" ? "checking" : portStatus === "open" ? "open" : "closed";
-            const statusText =
-              portStatus === "checking"
-                ? "检查中..."
-                : portStatus === "open"
-                  ? "开放"
-                  : portStatus === "closed"
-                    ? "关闭"
-                    : "未知";
+      scanBtn.addEventListener('click', async () => {
+        scanBtn.disabled = true;
+        scanBtn.textContent = '正在分析网络包...';
+        
+        const statusMap = {};
+        commonPorts.forEach(p => statusMap[p.port] = 'checking');
+        renderPorts(statusMap);
 
-            return `
-          <div class="port-card ${statusClass}">
-            <div class="port-number">${port.port}</div>
-            <div class="service-name">${port.service}</div>
-            <span class="status ${statusClass}">${statusText}</span>
-          </div>
-        `;
-          })
-          .join("");
-      }
+        await new Promise(r => setTimeout(r, 1500));
 
-      async function simulateScan(btn) {
-        btn.disabled = true;
-        btn.textContent = "扫描中...";
-
-        // Show checking status
-        const checkingStatus = {};
-        commonPorts.forEach((p) => (checkingStatus[p.port] = "checking"));
-        renderPorts(checkingStatus);
-
-        // Simulate scan with delay
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-
-        // Randomly set some ports as "open" or "closed" (purely simulated)
-        const finalStatus = {};
-        commonPorts.forEach((p) => {
-          // Common ports more likely to be "open" in simulation
-          const commonOpenPorts = [80, 443, 8080, 8443, 3000, 5000];
-          const isCommon = commonOpenPorts.includes(p.port);
-          finalStatus[p.port] =
-            (isCommon && Math.random() > 0.3) || Math.random() > 0.7 ? "open" : "closed";
+        commonPorts.forEach(p => {
+          // 模拟结果：80 和 443 通常是开放的，其他随机
+          if (p.port === 80 || p.port === 443) statusMap[p.port] = 'open';
+          else statusMap[p.port] = Math.random() > 0.7 ? 'open' : 'closed';
         });
 
-        renderPorts(finalStatus);
-
-        btn.disabled = false;
-        btn.textContent = "重新扫描";
-      }
+        renderPorts(statusMap);
+        scanBtn.disabled = false;
+        scanBtn.textContent = '再次模拟扫描';
+      });
 
       renderPorts();
-
-      function toggleTheme() {
-        const html = document.documentElement;
-        const next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
-        html.setAttribute("data-theme", next);
-        document.querySelector(".theme-toggle").textContent = next === "dark" ? "🌙" : "☀️";
-        localStorage.setItem("theme", next);
-      }
-      (function () {
-        const saved = localStorage.getItem("theme");
-        if (saved) {
-          document.documentElement.setAttribute("data-theme", saved);
-          document.querySelector(".theme-toggle").textContent = saved === "dark" ? "🌙" : "☀️";
-        }
-      })();
     </script>
   </body>
 </html>

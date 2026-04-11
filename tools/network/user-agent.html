@@ -1,844 +1,309 @@
 <!doctype html>
 <html lang="zh-CN">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>User Agent 解析器 - WebUtils</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Agent 解析器 - 浏览器与操作系统检测工具 | WebUtils</title>
     <!-- SEO Meta Tags -->
-    <meta name="description" content="User-Agent 检测" />
-    <meta name="keywords" content="user agent 解析器" />
+    <meta name="description" content="免费在线 User Agent 解析工具。快速查看您的浏览器版本、操作系统、设备类型及硬件特征。支持自定义 UA 字符串解析，帮助开发者进行环境调试和兼容性测试。" />
+    <meta name="keywords" content="User Agent,UA解析,浏览器检测,操作系统识别,环境调试,在线工具" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/network/user-agent.html" />
 
     <!-- Open Graph -->
-    <meta property="og:title" content="User Agent 解析器 - WebUtils" />
-    <meta property="og:description" content="User-Agent 检测" />
+    <meta property="og:title" content="User Agent 解析器 - 浏览器与操作系统检测工具" />
+    <meta property="og:description" content="免费在线 User Agent 解析工具。深入分析您的浏览器环境和设备特征。" />
     <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/network/user-agent.html"
-    />
+    <meta property="og:url" content="https://essays4u.net/tools/network/user-agent.html" />
     <meta property="og:site_name" content="WebUtils" />
     <meta property="og:locale" content="zh_CN" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="User Agent 解析器 - WebUtils" />
-    <meta name="twitter:description" content="User-Agent 检测" />
-    <!-- OG Image -->
     <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
 
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
     <style>
       :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --bg-body: #0a0a0a;
+        --bg-card: #111;
+        --bg-input: #0d0d0d;
+        --bg-hover: #1a1a1a;
+        --text-primary: #e5e5e5;
+        --text-secondary: #737373;
+        --text-muted: #525252;
+        --border-color: #252525;
+        --border-focus: #404040;
+        --accent: #00f5d4;
+        --accent-hover: #00dfc4;
+        --accent-glow: rgba(0, 245, 212, 0.15);
+        --success: #10b981;
+        --error: #ef4444;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 14px;
+        --font-sans: "Inter", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
       }
 
       [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
+        --bg-body: #fafafa;
         --bg-card: #fff;
         --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        --bg-hover: #f0f0f0;
+        --text-primary: #171717;
+        --text-secondary: #525252;
+        --text-muted: #a3a3a3;
+        --border-color: #e5e5e5;
+        --border-focus: #d4d4d4;
+        --accent: #10b981;
+        --accent-hover: #059669;
+        --accent-glow: rgba(16, 185, 129, 0.15);
       }
 
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--color-bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-      }
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
-
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
+      * { box-sizing: border-box; margin: 0; padding: 0; }
       body {
         font-family: var(--font-sans);
-        background: var(--color-bg-deep);
-        color: var(--color-text-primary);
-        min-height: 100vh;
+        background: var(--bg-body);
+        color: var(--text-primary);
         line-height: 1.6;
-      }
-
-      .bg-grid {
-        position: fixed;
-        inset: 0;
-        background-image:
-          linear-gradient(rgb(0, 245, 212, 0.02) 1px, transparent 1px),
-          linear-gradient(90deg, rgb(0, 245, 212, 0.02) 1px, transparent 1px);
-        background-size: 40px 40px;
-        pointer-events: none;
-        z-index: 0;
-      }
-
-      .container {
-        position: relative;
-        z-index: 1;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 24px;
         min-height: 100vh;
       }
 
-      .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        color: var(--color-text-secondary);
-        text-decoration: none;
-        padding: 8px 14px;
-        background: var(--color-bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        transition: all 0.2s ease;
-        margin-bottom: 24px;
-      }
-
-      .back-link:hover {
-        border-color: var(--color-accent-cyan);
-        color: var(--color-accent-cyan);
-      }
-
-      h1 {
-        font-family: var(--font-mono);
-        font-size: 1.5rem;
-        margin-bottom: 8px;
-      }
-
-      .desc {
-        font-size: 0.9rem;
-        color: var(--color-text-secondary);
-        margin-bottom: 24px;
-      }
-
-      .card {
-        background: var(--color-bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-lg);
-        padding: 24px;
-        margin-bottom: 20px;
-      }
-
-      .ua-input-section {
-        margin-bottom: 24px;
-      }
-
-      .ua-input-section label {
-        display: block;
-        font-family: var(--font-mono);
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        margin-bottom: 10px;
-      }
-
-      .ua-input-group {
-        display: flex;
-        gap: 12px;
-      }
-
-      textarea {
-        flex: 1;
-        min-height: 80px;
-        padding: 12px 16px;
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        background: var(--bg-input);
-        border: 2px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        color: var(--color-text-primary);
-        resize: vertical;
-        transition: all 0.2s;
-      }
-
-      textarea:focus {
-        outline: none;
-        border-color: var(--color-accent-cyan);
-        box-shadow: 0 0 0 4px var(--glow-cyan);
-      }
-
-      .current-ua {
-        background: var(--color-bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        padding: 16px;
-        margin-bottom: 24px;
-      }
-
-      .current-ua h3 {
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-        color: var(--text-muted);
-        margin-bottom: 12px;
-        text-transform: uppercase;
-      }
-
-      .current-ua-content {
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        color: var(--color-accent-cyan);
-        word-break: break-all;
-        line-height: 1.5;
-      }
-
-      .results-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 16px;
-        margin-bottom: 24px;
-      }
-
-      .result-card {
-        background: var(--color-bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        padding: 16px;
-        transition: all 0.2s ease;
-      }
-
-      .result-card:hover {
-        border-color: var(--color-accent-cyan);
-      }
-
-      .result-title {
-        font-family: var(--font-mono);
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        margin-bottom: 8px;
-      }
-
-      .result-value {
-        font-family: var(--font-mono);
-        font-size: 1rem;
-        font-weight: 600;
-        color: var(--color-text-primary);
-        word-break: break-all;
-      }
-
-      .result-value.browser {
-        color: var(--color-accent-cyan);
-      }
-
-      .result-value.os {
-        color: var(--accent-blue);
-      }
-
-      .result-value.device {
-        color: var(--color-accent-purple);
-      }
-
-      .result-value.engine {
-        color: var(--accent-green);
-      }
-
-      .ua-details {
-        background: var(--color-bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        padding: 16px;
-        margin-bottom: 24px;
-      }
-
-      .ua-details h3 {
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-        color: var(--text-muted);
-        margin-bottom: 12px;
-        text-transform: uppercase;
-      }
-
-      .ua-features-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 12px;
-      }
-
-      .feature-item {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-      }
-
-      .feature-label {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-      }
-
-      .feature-value {
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-        color: var(--color-text-primary);
-        font-weight: 500;
-      }
-
-      .feature-value.yes {
-        color: var(--accent-green);
-      }
-
-      .feature-value.no {
-        color: var(--text-muted);
-      }
-
-      .examples {
-        margin-bottom: 24px;
-      }
-
-      .examples h3 {
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-        color: var(--text-muted);
-        margin-bottom: 12px;
-        text-transform: uppercase;
-      }
-
-      .example-buttons {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-      }
-
-      .example-btn {
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        padding: 8px 12px;
-        background: var(--color-bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        color: var(--color-text-secondary);
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-
-      .example-btn:hover {
-        border-color: var(--color-accent-cyan);
-        color: var(--color-accent-cyan);
-      }
-
-      .actions {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-      }
-
-      button {
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        padding: 10px 16px;
-        background: var(--color-bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        color: var(--color-text-secondary);
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-
-      button:hover {
-        border-color: var(--color-accent-cyan);
-        color: var(--color-accent-cyan);
-      }
-
-      button.primary {
-        background: var(--color-accent-cyan);
-        border-color: var(--color-accent-cyan);
-        color: var(--color-bg-deep);
-      }
-
-      button.primary:hover {
-        background: #00dfc4;
-      }
-
-      .status {
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        color: var(--text-muted);
-        margin-top: 16px;
-      }
-
-      .status.success {
-        color: var(--accent-green);
-      }
-
-      .status.success::before {
-        content: "✓ ";
-      }
-
-      .status.error {
-        color: #f43f5e;
-      }
-
-      .status.error::before {
-        content: "✗ ";
-      }
-
-      footer {
-        text-align: center;
-        margin-top: 32px;
-        padding-top: 16px;
-        border-top: 1px solid var(--border-subtle);
-        font-family: var(--font-mono);
-        font-size: 0.8rem;
-        color: var(--text-muted);
-      }
-
-      footer a {
-        color: var(--color-accent-cyan);
-        text-decoration: none;
-      }
-
+      .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+      
       .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
+        display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 24px;
       }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
+      .breadcrumb a { color: var(--text-secondary); text-decoration: none; }
+      .breadcrumb a:hover { color: var(--accent); }
+
+      .header { margin-bottom: 32px; text-align: center; }
+      .header h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.02em; }
+      .header p { color: var(--text-secondary); font-size: 1.1rem; }
+
+      .adsense-placeholder {
+        min-height: 90px; background: rgba(128,128,128,0.03); margin: 32px 0; border: 1px dashed var(--border-color); border-radius: var(--radius-md);
+        display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem;
       }
-      .breadcrumb a:hover {
-        text-decoration: underline;
+
+      .main-card {
+        background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 32px; margin-bottom: 40px; box-shadow: 0 4px 24px rgba(0,0,0,0.2);
       }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
+
+      .ua-banner {
+        background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px; margin-bottom: 32px;
+      }
+      .ua-label { color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.05em; }
+      .ua-value { font-family: var(--font-mono); font-size: 0.95rem; color: var(--accent); word-break: break-all; line-height: 1.5; }
+
+      .input-group { margin-bottom: 32px; }
+      textarea {
+        width: 100%; min-height: 100px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 16px; color: var(--text-primary); font-family: var(--font-mono); font-size: 0.9rem; resize: vertical; margin-bottom: 16px;
+      }
+      textarea:focus { outline: none; border-color: var(--accent); }
+      .btn-primary {
+        background: var(--accent); color: #000; border: none; border-radius: var(--radius-sm); padding: 12px 24px; font-weight: 600; cursor: pointer; transition: all 0.2s; width: 100%;
+      }
+      .btn-primary:hover { background: var(--accent-hover); box-shadow: 0 0 15px var(--accent-glow); }
+
+      .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px; }
+      .result-item { background: var(--bg-input); padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); }
+      .result-label { color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 4px; }
+      .result-value { font-weight: 600; word-break: break-all; color: var(--text-primary); }
+
+      .feature-section h3 { font-size: 1.1rem; margin-bottom: 16px; color: var(--text-primary); border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+      .feature-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+      .feature-item { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 4px 0; }
+      .feature-name { color: var(--text-secondary); }
+      .feature-status { font-weight: 600; font-family: var(--font-mono); }
+      .status-yes { color: var(--success); }
+      .status-no { color: var(--text-muted); }
+
+      .article-section { margin-top: 64px; border-top: 1px solid var(--border-color); padding-top: 48px; }
+      .article-section h2 { font-size: 1.75rem; margin-bottom: 24px; color: var(--text-primary); }
+      .article-section h3 { font-size: 1.25rem; margin-top: 32px; margin-bottom: 16px; color: var(--text-primary); }
+      .article-section p { margin-bottom: 16px; color: var(--text-secondary); line-height: 1.8; }
+      .article-section ul { margin-bottom: 24px; padding-left: 20px; color: var(--text-secondary); }
+      .article-section li { margin-bottom: 12px; }
+
+      .theme-toggle {
+        position: fixed; top: 20px; right: 20px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 8px 12px; cursor: pointer; color: var(--text-secondary); font-size: 0.8rem; z-index: 100;
       }
     </style>
   </head>
   <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>›</span>
-      User Agent 解析器
-    </nav>
-    <div class="bg-grid"></div>
+    <button class="theme-toggle" id="themeToggle">切换主题</button>
 
     <div class="container">
-      <a href="../../index.html" class="back-link">← 返回</a>
-      <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">🌙</button>
+      <nav class="breadcrumb">
+        <a href="../../index.html">首页</a>
+        <span>/</span>
+        <a href="../index.html">网络工具</a>
+        <span>/</span>
+        <span>User Agent 解析器</span>
+      </nav>
 
-      <h1>User Agent 解析器</h1>
-      <p class="desc">解析浏览器 User Agent 字符串，显示浏览器、操作系统、设备等详细信息</p>
+      <header class="header">
+        <h1>🔍 User Agent 解析器</h1>
+        <p>深入分析浏览器、操作系统及设备硬件特征</p>
+      </header>
 
-      <div class="card">
-        <div class="current-ua">
-          <h3>当前浏览器 User Agent</h3>
-          <div class="current-ua-content" id="currentUA"></div>
-        </div>
-
-        <div class="ua-input-section">
-          <label>User Agent 字符串 (可选)</label>
-          <div class="ua-input-group">
-            <textarea
-              id="input"
-              placeholder="粘贴要解析的 User Agent 字符串... 留空则使用当前浏览器 UA"
-            ></textarea>
-            <button id="btnAnalyze" class="primary">解析</button>
-          </div>
-        </div>
-
-        <div class="examples">
-          <h3>示例 User Agent</h3>
-          <div class="example-buttons">
-            <button
-              class="example-btn"
-              data-ua="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-            >
-              Chrome Windows
-            </button>
-            <button
-              class="example-btn"
-              data-ua="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15"
-            >
-              Safari Mac
-            </button>
-            <button
-              class="example-btn"
-              data-ua="Mozilla/5.0 (iPhone; CPU iPhone OS 17_1_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1"
-            >
-              Safari iOS
-            </button>
-            <button
-              class="example-btn"
-              data-ua="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0"
-            >
-              Firefox Windows
-            </button>
-          </div>
-        </div>
-
-        <div class="results-grid" id="resultsGrid"></div>
-
-        <div class="ua-details" id="uaDetails" style="display: none">
-          <h3>功能检测</h3>
-          <div class="ua-features-grid" id="uaFeatures"></div>
-        </div>
-
-        <div class="actions">
-          <button id="btnCopy">复制结果</button>
-          <button id="btnPaste">粘贴 UA</button>
-          <button id="btnCopyCurrent">复制当前 UA</button>
-          <button id="btnClear">清空</button>
-        </div>
-
-        <div id="status" class="status"></div>
+      <!-- Google AdSense Placeholder - Top -->
+      <div class="adsense-placeholder">
+        <span>广告位 - 顶部</span>
       </div>
 
-      <footer>
-        <a href="https://github.com/chicogong/html-tools" target="_blank">GitHub</a>
-        · 纯前端 · 无服务器 ·
-        <a href="../../index.html">WebUtils</a>
-      </footer>
+      <main class="main-card">
+        <div class="ua-banner">
+          <div class="ua-label">您当前的 User Agent</div>
+          <div class="ua-value" id="currentUA">...</div>
+        </div>
+
+        <div class="input-group">
+          <textarea id="uaInput" placeholder="在此粘贴要解析的 User Agent 字符串... 留空则解析当前浏览器"></textarea>
+          <button id="analyzeBtn" class="btn-primary">立即解析</button>
+        </div>
+
+        <div id="resultsArea" style="display: none;">
+          <div class="results-grid" id="resultsGrid"></div>
+          
+          <div class="feature-section">
+            <h3>浏览器功能检测</h3>
+            <div class="feature-grid" id="featureGrid"></div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Google AdSense Placeholder - Middle -->
+      <div class="adsense-placeholder">
+        <span>广告位 - 中部</span>
+      </div>
+
+      <section class="article-section">
+        <h2>深度解析：User Agent 在互联网中的角色</h2>
+        <p>User Agent（简称 UA）是一个特殊的字符串头，由浏览器在每次 HTTP 请求中发送给服务器。它告诉服务器您的浏览器类型、版本号、操作系统、渲染引擎以及设备类型。通过解析这个字符串，网站可以提供更佳的兼容性和个性化体验。</p>
+        
+        <h3>为什么开发者需要解析 User Agent？</h3>
+        <ul>
+          <li><strong>响应式设计与设备识别：</strong> 区分用户是在手机、平板还是电脑上访问，从而加载不同的布局和资源。</li>
+          <li><strong>兼容性处理：</strong> 针对旧版本浏览器（如 IE）应用特定的 CSS 补丁或 Polyfill。</li>
+          <li><strong>统计与分析：</strong> 了解访问者的技术画像，优化网站的开发重心。</li>
+          <li><strong>安全防护：</strong> 识别并拦截异常的爬虫请求或伪造的 UA，防止恶意攻击。</li>
+        </ul>
+
+        <h3>User Agent 的典型结构</h3>
+        <p>虽然 UA 字符串看起来杂乱无章，但它通常遵循一定的规范。例如，大多数现代浏览器 UA 都以 <code>Mozilla/5.0</code> 开头，这是为了保持历史兼容性。接着会包含操作系统信息（如 <code>Windows NT 10.0; Win64; x64</code>）和渲染引擎信息（如 <code>AppleWebKit/537.36</code>）。</p>
+
+        <h3>如何模拟不同的 User Agent 进行测试？</h3>
+        <p>在 Chrome 浏览器中，您可以按下 <code>F12</code> 打开开发者工具，点击右上角的三个点 -> <code>More tools</code> -> <code>Network conditions</code>，取消勾选 <code>Use browser default</code>，即可在下拉菜单中选择或自定义 UA。这对于测试移动端显示效果非常有用。</p>
+      </section>
+
+      <!-- Google AdSense Placeholder - Bottom -->
+      <div class="adsense-placeholder">
+        <span>广告位 - 底部</span>
+      </div>
     </div>
 
     <script>
-      const inputEl = document.getElementById("input");
-      const currentUAEl = document.getElementById("currentUA");
-      const resultsGridEl = document.getElementById("resultsGrid");
-      const uaDetailsEl = document.getElementById("uaDetails");
-      const uaFeaturesEl = document.getElementById("uaFeatures");
-      const statusEl = document.getElementById("status");
-      const LS_KEY = "user_agent_input_v1";
+      // 主题切换
+      const themeToggle = document.getElementById('themeToggle');
+      const html = document.documentElement;
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      html.setAttribute('data-theme', savedTheme);
+      themeToggle.textContent = savedTheme === 'dark' ? '切换到亮色' : '切换到暗色';
+      themeToggle.addEventListener('click', () => {
+        const currentTheme = html.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        themeToggle.textContent = newTheme === 'dark' ? '切换到亮色' : '切换到暗色';
+      });
 
-      function parseUserAgent(uaString) {
-        const ua = uaString || navigator.userAgent;
-        let browser = "Unknown";
-        let browserVersion = "";
-        let os = "Unknown";
-        let osVersion = "";
-        let device = "Unknown";
-        let engine = "Unknown";
+      // 解析逻辑
+      const uaInput = document.getElementById('uaInput');
+      const analyzeBtn = document.getElementById('analyzeBtn');
+      const resultsArea = document.getElementById('resultsArea');
+      const resultsGrid = document.getElementById('resultsGrid');
+      const featureGrid = document.getElementById('featureGrid');
+      const currentUAEl = document.getElementById('currentUA');
 
-        // Browser detection
+      function parseUA(ua) {
+        let browser = "Unknown", bv = "", os = "Unknown", ov = "", device = "Desktop", engine = "Unknown";
         if (ua.includes("Chrome") && !ua.includes("Edg") && !ua.includes("OPR")) {
-          browser = "Chrome";
-          const match = ua.match(/Chrome\/([\d.]+)/);
-          if (match) browserVersion = match[1];
+          browser = "Chrome"; bv = ua.match(/Chrome\/([\d.]+)/)?.[1] || "";
         } else if (ua.includes("Firefox")) {
-          browser = "Firefox";
-          const match = ua.match(/Firefox\/([\d.]+)/);
-          if (match) browserVersion = match[1];
+          browser = "Firefox"; bv = ua.match(/Firefox\/([\d.]+)/)?.[1] || "";
         } else if (ua.includes("Safari") && !ua.includes("Chrome")) {
-          browser = "Safari";
-          const match = ua.match(/Version\/([\d.]+)/);
-          if (match) browserVersion = match[1];
+          browser = "Safari"; bv = ua.match(/Version\/([\d.]+)/)?.[1] || "";
         } else if (ua.includes("Edg")) {
-          browser = "Edge";
-          const match = ua.match(/Edg\/([\d.]+)/);
-          if (match) browserVersion = match[1];
-        } else if (ua.includes("OPR")) {
-          browser = "Opera";
-          const match = ua.match(/OPR\/([\d.]+)/);
-          if (match) browserVersion = match[1];
+          browser = "Edge"; bv = ua.match(/Edg\/([\d.]+)/)?.[1] || "";
         }
 
-        // OS detection
         if (ua.includes("Windows NT")) {
-          os = "Windows";
-          const match = ua.match(/Windows NT ([\d.]+)/);
-          if (match) {
-            const version = match[1];
-            if (version === "10.0") osVersion = "10/11";
-            else if (version === "6.3") osVersion = "8.1";
-            else if (version === "6.2") osVersion = "8";
-            else if (version === "6.1") osVersion = "7";
-            else osVersion = version;
-          }
+          os = "Windows"; ov = ua.match(/Windows NT ([\d.]+)/)?.[1] === "10.0" ? "10/11" : "Old";
         } else if (ua.includes("Mac OS X")) {
-          os = "macOS";
-          const match = ua.match(/Mac OS X ([\d_]+)/);
-          if (match) osVersion = match[1].replace(/_/g, ".");
+          os = "macOS"; ov = ua.match(/Mac OS X ([\d_]+)/)?.[1].replace(/_/g, ".") || "";
         } else if (ua.includes("iPhone") || ua.includes("iPad")) {
-          os = "iOS";
-          const match = ua.match(/OS ([\d_]+)/);
-          if (match) osVersion = match[1].replace(/_/g, ".");
+          os = "iOS"; device = ua.includes("iPad") ? "iPad" : "iPhone";
         } else if (ua.includes("Android")) {
-          os = "Android";
-          const match = ua.match(/Android ([\d.]+)/);
-          if (match) osVersion = match[1];
-        } else if (ua.includes("Linux")) {
-          os = "Linux";
+          os = "Android"; device = "Android Mobile";
         }
 
-        // Device detection
-        if (ua.includes("Mobile") || ua.includes("iPhone") || ua.includes("Android")) {
-          device = "Mobile";
-          if (ua.includes("iPhone")) device = "iPhone";
-          else if (ua.includes("iPad")) device = "iPad";
-          else if (ua.includes("Android")) device = "Android Phone/Tablet";
-        } else if (ua.includes("Tablet") || ua.includes("iPad")) {
-          device = "Tablet";
-        } else {
-          device = "Desktop";
-        }
+        if (ua.includes("AppleWebKit")) engine = "WebKit";
+        else if (ua.includes("Gecko")) engine = "Gecko";
 
-        // Engine detection
-        if (ua.includes("AppleWebKit")) {
-          engine = "WebKit";
-          if (ua.includes("Chrome")) engine = "Blink (WebKit fork)";
-        } else if (ua.includes("Gecko")) {
-          engine = "Gecko";
-        } else if (ua.includes("Trident")) {
-          engine = "Trident";
-        }
-
-        return {
-          browser: browser + (browserVersion ? " " + browserVersion : ""),
-          os: os + (osVersion ? " " + osVersion : ""),
-          device: device,
-          engine: engine,
-          raw: ua
-        };
+        return [
+          { label: "浏览器", value: browser + (bv ? " " + bv : "") },
+          { label: "操作系统", value: os + (ov ? " " + ov : "") },
+          { label: "设备类型", value: device },
+          { label: "内核引擎", value: engine },
+          { label: "语言", value: navigator.language },
+          { label: "平台", value: navigator.platform }
+        ];
       }
 
       function detectFeatures() {
-        return {
-          localStorage: !!window.localStorage,
-          sessionStorage: !!window.sessionStorage,
-          cookies: navigator.cookieEnabled,
-          javascript: true,
-          geolocation: !!navigator.geolocation,
-          webGL: (function () {
-            try {
-              const canvas = document.createElement("canvas");
-              return !!(
-                window.WebGLRenderingContext &&
-                (canvas.getContext("webgl") || canvas.getContext("experimental-webgl"))
-              );
-            } catch (e) {
-              return false;
-            }
-          })(),
-          canvas: !!window.HTMLCanvasElement,
-          webWorkers: !!window.Worker,
-          serviceWorkers: "serviceWorker" in navigator,
-          pushNotifications: "PushManager" in window,
-          touchEvents: "ontouchstart" in window || navigator.maxTouchPoints > 0,
-          webAssembly: !!window.WebAssembly,
-          webAudio: !!window.AudioContext || !!window.webkitAudioContext
-        };
+        return [
+          { name: "Local Storage", status: !!window.localStorage },
+          { name: "Session Storage", status: !!window.sessionStorage },
+          { name: "Cookies Enabled", status: navigator.cookieEnabled },
+          { name: "Geolocation", status: !!navigator.geolocation },
+          { name: "WebGL", status: !!document.createElement('canvas').getContext('webgl') },
+          { name: "WebAssembly", status: !!window.WebAssembly },
+          { name: "Service Worker", status: 'serviceWorker' in navigator },
+          { name: "Touch Support", status: 'ontouchstart' in window }
+        ];
       }
 
-      function analyzeUA() {
-        const inputText = inputEl.value.trim();
-        const uaString = inputText || navigator.userAgent;
+      function performAnalysis() {
+        const ua = uaInput.value.trim() || navigator.userAgent;
+        if (!uaInput.value) uaInput.value = ua;
+        
+        const results = parseUA(ua);
+        resultsGrid.innerHTML = results.map(r => `
+          <div class="result-item">
+            <div class="result-label">${r.label}</div>
+            <div class="result-value">${r.value}</div>
+          </div>
+        `).join('');
 
-        if (!inputText) {
-          inputEl.value = uaString;
-        }
-
-        const result = parseUserAgent(uaString);
         const features = detectFeatures();
+        featureGrid.innerHTML = features.map(f => `
+          <div class="feature-item">
+            <span class="feature-name">${f.name}</span>
+            <span class="feature-status ${f.status ? 'status-yes' : 'status-no'}">${f.status ? 'YES' : 'NO'}</span>
+          </div>
+        `).join('');
 
-        resultsGridEl.innerHTML = "";
-        uaDetailsEl.style.display = "block";
-        uaFeaturesEl.innerHTML = "";
-
-        const results = [
-          { title: "浏览器", value: result.browser, className: "browser" },
-          { title: "操作系统", value: result.os, className: "os" },
-          { title: "设备类型", value: result.device, className: "device" },
-          { title: "渲染引擎", value: result.engine, className: "engine" },
-          { title: "语言", value: navigator.language || "Unknown" },
-          { title: "平台", value: navigator.platform || "Unknown" },
-          { title: "用户代理长度", value: result.raw.length + " 字符" },
-          { title: "完整 UA", value: result.raw }
-        ];
-
-        results.forEach(function (resultItem) {
-          const card = document.createElement("div");
-          card.className = "result-card";
-          card.innerHTML =
-            '<div class="result-title">' +
-            resultItem.title +
-            "</div>" +
-            '<div class="result-value ' +
-            (resultItem.className || "") +
-            '">' +
-            resultItem.value +
-            "</div>";
-          resultsGridEl.appendChild(card);
-        });
-
-        const featureItems = [
-          { label: "Local Storage", value: features.localStorage ? "yes" : "no" },
-          { label: "Session Storage", value: features.sessionStorage ? "yes" : "no" },
-          { label: "Cookies", value: features.cookies ? "yes" : "no" },
-          { label: "JavaScript", value: features.javascript ? "yes" : "no" },
-          { label: "Geolocation", value: features.geolocation ? "yes" : "no" },
-          { label: "WebGL", value: features.webGL ? "yes" : "no" },
-          { label: "Canvas", value: features.canvas ? "yes" : "no" },
-          { label: "Web Workers", value: features.webWorkers ? "yes" : "no" },
-          { label: "Service Workers", value: features.serviceWorkers ? "yes" : "no" },
-          { label: "Push Notifications", value: features.pushNotifications ? "yes" : "no" },
-          { label: "Touch Events", value: features.touchEvents ? "yes" : "no" },
-          { label: "WebAssembly", value: features.webAssembly ? "yes" : "no" },
-          { label: "Web Audio", value: features.webAudio ? "yes" : "no" }
-        ];
-
-        featureItems.forEach(function (feature) {
-          const item = document.createElement("div");
-          item.className = "feature-item";
-          item.innerHTML =
-            '<div class="feature-label">' +
-            feature.label +
-            "</div>" +
-            '<div class="feature-value ' +
-            feature.value +
-            '">' +
-            (feature.value === "yes" ? "支持" : "不支持") +
-            "</div>";
-          uaFeaturesEl.appendChild(item);
-        });
-
-        showStatus("解析完成", "success");
-      }
-
-      function showStatus(msg, type) {
-        statusEl.textContent = msg;
-        statusEl.className = "status " + (type || "");
-      }
-
-      function reset() {
-        inputEl.value = "";
-        resultsGridEl.innerHTML = "";
-        uaDetailsEl.style.display = "none";
-        uaFeaturesEl.innerHTML = "";
-        statusEl.textContent = "";
-        localStorage.removeItem(LS_KEY);
+        resultsArea.style.display = 'block';
       }
 
       currentUAEl.textContent = navigator.userAgent;
-
-      document.getElementById("btnAnalyze").onclick = analyzeUA;
-
-      document.getElementById("btnCopy").onclick = async function () {
-        const results = [];
-        resultsGridEl.querySelectorAll(".result-card").forEach(function (card) {
-          const title = card.querySelector(".result-title").textContent;
-          const value = card.querySelector(".result-value").textContent;
-          results.push(`${title}: ${value}`);
-        });
-
-        const output = results.join("\n");
-
-        try {
-          await navigator.clipboard.writeText(output);
-          showStatus("已复制", "success");
-        } catch (e) {
-          showStatus("复制失败", "error");
-        }
-      };
-
-      document.getElementById("btnPaste").onclick = async function () {
-        try {
-          const text = await navigator.clipboard.readText();
-          inputEl.value = text.trim();
-          showStatus("已粘贴", "success");
-        } catch (e) {
-          showStatus("无法访问剪贴板", "error");
-        }
-      };
-
-      document.getElementById("btnCopyCurrent").onclick = async function () {
-        try {
-          await navigator.clipboard.writeText(navigator.userAgent);
-          showStatus("当前 UA 已复制", "success");
-        } catch (e) {
-          showStatus("复制失败", "error");
-        }
-      };
-
-      document.getElementById("btnClear").onclick = reset;
-
-      document.querySelectorAll(".example-btn").forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          inputEl.value = btn.getAttribute("data-ua");
-          analyzeUA();
-        });
-      });
-
-      inputEl.addEventListener("input", function () {
-        localStorage.setItem(LS_KEY, this.value);
-      });
-
-      const saved = localStorage.getItem(LS_KEY);
-      if (saved) inputEl.value = saved;
-
-      analyzeUA();
-      window.toggleTheme = function () {
-        const html = document.documentElement;
-        const btn = document.querySelector(".theme-toggle");
-        const next = html.getAttribute("data-theme") === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", next);
-        btn.textContent = next === "light" ? "☀️" : "🌙";
-        localStorage.setItem("theme", next);
-      };
-      (function () {
-        const saved = localStorage.getItem("theme");
-        if (saved) {
-          document.documentElement.setAttribute("data-theme", saved);
-          const btn = document.querySelector(".theme-toggle");
-          if (btn) btn.textContent = saved === "light" ? "☀️" : "🌙";
-        }
-      })();
+      analyzeBtn.addEventListener('click', performAnalysis);
+      performAnalysis();
     </script>
   </body>
 </html>
