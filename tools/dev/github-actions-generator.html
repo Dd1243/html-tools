@@ -1,1132 +1,433 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>GitHub Actions 生成�?- WebUtils</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Actions 生成器 - 自动化 CI/CD 工作流构建工具 - WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="可视化生�?GitHub Actions 工作流配置，支持多种 CI/CD 模板" />
-    <meta name="keywords" content="github actions workflow ci cd 自动�?部署 测试 yaml 生成�? />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link
-      rel="canonical"
-      href="https://essays4u.net/tools/dev/github-actions-generator.html"
-    />
+    <meta name="description" content="功能强大的 GitHub Actions 工作流生成器。支持 Node.js, Python, Go 等多种环境，一键配置自动测试、构建、部署流程。提供可视化界面，自动生成 YAML 配置文件，助力开发者实现自动化运维。">
+    <meta name="keywords" content="GitHub Actions生成器,CI/CD自动化,工作流配置,YAML生成工具,自动化部署,GitHub工作流手册">
+    <meta name="author" content="WebUtils">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://essays4u.net/tools/dev/github-actions-generator.html">
 
     <!-- Open Graph -->
-    <meta property="og:title" content="GitHub Actions 生成�?- WebUtils" />
-    <meta
-      property="og:description"
-      content="可视化生�?GitHub Actions 工作流配置，支持多种 CI/CD 模板"
-    />
-    <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/dev/github-actions-generator.html"
-    />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://essays4u.net/tools/dev/github-actions-generator.html">
+    <meta property="og:title" content="GitHub Actions 生成器 - 自动化 CI/CD 工作流构建工具">
+    <meta property="og:description" content="可视化配置 GitHub Actions，一键生成 YAML 工作流文件。">
+    <meta property="og:image" content="https://essays4u.net/social-preview.png">
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="GitHub Actions 生成�?- WebUtils" />
-    <meta
-      name="twitter:description"
-      content="可视化生�?GitHub Actions 工作流配置，支持多种 CI/CD 模板"
-    />
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="GitHub Actions 生成器 - 自动化 CI/CD 工作流构建工具">
+    <meta property="twitter:description" content="可视化配置 GitHub Actions，一键生成 YAML 工作流文件。">
+    <meta property="twitter:image" content="https://essays4u.net/social-preview.png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 
     <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      :root {
-        --bg: #f8f9fa;
-        --card-bg: #fff;
-        --text: #212529;
-        --color-text-muted: #6c757d;
-        --border: #dee2e6;
-        --primary: #0d6efd;
-        --primary-hover: #0b5ed7;
-        --success: #198754;
-        --danger: #dc3545;
-        --shadow: 0 2px 8px rgb(0 0 0 / 8%);
-        --radius: 8px;
-      }
-
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-      }
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family:
-          system-ui,
-          -apple-system,
-          "Segoe UI",
-          Roboto,
-          sans-serif;
-        background: var(--bg-deep);
-        color: var(--text-primary);
-        margin: 0;
-        padding: 24px;
-        min-height: 100vh;
-      }
-
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-
-      .back-link {
-        display: inline-block;
-        margin-bottom: 16px;
-        color: var(--accent-cyan);
-        text-decoration: none;
-        font-size: 0.9rem;
-      }
-
-      .back-link:hover {
-        text-decoration: underline;
-      }
-
-      h1 {
-        font-size: 1.75rem;
-        margin: 0 0 8px;
-      }
-
-      .desc {
-        color: var(--text-muted);
-        margin: 0 0 24px;
-        font-size: 0.95rem;
-      }
-
-      .card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        padding: 20px;
-        box-shadow: var(--shadow);
-        margin-bottom: 20px;
-      }
-
-      .main-layout {
-        display: grid;
-        grid-template-columns: 380px 1fr;
-        gap: 20px;
-      }
-
-      @media (width <= 900px) {
-        .main-layout {
-          grid-template-columns: 1fr;
+        :root {
+            --bg-deep: #0a0a0f;
+            --bg-surface: #12121a;
+            --bg-card: #1a1a24;
+            --bg-input: #0e0e14;
+            --text-primary: #e8e8ed;
+            --text-secondary: #8888a0;
+            --text-muted: #55556a;
+            --border-subtle: #2a2a3a;
+            --border-strong: #3a3a4a;
+            --accent-github: #2ea44f;
+            --accent-github-hover: #2c974b;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --font-sans: 'Inter', -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-display: 'Space Grotesk', sans-serif;
         }
-      }
 
-      .form-section {
-        margin-bottom: 24px;
-      }
+        [data-theme="light"] {
+            --bg-deep: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-card: #ffffff;
+            --bg-input: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border-subtle: #e2e8f0;
+            --border-strong: #cbd5e1;
+            --accent-github: #2da44e;
+        }
 
-      .form-section h3 {
-        font-size: 0.95rem;
-        margin: 0 0 16px;
-        color: var(--text-primary);
-        border-bottom: 1px solid var(--border-subtle);
-        padding-bottom: 8px;
-      }
-
-      .form-group {
-        margin-bottom: 16px;
-      }
-
-      .form-group label {
-        display: block;
-        font-size: 0.85rem;
-        color: var(--text-muted);
-        margin-bottom: 6px;
-      }
-
-      .form-group select,
-      .form-group input {
-        width: 100%;
-        padding: 10px 12px;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        background: var(--bg-card);
-        color: var(--text-primary);
-        font-size: 0.9rem;
-      }
-
-      .form-group select:focus,
-      .form-group input:focus {
-        outline: none;
-        border-color: var(--accent-cyan);
-      }
-
-      .checkbox-group {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-      }
-
-      .checkbox-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 0.85rem;
-      }
-
-      .checkbox-item input[type="checkbox"] {
-        width: 16px;
-        height: 16px;
-      }
-
-      .templates {
-        margin-bottom: 24px;
-      }
-
-      .template-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-      }
-
-      .template-btn {
-        padding: 12px;
-        font-size: 0.8rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        background: var(--bg-card);
-        color: var(--text-primary);
-        cursor: pointer;
-        transition: all 0.2s;
-        text-align: left;
-      }
-
-      .template-btn:hover {
-        border-color: var(--accent-cyan);
-        color: var(--accent-cyan);
-      }
-
-      .template-btn.active {
-        border-color: var(--accent-cyan);
-        background: var(--accent-cyan);
-        color: #fff;
-      }
-
-      .template-btn .icon {
-        font-size: 1.3rem;
-        margin-bottom: 6px;
-        display: block;
-      }
-
-      .template-btn .name {
-        font-weight: 600;
-        display: block;
-        margin-bottom: 2px;
-      }
-
-      .template-btn .desc {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-        margin: 0;
-      }
-
-      .template-btn.active .desc {
-        color: rgba(255, 255, 255, 0.8);
-      }
-
-      .output-section h3 {
-        font-size: 0.95rem;
-        margin: 0 0 12px;
-        color: var(--text-primary);
-      }
-
-      .btn-row {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        margin-bottom: 16px;
-      }
-
-      button {
-        padding: 10px 16px;
-        font-size: 0.95rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        background: var(--bg-card);
-        color: var(--text-primary);
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-
-      button:hover {
-        border-color: var(--accent-cyan);
-        color: var(--accent-cyan);
-      }
-
-      button.primary {
-        background: var(--accent-cyan);
-        border-color: var(--accent-cyan);
-        color: #fff;
-      }
-
-      button.primary:hover {
-        background: var(--accent-cyan);
-        border-color: var(--accent-cyan);
-        color: #fff;
-      }
-
-      .code-block {
-        background: #1a1a2e;
-        color: var(--color-text-primary);
-        padding: 16px;
-        border-radius: var(--radius-md);
-        font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
-        font-size: 0.8rem;
-        overflow-x: auto;
-        white-space: pre;
-        line-height: 1.5;
-        min-height: 400px;
-        max-height: 600px;
-        overflow-y: auto;
-      }
-
-      [data-theme="light"] .code-block {
-        background: var(--color-bg-card);
-        color: #333;
-      }
-
-      .status {
-        font-size: 0.85rem;
-        margin-top: 12px;
-        min-height: 20px;
-      }
-
-      .status.success {
-        color: var(--accent-green);
-      }
-
-      .status.error {
-        color: var(--accent-red);
-      }
-
-      footer {
-        text-align: center;
-        margin-top: 32px;
-        padding-top: 16px;
-        border-top: 1px solid var(--border-subtle);
-        color: var(--text-muted);
-        font-size: 0.85rem;
-      }
-
-      footer a {
-        color: var(--accent-cyan);
-        text-decoration: none;
-      }
-
-      footer a:hover {
-        text-decoration: underline;
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-      @media (max-width: 480px) {
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-          padding: 12px;
-          padding-top: 56px;
+            font-family: var(--font-sans);
+            background-color: var(--bg-deep);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s;
+            min-height: 100vh;
         }
-        .breadcrumb {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          z-index: 99;
-          border-radius: 0;
-          display: flex;
-          align-items: center;
-          padding: 12px;
-          padding-right: 50px;
-          margin: 0;
-          font-size: 0.8rem;
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        
+        header { margin-bottom: 2.5rem; text-align: center; position: relative; }
+        .breadcrumb { display: flex; gap: 0.5rem; font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem; justify-content: center; }
+        .breadcrumb a { color: var(--accent-github); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        
+        h1 { font-family: var(--font-display); font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--accent-github); }
+        .subtitle { color: var(--text-secondary); font-size: 1.1rem; }
+
+        .theme-toggle { position: absolute; top: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 0.5rem 1rem; border-radius: var(--radius-md); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
+
+        .main-grid { display: grid; grid-template-columns: 450px 1fr; gap: 2rem; margin-bottom: 2rem; }
+        @media (max-width: 1024px) { .main-grid { grid-template-columns: 1fr; } }
+
+        /* Form Controls */
+        .config-pane { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem; height: fit-content; position: sticky; top: 2rem; }
+        .section-title { font-size: 0.85rem; color: var(--accent-github); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+        
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+        
+        input[type="text"], select, textarea {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            padding: 0.75rem;
+            border-radius: var(--radius-md);
+            outline: none;
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
         }
-        .theme-toggle {
-          position: fixed;
-          top: 8px;
-          right: 12px;
-          width: 36px;
-          height: 36px;
-          font-size: 1rem;
+        input:focus, select:focus, textarea:focus { border-color: var(--accent-github); }
+
+        .checkbox-group { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+        .checkbox-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-secondary); cursor: pointer; }
+        .checkbox-item input { accent-color: var(--accent-github); }
+
+        /* Output Pane */
+        .output-pane { display: flex; flex-direction: column; gap: 1rem; }
+        .card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .card-header h2 { font-size: 1.25rem; font-family: var(--font-display); }
+
+        .code-container { position: relative; border-radius: var(--radius-md); overflow: hidden; background: #0d1117; }
+        pre { margin: 0; padding: 1.5rem; font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.5; color: #c9d1d9; overflow-x: auto; max-height: 800px; }
+        
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        h1 {
-          font-size: 1.3rem;
-        }
-        .card {
-          padding: 12px;
-        }
-        .main-layout,
-        .grid {
-          grid-template-columns: 1fr !important;
-        }
-        .btn-row {
-          flex-direction: column;
-        }
-        .btn-row button {
-          width: 100%;
-        }
-        pre,
-        code,
-        textarea {
-          font-size: 0.7rem;
-          white-space: pre-wrap;
-          word-break: break-all;
-        }
-        .config-panel,
-        .output-panel {
-          min-width: 0;
-          overflow: hidden;
-        }
-      }
+        .btn:hover { background: var(--border-subtle); transform: translateY(-1px); }
+        .btn-primary { background: var(--accent-github); color: #fff; border: none; }
+        .btn-primary:hover { background: var(--accent-github-hover); box-shadow: 0 4px 12px rgba(46, 164, 79, 0.2); }
+
+        /* AdSense Placeholders */
+        .ads-placeholder { margin: 2rem 0; background: var(--bg-card); border: 1px dashed var(--border-subtle); height: 100px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem; border-radius: var(--radius-lg); }
+
+        /* Article Content */
+        article { margin-top: 4rem; max-width: 900px; margin-left: auto; margin-right: auto; }
+        article h2 { font-family: var(--font-display); font-size: 1.75rem; margin: 2.5rem 0 1rem; color: var(--accent-github); }
+        article h3 { font-size: 1.25rem; margin: 1.5rem 0 0.75rem; }
+        article p { margin-bottom: 1.25rem; color: var(--text-secondary); }
+        article ul, article ol { margin-bottom: 1.5rem; padding-left: 1.5rem; color: var(--text-secondary); }
+        article li { margin-bottom: 0.5rem; }
+        code { background: var(--bg-input); padding: 0.2rem 0.4rem; border-radius: 4px; font-family: var(--font-mono); font-size: 0.9em; }
+
+        .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--accent-github); color: #fff; padding: 0.75rem 1.5rem; border-radius: var(--radius-md); transform: translateY(100px); transition: transform 0.3s; z-index: 1000; }
+        .toast.show { transform: translateY(0); }
+
+        footer { margin-top: 4rem; padding: 2rem; border-top: 1px solid var(--border-subtle); text-align: center; color: var(--text-muted); font-size: 0.875rem; }
+        footer a { color: var(--text-secondary); text-decoration: none; margin: 0 0.5rem; }
+
+        /* Syntax Highlighting Sim */
+        .token-key { color: #7ee787; }
+        .token-val { color: #a5d6ff; }
+        .token-comment { color: #8b949e; }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      GitHub Actions 生成�?
-    </nav>
+</head>
+<body>
     <div class="container">
-      <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">☀�?/button>
-      <h1>GitHub Actions 生成�?/h1>
-      <p class="desc">可视化生�?GitHub Actions 工作流配置，支持多种 CI/CD 场景</p>
+        <nav class="breadcrumb">
+            <a href="../../index.html">首页</a> / <span>开发工具</span> / <span>GitHub Actions 生成器</span>
+        </nav>
 
-      <div class="card">
-        <div class="main-layout">
-          <div class="config-panel">
-            <div class="templates">
-              <h3>选择模板</h3>
-              <div class="template-grid">
-                <button class="template-btn active" data-template="node-ci">
-                  <span class="icon">📦</span>
-                  <span class="name">Node.js CI</span>
-                  <p class="desc">测试 + 构建 + 缓存</p>
-                </button>
-                <button class="template-btn" data-template="python-ci">
-                  <span class="icon">🐍</span>
-                  <span class="name">Python CI</span>
-                  <p class="desc">Pytest + 多版本测�?/p>
-                </button>
-                <button class="template-btn" data-template="docker-build">
-                  <span class="icon">🐳</span>
-                  <span class="name">Docker Build</span>
-                  <p class="desc">构建并推送镜�?/p>
-                </button>
-                <button class="template-btn" data-template="deploy-pages">
-                  <span class="icon">🌐</span>
-                  <span class="name">Deploy Pages</span>
-                  <p class="desc">部署�?GitHub Pages</p>
-                </button>
-                <button class="template-btn" data-template="release">
-                  <span class="icon">🏷�?/span>
-                  <span class="name">Auto Release</span>
-                  <p class="desc">自动创建 Release</p>
-                </button>
-                <button class="template-btn" data-template="lint">
-                  <span class="icon">🔍</span>
-                  <span class="name">Lint & Format</span>
-                  <p class="desc">代码检查和格式�?/p>
-                </button>
-              </div>
-            </div>
+        <header>
+            <h1>GitHub Actions 生成器</h1>
+            <p class="subtitle">可视化配置您的 CI/CD 工作流，让自动化部署变得简单</p>
+            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">
+                <span>🌙</span> 暗色模式
+            </button>
+        </header>
 
-            <div class="form-section">
-              <h3>基础配置</h3>
-
-              <div class="form-group">
-                <label>工作流名�?/label>
-                <input type="text" id="workflowName" value="CI" />
-              </div>
-
-              <div class="form-group">
-                <label>触发分支</label>
-                <input type="text" id="branches" value="main, master" placeholder="main, develop" />
-              </div>
-
-              <div class="form-group">
-                <label>Node.js 版本（多版本用逗号分隔�?/label>
-                <input type="text" id="nodeVersions" value="18, 20" />
-              </div>
-
-              <div class="form-group">
-                <label>运行环境</label>
-                <select id="runsOn">
-                  <option value="ubuntu-latest">ubuntu-latest</option>
-                  <option value="ubuntu-22.04">ubuntu-22.04</option>
-                  <option value="ubuntu-20.04">ubuntu-20.04</option>
-                  <option value="macos-latest">macos-latest</option>
-                  <option value="windows-latest">windows-latest</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-section">
-              <h3>可选步�?/h3>
-              <div class="checkbox-group">
-                <label class="checkbox-item">
-                  <input type="checkbox" id="enableCache" checked />
-                  启用依赖缓存
-                </label>
-                <label class="checkbox-item">
-                  <input type="checkbox" id="enableLint" checked />
-                  运行 Lint 检�?
-                </label>
-                <label class="checkbox-item">
-                  <input type="checkbox" id="enableTest" checked />
-                  运行测试
-                </label>
-                <label class="checkbox-item">
-                  <input type="checkbox" id="enableBuild" checked />
-                  运行构建
-                </label>
-                <label class="checkbox-item">
-                  <input type="checkbox" id="enableCoverage" />
-                  上传测试覆盖�?
-                </label>
-                <label class="checkbox-item">
-                  <input type="checkbox" id="enableArtifact" />
-                  上传构建产物
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <div class="output-panel">
-            <div class="output-section">
-              <h3>生成的工作流配置</h3>
-              <div class="btn-row">
-                <button class="primary" id="btnGenerate">生成</button>
-                <button id="btnCopy">复制</button>
-                <button id="btnDownload">下载</button>
-                <button id="btnShare">分享</button>
-              </div>
-              <div class="code-block" id="output"># 选择模板后点�?生成"</div>
-              <div id="status" class="status"></div>
-            </div>
-          </div>
+        <!-- Google AdSense Top -->
+        <div class="ads-placeholder">
+            广告占位符 - Google AdSense (Top)
         </div>
-      </div>
 
-      <footer>
-        <a href="https://github.com/chicogong/html-tools" target="_blank" rel="noreferrer">
-          GitHub
-        </a>
-        · 纯前端工�?· 无服务器 ·
-        <a href="../../index.html">WebUtils</a>
-      </footer>
+        <main class="main-grid">
+            <!-- Configuration Pane -->
+            <aside class="config-pane">
+                <div class="section-title">📦 基础配置</div>
+                <div class="form-group">
+                    <label>工作流名称 (Name)</label>
+                    <input type="text" id="wfName" value="CI" oninput="generateYAML()">
+                </div>
+                <div class="form-group">
+                    <label>触发事件 (Events)</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item"><input type="checkbox" id="evPush" checked onchange="generateYAML()"> push</label>
+                        <label class="checkbox-item"><input type="checkbox" id="evPR" checked onchange="generateYAML()"> pull_request</label>
+                        <label class="checkbox-item"><input type="checkbox" id="evRelease" onchange="generateYAML()"> release</label>
+                        <label class="checkbox-item"><input type="checkbox" id="evDispatch" onchange="generateYAML()"> workflow_dispatch</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>目标分支 (Branches)</label>
+                    <input type="text" id="wfBranches" value="main, master" oninput="generateYAML()" placeholder="用逗号分隔">
+                </div>
+
+                <div class="section-title">🛠️ 运行环境</div>
+                <div class="form-group">
+                    <label>操作系统 (Runs On)</label>
+                    <select id="wfOS" onchange="generateYAML()">
+                        <option value="ubuntu-latest">ubuntu-latest</option>
+                        <option value="windows-latest">windows-latest</option>
+                        <option value="macos-latest">macos-latest</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>技术栈 (Template)</label>
+                    <select id="wfTemplate" onchange="generateYAML()">
+                        <option value="node">Node.js</option>
+                        <option value="python">Python</option>
+                        <option value="go">Go</option>
+                        <option value="static">静态网页 (HTML/JS)</option>
+                        <option value="docker">Docker Build</option>
+                    </select>
+                </div>
+
+                <div class="section-title">⚡ 步骤配置</div>
+                <div class="form-group">
+                    <label>启用步骤 (Steps)</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item"><input type="checkbox" id="stepCache" checked onchange="generateYAML()"> 依赖缓存</label>
+                        <label class="checkbox-item"><input type="checkbox" id="stepLint" onchange="generateYAML()"> 代码检查 (Lint)</label>
+                        <label class="checkbox-item"><input type="checkbox" id="stepTest" checked onchange="generateYAML()"> 运行测试</label>
+                        <label class="checkbox-item"><input type="checkbox" id="stepBuild" checked onchange="generateYAML()"> 执行构建</label>
+                        <label class="checkbox-item"><input type="checkbox" id="stepDeploy" onchange="generateYAML()"> 自动部署 (Pages)</label>
+                    </div>
+                </div>
+                
+                <button class="btn" style="width: 100%; justify-content: center; margin-top: 1rem;" onclick="resetConfig()">重置配置</button>
+            </aside>
+
+            <!-- Output Pane -->
+            <section class="output-pane">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>YAML 配置文件</h2>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-primary" onclick="copyYAML()">复制代码</button>
+                            <button class="btn" onclick="downloadYAML()">下载文件</button>
+                        </div>
+                    </div>
+                    <div class="code-container">
+                        <pre id="yamlOutput"></pre>
+                    </div>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 1rem;">
+                        💡 提示：将此文件保存为项目根目录下的 <code>.github/workflows/${wfName.toLowerCase()}.yml</code>
+                    </p>
+                </div>
+            </section>
+        </main>
+
+        <!-- Google AdSense Bottom -->
+        <div class="ads-placeholder">
+            广告占位符 - Google AdSense (Bottom)
+        </div>
+
+        <!-- SEO Content -->
+        <article>
+            <h2>什么是 GitHub Actions？为什么要使用它？</h2>
+            <p>GitHub Actions 是 GitHub 提供的持续集成和持续交付 (CI/CD) 平台，允许你直接在 GitHub 仓库中自动化你的软件开发工作流。通过 YAML 文件定义，你可以自动化从代码审查、测试到部署的每一个环节。</p>
+            
+            <h3>解决的具体痛点</h3>
+            <ul>
+                <li><strong>避免“我的机器上运行正常”：</strong> 通过在标准的云端环境中运行测试，确保代码在任何地方都能正常工作。</li>
+                <li><strong>自动化繁琐任务：</strong> 每次提交代码后自动执行打包、构建镜像、发布到 NPM 或部署到服务器，省去人工操作。</li>
+                <li><strong>快速反馈循环：</strong> 开发者提交 PR 后，Actions 自动运行 Lint 和单元测试，几分钟内即可得知代码是否引入了破坏性更改。</li>
+            </ul>
+
+            <h3>如何使用本生成器？</h3>
+            <p>配置 GitHub Actions 往往需要查阅冗长的文档，记住复杂的 YAML 缩进。本生成器提供了一个<strong>可视化直观界面</strong>：</p>
+            <ol>
+                <li><strong>基础设置：</strong> 定义工作流名称（如 <code>Test and Deploy</code>）和触发时机。通常建议在 <code>push</code> 到 <code>main</code> 分支或开启 <code>pull_request</code> 时触发。</li>
+                <li><strong>环境选择：</strong> 选择运行系统的版本。对于大多数 Web 项目，<code>ubuntu-latest</code> 是性价比最高的选择。</li>
+                <li><strong>模板化流程：</strong> 我们内置了针对 Node.js (npm/yarn/pnpm)、Python 和 Go 的标准 CI 流程模板，包含依赖安装、测试和构建步骤。</li>
+                <li><strong>一键生成：</strong> 右侧实时生成符合 GitHub 规范的 YAML 代码。您只需复制并粘贴到项目中的 <code>.github/workflows/</code> 目录下即可。</li>
+            </ol>
+
+            <h3>Actions 最佳实践</h3>
+            <ul>
+                <li><strong>使用缓存 (Caching)：</strong> 启用依赖项缓存（如 <code>node_modules</code>）可以显著缩短构建时间。</li>
+                <li><strong>矩阵构建 (Matrix Strategy)：</strong> 如果你的库需要支持多个 Node.js 版本，可以使用矩阵策略同时在 16.x, 18.x 和 20.x 上运行测试。</li>
+                <li><strong>Secrets 安全管理：</strong> 永远不要在 YAML 中硬编码密码或 API 密钥。使用 <code>${{ secrets.YOUR_KEY }}</code> 引用在仓库设置中配置的加密变量。</li>
+                <li><strong>保持工作流原子化：</strong> 一个复杂的项目可以拥有多个工作流文件，例如一个负责 <code>test.yml</code>，另一个负责 <code>deploy.yml</code>，这更易于维护。</li>
+            </ul>
+        </article>
+
+        <footer>
+            <p>&copy; 2026 WebUtils. 基于 MIT 协议开源。 <a href="https://github.com/nicepkg/html-tools">GitHub</a> | <a href="../../index.html">更多工具</a></p>
+        </footer>
     </div>
 
+    <div id="toast" class="toast">代码已成功复制！</div>
+
     <script>
-      var workflowNameEl = document.getElementById("workflowName");
-      var branchesEl = document.getElementById("branches");
-      var nodeVersionsEl = document.getElementById("nodeVersions");
-      var runsOnEl = document.getElementById("runsOn");
-      var enableCacheEl = document.getElementById("enableCache");
-      var enableLintEl = document.getElementById("enableLint");
-      var enableTestEl = document.getElementById("enableTest");
-      var enableBuildEl = document.getElementById("enableBuild");
-      var enableCoverageEl = document.getElementById("enableCoverage");
-      var enableArtifactEl = document.getElementById("enableArtifact");
-      var outputEl = document.getElementById("output");
-      var statusEl = document.getElementById("status");
+        const wfName = document.getElementById('wfName');
+        const wfBranches = document.getElementById('wfBranches');
+        const wfOS = document.getElementById('wfOS');
+        const wfTemplate = document.getElementById('wfTemplate');
+        const yamlOutput = document.getElementById('yamlOutput');
+        const toast = document.getElementById('toast');
 
-      var currentTemplate = "node-ci";
+        function generateYAML() {
+            const name = wfName.value || 'CI';
+            const branches = wfBranches.value.split(',').map(b => b.trim()).filter(b => b);
+            const os = wfOS.value;
+            const template = wfTemplate.value;
 
-      var templates = {
-        "node-ci": {
-          name: "CI",
-          branches: "main, master",
-          nodeVersions: "18, 20",
-          cache: true,
-          lint: true,
-          test: true,
-          build: true,
-          coverage: false,
-          artifact: false
-        },
-        "python-ci": {
-          name: "Python CI",
-          branches: "main, master",
-          nodeVersions: "3.10, 3.11, 3.12",
-          cache: true,
-          lint: true,
-          test: true,
-          build: false,
-          coverage: true,
-          artifact: false
-        },
-        "docker-build": {
-          name: "Docker Build",
-          branches: "main",
-          nodeVersions: "",
-          cache: false,
-          lint: false,
-          test: false,
-          build: true,
-          coverage: false,
-          artifact: false
-        },
-        "deploy-pages": {
-          name: "Deploy to GitHub Pages",
-          branches: "main",
-          nodeVersions: "20",
-          cache: true,
-          lint: false,
-          test: false,
-          build: true,
-          coverage: false,
-          artifact: false
-        },
-        release: {
-          name: "Release",
-          branches: "",
-          nodeVersions: "20",
-          cache: true,
-          lint: false,
-          test: true,
-          build: true,
-          coverage: false,
-          artifact: true
-        },
-        lint: {
-          name: "Lint",
-          branches: "main, master",
-          nodeVersions: "20",
-          cache: true,
-          lint: true,
-          test: false,
-          build: false,
-          coverage: false,
-          artifact: false
-        }
-      };
+            // Events
+            const events = [];
+            if (document.getElementById('evPush').checked) events.push('push');
+            if (document.getElementById('evPR').checked) events.push('pull_request');
+            if (document.getElementById('evRelease').checked) events.push('release');
+            if (document.getElementById('evDispatch').checked) events.push('workflow_dispatch');
 
-      function applyTemplate(name) {
-        currentTemplate = name;
-        var t = templates[name];
-        if (!t) return;
-
-        workflowNameEl.value = t.name;
-        branchesEl.value = t.branches;
-        nodeVersionsEl.value = t.nodeVersions;
-        enableCacheEl.checked = t.cache;
-        enableLintEl.checked = t.lint;
-        enableTestEl.checked = t.test;
-        enableBuildEl.checked = t.build;
-        enableCoverageEl.checked = t.coverage;
-        enableArtifactEl.checked = t.artifact;
-
-        document.querySelectorAll(".template-btn").forEach(function (btn) {
-          btn.classList.toggle("active", btn.dataset.template === name);
-        });
-
-        generate();
-      }
-
-      window.generate = function () {
-        var name = workflowNameEl.value || "CI";
-        var branches = branchesEl.value
-          .split(",")
-          .map(function (b) {
-            return b.trim();
-          })
-          .filter(Boolean);
-        var versions = nodeVersionsEl.value
-          .split(",")
-          .map(function (v) {
-            return v.trim();
-          })
-          .filter(Boolean);
-        var runsOn = runsOnEl.value;
-        var enableCache = enableCacheEl.checked;
-        var enableLint = enableLintEl.checked;
-        var enableTest = enableTestEl.checked;
-        var enableBuild = enableBuildEl.checked;
-        var enableCoverage = enableCoverageEl.checked;
-        var enableArtifact = enableArtifactEl.checked;
-
-        var isPython = currentTemplate === "python-ci";
-        var isDocker = currentTemplate === "docker-build";
-        var isPages = currentTemplate === "deploy-pages";
-        var isRelease = currentTemplate === "release";
-
-        var lines = [];
-
-        lines.push("name: " + name);
-        lines.push("");
-        lines.push("on:");
-
-        if (isRelease) {
-          lines.push("  push:");
-          lines.push("    tags:");
-          lines.push('      - "v*"');
-        } else if (branches.length > 0) {
-          lines.push("  push:");
-          lines.push("    branches: [" + branches.join(", ") + "]");
-          lines.push("  pull_request:");
-          lines.push("    branches: [" + branches.join(", ") + "]");
-        } else {
-          lines.push("  push:");
-          lines.push("  pull_request:");
-        }
-
-        if (isPages) {
-          lines.push("  workflow_dispatch:");
-          lines.push("");
-          lines.push("permissions:");
-          lines.push("  contents: read");
-          lines.push("  pages: write");
-          lines.push("  id-token: write");
-          lines.push("");
-          lines.push("concurrency:");
-          lines.push('  group: "pages"');
-          lines.push("  cancel-in-progress: false");
-        }
-
-        lines.push("");
-        lines.push("jobs:");
-
-        if (isDocker) {
-          // Docker build workflow
-          lines.push("  build:");
-          lines.push("    runs-on: " + runsOn);
-          lines.push("    steps:");
-          lines.push("      - name: Checkout");
-          lines.push("        uses: actions/checkout@v4");
-          lines.push("");
-          lines.push("      - name: Set up Docker Buildx");
-          lines.push("        uses: docker/setup-buildx-action@v3");
-          lines.push("");
-          lines.push("      - name: Login to Docker Hub");
-          lines.push("        uses: docker/login-action@v3");
-          lines.push("        with:");
-          lines.push("          username: ${{ secrets.DOCKERHUB_USERNAME }}");
-          lines.push("          password: ${{ secrets.DOCKERHUB_TOKEN }}");
-          lines.push("");
-          lines.push("      - name: Build and push");
-          lines.push("        uses: docker/build-push-action@v5");
-          lines.push("        with:");
-          lines.push("          context: .");
-          lines.push("          push: true");
-          lines.push("          tags: |");
-          lines.push("            ${{ secrets.DOCKERHUB_USERNAME }}/app:latest");
-          lines.push("            ${{ secrets.DOCKERHUB_USERNAME }}/app:${{ github.sha }}");
-          lines.push("          cache-from: type=gha");
-          lines.push("          cache-to: type=gha,mode=max");
-        } else if (isPages) {
-          // GitHub Pages deployment
-          lines.push("  build:");
-          lines.push("    runs-on: " + runsOn);
-          lines.push("    steps:");
-          lines.push("      - name: Checkout");
-          lines.push("        uses: actions/checkout@v4");
-          lines.push("");
-          if (versions.length > 0) {
-            lines.push("      - name: Setup Node.js");
-            lines.push("        uses: actions/setup-node@v4");
-            lines.push("        with:");
-            lines.push("          node-version: " + versions[0]);
-            if (enableCache) {
-              lines.push("          cache: npm");
+            let yaml = `name: ${name}\n\non:`;
+            
+            if (events.length === 1 && events[0] === 'workflow_dispatch') {
+                yaml += ` [workflow_dispatch]`;
+            } else {
+                events.forEach(ev => {
+                    if (ev === 'workflow_dispatch') {
+                        yaml += `\n  workflow_dispatch:`;
+                    } else if (ev === 'push' || ev === 'pull_request') {
+                        yaml += `\n  ${ev}:\n    branches: [ ${branches.join(', ')} ]`;
+                    } else {
+                        yaml += `\n  ${ev}:`;
+                    }
+                });
             }
-            lines.push("");
-            lines.push("      - name: Install dependencies");
-            lines.push("        run: npm ci");
-            lines.push("");
-            lines.push("      - name: Build");
-            lines.push("        run: npm run build");
-            lines.push("");
-          }
-          lines.push("      - name: Setup Pages");
-          lines.push("        uses: actions/configure-pages@v4");
-          lines.push("");
-          lines.push("      - name: Upload artifact");
-          lines.push("        uses: actions/upload-pages-artifact@v3");
-          lines.push("        with:");
-          lines.push("          path: ./dist");
-          lines.push("");
-          lines.push("  deploy:");
-          lines.push("    environment:");
-          lines.push("      name: github-pages");
-          lines.push("      url: ${{ steps.deployment.outputs.page_url }}");
-          lines.push("    runs-on: " + runsOn);
-          lines.push("    needs: build");
-          lines.push("    steps:");
-          lines.push("      - name: Deploy to GitHub Pages");
-          lines.push("        id: deployment");
-          lines.push("        uses: actions/deploy-pages@v4");
-        } else if (isPython) {
-          // Python CI
-          lines.push("  test:");
-          lines.push("    runs-on: " + runsOn);
-          if (versions.length > 1) {
-            lines.push("    strategy:");
-            lines.push("      matrix:");
-            lines.push(
-              "        python-version: [" +
-                versions
-                  .map(function (v) {
-                    return '"' + v + '"';
-                  })
-                  .join(", ") +
-                "]"
-            );
-          }
-          lines.push("    steps:");
-          lines.push("      - name: Checkout");
-          lines.push("        uses: actions/checkout@v4");
-          lines.push("");
-          lines.push("      - name: Set up Python");
-          lines.push("        uses: actions/setup-python@v5");
-          lines.push("        with:");
-          lines.push(
-            "          python-version: " +
-              (versions.length > 1 ? "${{ matrix.python-version }}" : versions[0] || "3.12")
-          );
-          if (enableCache) {
-            lines.push("          cache: pip");
-          }
-          lines.push("");
-          lines.push("      - name: Install dependencies");
-          lines.push("        run: |");
-          lines.push("          python -m pip install --upgrade pip");
-          lines.push("          pip install -r requirements.txt");
-          if (enableLint) {
-            lines.push("");
-            lines.push("      - name: Lint with ruff");
-            lines.push("        run: |");
-            lines.push("          pip install ruff");
-            lines.push("          ruff check .");
-          }
-          if (enableTest) {
-            lines.push("");
-            lines.push("      - name: Test with pytest");
-            lines.push("        run: |");
-            lines.push("          pip install pytest" + (enableCoverage ? " pytest-cov" : ""));
-            lines.push("          pytest" + (enableCoverage ? " --cov=./ --cov-report=xml" : ""));
-          }
-          if (enableCoverage) {
-            lines.push("");
-            lines.push("      - name: Upload coverage");
-            lines.push("        uses: codecov/codecov-action@v4");
-            lines.push("        with:");
-            lines.push("          token: ${{ secrets.CODECOV_TOKEN }}");
-          }
-        } else {
-          // Node.js CI (default)
-          lines.push("  build:");
-          lines.push("    runs-on: " + runsOn);
-          if (versions.length > 1) {
-            lines.push("    strategy:");
-            lines.push("      matrix:");
-            lines.push("        node-version: [" + versions.join(", ") + "]");
-          }
-          lines.push("    steps:");
-          lines.push("      - name: Checkout");
-          lines.push("        uses: actions/checkout@v4");
-          lines.push("");
-          lines.push("      - name: Setup Node.js");
-          lines.push("        uses: actions/setup-node@v4");
-          lines.push("        with:");
-          lines.push(
-            "          node-version: " +
-              (versions.length > 1 ? "${{ matrix.node-version }}" : versions[0] || "20")
-          );
-          if (enableCache) {
-            lines.push("          cache: npm");
-          }
-          lines.push("");
-          lines.push("      - name: Install dependencies");
-          lines.push("        run: npm ci");
 
-          if (enableLint) {
-            lines.push("");
-            lines.push("      - name: Lint");
-            lines.push("        run: npm run lint");
-          }
+            yaml += `\n\njobs:\n  build-and-test:\n    runs-on: ${os}\n\n    steps:\n      - name: Checkout code\n        uses: actions/checkout@v4`;
 
-          if (enableTest) {
-            lines.push("");
-            lines.push("      - name: Test");
-            lines.push("        run: npm test");
-          }
+            // Template specific steps
+            if (template === 'node') {
+                yaml += `\n\n      - name: Set up Node.js\n        uses: actions/setup-node@v4\n        with:\n          node-version: '20'`;
+                if (document.getElementById('stepCache').checked) yaml += `\n          cache: 'npm'`;
+                yaml += `\n\n      - name: Install dependencies\n        run: npm ci`;
+                if (document.getElementById('stepLint').checked) yaml += `\n\n      - name: Run lint\n        run: npm run lint`;
+                if (document.getElementById('stepTest').checked) yaml += `\n\n      - name: Run tests\n        run: npm test`;
+                if (document.getElementById('stepBuild').checked) yaml += `\n\n      - name: Build project\n        run: npm run build`;
+            } else if (template === 'python') {
+                yaml += `\n\n      - name: Set up Python\n        uses: actions/setup-python@v5\n        with:\n          python-version: '3.10'`;
+                if (document.getElementById('stepCache').checked) yaml += `\n          cache: 'pip'`;
+                yaml += `\n\n      - name: Install dependencies\n        run: |\n          python -m pip install --upgrade pip\n          pip install -r requirements.txt`;
+                if (document.getElementById('stepTest').checked) yaml += `\n\n      - name: Run tests\n        run: pytest`;
+            } else if (template === 'go') {
+                yaml += `\n\n      - name: Set up Go\n        uses: actions/setup-go@v5\n        with:\n          go-version: '1.21'`;
+                yaml += `\n\n      - name: Install dependencies\n        run: go mod download`;
+                if (document.getElementById('stepTest').checked) yaml += `\n\n      - name: Run tests\n        run: go test ./...`;
+            } else if (template === 'static') {
+                if (document.getElementById('stepBuild').checked) yaml += `\n\n      - name: Build (optional)\n        run: echo "Building static site..."`;
+            } else if (template === 'docker') {
+                yaml += `\n\n      - name: Set up Docker Buildx\n        uses: actions/setup-buildx-action@v3\n\n      - name: Build Docker image\n        run: docker build . -t my-app:latest`;
+            }
 
-          if (enableBuild) {
-            lines.push("");
-            lines.push("      - name: Build");
-            lines.push("        run: npm run build");
-          }
+            if (document.getElementById('stepDeploy').checked) {
+                yaml += `\n\n      - name: Deploy to GitHub Pages\n        uses: peaceiris/actions-gh-pages@v3\n        with:\n          github_token: \${{ secrets.GITHUB_TOKEN }}\n          publish_dir: ./dist`;
+            }
 
-          if (enableCoverage) {
-            lines.push("");
-            lines.push("      - name: Upload coverage");
-            lines.push("        uses: codecov/codecov-action@v4");
-            lines.push("        with:");
-            lines.push("          token: ${{ secrets.CODECOV_TOKEN }}");
-          }
-
-          if (enableArtifact) {
-            lines.push("");
-            lines.push("      - name: Upload artifact");
-            lines.push("        uses: actions/upload-artifact@v4");
-            lines.push("        with:");
-            lines.push("          name: build-${{ github.sha }}");
-            lines.push("          path: dist/");
-          }
-
-          if (isRelease) {
-            lines.push("");
-            lines.push("  release:");
-            lines.push("    needs: build");
-            lines.push("    runs-on: " + runsOn);
-            lines.push("    steps:");
-            lines.push("      - name: Checkout");
-            lines.push("        uses: actions/checkout@v4");
-            lines.push("");
-            lines.push("      - name: Download artifact");
-            lines.push("        uses: actions/download-artifact@v4");
-            lines.push("        with:");
-            lines.push("          name: build-${{ github.sha }}");
-            lines.push("          path: dist/");
-            lines.push("");
-            lines.push("      - name: Create Release");
-            lines.push("        uses: softprops/action-gh-release@v1");
-            lines.push("        with:");
-            lines.push("          files: dist/*");
-            lines.push("          generate_release_notes: true");
-          }
+            yamlOutput.textContent = yaml;
         }
 
-        outputEl.textContent = lines.join("\n");
-        saveToUrl();
-      };
-
-      // Template buttons
-      document.querySelectorAll(".template-btn").forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          applyTemplate(btn.dataset.template);
-        });
-      });
-
-      // Generate button
-      document.getElementById("btnGenerate").addEventListener("click", generate);
-
-      // Auto-generate on input change
-      [
-        workflowNameEl,
-        branchesEl,
-        nodeVersionsEl,
-        runsOnEl,
-        enableCacheEl,
-        enableLintEl,
-        enableTestEl,
-        enableBuildEl,
-        enableCoverageEl,
-        enableArtifactEl
-      ].forEach(function (el) {
-        el.addEventListener("change", generate);
-        el.addEventListener("input", generate);
-      });
-
-      // Copy
-      document.getElementById("btnCopy").addEventListener("click", async function () {
-        try {
-          await navigator.clipboard.writeText(outputEl.textContent);
-          showStatus("已复制到剪贴�?, "success");
-        } catch (e) {
-          showStatus("复制失败", "error");
-        }
-      });
-
-      // Download
-      document.getElementById("btnDownload").addEventListener("click", function () {
-        var content = outputEl.textContent;
-        var blob = new Blob([content], { type: "text/yaml" });
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement("a");
-        a.href = url;
-        a.download = "ci.yml";
-        a.click();
-        URL.revokeObjectURL(url);
-        showStatus("已下�?ci.yml", "success");
-      });
-
-      // Share
-      document.getElementById("btnShare").addEventListener("click", async function () {
-        saveToUrl();
-        try {
-          await navigator.clipboard.writeText(location.href);
-          showStatus("分享链接已复�?, "success");
-        } catch (e) {
-          showStatus("复制失败", "error");
-        }
-      });
-
-      function showStatus(msg, type) {
-        statusEl.textContent = msg;
-        statusEl.className = "status " + (type || "");
-      }
-
-      // URL state
-      function saveToUrl() {
-        var state = {
-          t: currentTemplate,
-          n: workflowNameEl.value,
-          b: branchesEl.value,
-          v: nodeVersionsEl.value,
-          r: runsOnEl.value,
-          c: enableCacheEl.checked,
-          l: enableLintEl.checked,
-          te: enableTestEl.checked,
-          bu: enableBuildEl.checked,
-          co: enableCoverageEl.checked,
-          ar: enableArtifactEl.checked
-        };
-        try {
-          history.replaceState(null, "", "#" + btoa(JSON.stringify(state)));
-        } catch (e) {
-          // ignore
-        }
-      }
-
-      window.loadFromUrl = function () {
-        var hash = location.hash.slice(1);
-        if (!hash) return false;
-        try {
-          var state = JSON.parse(atob(hash));
-          if (state.t) currentTemplate = state.t;
-          if (state.n) workflowNameEl.value = state.n;
-          if (state.b !== undefined) branchesEl.value = state.b;
-          if (state.v !== undefined) nodeVersionsEl.value = state.v;
-          if (state.r) runsOnEl.value = state.r;
-          if (state.c !== undefined) enableCacheEl.checked = state.c;
-          if (state.l !== undefined) enableLintEl.checked = state.l;
-          if (state.te !== undefined) enableTestEl.checked = state.te;
-          if (state.bu !== undefined) enableBuildEl.checked = state.bu;
-          if (state.co !== undefined) enableCoverageEl.checked = state.co;
-          if (state.ar !== undefined) enableArtifactEl.checked = state.ar;
-
-          document.querySelectorAll(".template-btn").forEach(function (btn) {
-            btn.classList.toggle("active", btn.dataset.template === currentTemplate);
-          });
-          return true;
-        } catch (e) {
-          // ignore
-        }
-        return false;
-      };
-
-      // Theme
-      window.toggleTheme = function () {
-        var html = document.documentElement;
-        var btn = document.querySelector(".theme-toggle");
-        var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
-        html.setAttribute("data-theme", next);
-        btn.textContent = next === "dark" ? "🌙" : "☀�?;
-        localStorage.setItem("theme", next);
-      };
-
-      // Init
-      (function () {
-        var saved = localStorage.getItem("theme");
-        if (saved) {
-          document.documentElement.setAttribute("data-theme", saved);
-          var btn = document.querySelector(".theme-toggle");
-          if (btn) btn.textContent = saved === "dark" ? "🌙" : "☀�?;
+        function resetConfig() {
+            wfName.value = 'CI';
+            wfBranches.value = 'main, master';
+            wfOS.value = 'ubuntu-latest';
+            wfTemplate.value = 'node';
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.checked = (cb.id === 'evPush' || cb.id === 'evPR' || cb.id === 'stepCache' || cb.id === 'stepTest' || cb.id === 'stepBuild');
+            });
+            generateYAML();
         }
 
-        if (!loadFromUrl()) {
-          generate();
-        } else {
-          generate();
+        async function copyYAML() {
+            try {
+                await navigator.clipboard.writeText(yamlOutput.textContent);
+                showToast();
+            } catch (err) {
+                console.error('复制失败', err);
+            }
         }
-      })();
+
+        function downloadYAML() {
+            const blob = new Blob([yamlOutput.textContent], { type: 'text/yaml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${wfName.value.toLowerCase() || 'ci'}.yml`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function showToast() {
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const btn = document.getElementById('themeBtn');
+            const isDark = html.getAttribute('data-theme') !== 'light';
+            if (isDark) {
+                html.setAttribute('data-theme', 'light');
+                btn.innerHTML = '<span>☀️</span> 亮色模式';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.removeAttribute('data-theme');
+                btn.innerHTML = '<span>🌙</span> 暗色模式';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+            document.getElementById('themeBtn').innerHTML = '<span>☀️</span> 亮色模式';
+        }
+
+        // Init
+        generateYAML();
     </script>
-  </body>
+</body>
 </html>
-
