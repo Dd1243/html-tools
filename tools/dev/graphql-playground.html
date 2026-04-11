@@ -1,761 +1,427 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GraphQL Playground - WebUtils</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GraphQL Playground 在线测试器 - 交互式 API 调试与内省工具 - WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="GraphQL Playground - WebUtils" />
-    <meta name="keywords" content="graphql-playground,dev,tools,webutils" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/dev/graphql-playground.html" />
+    <meta name="description" content="轻量级在线 GraphQL Playground。支持实时执行 Query 和 Mutation，具备自动格式化、变量管理、响应时间统计及查询历史记录功能。支持通过 Introspection 获取远程 Schema，是开发者调试 GraphQL API 的理想工具。">
+    <meta name="keywords" content="GraphQL在线测试,GraphQL客户端,GraphQL Playground,API调试,内省查询,GraphiQL替代,GraphQL IDE">
+    <meta name="author" content="WebUtils">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://essays4u.net/tools/dev/graphql-playground.html">
 
     <!-- Open Graph -->
-    <meta property="og:title" content="GraphQL Playground - WebUtils" />
-    <meta property="og:description" content="GraphQL Playground - WebUtils" />
-    <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/dev/graphql-playground.html"
-    />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://essays4u.net/tools/dev/graphql-playground.html">
+    <meta property="og:title" content="GraphQL Playground 在线测试器 - 交互式 API 调试与内省工具">
+    <meta property="og:description" content="无需安装，在线调试您的 GraphQL API，支持内省、历史记录与变量。">
+    <meta property="og:image" content="https://essays4u.net/social-preview.png">
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="GraphQL Playground - WebUtils" />
-    <meta name="twitter:description" content="GraphQL Playground - WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="GraphQL Playground 在线测试器 - 交互式 API 调试与内省工具">
+    <meta property="twitter:description" content="无需安装，在线调试您的 GraphQL API，支持内省、历史记录与变量。">
+    <meta property="twitter:image" content="https://essays4u.net/social-preview.png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 
     <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      :root {
-        --bg-primary: #0a0a0f;
-        --bg-secondary: #12121a;
-        --bg-tertiary: #1a1a25;
-        --color-text-primary: #fff;
-        --color-text-secondary: #88a;
-        --accent: #e535ab;
-        --border: #2a2a3a;
-        --success: #22c55e;
-      }
-      [data-theme="light"] {
-        --bg-primary: #f8fafc;
-        --bg-secondary: #fff;
-        --bg-tertiary: #f1f5f9;
-        --color-text-primary: #1e293b;
-        --color-text-secondary: #64748b;
-        --border: #e2e8f0;
-      }
-      body {
-        font-family: var(--font-sans);
-        background: var(--bg-deep);
-        color: var(--color-text-primary);
-        min-height: 100vh;
-      }
-      .header {
-        background: linear-gradient(135deg, #e535ab, #b8278f);
-        padding: 1.5rem 2rem;
-      }
-      .nav {
-        max-width: 1600px;
-        margin: 0 auto;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .back-link {
-        color: rgba(255, 255, 255, 0.9);
-        text-decoration: none;
-        font-size: 0.9rem;
-      }
-      .theme-toggle {
-        background: rgba(255, 255, 255, 0.2);
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
-        color: white;
-        cursor: pointer;
-      }
-      .header-content {
-        max-width: 1600px;
-        margin: 1rem auto 0;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-      }
-      .header h1 {
-        font-size: 1.5rem;
-      }
-      .container {
-        max-width: 1600px;
-        margin: 0 auto;
-        padding: 1.5rem;
-      }
-      .endpoint-bar {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 1rem;
-        flex-wrap: wrap;
-      }
-      .endpoint-bar input {
-        flex: 1;
-        min-width: 300px;
-        padding: 0.75rem 1rem;
-        background: var(--bg-secondary);
-        border: 1px solid var(--border-subtle);
-        border-radius: 0.5rem;
-        color: var(--color-text-primary);
-        font-size: 0.95rem;
-      }
-      .btn {
-        padding: 0.75rem 1.5rem;
-        background: var(--accent-cyan);
-        color: white;
-        border: none;
-        border-radius: 0.5rem;
-        cursor: pointer;
-        font-size: 0.95rem;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      .btn:hover {
-        opacity: 0.9;
-      }
-      .btn-secondary {
-        background: var(--bg-tertiary);
-        color: var(--color-text-primary);
-        border: 1px solid var(--border-subtle);
-      }
-      .playground {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-        height: calc(100vh - 220px);
-        min-height: 500px;
-      }
-      .panel {
-        background: var(--bg-secondary);
-        border-radius: 0.75rem;
-        border: 1px solid var(--border-subtle);
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-      }
-      .panel-header {
-        padding: 0.75rem 1rem;
-        border-bottom: 1px solid var(--border-subtle);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: var(--bg-tertiary);
-      }
-      .panel-title {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: var(--color-text-secondary);
-      }
-      .panel-tabs {
-        display: flex;
-        gap: 0.5rem;
-      }
-      .panel-tab {
-        padding: 0.25rem 0.75rem;
-        background: transparent;
-        border: none;
-        color: var(--color-text-secondary);
-        cursor: pointer;
-        font-size: 0.8rem;
-        border-radius: 0.25rem;
-      }
-      .panel-tab.active {
-        background: var(--accent-cyan);
-        color: white;
-      }
-      .panel-content {
-        flex: 1;
-        overflow: hidden;
-        position: relative;
-      }
-      textarea {
-        width: 100%;
-        height: 100%;
-        padding: 1rem;
-        background: transparent;
-        border: none;
-        color: var(--color-text-primary);
-        font-family: Monaco, Menlo, Consolas, monospace;
-        font-size: 0.9rem;
-        resize: none;
-        line-height: 1.5;
-      }
-      textarea:focus {
-        outline: none;
-      }
-      .result-view {
-        width: 100%;
-        height: 100%;
-        padding: 1rem;
-        overflow: auto;
-        font-family: Monaco, Menlo, Consolas, monospace;
-        font-size: 0.9rem;
-        white-space: pre-wrap;
-        overflow-wrap: break-word;
-      }
-      .result-success {
-        color: var(--accent-green);
-      }
-      .result-error {
-        color: #ef4444;
-      }
-      .variables-section {
-        border-top: 1px solid var(--border-subtle);
-        max-height: 150px;
-      }
-      .variables-header {
-        padding: 0.5rem 1rem;
-        background: var(--bg-tertiary);
-        font-size: 0.8rem;
-        color: var(--color-text-secondary);
-        cursor: pointer;
-        display: flex;
-        justify-content: space-between;
-      }
-      .variables-content {
-        height: 100px;
-      }
-      .variables-content textarea {
-        height: 100%;
-      }
-      .history {
-        background: var(--bg-secondary);
-        border-radius: 0.75rem;
-        border: 1px solid var(--border-subtle);
-        margin-top: 1rem;
-        max-height: 200px;
-        overflow: hidden;
-      }
-      .history-header {
-        padding: 0.75rem 1rem;
-        border-bottom: 1px solid var(--border-subtle);
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: var(--color-text-secondary);
-        background: var(--bg-tertiary);
-      }
-      .history-list {
-        max-height: 150px;
-        overflow-y: auto;
-      }
-      .history-item {
-        padding: 0.5rem 1rem;
-        border-bottom: 1px solid var(--border-subtle);
-        cursor: pointer;
-        font-size: 0.8rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .history-item:hover {
-        background: var(--bg-tertiary);
-      }
-      .history-item:last-child {
-        border-bottom: none;
-      }
-      .history-query {
-        font-family: var(--font-mono);
-        color: var(--color-text-primary);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 70%;
-      }
-      .history-time {
-        color: var(--color-text-secondary);
-        font-size: 0.75rem;
-      }
-      .status-bar {
-        display: flex;
-        gap: 1rem;
-        font-size: 0.8rem;
-        color: var(--color-text-secondary);
-        margin-top: 0.5rem;
-      }
-      .status-item {
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-      }
-      .prettify-btn {
-        position: absolute;
-        top: 0.5rem;
-        right: 0.5rem;
-        padding: 0.25rem 0.5rem;
-        background: var(--bg-tertiary);
-        border: 1px solid var(--border-subtle);
-        border-radius: 0.25rem;
-        color: var(--color-text-secondary);
-        cursor: pointer;
-        font-size: 0.75rem;
-      }
-      .prettify-btn:hover {
-        color: var(--color-text-primary);
-      }
-      @media (max-width: 900px) {
-        .playground {
-          grid-template-columns: 1fr;
-          height: auto;
+        :root {
+            --bg-deep: #0a0a0f;
+            --bg-surface: #12121a;
+            --bg-card: #1a1a24;
+            --bg-input: #0e0e14;
+            --text-primary: #e8e8ed;
+            --text-secondary: #8888a0;
+            --text-muted: #55556a;
+            --border-subtle: #2a2a3a;
+            --border-strong: #3a3a4a;
+            --accent-gql: #e535ab;
+            --accent-gql-glow: rgba(229, 53, 171, 0.15);
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --font-sans: 'Inter', -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-display: 'Space Grotesk', sans-serif;
         }
-        .panel {
-          min-height: 300px;
-        }
-      }
 
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
+        [data-theme="light"] {
+            --bg-deep: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-card: #ffffff;
+            --bg-input: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border-subtle: #e2e8f0;
+            --border-strong: #cbd5e1;
+            --accent-gql: #d1108a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-deep);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s;
+            min-height: 100vh;
+        }
+
+        .container { max-width: 1600px; margin: 0 auto; padding: 2rem; }
+        
+        header { margin-bottom: 2rem; text-align: center; position: relative; }
+        .breadcrumb { display: flex; gap: 0.5rem; font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem; justify-content: center; }
+        .breadcrumb a { color: var(--accent-gql); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        
+        h1 { font-family: var(--font-display); font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--accent-gql); }
+        .subtitle { color: var(--text-secondary); font-size: 1.1rem; }
+
+        .theme-toggle { position: absolute; top: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 0.5rem 1rem; border-radius: var(--radius-md); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
+
+        .endpoint-bar { background: var(--bg-card); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); display: flex; gap: 1rem; margin-bottom: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .endpoint-bar input { flex: 1; background: var(--bg-input); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 0.75rem 1rem; border-radius: 8px; outline: none; font-family: var(--font-mono); }
+        .endpoint-bar input:focus { border-color: var(--accent-gql); }
+
+        .playground-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; height: calc(100vh - 350px); min-height: 500px; margin-bottom: 1.5rem; }
+        @media (max-width: 968px) { .playground-grid { grid-template-columns: 1fr; height: auto; } }
+
+        .panel { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); display: flex; flex-direction: column; overflow: hidden; }
+        .panel-header { padding: 0.75rem 1rem; background: var(--bg-surface); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; }
+        .panel-title { font-size: 0.85rem; font-family: var(--font-display); text-transform: uppercase; color: var(--accent-gql); font-weight: 700; }
+        .panel-actions { display: flex; gap: 0.5rem; }
+
+        .panel-body { flex: 1; position: relative; }
+        textarea { width: 100%; height: 100%; background: transparent; border: none; color: var(--text-primary); padding: 1.5rem; font-family: var(--font-mono); font-size: 0.9rem; resize: none; outline: none; line-height: 1.5; }
+
+        .variables-pane { border-top: 1px solid var(--border-subtle); height: 150px; transition: height 0.3s; }
+        .variables-pane.collapsed { height: 40px; }
+        .variables-header { padding: 0.5rem 1rem; background: var(--bg-surface); cursor: pointer; display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); }
+
+        .response-view { width: 100%; height: 100%; padding: 1.5rem; background: #0d1117; color: #c9d1d9; font-family: var(--font-mono); font-size: 0.85rem; overflow: auto; white-space: pre-wrap; }
+        .status-line { display: flex; gap: 1.5rem; padding: 0.5rem 1rem; font-size: 0.75rem; color: var(--text-muted); background: var(--bg-surface); border-top: 1px solid var(--border-subtle); }
+
+        .btn { padding: 0.6rem 1.2rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); background: var(--bg-card); color: var(--text-primary); cursor: pointer; font-size: 0.875rem; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn:hover { background: var(--border-subtle); transform: translateY(-1px); }
+        .btn-primary { background: var(--accent-gql); color: #fff; border: none; font-weight: 600; }
+        .btn-primary:hover { opacity: 0.9; box-shadow: 0 4px 12px var(--accent-gql-glow); }
+
+        .history-list { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1rem; max-height: 200px; overflow-y: auto; }
+        .history-item { padding: 0.5rem; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; font-size: 0.8rem; cursor: pointer; }
+        .history-item:hover { background: var(--bg-surface); }
+        .history-item:last-child { border-bottom: none; }
+
+        /* AdSense Placeholders */
+        .ads-placeholder { margin: 2rem 0; background: var(--bg-card); border: 1px dashed var(--border-subtle); height: 100px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem; border-radius: var(--radius-lg); }
+
+        /* Article Content */
+        article { margin-top: 4rem; max-width: 1000px; margin-left: auto; margin-right: auto; }
+        article h2 { font-family: var(--font-display); font-size: 1.75rem; margin: 2.5rem 0 1rem; color: var(--accent-gql); }
+        article h3 { font-size: 1.25rem; margin: 1.5rem 0 0.75rem; }
+        article p { margin-bottom: 1.25rem; color: var(--text-secondary); }
+        article ul, article ol { margin-bottom: 1.5rem; padding-left: 1.5rem; color: var(--text-secondary); }
+        article li { margin-bottom: 0.5rem; }
+        code { background: var(--bg-input); padding: 0.2rem 0.4rem; border-radius: 4px; font-family: var(--font-mono); font-size: 0.9em; }
+
+        .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--accent-gql); color: #fff; padding: 0.75rem 1.5rem; border-radius: var(--radius-md); transform: translateY(100px); transition: transform 0.3s; z-index: 1000; }
+        .toast.show { transform: translateY(0); }
+
+        footer { margin-top: 4rem; padding: 2rem; border-top: 1px solid var(--border-subtle); text-align: center; color: var(--text-muted); font-size: 0.875rem; }
+        footer a { color: var(--text-secondary); text-decoration: none; margin: 0 0.5rem; }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      GraphQL Playground
-    </nav>
-    <div class="header">
-      <div class="nav">
-        <button class="theme-toggle" onclick="toggleTheme()">🌓 主题</button>
-      </div>
-      <div class="header-content">
-        <h1>�?GraphQL Playground</h1>
-      </div>
-    </div>
-
+</head>
+<body>
     <div class="container">
-      <div class="endpoint-bar">
-        <input
-          type="text"
-          id="endpointUrl"
-          placeholder="GraphQL Endpoint URL (例如: https://api.example.com/graphql)"
-          value=""
-        />
-        <button class="btn" onclick="executeQuery()">�?执行</button>
-        <button class="btn btn-secondary" onclick="loadExample()">示例查询</button>
-        <button class="btn btn-secondary" onclick="fetchSchema()">获取Schema</button>
-      </div>
+        <nav class="breadcrumb">
+            <a href="../../index.html">首页</a> / <span>开发工具</span> / <span>GraphQL Playground</span>
+        </nav>
 
-      <div class="playground">
-        <div class="panel">
-          <div class="panel-header">
-            <span class="panel-title">查询</span>
-            <div class="panel-tabs">
-              <button class="panel-tab active" onclick="switchTab('query')">Query</button>
-              <button class="panel-tab" onclick="switchTab('mutation')">Mutation</button>
-              <button class="panel-tab" onclick="switchTab('subscription')">Subscription</button>
-            </div>
-          </div>
-          <div class="panel-content">
-            <textarea id="queryEditor" placeholder="输入GraphQL查询..."></textarea>
-            <button class="prettify-btn" onclick="prettifyQuery()">格式�?/button>
-          </div>
-          <div class="variables-section">
-            <div class="variables-header" onclick="toggleVariables()">
-              <span>变量 (JSON)</span>
-              <span id="varToggle">�?/span>
-            </div>
-            <div class="variables-content" id="variablesContent">
-              <textarea id="variablesEditor" placeholder='{"key": "value"}'></textarea>
-            </div>
-          </div>
+        <header>
+            <h1>GraphQL Playground</h1>
+            <p class="subtitle">轻量、极速的在线 GraphQL 客户端，实时调试您的 API 接口</p>
+            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">
+                <span>🌙</span> 暗色模式
+            </button>
+        </header>
+
+        <!-- Google AdSense Top -->
+        <div class="ads-placeholder">
+            广告占位符 - Google AdSense (Top)
         </div>
 
-        <div class="panel">
-          <div class="panel-header">
-            <span class="panel-title">响应</span>
-            <div class="panel-tabs">
-              <button class="panel-tab active" id="resultTab">结果</button>
-              <button class="panel-tab" id="schemaTab" onclick="showSchema()">Schema</button>
+        <main>
+            <div class="endpoint-bar">
+                <input type="text" id="endpointUrl" placeholder="输入 GraphQL Endpoint URL (例如: https://api.spacex.land/graphql)" spellcheck="false">
+                <button class="btn btn-primary" onclick="executeQuery()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    执行查询
+                </button>
+                <button class="btn" onclick="fetchSchema()">获取 Schema</button>
             </div>
-          </div>
-          <div class="panel-content">
-            <div class="result-view" id="resultView">
-              <span style="color: var(--color-text-secondary)">执行查询后结果将显示在这�?..</span>
+
+            <div class="playground-grid">
+                <!-- Request Panel -->
+                <section class="panel">
+                    <div class="panel-header">
+                        <span class="panel-title">操作请求</span>
+                        <div class="panel-actions">
+                            <button class="btn" style="padding:0.2rem 0.5rem;" onclick="prettifyQuery()">格式化</button>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <textarea id="queryEditor" placeholder="# 输入 GraphQL 查询...&#10;query GetCompany {&#10;  company {&#10;    name&#10;    ceo&#10;  }&#10;}"></textarea>
+                    </div>
+                    <div class="variables-pane" id="varsPane">
+                        <div class="variables-header" onclick="toggleVars()">
+                            <span>QUERY VARIABLES (JSON)</span>
+                            <span id="varToggleIcon">▼</span>
+                        </div>
+                        <div style="height: 110px;">
+                            <textarea id="varsEditor" placeholder='{ "id": 1 }'></textarea>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Response Panel -->
+                <section class="panel">
+                    <div class="panel-header">
+                        <span class="panel-title">执行响应</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="response-view" id="responseView">等待执行查询...</div>
+                    </div>
+                    <div class="status-line">
+                        <span id="statusTime">时间: -</span>
+                        <span id="statusSize">大小: -</span>
+                    </div>
+                </section>
             </div>
-          </div>
-        </div>
-      </div>
 
-      <div class="status-bar">
-        <div class="status-item" id="statusTime">响应时间: -</div>
-        <div class="status-item" id="statusSize">响应大小: -</div>
-      </div>
+            <div class="panel-title" style="margin-bottom: 0.5rem; font-size: 0.75rem;">查询历史</div>
+            <div class="history-list" id="historyList">
+                <div style="text-align: center; padding: 1rem; color: var(--text-muted); font-size: 0.85rem;">暂无历史记录</div>
+            </div>
+        </main>
 
-      <div class="history" id="historyPanel">
-        <div class="history-header">查询历史</div>
-        <div class="history-list" id="historyList">
-          <div
-            style="
-              padding: 1rem;
-              color: var(--color-text-secondary);
-              text-align: center;
-              font-size: 0.85rem;
-            "
-          >
-            暂无历史记录
-          </div>
+        <!-- Google AdSense Bottom -->
+        <div class="ads-placeholder">
+            广告占位符 - Google AdSense (Bottom)
         </div>
-      </div>
+
+        <!-- SEO Content -->
+        <article>
+            <h2>GraphQL Playground：每一位开发者的必备利器</h2>
+            <p>GraphQL Playground 是一个功能强大的 IDE（集成开发环境），专门用于探索、测试和调试 GraphQL API。与传统的 REST 接口测试工具相比，Playground 充分利用了 GraphQL 的强类型系统和自描述特性，提供了极其流畅的开发体验。</p>
+            
+            <h3>为什么需要在线 Playground？</h3>
+            <p>在开发过程中，我们经常需要快速验证一个查询逻辑，或者在没有安装本地客户端（如 Postman, Insomnia）的机器上调试生产环境接口。本工具提供：</p>
+            <ul>
+                <li><strong>即开即用：</strong> 无需安装任何软件，只要有浏览器即可访问全球任何公开或受信任的 GraphQL 节点。</li>
+                <li><strong>内省支持 (Introspection)：</strong> 通过一键“获取 Schema”，您可以直接查看服务端定义的所有类型、查询和变更，这相当于拥有了一份实时更新的 API 文档。</li>
+                <li><strong>本地安全：</strong> 所有的查询历史记录和 Endpoint 配置都保存在您的浏览器本地（localStorage），不会上传到我们的服务器。</li>
+                <li><strong>性能分析：</strong> 实时显示响应时间和返回包大小，帮助您优化查询深度和字段选择。</li>
+            </ul>
+
+            <h3>解决的具体痛点</h3>
+            <p><strong>场景一：验证跨域 (CORS) 问题。</strong><br>在本地开发时，由于环境差异，经常会遇到 CORS 限制。使用在线工具可以快速判断是服务端配置问题还是本地开发代理配置问题。</p>
+            
+            <p><strong>场景二：复杂变量调试。</strong><br>GraphQL 的变量系统（Variables）要求严格的 JSON 格式。本工具提供独立的变量编辑窗口，并支持实时格式化，确保参数传递万无一无。</p>
+
+            <p><strong>场景三：历史记录找回。</strong><br>您是否写过一段非常复杂的查询却忘记保存？我们的历史记录功能会自动保存您最近执行的 20 条查询，随时点击即可恢复。</p>
+
+            <h3>GraphQL vs. REST：核心优势</h3>
+            <ol>
+                <li><strong>精确获取：</strong> REST 往往会返回整个资源对象（Over-fetching），而 GraphQL 允许前端指定所需的字段，极大地节省了带宽。</li>
+                <li><strong>单一端点：</strong> 无需管理 <code>/users</code>, <code>/posts</code>, <code>/comments</code> 等数十个端点，GraphQL 只有一个 <code>/graphql</code> 端点处理所有请求。</li>
+                <li><strong>强类型契约：</strong> 后端 Schema 即文档，前端可以根据类型定义自动生成代码（如 TypeScript 定义），显著减少前后端联调成本。</li>
+            </ol>
+        </article>
+
+        <footer>
+            <p>&copy; 2026 WebUtils. 基于 MIT 协议开源。 <a href="https://github.com/nicepkg/html-tools">GitHub</a> | <a href="../../index.html">更多工具</a></p>
+        </footer>
     </div>
+
+    <div id="toast" class="toast">操作成功</div>
 
     <script>
-      window.toggleTheme = function () {
-        const theme = document.body.getAttribute("data-theme") === "light" ? "dark" : "light";
-        document.body.setAttribute("data-theme", theme);
-        localStorage.setItem("theme", theme);
-      };
-      document.body.setAttribute("data-theme", localStorage.getItem("theme") || "dark");
+        let history = JSON.parse(localStorage.getItem('gql_playground_history') || '[]');
 
-      let queryHistory = JSON.parse(localStorage.getItem("graphql_history") || "[]");
-      let currentSchema = null;
-
-      window.loadExample = function () {
-        document.getElementById("queryEditor").value = `# 示例GraphQL查询
-query GetUsers($limit: Int) {
-  users(limit: $limit) {
-    id
-    name
-    email
-    posts {
-      id
-      title
-      createdAt
-    }
-  }
-}
-
-# 你也可以尝试mutation
-# mutation CreateUser($input: CreateUserInput!) {
-#   createUser(input: $input) {
-#     id
-#     name
-#   }
-# }`;
-        document.getElementById("variablesEditor").value = JSON.stringify({ limit: 10 }, null, 2);
-      };
-
-      window.switchTab = function (type) {
-        document
-          .querySelectorAll(".panel-tabs .panel-tab")
-          .forEach((t) => t.classList.remove("active"));
-        event.target.classList.add("active");
-
-        const templates = {
-          query: "query {\n  \n}",
-          mutation: "mutation {\n  \n}",
-          subscription: "subscription {\n  \n}"
-        };
-
-        const editor = document.getElementById("queryEditor");
-        if (!editor.value.trim()) {
-          editor.value = templates[type];
-        }
-      };
-
-      window.toggleVariables = function () {
-        const content = document.getElementById("variablesContent");
-        const toggle = document.getElementById("varToggle");
-        if (content.style.display === "none") {
-          content.style.display = "block";
-          toggle.textContent = "�?;
-        } else {
-          content.style.display = "none";
-          toggle.textContent = "�?;
-        }
-      };
-
-      async function executeQuery() {
-        const endpoint = document.getElementById("endpointUrl").value.trim();
-        const query = document.getElementById("queryEditor").value.trim();
-        const variablesStr = document.getElementById("variablesEditor").value.trim();
-
-        if (!endpoint) {
-          showResult({ error: "请输入GraphQL Endpoint URL" }, true);
-          return;
+        // Theme Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const btn = document.getElementById('themeBtn');
+            const isDark = html.getAttribute('data-theme') !== 'light';
+            if (isDark) {
+                html.setAttribute('data-theme', 'light');
+                btn.innerHTML = '<span>☀️</span> 亮色模式';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.removeAttribute('data-theme');
+                btn.innerHTML = '<span>🌙</span> 暗色模式';
+                localStorage.setItem('theme', 'dark');
+            }
         }
 
-        if (!query) {
-          showResult({ error: "请输入GraphQL查询" }, true);
-          return;
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+            document.getElementById('themeBtn').innerHTML = '<span>☀️</span> 亮色模式';
         }
 
-        let variables = null;
-        if (variablesStr) {
-          try {
-            variables = JSON.parse(variablesStr);
-          } catch (e) {
-            showResult({ error: "变量JSON格式错误: " + e.message }, true);
-            return;
-          }
+        function toggleVars() {
+            const pane = document.getElementById('varsPane');
+            const icon = document.getElementById('varToggleIcon');
+            pane.classList.toggle('collapsed');
+            icon.textContent = pane.classList.contains('collapsed') ? '▲' : '▼';
         }
 
-        const startTime = performance.now();
+        async function executeQuery() {
+            const url = document.getElementById('endpointUrl').value.trim();
+            const query = document.getElementById('queryEditor').value.trim();
+            const varsStr = document.getElementById('varsEditor').value.trim();
+            const view = document.getElementById('responseView');
 
-        try {
-          const response = await fetch(endpoint, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              query,
-              variables
-            })
-          });
+            if (!url) return alert('请输入 Endpoint URL');
+            if (!query) return alert('请输入 GraphQL 查询');
 
-          const endTime = performance.now();
-          const data = await response.json();
-          const responseSize = JSON.stringify(data).length;
+            let vars = {};
+            if (varsStr) {
+                try { vars = JSON.parse(varsStr); } 
+                catch (e) { return alert('变量 JSON 格式错误'); }
+            }
 
-          document.getElementById("statusTime").textContent =
-            `响应时间: ${Math.round(endTime - startTime)}ms`;
-          document.getElementById("statusSize").textContent =
-            `响应大小: ${formatBytes(responseSize)}`;
+            view.textContent = '请求中...';
+            const start = performance.now();
 
-          showResult(data, !!data.errors);
-          addToHistory(query, variables);
-        } catch (e) {
-          showResult({ error: "请求失败: " + e.message }, true);
-        }
-      }
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query, variables: vars })
+                });
+                const data = await res.json();
+                const end = performance.now();
 
-      function showResult(data, isError = false) {
-        const resultView = document.getElementById("resultView");
-        resultView.className = "result-view " + (isError ? "result-error" : "result-success");
-        resultView.textContent = JSON.stringify(data, null, 2);
-      }
-
-      function formatBytes(bytes) {
-        if (bytes < 1024) return bytes + " B";
-        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + " KB";
-        return (bytes / (1024 * 1024)).toFixed(2) + " MB";
-      }
-
-      function addToHistory(query, variables) {
-        const item = {
-          query: query.substring(0, 100),
-          fullQuery: query,
-          variables,
-          time: new Date().toLocaleTimeString()
-        };
-        queryHistory.unshift(item);
-        if (queryHistory.length > 20) queryHistory.pop();
-        localStorage.setItem("graphql_history", JSON.stringify(queryHistory));
-        renderHistory();
-      }
-
-      function renderHistory() {
-        const list = document.getElementById("historyList");
-        if (queryHistory.length === 0) {
-          list.innerHTML =
-            '<div style="padding: 1rem; color: var(--color-text-secondary); text-align: center; font-size: 0.85rem;">暂无历史记录</div>';
-          return;
-        }
-        list.innerHTML = queryHistory
-          .map(
-            (item, i) => `
-                <div class="history-item" onclick="loadHistory(${i})">
-                    <span class="history-query">${escapeHtml(item.query)}</span>
-                    <span class="history-time">${item.time}</span>
-                </div>
-            `
-          )
-          .join("");
-      }
-
-      window.loadHistory = function (index) {
-        const item = queryHistory[index];
-        document.getElementById("queryEditor").value = item.fullQuery;
-        if (item.variables) {
-          document.getElementById("variablesEditor").value = JSON.stringify(
-            item.variables,
-            null,
-            2
-          );
-        }
-      };
-
-      window.escapeHtml = function (str) {
-        return str.replace(
-          /[&<>"']/g,
-          (m) =>
-            ({
-              "&": "&amp;",
-              "<": "&lt;",
-              ">": "&gt;",
-              '"': "&quot;",
-              "'": "&#39;"
-            })[m]
-        );
-      };
-
-      window.prettifyQuery = function () {
-        const editor = document.getElementById("queryEditor");
-        let query = editor.value;
-
-        // Basic prettification
-        query = query.replace(/\{/g, " {\n");
-        query = query.replace(/\}/g, "\n}");
-        query = query.replace(/,\s*/g, "\n");
-
-        // Re-indent
-        const lines = query.split("\n");
-        let indent = 0;
-        const formatted = lines
-          .map((line) => {
-            line = line.trim();
-            if (!line) return "";
-            if (line.startsWith("}")) indent--;
-            const result = "  ".repeat(Math.max(0, indent)) + line;
-            if (line.endsWith("{")) indent++;
-            return result;
-          })
-          .filter((l) => l)
-          .join("\n");
-
-        editor.value = formatted;
-      };
-
-      window.fetchSchema = async function () {
-        const endpoint = document.getElementById("endpointUrl").value.trim();
-        if (!endpoint) {
-          showResult({ error: "请输入GraphQL Endpoint URL" }, true);
-          return;
+                document.getElementById('statusTime').textContent = `时间: ${Math.round(end - start)}ms`;
+                document.getElementById('statusSize').textContent = `大小: ${formatBytes(JSON.stringify(data).length)}`;
+                
+                view.textContent = JSON.stringify(data, null, 2);
+                saveHistory(query, vars);
+            } catch (err) {
+                view.textContent = `请求失败:\n${err.message}`;
+            }
         }
 
-        const introspectionQuery = `
+        async function fetchSchema() {
+            const url = document.getElementById('endpointUrl').value.trim();
+            if (!url) return alert('请输入 Endpoint URL');
+            
+            const view = document.getElementById('responseView');
+            view.textContent = '正在获取 Introspection Schema...';
+
+            const introspectionQuery = `
                 query IntrospectionQuery {
                     __schema {
+                        queryType { name }
+                        mutationType { name }
+                        subscriptionType { name }
                         types {
-                            name
-                            kind
-                            fields {
-                                name
-                                type {
-                                    name
-                                    kind
-                                }
-                            }
+                            ...FullType
                         }
+                    }
+                }
+                fragment FullType on __Type {
+                    kind
+                    name
+                    fields(includeDeprecated: true) {
+                        name
+                        type { name kind }
                     }
                 }
             `;
 
-        try {
-          const response = await fetch(endpoint, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ query: introspectionQuery })
-          });
-          const data = await response.json();
-          currentSchema = data;
-          showResult(data, !!data.errors);
-        } catch (e) {
-          showResult({ error: "获取Schema失败: " + e.message }, true);
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: introspectionQuery })
+                });
+                const data = await res.json();
+                view.textContent = JSON.stringify(data, null, 2);
+            } catch (err) {
+                view.textContent = `获取失败:\n${err.message}`;
+            }
         }
-      };
 
-      window.showSchema = function () {
-        if (currentSchema) {
-          showResult(currentSchema, false);
-        } else {
-          showResult({ message: '请先点击"获取Schema"按钮' }, false);
+        function saveHistory(query, variables) {
+            const item = { query, variables, time: new Date().toLocaleTimeString() };
+            history.unshift(item);
+            if (history.length > 20) history.pop();
+            localStorage.setItem('gql_playground_history', JSON.stringify(history));
+            renderHistory();
         }
-      };
 
-      // Keyboard shortcuts
-      document.addEventListener("keydown", (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
-          e.preventDefault();
-          executeQuery();
+        function renderHistory() {
+            const list = document.getElementById('historyList');
+            if (history.length === 0) return;
+            
+            list.innerHTML = history.map((item, i) => `
+                <div class="history-item" onclick="loadHistory(${i})">
+                    <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:80%;">
+                        ${item.query.replace(/\n/g, ' ').substring(0, 80)}...
+                    </span>
+                    <span style="color:var(--text-muted)">${item.time}</span>
+                </div>
+            `).join('');
         }
-      });
 
-      renderHistory();
+        function loadHistory(i) {
+            const item = history[i];
+            document.getElementById('queryEditor').value = item.query;
+            document.getElementById('varsEditor').value = JSON.stringify(item.variables, null, 2);
+            showToast('已加载历史查询');
+        }
+
+        function prettifyQuery() {
+            const editor = document.getElementById('queryEditor');
+            let q = editor.value;
+            // Simplified prettifier
+            q = q.replace(/\{/g, ' {\n').replace(/\}/g, '\n}').replace(/,\s*/g, '\n');
+            const lines = q.split('\n');
+            let indent = 0;
+            const formatted = lines.map(l => {
+                l = l.trim();
+                if (!l) return null;
+                if (l.startsWith('}')) indent--;
+                const res = '  '.repeat(Math.max(0, indent)) + l;
+                if (l.endsWith('{')) indent++;
+                return res;
+            }).filter(l => l).join('\n');
+            editor.value = formatted;
+        }
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + ['B', 'KB', 'MB'][i];
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
+        }
+
+        // Init
+        renderHistory();
     </script>
-  </body>
+</body>
 </html>
-

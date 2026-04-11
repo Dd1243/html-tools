@@ -1,1017 +1,524 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Glob 模式测试 - WebUtils</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glob 模式测试器 - 在线通配符匹配与文件路径校验工具 - WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Glob 模式匹配测试" />
-    <meta name="keywords" content="glob 模式测试" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/dev/glob-tester.html" />
+    <meta name="description" content="功能强大的在线 Glob 模式测试工具。支持 *, **, ?, [], {} 等高级通配符语法。通过 picomatch 引擎实时校验文件路径匹配结果，提供详细的语法说明和常用模式示例。助力开发者调试构建脚本、配置文件和 CI/CD 流。">
+    <meta name="keywords" content="Glob测试,Glob模式,通配符匹配,文件路径校验,picomatch测试,正则表达式,构建工具配置">
+    <meta name="author" content="WebUtils">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://essays4u.net/tools/dev/glob-tester.html">
 
     <!-- Open Graph -->
-    <meta property="og:title" content="Glob 模式测试 - WebUtils" />
-    <meta property="og:description" content="Glob 模式匹配测试" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/dev/glob-tester.html" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://essays4u.net/tools/dev/glob-tester.html">
+    <meta property="og:title" content="Glob 模式测试器 - 在线通配符匹配与文件路径校验工具">
+    <meta property="og:description" content="实时测试 Glob 通配符模式，支持多种高级语法，助力开发者高效配置项目。">
+    <meta property="og:image" content="https://essays4u.net/social-preview.png">
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Glob 模式测试 - WebUtils" />
-    <meta name="twitter:description" content="Glob 模式匹配测试" />
-    <!-- OG Image -->
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Glob 模式测试器 - 在线通配符匹配与文件路径校验工具">
+    <meta property="twitter:description" content="实时测试 Glob 通配符模式，支持多种高级语法，助力开发者高效配置项目。">
+    <meta property="twitter:image" content="https://essays4u.net/social-preview.png">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
     <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
-      body {
-        font-family: var(--font-sans);
-        background: var(--color-bg-deep);
-        color: var(--color-text-primary);
-        min-height: 100vh;
-        line-height: 1.6;
-        padding: 24px;
-      }
-
-      .bg-grid {
-        position: fixed;
-        inset: 0;
-        background-image:
-          linear-gradient(rgb(0, 245, 212, 0.03) 1px, transparent 1px),
-          linear-gradient(90deg, rgb(0, 245, 212, 0.03) 1px, transparent 1px);
-        background-size: 50px 50px;
-        pointer-events: none;
-        z-index: 0;
-      }
-
-      .container {
-        position: relative;
-        z-index: 1;
-        max-width: 1000px;
-        margin: 0 auto;
-      }
-
-      .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        color: var(--color-accent-cyan);
-        text-decoration: none;
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-        margin-bottom: 24px;
-        transition: opacity 0.2s;
-      }
-
-      .back-link:hover {
-        opacity: 0.8;
-      }
-
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 44px;
-        height: 44px;
-        background: var(--color-bg-card);
-        border: 2px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .theme-toggle:hover {
-        border-color: var(--color-accent-cyan);
-        box-shadow: 0 0 20px var(--glow-cyan);
-      }
-
-      header {
-        margin-bottom: 32px;
-      }
-
-      header h1 {
-        font-family: var(--font-mono);
-        font-size: 1.75rem;
-        font-weight: 700;
-        margin-bottom: 8px;
-        background: linear-gradient(
-          135deg,
-          var(--color-text-primary) 0%,
-          var(--color-text-secondary) 100%
-        );
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      .desc {
-        color: var(--color-text-secondary);
-        font-size: 0.95rem;
-      }
-
-      .card {
-        background: var(--color-bg-card);
-        border: 2px solid var(--border-subtle);
-        border-radius: var(--radius-lg);
-        padding: 24px;
-        margin-bottom: 20px;
-      }
-
-      .btn-row {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        margin-bottom: 20px;
-      }
-
-      button {
-        font-family: var(--font-mono);
-        padding: 10px 16px;
-        font-size: 0.9rem;
-        border: 2px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        background: var(--color-bg-surface);
-        color: var(--color-text-primary);
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-
-      button:hover {
-        border-color: var(--color-accent-cyan);
-        box-shadow: 0 0 12px var(--glow-cyan);
-      }
-
-      button:focus-visible {
-        outline: 2px solid var(--color-accent-cyan);
-        outline-offset: 2px;
-      }
-
-      button.primary {
-        background: linear-gradient(135deg, var(--color-accent-cyan), var(--accent-green));
-        border-color: transparent;
-        color: var(--color-bg-deep);
-        font-weight: 600;
-      }
-
-      button.primary:hover {
-        box-shadow: 0 0 20px var(--glow-cyan);
-      }
-
-      .section-label {
-        display: block;
-        font-family: var(--font-mono);
-        font-weight: 600;
-        font-size: 0.85rem;
-        color: var(--color-text-secondary);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-bottom: 10px;
-      }
-
-      .pattern-input-wrapper {
-        position: relative;
-        margin-bottom: 16px;
-      }
-
-      .pattern-input {
-        width: 100%;
-        padding: 14px 16px;
-        font-family: var(--font-mono);
-        font-size: 1rem;
-        background: var(--color-bg-surface);
-        border: 2px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        color: var(--color-text-primary);
-        outline: none;
-        transition: all 0.2s;
-      }
-
-      .pattern-input:focus {
-        border-color: var(--color-accent-cyan);
-        box-shadow: 0 0 0 4px var(--glow-cyan);
-      }
-
-      .pattern-input::placeholder {
-        color: var(--text-muted);
-      }
-
-      .pattern-explanation {
-        background: var(--color-bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        padding: 14px 16px;
-        margin-bottom: 20px;
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        color: var(--color-text-secondary);
-        min-height: 44px;
-      }
-
-      .pattern-explanation code {
-        background: var(--color-bg-card);
-        padding: 2px 6px;
-        border-radius: var(--radius-sm);
-        color: var(--color-accent-cyan);
-      }
-
-      .pattern-explanation.error {
-        color: var(--accent-red);
-      }
-
-      .presets {
-        margin-bottom: 24px;
-      }
-
-      .presets-title {
-        font-family: var(--font-mono);
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        margin-bottom: 10px;
-      }
-
-      .presets-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-      }
-
-      .preset-btn {
-        font-size: 0.8rem;
-        padding: 6px 12px;
-        background: var(--color-bg-deep);
-        border: 1px solid var(--border-subtle);
-        border-radius: 16px;
-      }
-
-      .preset-btn:hover {
-        border-color: var(--color-accent-cyan);
-        color: var(--color-accent-cyan);
-      }
-
-      textarea {
-        width: 100%;
-        min-height: 200px;
-        padding: 14px 16px;
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-        background: var(--color-bg-surface);
-        border: 2px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        color: var(--color-text-primary);
-        outline: none;
-        resize: vertical;
-        line-height: 1.6;
-        transition: all 0.2s;
-      }
-
-      textarea:focus {
-        border-color: var(--color-accent-cyan);
-        box-shadow: 0 0 0 4px var(--glow-cyan);
-      }
-
-      textarea::placeholder {
-        color: var(--text-muted);
-      }
-
-      .stats {
-        display: flex;
-        gap: 24px;
-        margin-top: 16px;
-        padding: 14px 16px;
-        background: var(--color-bg-surface);
-        border-radius: var(--radius-md);
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-      }
-
-      .stat-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .stat-label {
-        color: var(--text-muted);
-      }
-
-      .stat-value {
-        font-weight: 600;
-        color: var(--color-text-primary);
-      }
-
-      .stat-value.matched {
-        color: var(--accent-green);
-      }
-
-      .stat-value.unmatched {
-        color: var(--text-muted);
-      }
-
-      .results-section {
-        margin-top: 24px;
-      }
-
-      .results-list {
-        background: var(--color-bg-surface);
-        border: 2px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        max-height: 400px;
-        overflow-y: auto;
-      }
-
-      .result-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 10px 16px;
-        border-bottom: 1px solid var(--border-subtle);
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-        transition: background 0.15s;
-      }
-
-      .result-item:last-child {
-        border-bottom: none;
-      }
-
-      .result-item:hover {
-        background: var(--bg-card-hover);
-      }
-
-      .result-icon {
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.75rem;
-        flex-shrink: 0;
-      }
-
-      .result-item.matched .result-icon {
-        background: var(--accent-green);
-        color: var(--color-bg-deep);
-      }
-
-      .result-item.unmatched .result-icon {
-        background: var(--border-subtle);
-        color: var(--text-muted);
-      }
-
-      .result-path {
-        flex: 1;
-        word-break: break-all;
-      }
-
-      .result-item.matched .result-path {
-        color: var(--accent-green);
-      }
-
-      .result-item.unmatched .result-path {
-        color: var(--text-muted);
-      }
-
-      .no-paths {
-        padding: 40px;
-        text-align: center;
-        color: var(--text-muted);
-        font-family: var(--font-mono);
-      }
-
-      .syntax-reference {
-        margin-top: 24px;
-        padding-top: 24px;
-        border-top: 1px solid var(--border-subtle);
-      }
-
-      .syntax-title {
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: var(--color-text-secondary);
-        margin-bottom: 16px;
-      }
-
-      .syntax-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 12px;
-      }
-
-      .syntax-item {
-        display: flex;
-        gap: 12px;
-        padding: 10px 14px;
-        background: var(--color-bg-surface);
-        border-radius: var(--radius-md);
-        font-size: 0.85rem;
-      }
-
-      .syntax-pattern {
-        font-family: var(--font-mono);
-        color: var(--color-accent-cyan);
-        white-space: nowrap;
-        min-width: 70px;
-      }
-
-      .syntax-desc {
-        color: var(--color-text-secondary);
-      }
-
-      .toast {
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: var(--color-bg-card);
-        border: 2px solid var(--color-accent-cyan);
-        padding: 10px 20px;
-        border-radius: var(--radius-md);
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        color: var(--color-accent-cyan);
-        z-index: 1000;
-        box-shadow: 0 4px 20px var(--glow-cyan);
-      }
-
-      footer {
-        text-align: center;
-        margin-top: 40px;
-        padding-top: 20px;
-        border-top: 1px solid var(--border-subtle);
-        color: var(--text-muted);
-        font-size: 0.85rem;
-      }
-
-      footer a {
-        color: var(--color-accent-cyan);
-        text-decoration: none;
-      }
-
-      footer a:hover {
-        text-decoration: underline;
-      }
-
-      @media (width <= 640px) {
+        :root {
+            --bg-deep: #0a0a0f;
+            --bg-surface: #12121a;
+            --bg-card: #1a1a24;
+            --bg-input: #0e0e14;
+            --text-primary: #e8e8ed;
+            --text-secondary: #8888a0;
+            --text-muted: #55556a;
+            --border-subtle: #2a2a3a;
+            --border-strong: #3a3a4a;
+            --accent-glob: #00f5d4;
+            --accent-glob-glow: rgba(0, 245, 212, 0.15);
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --font-sans: 'Inter', -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-display: 'Space Grotesk', sans-serif;
+        }
+
+        [data-theme="light"] {
+            --bg-deep: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-card: #ffffff;
+            --bg-input: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border-subtle: #e2e8f0;
+            --border-strong: #cbd5e1;
+            --accent-glob: #0d9488;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-          padding: 16px;
+            font-family: var(--font-sans);
+            background-color: var(--bg-deep);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s;
+            min-height: 100vh;
         }
 
-        .card {
-          padding: 16px;
-        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        
+        header { margin-bottom: 2.5rem; text-align: center; position: relative; }
+        .breadcrumb { display: flex; gap: 0.5rem; font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem; justify-content: center; }
+        .breadcrumb a { color: var(--accent-glob); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        
+        h1 { font-family: var(--font-display); font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--accent-glob); }
+        .subtitle { color: var(--text-secondary); font-size: 1.1rem; }
 
-        .stats {
-          flex-direction: column;
-          gap: 8px;
-        }
+        .theme-toggle { position: absolute; top: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 0.5rem 1rem; border-radius: var(--radius-md); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
 
-        .syntax-grid {
-          grid-template-columns: 1fr;
-        }
-      }
+        .main-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+        @media (max-width: 968px) { .main-layout { grid-template-columns: 1fr; } }
 
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
+        .card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+        .card-header h2 { font-size: 1.25rem; font-family: var(--font-display); color: var(--accent-glob); }
+
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+        input[type="text"], textarea {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-md);
+            outline: none;
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        input:focus, textarea:focus { border-color: var(--accent-glob); box-shadow: 0 0 0 3px var(--accent-glob-glow); }
+
+        .explanation {
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 0.75rem 1rem;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            min-height: 2.5rem;
+        }
+        .explanation code { color: var(--accent-glob); font-weight: 600; background: rgba(0, 245, 212, 0.05); padding: 0.1rem 0.3rem; border-radius: 4px; }
+        .explanation.error { color: var(--accent-red); border-color: var(--accent-red); }
+
+        .presets { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+        .preset-btn {
+            padding: 0.3rem 0.75rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .preset-btn:hover { border-color: var(--accent-glob); color: var(--accent-glob); }
+
+        .stats-bar { display: flex; gap: 1.5rem; margin-top: 1rem; font-size: 0.85rem; font-family: var(--font-mono); }
+        .stat-item { display: flex; align-items: center; gap: 0.5rem; }
+        .stat-count { font-weight: 700; color: var(--text-primary); }
+        .stat-count.matched { color: #10b981; }
+        .stat-count.unmatched { color: var(--text-muted); }
+
+        .results-list {
+            margin-top: 1.5rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .result-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+        }
+        .result-item:last-child { border-bottom: none; }
+        .result-icon { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; flex-shrink: 0; }
+        .matched .result-icon { background: #10b981; color: #fff; }
+        .unmatched .result-icon { background: var(--border-subtle); color: var(--text-muted); }
+        .matched .result-path { color: #10b981; }
+        .unmatched .result-path { color: var(--text-muted); }
+
+        .btn-toolbar { display: flex; gap: 0.75rem; margin-top: 1rem; }
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn:hover { background: var(--border-subtle); transform: translateY(-1px); }
+        .btn-primary { background: var(--accent-glob); color: #000; border: none; font-weight: 600; }
+        .btn-primary:hover { background: #00dbc0; box-shadow: 0 4px 12px var(--accent-glob-glow); }
+
+        /* Syntax Guide */
+        .syntax-guide { margin-top: 2rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; }
+        .syntax-item { background: var(--bg-input); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); }
+        .syntax-pattern { display: block; font-family: var(--font-mono); color: var(--accent-glob); font-weight: 700; margin-bottom: 0.25rem; }
+        .syntax-desc { font-size: 0.85rem; color: var(--text-secondary); }
+
+        /* AdSense Placeholders */
+        .ads-placeholder { margin: 2rem 0; background: var(--bg-card); border: 1px dashed var(--border-subtle); height: 100px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem; border-radius: var(--radius-lg); }
+
+        /* Article Content */
+        article { margin-top: 4rem; max-width: 900px; margin-left: auto; margin-right: auto; }
+        article h2 { font-family: var(--font-display); font-size: 1.75rem; margin: 2.5rem 0 1rem; color: var(--accent-glob); }
+        article h3 { font-size: 1.25rem; margin: 1.5rem 0 0.75rem; }
+        article p { margin-bottom: 1.25rem; color: var(--text-secondary); }
+        article ul, article ol { margin-bottom: 1.5rem; padding-left: 1.5rem; color: var(--text-secondary); }
+        article li { margin-bottom: 0.5rem; }
+        code { background: var(--bg-input); padding: 0.2rem 0.4rem; border-radius: 4px; font-family: var(--font-mono); font-size: 0.9em; }
+
+        .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--accent-glob); color: #000; padding: 0.75rem 1.5rem; border-radius: var(--radius-md); font-weight: 600; transform: translateY(100px); transition: transform 0.3s; z-index: 1000; }
+        .toast.show { transform: translateY(0); }
+
+        footer { margin-top: 4rem; padding: 2rem; border-top: 1px solid var(--border-subtle); text-align: center; color: var(--text-muted); font-size: 0.875rem; }
+        footer a { color: var(--text-secondary); text-decoration: none; margin: 0 0.5rem; }
     </style>
-  </head>
-  <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      Glob 模式测试
-    </nav>
-    <div class="bg-grid"></div>
-
+</head>
+<body>
     <div class="container">
-      <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">🌙</button>
+        <nav class="breadcrumb">
+            <a href="../../index.html">首页</a> / <span>开发工具</span> / <span>Glob 模式测试</span>
+        </nav>
 
-      <header>
-        <h1>Glob 模式测试</h1>
-        <p class="desc">测试 glob 通配符模式匹配文件路径，支持 *, **, ?, [], {} 等语�?/p>
-      </header>
+        <header>
+            <h1>Glob 模式测试器</h1>
+            <p class="subtitle">实时测试通配符匹配逻辑，助力精准配置项目路径</p>
+            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">
+                <span>🌙</span> 暗色模式
+            </button>
+        </header>
 
-      <div class="card">
-        <div class="btn-row">
-          <button id="btnPaste">粘贴路径</button>
-          <button id="btnShare">分享链接</button>
-          <button id="btnClear">清空</button>
+        <!-- Google AdSense Top -->
+        <div class="ads-placeholder">
+            广告占位符 - Google AdSense (Top)
         </div>
 
-        <label class="section-label">Glob 模式</label>
-        <div class="pattern-input-wrapper">
-          <input
-            type="text"
-            id="pattern"
-            class="pattern-input"
-            placeholder="输入 glob 模式，如 **/*.js"
-          />
+        <main class="main-layout">
+            <!-- Left: Inputs -->
+            <section class="card">
+                <div class="card-header">
+                    <h2>配置与测试</h2>
+                </div>
+                
+                <div class="form-group">
+                    <label>Glob 模式 (Pattern)</label>
+                    <input type="text" id="pattern" placeholder="例如: **/*.js" spellcheck="false">
+                    <div id="explanation" class="explanation">输入模式以查看语法说明...</div>
+                    <div class="presets">
+                        <button class="preset-btn" data-pattern="*.js">*.js</button>
+                        <button class="preset-btn" data-pattern="**/*.ts">**/*.ts</button>
+                        <button class="preset-btn" data-pattern="src/**/*">src/**/*</button>
+                        <button class="preset-btn" data-pattern="*.{js,ts}">*.{js,ts}</button>
+                        <button class="preset-btn" data-pattern="!node_modules/**">!node_modules/**</button>
+                        <button class="preset-btn" data-pattern="**/*.test.js">测试文件</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>待测试路径 (Paths - 每行一个)</label>
+                    <textarea id="paths" rows="12" placeholder="src/index.js&#10;tests/main.test.js&#10;node_modules/lodash/index.js" spellcheck="false"></textarea>
+                </div>
+
+                <div class="btn-toolbar">
+                    <button class="btn" onclick="copyShareLink()">分享测试</button>
+                    <button class="btn" onclick="clearAll()">清空全部</button>
+                </div>
+            </section>
+
+            <!-- Right: Results -->
+            <section class="card">
+                <div class="card-header">
+                    <h2>匹配结果</h2>
+                </div>
+
+                <div class="stats-bar">
+                    <div class="stat-item">总数: <span class="stat-count" id="totalCount">0</span></div>
+                    <div class="stat-item">匹配: <span class="stat-count matched" id="matchedCount">0</span></div>
+                    <div class="stat-item">未匹配: <span class="stat-count unmatched" id="unmatchedCount">0</span></div>
+                </div>
+
+                <div class="results-list" id="resultsList">
+                    <div style="padding: 3rem; text-align: center; color: var(--text-muted);">请输入路径开始测试</div>
+                </div>
+
+                <div class="section-title" style="margin-top: 2rem; font-size: 0.85rem; color: var(--accent-glob); text-transform: uppercase;">快速语法参考</div>
+                <div class="syntax-guide">
+                    <div class="syntax-item">
+                        <span class="syntax-pattern">*</span>
+                        <span class="syntax-desc">匹配当前目录任意字符</span>
+                    </div>
+                    <div class="syntax-item">
+                        <span class="syntax-pattern">**</span>
+                        <span class="syntax-desc">跨目录匹配任意层级</span>
+                    </div>
+                    <div class="syntax-item">
+                        <span class="syntax-pattern">?</span>
+                        <span class="syntax-desc">匹配单个任意字符</span>
+                    </div>
+                    <div class="syntax-item">
+                        <span class="syntax-pattern">{a,b}</span>
+                        <span class="syntax-desc">匹配 a 或 b 选项</span>
+                    </div>
+                    <div class="syntax-item">
+                        <span class="syntax-pattern">[a-z]</span>
+                        <span class="syntax-desc">匹配字符范围</span>
+                    </div>
+                    <div class="syntax-item">
+                        <span class="syntax-pattern">!(x)</span>
+                        <span class="syntax-desc">排除匹配特定模式</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Google AdSense Bottom -->
+        <div class="ads-placeholder">
+            广告占位符 - Google AdSense (Bottom)
         </div>
 
-        <div id="explanation" class="pattern-explanation">输入 glob 模式后将显示模式说明</div>
+        <!-- SEO Content -->
+        <article>
+            <h2>深入理解 Glob 模式及其在开发中的应用</h2>
+            <p>Glob（Global）模式是一种简化的正则表达式语法，最初用于 Unix Shell 匹配文件路径。如今，它已成为现代 Web 开发工具链中不可或缺的一部分，被广泛应用于 <strong>Webpack, Gulp, ESLint, Prettier, VS Code</strong> 以及各类 CI/CD 配置文件（如 <code>.gitignore</code> 和 <code>GitHub Actions</code>）中。</p>
+            
+            <h3>为什么要使用 Glob 测试工具？</h3>
+            <p>在复杂的项目结构中，编写准确的路径匹配规则极具挑战性。常见的痛点包括：</p>
+            <ul>
+                <li><strong>误匹配敏感文件：</strong> 一个错误的 <code>**/*.js</code> 可能会意外包含 <code>node_modules</code> 或生产环境的 <code>secrets.js</code>，导致构建缓慢甚至安全漏洞。</li>
+                <li><strong>排除规则失效：</strong> <code>!</code> 否定模式在不同工具（如 <code>picomatch</code> vs <code>minimatch</code>）中的行为略有差异，导致配置不生效。</li>
+                <li><strong>递归性能瓶颈：</strong> 过度使用 <code>**</code> 会导致扫描数万个无关文件，显著拖慢 CI/CD 流程。</li>
+            </ul>
+            <p>我们的在线测试器通过 <strong>picomatch</strong> 引擎（目前最高效的 Glob 解析器之一）实时反馈匹配结果，帮助您在应用配置前进行精准校验。</p>
 
-        <div class="presets">
-          <div class="presets-title">常用模式�?/div>
-          <div class="presets-list">
-            <button class="preset-btn" data-pattern="*.js">*.js</button>
-            <button class="preset-btn" data-pattern="**/*.ts">**/*.ts</button>
-            <button class="preset-btn" data-pattern="src/**/*">src/**/*</button>
-            <button class="preset-btn" data-pattern="*.{js,ts}">*.{js,ts}</button>
-            <button class="preset-btn" data-pattern="!node_modules/**">!node_modules/**</button>
-            <button class="preset-btn" data-pattern="**/*.test.js">**/*.test.js</button>
-            <button class="preset-btn" data-pattern="[a-z]*.md">[a-z]*.md</button>
-            <button class="preset-btn" data-pattern="**/??.txt">**/??.txt</button>
-          </div>
-        </div>
+            <h3>解决的具体场景</h3>
+            <p><strong>场景一：配置项目 Lint 规则。</strong><br>您希望对 <code>src</code> 下的所有 <code>.js</code> 和 <code>.ts</code> 文件进行检查，但排除所有以 <code>.test.</code> 结尾的文件。您可以测试模式：<code>src/**/!(*.test).{js,ts}</code>。</p>
+            
+            <p><strong>场景二：Webpack 入口点扫描。</strong><br>通过 <code>**/*.entry.js</code> 自动发现所有入口文件，确保嵌套目录下的页面也能被正确打包。</p>
 
-        <label class="section-label" for="paths">文件路径（每行一个）</label>
-        <textarea
-          id="paths"
-          placeholder="输入文件路径，每行一个，如：
-src/index.js
-src/utils/helper.ts
-tests/unit/test.spec.js
-README.md
-node_modules/lodash/index.js"
-        ></textarea>
+            <p><strong>场景三：CI/CD 缓存路径。</strong><br>在 GitHub Actions 中配置 <code>cache</code> 路径，确保只缓存 <code>package-lock.json</code> 所在的目录，避免缓存冗余数据。</p>
 
-        <div class="stats">
-          <div class="stat-item">
-            <span class="stat-label">总数</span>
-            <span class="stat-value" id="totalCount">0</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">匹配</span>
-            <span class="stat-value matched" id="matchedCount">0</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">未匹�?/span>
-            <span class="stat-value unmatched" id="unmatchedCount">0</span>
-          </div>
-        </div>
+            <h3>Glob 核心语法详解</h3>
+            <ol>
+                <li><strong><code>*</code> (单星号)：</strong> 匹配单个路径段内的任意数量字符。例如 <code>*.js</code> 匹配 <code>app.js</code>，但不匹配 <code>src/app.js</code>。</li>
+                <li><strong><code>**</code> (双星号)：</strong> 匹配零个或多个目录。例如 <code>src/**/*.js</code> 会深度递归查找 <code>src</code> 下所有的 JavaScript 文件。</li>
+                <li><strong><code>{}</code> (大括号)：</strong> 用于创建扩展组。<code>{js,ts}</code> 匹配 <code>js</code> 或 <code>ts</code> 后缀。</li>
+                <li><strong><code>[]</code> (中括号)：</strong> 匹配字符集合。<code>[0-9]</code> 匹配任何数字位。</li>
+                <li><strong><code>!</code> (感叹号)：</strong> 用于取反。注意在许多实现中，取反模式通常需要放在一个列表的末尾或作为独立规则。</li>
+            </ol>
 
-        <div class="results-section">
-          <label class="section-label">匹配结果</label>
-          <div class="results-list" id="resultsList">
-            <div class="no-paths">请输入文件路径进行测�?/div>
-          </div>
-        </div>
+            <h3>如何使用本工具？</h3>
+            <p>1. <strong>输入模式：</strong> 在左侧输入框填写您的 Glob 规则。工具会自动为您解析并生成人类可读的语法说明。</p>
+            <p>2. <strong>列出路径：</strong> 将您的项目文件结构（部分）粘贴到下方文本框。建议包含一些您希望匹配和希望排除的临界路径。</p>
+            <p>3. <strong>观察反馈：</strong> 右侧会实时通过 绿色（匹配）和 灰色（未匹配）标签显示结果，并统计命中率。</p>
+            <p>4. <strong>分享：</strong> 点击“分享测试”可生成包含当前配置的加密链接，方便与同事讨论或记录配置方案。</p>
+        </article>
 
-        <div class="syntax-reference">
-          <div class="syntax-title">Glob 语法参�?/div>
-          <div class="syntax-grid">
-            <div class="syntax-item">
-              <span class="syntax-pattern">*</span>
-              <span class="syntax-desc">匹配任意字符（不含路径分隔符�?/span>
-            </div>
-            <div class="syntax-item">
-              <span class="syntax-pattern">**</span>
-              <span class="syntax-desc">匹配任意层级目录</span>
-            </div>
-            <div class="syntax-item">
-              <span class="syntax-pattern">?</span>
-              <span class="syntax-desc">匹配单个任意字符</span>
-            </div>
-            <div class="syntax-item">
-              <span class="syntax-pattern">[abc]</span>
-              <span class="syntax-desc">匹配括号内的任意一个字�?/span>
-            </div>
-            <div class="syntax-item">
-              <span class="syntax-pattern">[a-z]</span>
-              <span class="syntax-desc">匹配字符范围</span>
-            </div>
-            <div class="syntax-item">
-              <span class="syntax-pattern">{a,b}</span>
-              <span class="syntax-desc">匹配任意一个选项</span>
-            </div>
-            <div class="syntax-item">
-              <span class="syntax-pattern">!(x)</span>
-              <span class="syntax-desc">排除匹配（否定模式）</span>
-            </div>
-            <div class="syntax-item">
-              <span class="syntax-pattern">@(a|b)</span>
-              <span class="syntax-desc">匹配 a �?b 中的一�?/span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <footer>
-        <a
-          href="https://github.com/chicogong/html-tools/blob/main/tools/dev/glob-tester.html"
-          target="_blank"
-          rel="noreferrer"
-        >
-          View source
-        </a>
-        · 纯前端工�?· 无服务器 ·
-        <a href="../../index.html">WebUtils</a>
-      </footer>
+        <footer>
+            <p>&copy; 2026 WebUtils. 基于 MIT 协议开源。 <a href="https://github.com/nicepkg/html-tools">GitHub</a> | <a href="../../index.html">更多工具</a></p>
+        </footer>
     </div>
+
+    <div id="toast" class="toast">内容已复制</div>
 
     <script src="https://cdn.jsdelivr.net/npm/picomatch@2.3.1/dist/picomatch.min.js"></script>
     <script>
-      var patternEl = document.getElementById("pattern");
-      var pathsEl = document.getElementById("paths");
-      var explanationEl = document.getElementById("explanation");
-      var resultsListEl = document.getElementById("resultsList");
-      var totalCountEl = document.getElementById("totalCount");
-      var matchedCountEl = document.getElementById("matchedCount");
-      var unmatchedCountEl = document.getElementById("unmatchedCount");
+        const patternInput = document.getElementById('pattern');
+        const pathsInput = document.getElementById('paths');
+        const explanation = document.getElementById('explanation');
+        const resultsList = document.getElementById('resultsList');
+        const totalCount = document.getElementById('totalCount');
+        const matchedCount = document.getElementById('matchedCount');
+        const unmatchedCount = document.getElementById('unmatchedCount');
+        const toast = document.getElementById('toast');
 
-      var LS_KEY = "glob_tester_v1";
+        const LS_KEY = 'webutils_glob_tester';
 
-      window.escapeHtml = function (text) {
-        var div = document.createElement("div");
-        div.textContent = text;
-        return div.textContent;
-      };
-
-      function createCodeElement(text) {
-        var code = document.createElement("code");
-        code.textContent = text;
-        return code;
-      }
-
-      function explainPattern(pattern) {
-        explanationEl.classList.remove("error");
-
-        if (!pattern) {
-          explanationEl.textContent = "输入 glob 模式后将显示模式说明";
-          return;
+        // Theme Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const btn = document.getElementById('themeBtn');
+            const isDark = html.getAttribute('data-theme') !== 'light';
+            if (isDark) {
+                html.setAttribute('data-theme', 'light');
+                btn.innerHTML = '<span>☀️</span> 亮色模式';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.removeAttribute('data-theme');
+                btn.innerHTML = '<span>🌙</span> 暗色模式';
+                localStorage.setItem('theme', 'dark');
+            }
         }
 
-        var fragment = document.createDocumentFragment();
-        var parts = [];
-        var isNegation = pattern.startsWith("!");
-        var p = isNegation ? pattern.slice(1) : pattern;
-
-        if (isNegation) {
-          parts.push({ text: "排除（否定）模式" });
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+            document.getElementById('themeBtn').innerHTML = '<span>☀️</span> 亮色模式';
         }
 
-        if (p.includes("**")) {
-          parts.push({ text: "任意层级目录", code: "**" });
+        function runTest() {
+            const pattern = patternInput.value.trim();
+            const pathsText = pathsInput.value.trim();
+            
+            updateExplanation(pattern);
+
+            if (!pathsText) {
+                resultsList.innerHTML = '<div style="padding: 3rem; text-align: center; color: var(--text-muted);">请输入路径开始测试</div>';
+                totalCount.textContent = '0';
+                matchedCount.textContent = '0';
+                unmatchedCount.textContent = '0';
+                return;
+            }
+
+            const paths = pathsText.split('\n').map(p => p.trim()).filter(p => p);
+            let isMatch;
+            
+            try {
+                isMatch = pattern ? picomatch(pattern, { dot: true }) : () => false;
+                explanation.classList.remove('error');
+            } catch (e) {
+                explanation.textContent = '语法错误: ' + e.message;
+                explanation.classList.add('error');
+                return;
+            }
+
+            let mCount = 0;
+            let uCount = 0;
+            let html = '';
+
+            paths.forEach(path => {
+                const matched = isMatch(path);
+                if (matched) mCount++; else uCount++;
+                
+                html += `
+                    <div class="result-item ${matched ? 'matched' : 'unmatched'}">
+                        <span class="result-icon">${matched ? '✓' : '×'}</span>
+                        <span class="result-path">${escapeHtml(path)}</span>
+                    </div>
+                `;
+            });
+
+            resultsList.innerHTML = html || '<div style="padding: 3rem; text-align: center; color: var(--text-muted);">无有效路径</div>';
+            totalCount.textContent = paths.length;
+            matchedCount.textContent = mCount;
+            unmatchedCount.textContent = uCount;
+
+            saveState();
         }
 
-        if (/(?<!\*)\*(?!\*)/.test(p)) {
-          parts.push({ text: "任意字符（不含路径分隔符�?, code: "*" });
+        function updateExplanation(p) {
+            if (!p) {
+                explanation.textContent = '输入模式以查看语法说明...';
+                return;
+            }
+
+            let parts = [];
+            if (p.startsWith('!')) parts.push('排除模式');
+            if (p.includes('**')) parts.push('递归 <code>**</code> (任意层级)');
+            if (p.includes('*') && !p.includes('**')) parts.push('通配 <code>*</code> (单层目录)');
+            if (p.includes('{')) parts.push('分组 <code>{}</code> (多选一)');
+            if (p.includes('[')) parts.push('范围 <code>[]</code> (字符集)');
+            
+            explanation.innerHTML = parts.length ? `当前包含: ${parts.join(', ')}` : '精确匹配字符串';
         }
 
-        if (p.includes("?")) {
-          parts.push({ text: "单个字符", code: "?" });
+        function saveState() {
+            const state = { p: patternInput.value, t: pathsInput.value };
+            localStorage.setItem(LS_KEY, JSON.stringify(state));
         }
 
-        var bracketMatch = p.match(/\[([^\]]+)\]/);
-        if (bracketMatch) {
-          if (bracketMatch[1].includes("-")) {
-            parts.push({ text: "字符范围", code: "[" + bracketMatch[1] + "]" });
-          } else {
-            parts.push({ text: "其中任意一个字�?, code: "[" + bracketMatch[1] + "]" });
-          }
+        function loadState() {
+            const hash = location.hash.slice(1);
+            if (hash) {
+                try {
+                    const data = JSON.parse(decodeURIComponent(atob(hash)));
+                    patternInput.value = data.p || '';
+                    pathsInput.value = data.t || '';
+                    return;
+                } catch (e) {}
+            }
+
+            const saved = localStorage.getItem(LS_KEY);
+            if (saved) {
+                const data = JSON.parse(saved);
+                patternInput.value = data.p || '';
+                pathsInput.value = data.t || '';
+            }
         }
 
-        var braceMatch = p.match(/\{([^}]+)\}/);
-        if (braceMatch) {
-          var options = braceMatch[1].split(",").map(function (o) {
-            return o.trim();
-          });
-          parts.push({ text: "匹配 " + options.join(" �?"), code: "{...}" });
+        function copyShareLink() {
+            const state = { p: patternInput.value, t: pathsInput.value };
+            const encoded = btoa(encodeURIComponent(JSON.stringify(state)));
+            const url = window.location.origin + window.location.pathname + '#' + encoded;
+            navigator.clipboard.writeText(url);
+            showToast('分享链接已复制');
         }
 
-        var extMatch = p.match(/\*\.(\w+)$/);
-        if (extMatch && !braceMatch) {
-          parts.push({ text: "扩展�?, code: "." + extMatch[1] });
+        function clearAll() {
+            if (confirm('确定要清空吗？')) {
+                patternInput.value = '';
+                pathsInput.value = '';
+                runTest();
+            }
         }
 
-        if (parts.length === 0) {
-          parts.push({ text: "精确匹配", code: pattern });
+        function showToast(msg) {
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
         }
 
-        explanationEl.textContent = "";
-        parts.forEach(function (part, index) {
-          if (index > 0) {
-            explanationEl.appendChild(document.createTextNode("�?));
-          }
-          if (part.code) {
-            explanationEl.appendChild(createCodeElement(part.code));
-            explanationEl.appendChild(document.createTextNode(" " + part.text));
-          } else {
-            explanationEl.appendChild(document.createTextNode(part.text));
-          }
-        });
-      }
-
-      function createResultItem(path, matched) {
-        var item = document.createElement("div");
-        item.className = "result-item " + (matched ? "matched" : "unmatched");
-
-        var icon = document.createElement("span");
-        icon.className = "result-icon";
-        icon.textContent = matched ? "�? : "�?;
-
-        var pathSpan = document.createElement("span");
-        pathSpan.className = "result-path";
-        pathSpan.textContent = path;
-
-        item.appendChild(icon);
-        item.appendChild(pathSpan);
-
-        return item;
-      }
-
-      function runTest() {
-        var pattern = patternEl.value.trim();
-        var pathsText = pathsEl.value.trim();
-
-        explainPattern(pattern);
-
-        if (!pathsText) {
-          resultsListEl.textContent = "";
-          var noPathsDiv = document.createElement("div");
-          noPathsDiv.className = "no-paths";
-          noPathsDiv.textContent = "请输入文件路径进行测�?;
-          resultsListEl.appendChild(noPathsDiv);
-          totalCountEl.textContent = "0";
-          matchedCountEl.textContent = "0";
-          unmatchedCountEl.textContent = "0";
-          return;
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
-        var paths = pathsText
-          .split("\n")
-          .map(function (p) {
-            return p.trim();
-          })
-          .filter(function (p) {
-            return p.length > 0;
-          });
-
-        if (paths.length === 0) {
-          resultsListEl.textContent = "";
-          var noPathsDiv = document.createElement("div");
-          noPathsDiv.className = "no-paths";
-          noPathsDiv.textContent = "请输入文件路径进行测�?;
-          resultsListEl.appendChild(noPathsDiv);
-          totalCountEl.textContent = "0";
-          matchedCountEl.textContent = "0";
-          unmatchedCountEl.textContent = "0";
-          return;
-        }
-
-        var isMatch;
-        try {
-          if (pattern) {
-            isMatch = picomatch(pattern, { dot: true });
-          } else {
-            isMatch = function () {
-              return false;
+        // Listeners
+        patternInput.addEventListener('input', runTest);
+        pathsInput.addEventListener('input', runTest);
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.onclick = () => {
+                patternInput.value = btn.dataset.pattern;
+                runTest();
             };
-          }
-        } catch (e) {
-          explanationEl.textContent = "模式语法错误: " + e.message;
-          explanationEl.classList.add("error");
-          return;
-        }
-
-        var matchedCount = 0;
-        var unmatchedCount = 0;
-        var fragment = document.createDocumentFragment();
-
-        paths.forEach(function (path) {
-          var matched = false;
-          try {
-            matched = isMatch(path);
-          } catch (e) {
-            matched = false;
-          }
-
-          if (matched) {
-            matchedCount++;
-          } else {
-            unmatchedCount++;
-          }
-
-          fragment.appendChild(createResultItem(path, matched));
         });
 
-        resultsListEl.textContent = "";
-        resultsListEl.appendChild(fragment);
-        totalCountEl.textContent = paths.length;
-        matchedCountEl.textContent = matchedCount;
-        unmatchedCountEl.textContent = unmatchedCount;
-
-        saveToStorage();
-        saveToUrl();
-      }
-
-      window.loadFromUrl = function () {
-        var hash = location.hash.slice(1);
-        if (!hash) return false;
-        try {
-          var data = JSON.parse(decodeURIComponent(atob(hash)));
-          patternEl.value = data.p || "";
-          pathsEl.value = data.t || "";
-          return true;
-        } catch (e) {
-          return false;
-        }
-      };
-
-      function saveToUrl() {
-        try {
-          var data = {
-            p: patternEl.value,
-            t: pathsEl.value
-          };
-          var encoded = btoa(encodeURIComponent(JSON.stringify(data)));
-          if (encoded.length < 2000) {
-            history.replaceState(null, "", "#" + encoded);
-          }
-        } catch (e) {}
-      }
-
-      function loadFromStorage() {
-        var saved = localStorage.getItem(LS_KEY);
-        if (saved) {
-          try {
-            var data = JSON.parse(saved);
-            patternEl.value = data.p || "";
-            pathsEl.value = data.t || "";
-          } catch (e) {}
-        }
-      }
-
-      function saveToStorage() {
-        var data = {
-          p: patternEl.value,
-          t: pathsEl.value
-        };
-        localStorage.setItem(LS_KEY, JSON.stringify(data));
-      }
-
-      function showStatus(msg) {
-        var statusEl = document.createElement("div");
-        statusEl.className = "toast";
-        statusEl.textContent = msg;
-        document.body.appendChild(statusEl);
-        setTimeout(function () {
-          statusEl.remove();
-        }, 2000);
-      }
-
-      document.getElementById("btnPaste").onclick = async function () {
-        try {
-          var text = await navigator.clipboard.readText();
-          pathsEl.value = text;
-          runTest();
-          showStatus("已粘�?);
-        } catch (e) {
-          showStatus("无法访问剪贴�?);
-        }
-      };
-
-      document.getElementById("btnShare").onclick = async function () {
-        saveToUrl();
-        try {
-          await navigator.clipboard.writeText(location.href);
-          showStatus("分享链接已复�?);
-        } catch (e) {
-          showStatus("复制失败");
-        }
-      };
-
-      document.getElementById("btnClear").onclick = function () {
-        patternEl.value = "";
-        pathsEl.value = "";
-        localStorage.removeItem(LS_KEY);
-        history.replaceState(null, "", location.pathname);
+        // Init
+        loadState();
         runTest();
-        showStatus("已清�?);
-      };
-
-      patternEl.addEventListener("input", runTest);
-      pathsEl.addEventListener("input", runTest);
-
-      var presetBtns = document.querySelectorAll(".preset-btn");
-      for (var i = 0; i < presetBtns.length; i++) {
-        presetBtns[i].addEventListener("click", function () {
-          patternEl.value = this.dataset.pattern;
-          runTest();
-        });
-      }
-
-      if (!loadFromUrl()) {
-        loadFromStorage();
-      }
-      runTest();
-
-      window.toggleTheme = function () {
-        var html = document.documentElement;
-        var btn = document.querySelector(".theme-toggle");
-        var current = html.getAttribute("data-theme");
-        var next = current === "light" ? "dark" : "light";
-
-        if (next === "light") {
-          html.setAttribute("data-theme", "light");
-          btn.textContent = "☀�?;
-        } else {
-          html.removeAttribute("data-theme");
-          btn.textContent = "🌙";
-        }
-        localStorage.setItem("theme", next);
-      };
-
-      (function () {
-        var saved = localStorage.getItem("theme");
-        if (saved === "light") {
-          document.documentElement.setAttribute("data-theme", "light");
-          var btn = document.querySelector(".theme-toggle");
-          if (btn) btn.textContent = "☀�?;
-        }
-      })();
     </script>
-  </body>
+</body>
 </html>
-

@@ -1,1229 +1,466 @@
-<!doctype html>
-<html lang="zh-CN" data-theme="light">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GraphQL 查询构建�?- WebUtils</title>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GraphQL 查询构建器 - 可视化 SDL 解析与 API 请求生成工具 - WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="GraphQL 查询构建�?- WebUtils" />
-    <meta name="keywords" content="graphql-builder,dev,tools,webutils" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/dev/graphql-builder.html" />
+    <meta name="description" content="专业的在线 GraphQL 查询构建器。支持解析 GraphQL SDL (Schema Definition Language)，可视化选择字段、定义变量和 Fragment。自动生成标准的 Query、Mutation 和 cURL 请求命令，助力前端开发者高效对接 GraphQL 接口。">
+    <meta name="keywords" content="GraphQL构建器,GraphQL查询生成,SDL解析,GraphQL可视化,API调试工具,Query生成器,Mutation构建">
+    <meta name="author" content="WebUtils">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://essays4u.net/tools/dev/graphql-builder.html">
 
     <!-- Open Graph -->
-    <meta property="og:title" content="GraphQL 查询构建�?- WebUtils" />
-    <meta property="og:description" content="GraphQL 查询构建�?- WebUtils" />
-    <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/dev/graphql-builder.html"
-    />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://essays4u.net/tools/dev/graphql-builder.html">
+    <meta property="og:title" content="GraphQL 查询构建器 - 可视化 SDL 解析与 API 请求生成工具">
+    <meta property="og:description" content="通过可视化界面构建复杂的 GraphQL 查询，支持 SDL 解析与 cURL 导出。">
+    <meta property="og:image" content="https://essays4u.net/social-preview.png">
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="GraphQL 查询构建�?- WebUtils" />
-    <meta name="twitter:description" content="GraphQL 查询构建�?- WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="GraphQL 查询构建器 - 可视化 SDL 解析与 API 请求生成工具">
+    <meta property="twitter:description" content="通过可视化界面构建复杂的 GraphQL 查询，支持 SDL 解析与 cURL 导出。">
+    <meta property="twitter:image" content="https://essays4u.net/social-preview.png">
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      body {
-        padding: 1rem;
-      }
-      .container {
-        max-width: 1600px;
-      }
-      .grid-layout {
-        display: grid;
-        grid-template-columns: 300px 1fr 1fr;
-        gap: 1rem;
-      }
-      @media (max-width: 1200px) {
-        .grid-layout {
-          grid-template-columns: 1fr 1fr;
-        }
-        .schema-panel {
-          display: none;
-        }
-      }
-      @media (max-width: 768px) {
-        .grid-layout {
-          grid-template-columns: 1fr;
-        }
-      }
-      .field-item {
-        padding: 0.5rem;
-        margin: 0.25rem 0;
-        border-radius: var(--pico-border-radius);
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      .field-item:hover {
-        background: var(--pico-primary-focus);
-      }
-      .field-item.selected {
-        background: var(--pico-primary-background);
-      }
-      .field-type {
-        font-size: 0.75rem;
-        color: var(--pico-muted-color);
-        margin-left: auto;
-      }
-      .nested-fields {
-        margin-left: 1.5rem;
-        border-left: 2px solid var(--pico-muted-border-color);
-        padding-left: 0.5rem;
-      }
-      pre {
-        background: var(--pico-code-background-color);
-        padding: 1rem;
-        border-radius: var(--pico-border-radius);
-        overflow-x: auto;
-        font-size: 0.85rem;
-        tab-size: 2;
-      }
-      .query-output {
-        min-height: 300px;
-        max-height: 50vh;
-      }
-      .variables-output {
-        min-height: 100px;
-        max-height: 200px;
-      }
-      .btn-group {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-      }
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        z-index: 1000;
-      }
-      .output-section {
-        position: sticky;
-        top: 1rem;
-      }
-      .template-btn {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.8rem;
-      }
-      details {
-        margin-bottom: 0.5rem;
-      }
-      .arg-row {
-        display: flex;
-        gap: 0.5rem;
-        margin-bottom: 0.5rem;
-        align-items: center;
-      }
-      .arg-row input,
-      .arg-row select {
-        margin-bottom: 0;
-      }
-      .type-badge {
-        display: inline-block;
-        padding: 0.1rem 0.4rem;
-        border-radius: 4px;
-        font-size: 0.7rem;
-        background: var(--pico-secondary-background);
-      }
-      .type-badge.query {
-        background: #4caf50;
-        color: white;
-      }
-      .type-badge.mutation {
-        background: #ff9800;
-        color: white;
-      }
-      .type-badge.subscription {
-        background: #2196f3;
-        color: white;
-      }
-      .operation-tabs {
-        display: flex;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-      }
-      .operation-tabs button {
-        flex: 1;
-      }
-      .operation-tabs button.active {
-        background: var(--pico-primary);
-        color: white;
-      }
-      .schema-type {
-        margin-bottom: 1rem;
-        padding: 0.75rem;
-        background: var(--pico-card-background-color);
-        border-radius: var(--pico-border-radius);
-      }
-      .schema-type h5 {
-        margin: 0 0 0.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      .field-checkbox {
-        width: auto;
-        margin: 0;
-      }
-      .alias-input {
-        width: 80px;
-        font-size: 0.8rem;
-        padding: 0.2rem 0.4rem;
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-      @media (max-width: 480px) {
-        body {
-          padding: 12px;
-        }
-        .container {
-          max-width: 100%;
-          overflow-x: hidden;
-        }
-        h1 {
-          font-size: 1.3rem;
-        }
-        .card {
-          padding: 12px;
-        }
-        .main-grid,
-        .grid {
-          grid-template-columns: 1fr !important;
-        }
-        .btn-row {
-          flex-direction: column;
-        }
-        .btn-row button {
-          width: 100%;
-        }
-        pre,
-        code,
-        textarea {
-          font-size: 0.7rem;
-          white-space: pre-wrap;
-          word-break: break-all;
-        }
-        .editor-panel,
-        .preview-panel {
-          min-width: 0;
-          overflow: hidden;
-          max-width: 100%;
-        }
-      }
-    </style>
     <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      GraphQL 查询构建�?
-    </nav>
-    <button class="theme-toggle outline" onclick="toggleTheme()">🌓 主题</button>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 
-    <main class="container">
-      <h1>🔮 GraphQL 查询构建�?/h1>
-      <p>可视化构�?GraphQL Query、Mutation �?Subscription</p>
+    <style>
+        :root {
+            --bg-deep: #0a0a0f;
+            --bg-surface: #12121a;
+            --bg-card: #1a1a24;
+            --bg-input: #0e0e14;
+            --text-primary: #e8e8ed;
+            --text-secondary: #8888a0;
+            --text-muted: #55556a;
+            --border-subtle: #2a2a3a;
+            --border-strong: #3a3a4a;
+            --accent-gql: #e535ab;
+            --accent-gql-glow: rgba(229, 53, 171, 0.15);
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --font-sans: 'Inter', -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-display: 'Space Grotesk', sans-serif;
+        }
 
-      <div class="grid-layout">
-        <!-- Schema Panel -->
-        <section class="schema-panel">
-          <article>
-            <header>
-              <h3>Schema 定义</h3>
-            </header>
-            <label>
-              粘贴 Schema (SDL)
-              <textarea
-                id="schemaInput"
-                rows="10"
-                placeholder="type User {
-  id: ID!
-  name: String!
-  email: String
-  posts: [Post!]!
-}
+        [data-theme="light"] {
+            --bg-deep: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-card: #ffffff;
+            --bg-input: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border-subtle: #e2e8f0;
+            --border-strong: #cbd5e1;
+            --accent-gql: #d1108a;
+        }
 
-type Post {
-  id: ID!
-  title: String!
-  content: String
-  author: User!
-}
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-deep);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s;
+            min-height: 100vh;
+        }
 
-type Query {
-  user(id: ID!): User
-  users: [User!]!
-  post(id: ID!): Post
-  posts(limit: Int): [Post!]!
-}
+        .container { max-width: 1600px; margin: 0 auto; padding: 2rem; }
+        
+        header { margin-bottom: 2.5rem; text-align: center; position: relative; }
+        .breadcrumb { display: flex; gap: 0.5rem; font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem; justify-content: center; }
+        .breadcrumb a { color: var(--accent-gql); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        
+        h1 { font-family: var(--font-display); font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--accent-gql); }
+        .subtitle { color: var(--text-secondary); font-size: 1.1rem; }
 
-type Mutation {
-  createUser(name: String!, email: String): User!
-  createPost(title: String!, content: String, authorId: ID!): Post!
-}"
-              ></textarea>
-            </label>
-            <button onclick="parseSchema()">解析 Schema</button>
+        .theme-toggle { position: absolute; top: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 0.5rem 1rem; border-radius: var(--radius-md); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
 
-            <details open>
-              <summary>快速示�?/summary>
-              <div class="btn-group">
-                <button class="template-btn outline" onclick="loadExample('blog')">博客</button>
-                <button class="template-btn outline" onclick="loadExample('ecommerce')">
-                  电商
-                </button>
-                <button class="template-btn outline" onclick="loadExample('social')">社交</button>
-              </div>
-            </details>
-          </article>
-        </section>
+        .main-layout { display: grid; grid-template-columns: 320px 1fr 400px; gap: 1.5rem; height: calc(100vh - 250px); min-height: 700px; }
+        @media (max-width: 1400px) { .main-layout { grid-template-columns: 300px 1fr; height: auto; } }
+        @media (max-width: 968px) { .main-layout { grid-template-columns: 1fr; } }
 
-        <!-- Builder Panel -->
-        <section>
-          <article>
-            <header>
-              <h3>操作类型</h3>
-            </header>
-            <div class="operation-tabs">
-              <button class="active" onclick="setOperationType('query')" id="queryTab">
-                Query
-              </button>
-              <button onclick="setOperationType('mutation')" id="mutationTab">Mutation</button>
-              <button onclick="setOperationType('subscription')" id="subscriptionTab">
-                Subscription
-              </button>
-            </div>
+        .panel { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .panel-header { padding: 1rem; background: var(--bg-surface); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; }
+        .panel-header h3 { font-size: 0.9rem; font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent-gql); }
+        .panel-content { flex: 1; overflow-y: auto; padding: 1.25rem; }
 
-            <label>
-              操作名称
-              <input
-                type="text"
-                id="operationName"
-                placeholder="GetUser"
-                onchange="generateQuery()"
-              />
-            </label>
-          </article>
+        textarea { width: 100%; height: 100%; background: var(--bg-input); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 1rem; border-radius: var(--radius-md); font-family: var(--font-mono); font-size: 0.85rem; resize: none; outline: none; }
+        textarea:focus { border-color: var(--accent-gql); }
 
-          <article>
-            <header>
-              <div style="display: flex; justify-content: space-between; align-items: center">
-                <h3>变量定义</h3>
-                <button class="outline" onclick="addVariable()">+ 添加变量</button>
-              </div>
-            </header>
-            <div id="variablesContainer"></div>
-          </article>
+        /* Builder Specifics */
+        .op-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+        .op-tab { flex: 1; padding: 0.5rem; background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: 8px; color: var(--text-secondary); cursor: pointer; font-size: 0.85rem; text-align: center; }
+        .op-tab.active { background: var(--accent-gql); color: #fff; border-color: var(--accent-gql); }
 
-          <article>
-            <header>
-              <div style="display: flex; justify-content: space-between; align-items: center">
-                <h3>字段选择</h3>
-                <button class="outline" onclick="addRootField()">+ 添加根字�?/button>
-              </div>
-            </header>
-            <div id="fieldsContainer"></div>
-          </article>
+        .builder-section { margin-bottom: 2rem; }
+        .section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .section-head h4 { font-size: 0.85rem; color: var(--text-muted); }
 
-          <article>
-            <header>
-              <h3>Fragment 定义</h3>
-            </header>
-            <div id="fragmentsContainer"></div>
-            <button class="outline" onclick="addFragment()">+ 添加 Fragment</button>
-          </article>
-        </section>
+        .field-card { background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; position: relative; }
+        .field-row { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem; }
+        .field-row input { background: var(--bg-surface); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 0.4rem 0.6rem; border-radius: 4px; font-size: 0.85rem; outline: none; }
+        .field-row input:focus { border-color: var(--accent-gql); }
 
-        <!-- Output Panel -->
-        <section class="output-section">
-          <article>
-            <header>
-              <div style="display: flex; justify-content: space-between; align-items: center">
-                <h3>生成的查�?/h3>
-                <div class="btn-group">
-                  <button class="outline" onclick="copyQuery()">📋 复制</button>
-                  <button class="outline" onclick="formatQuery()">🎨 格式�?/button>
+        .nested-fields { margin-left: 1.5rem; padding-left: 1rem; border-left: 2px solid var(--border-subtle); margin-top: 0.5rem; }
+
+        /* Output View */
+        .code-box { background: #0d1117; color: #c9d1d9; padding: 1rem; border-radius: 8px; font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.5; white-space: pre-wrap; position: relative; }
+
+        .btn { padding: 0.5rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); background: var(--bg-card); color: var(--text-primary); cursor: pointer; font-size: 0.8rem; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.4rem; }
+        .btn:hover { background: var(--border-subtle); }
+        .btn-primary { background: var(--accent-gql); color: #fff; border: none; }
+        .btn-primary:hover { opacity: 0.9; box-shadow: 0 4px 12px var(--accent-gql-glow); }
+
+        /* AdSense Placeholders */
+        .ads-placeholder { margin: 2rem 0; background: var(--bg-card); border: 1px dashed var(--border-subtle); height: 100px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem; border-radius: var(--radius-lg); }
+
+        /* Article Content */
+        article { margin-top: 4rem; max-width: 1000px; margin-left: auto; margin-right: auto; }
+        article h2 { font-family: var(--font-display); font-size: 1.75rem; margin: 2.5rem 0 1rem; color: var(--accent-gql); }
+        article h3 { font-size: 1.25rem; margin: 1.5rem 0 0.75rem; }
+        article p { margin-bottom: 1.25rem; color: var(--text-secondary); }
+        article ul, article ol { margin-bottom: 1.5rem; padding-left: 1.5rem; color: var(--text-secondary); }
+        article li { margin-bottom: 0.5rem; }
+        code { background: var(--bg-input); padding: 0.2rem 0.4rem; border-radius: 4px; font-family: var(--font-mono); font-size: 0.9em; }
+
+        .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--accent-gql); color: #fff; padding: 0.75rem 1.5rem; border-radius: var(--radius-md); transform: translateY(100px); transition: transform 0.3s; z-index: 1000; }
+        .toast.show { transform: translateY(0); }
+
+        footer { margin-top: 4rem; padding: 2rem; border-top: 1px solid var(--border-subtle); text-align: center; color: var(--text-muted); font-size: 0.875rem; }
+        footer a { color: var(--text-secondary); text-decoration: none; margin: 0 0.5rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="../../index.html">首页</a> / <span>开发工具</span> / <span>GraphQL 查询构建器</span>
+        </nav>
+
+        <header>
+            <h1>GraphQL 查询构建器</h1>
+            <p class="subtitle">可视化构建复杂的 GraphQL 请求，提升 API 对接效率</p>
+            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">
+                <span>🌙</span> 暗色模式
+            </button>
+        </header>
+
+        <!-- Google AdSense Top -->
+        <div class="ads-placeholder">
+            广告占位符 - Google AdSense (Top)
+        </div>
+
+        <main class="main-layout">
+            <!-- Left: Schema Input -->
+            <aside class="panel">
+                <div class="panel-header">
+                    <h3>Schema 定义 (SDL)</h3>
+                    <button class="btn" onclick="parseSchema()">解析</button>
                 </div>
-              </div>
-            </header>
-            <pre class="query-output"><code id="queryOutput"></code></pre>
-          </article>
+                <div class="panel-content">
+                    <textarea id="schemaInput" placeholder="粘贴您的 GraphQL SDL (类型定义)...&#10;&#10;type User {&#10;  id: ID!&#10;  name: String!&#10;  email: String&#10;}"></textarea>
+                    <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                        <button class="btn" style="flex:1" onclick="loadExample('blog')">博客示例</button>
+                        <button class="btn" style="flex:1" onclick="loadExample('ecommerce')">电商示例</button>
+                    </div>
+                </div>
+            </aside>
 
-          <article>
-            <header>
-              <div style="display: flex; justify-content: space-between; align-items: center">
-                <h3>变量 JSON</h3>
-                <button class="outline" onclick="copyVariables()">📋 复制</button>
-              </div>
-            </header>
-            <pre class="variables-output"><code id="variablesOutput">{}</code></pre>
-          </article>
+            <!-- Middle: Builder -->
+            <section class="panel">
+                <div class="panel-header">
+                    <h3>查询构建器</h3>
+                </div>
+                <div class="panel-content">
+                    <div class="op-tabs">
+                        <div class="op-tab active" onclick="setOp('query')">Query</div>
+                        <div class="op-tab" onclick="setOp('mutation')">Mutation</div>
+                        <div class="op-tab" onclick="setOp('subscription')">Subscription</div>
+                    </div>
 
-          <article>
-            <header>
-              <h3>cURL 命令</h3>
-            </header>
-            <label>
-              GraphQL Endpoint
-              <input
-                type="text"
-                id="endpoint"
-                value="https://api.example.com/graphql"
-                onchange="generateCurl()"
-              />
-            </label>
-            <pre style="max-height: 150px"><code id="curlOutput"></code></pre>
-            <button class="outline" onclick="copyCurl()">📋 复制 cURL</button>
-          </article>
-        </section>
-      </div>
-    </main>
+                    <div class="builder-section">
+                        <div class="section-head">
+                            <h4>根字段与选择集</h4>
+                            <button class="btn btn-primary" onclick="addRootField()">+ 根字段</button>
+                        </div>
+                        <div id="fieldsContainer"></div>
+                    </div>
+
+                    <div class="builder-section">
+                        <div class="section-head">
+                            <h4>变量定义</h4>
+                            <button class="btn" onclick="addVariable()">+ 变量</button>
+                        </div>
+                        <div id="variablesContainer"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right: Output -->
+            <aside class="panel">
+                <div class="panel-header">
+                    <h3>生成的代码</h3>
+                    <div style="display: flex; gap: 0.4rem;">
+                        <button class="btn btn-primary" onclick="copyQuery()">复制</button>
+                    </div>
+                </div>
+                <div class="panel-content">
+                    <div class="form-group">
+                        <label>GraphQL Query</label>
+                        <div class="code-box" id="queryOutput"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Variables (JSON)</label>
+                        <div class="code-box" id="variablesOutput">{}</div>
+                    </div>
+                    <div class="form-group">
+                        <label>cURL 命令</label>
+                        <input type="text" id="endpoint" placeholder="Endpoint URL..." style="margin-bottom: 0.5rem;">
+                        <div class="code-box" id="curlOutput" style="max-height: 150px; overflow: auto;"></div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <!-- Google AdSense Bottom -->
+        <div class="ads-placeholder">
+            广告占位符 - Google AdSense (Bottom)
+        </div>
+
+        <!-- SEO Content -->
+        <article>
+            <h2>GraphQL 查询构建器：连接前端与数据的桥梁</h2>
+            <p>GraphQL 彻底改变了前端获取数据的方式，通过声明式的查询，前端可以精确地获取所需的数据，不多也不少。然而，对于复杂的 Schema，手动编写无错误的 Query、Mutation 往往耗时且容易出错。我们的在线构建器旨在简化这一过程。</p>
+            
+            <h3>为什么要使用可视化构建器？</h3>
+            <ul>
+                <li><strong>消除语法焦虑：</strong> 无需担心忘记大括号、变量声明前的 <code>$</code> 符号或必填参数的校验。</li>
+                <li><strong>快速探索 Schema：</strong> 通过解析 SDL (Schema Definition Language)，您可以直观地看到所有可用的类型和字段，像拼积木一样组合查询。</li>
+                <li><strong>生产级代码导出：</strong> 除了生成的 Query，我们还为您准备了 cURL 命令。这意味着您可以直接在终端或 Postman 中测试接口，而无需编写任何代码。</li>
+                <li><strong> Fragment 支持：</strong> 在大型项目中，复用字段定义（Fragment）是最佳实践。本工具支持可视化定义并引用 Fragment。</li>
+            </ul>
+
+            <h3>解决的具体场景</h3>
+            <p><strong>场景一：对接新接口。</strong><br>后端刚发布了新的 GraphQL Schema，您可以使用本工具快速解析 SDL，点选出页面所需的字段，生成 Query 后直接放入代码库中。</p>
+            
+            <p><strong>场景二：调试复杂的 Mutation。</strong><br>Mutation 通常包含复杂的 Input 类型变量。通过可视化界面输入变量值，自动生成的 JSON 变量块可以确保发送的数据结构完全符合服务端要求。</p>
+
+            <p><strong>场景三：CI/CD 与 脚本测试。</strong><br>如果您需要通过脚本定期调用 GraphQL 接口进行监控，使用本工具生成的 cURL 命令是最快捷的方案。</p>
+
+            <h3>GraphQL 最佳实践提示</h3>
+            <ol>
+                <li><strong>命名您的操作：</strong> 始终为您的 Query 和 Mutation 命名（如 <code>query GetUserDetail { ... }</code>），这有助于在生产环境的监控日志中快速定位问题。</li>
+                <li><strong>使用变量而非硬编码：</strong> 永远不要在 Query 字符串中硬编码参数值，使用变量可以提高性能并防止注入风险。</li>
+                <li><strong>按需请求字段：</strong> 既然选择了 GraphQL，就不要贪图方便请求 <code>*</code>（在 GraphQL 中通常指所有可用字段），只请求页面当前渲染所需的字段。</li>
+            </ol>
+        </article>
+
+        <footer>
+            <p>&copy; 2026 WebUtils. 基于 MIT 协议开源。 <a href="https://github.com/nicepkg/html-tools">GitHub</a> | <a href="../../index.html">更多工具</a></p>
+        </footer>
+    </div>
+
+    <div id="toast" class="toast">已复制到剪贴板</div>
 
     <script>
-      let operationType = "query";
-      let variables = [];
-      let rootFields = [];
-      let fragments = [];
-      let schema = null;
-      let variableId = 0;
-      let fieldId = 0;
-      let fragmentId = 0;
-
-      window.toggleTheme = function () {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute("data-theme");
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
-      };
-
-      (function () {
-        const savedTheme = localStorage.getItem("theme") || "light";
-        document.documentElement.setAttribute("data-theme", savedTheme);
-      })();
-
-      const examples = {
-        blog: `type User {
-  id: ID!
-  name: String!
-  email: String
-  posts: [Post!]!
-}
-
-type Post {
-  id: ID!
-  title: String!
-  content: String
-  published: Boolean!
-  author: User!
-  comments: [Comment!]!
-}
-
-type Comment {
-  id: ID!
-  text: String!
-  author: User!
-}
-
-type Query {
-  user(id: ID!): User
-  users(limit: Int, offset: Int): [User!]!
-  post(id: ID!): Post
-  posts(published: Boolean, limit: Int): [Post!]!
-}
-
-type Mutation {
-  createUser(name: String!, email: String): User!
-  createPost(title: String!, content: String, authorId: ID!): Post!
-  publishPost(id: ID!): Post
-}
-
-type Subscription {
-  postPublished: Post!
-}`,
-        ecommerce: `type Product {
-  id: ID!
-  name: String!
-  description: String
-  price: Float!
-  inStock: Boolean!
-  category: Category!
-}
-
-type Category {
-  id: ID!
-  name: String!
-  products: [Product!]!
-}
-
-type Order {
-  id: ID!
-  items: [OrderItem!]!
-  total: Float!
-  status: String!
-}
-
-type OrderItem {
-  product: Product!
-  quantity: Int!
-  price: Float!
-}
-
-type Query {
-  product(id: ID!): Product
-  products(category: ID, inStock: Boolean, minPrice: Float, maxPrice: Float): [Product!]!
-  categories: [Category!]!
-  order(id: ID!): Order
-  orders(status: String): [Order!]!
-}
-
-type Mutation {
-  createProduct(name: String!, price: Float!, categoryId: ID!): Product!
-  createOrder(items: [OrderItemInput!]!): Order!
-  updateOrderStatus(id: ID!, status: String!): Order!
-}
-
-input OrderItemInput {
-  productId: ID!
-  quantity: Int!
-}`,
-        social: `type User {
-  id: ID!
-  username: String!
-  displayName: String
-  avatar: String
-  followers: [User!]!
-  following: [User!]!
-  posts: [Post!]!
-}
-
-type Post {
-  id: ID!
-  content: String!
-  author: User!
-  likes: Int!
-  likedBy: [User!]!
-  createdAt: String!
-}
-
-type Query {
-  me: User
-  user(id: ID, username: String): User
-  feed(limit: Int, cursor: String): [Post!]!
-  search(query: String!): [User!]!
-}
-
-type Mutation {
-  follow(userId: ID!): User!
-  unfollow(userId: ID!): User!
-  createPost(content: String!): Post!
-  likePost(postId: ID!): Post!
-}
-
-type Subscription {
-  newPost: Post!
-  newFollower: User!
-}`
-      };
-
-      window.loadExample = function (type) {
-        document.getElementById("schemaInput").value = examples[type];
-        parseSchema();
-      };
-
-      window.setOperationType = function (type) {
-        operationType = type;
-        document.querySelectorAll(".operation-tabs button").forEach((btn) => {
-          btn.classList.remove("active");
-        });
-        document.getElementById(type + "Tab").classList.add("active");
-        generateQuery();
-      };
-
-      // Variable management
-      window.addVariable = function () {
-        const id = variableId++;
-        variables.push({
-          id,
-          name: "",
-          type: "String",
-          required: false,
-          defaultValue: ""
-        });
-        renderVariables();
-        generateQuery();
-      };
-
-      function removeVariable(id) {
-        variables = variables.filter((v) => v.id !== id);
-        renderVariables();
-        generateQuery();
-      }
-
-      function renderVariables() {
-        const container = document.getElementById("variablesContainer");
-        container.replaceChildren();
-
-        variables.forEach((v) => {
-          const row = document.createElement("div");
-          row.className = "arg-row";
-
-          const nameInput = document.createElement("input");
-          nameInput.type = "text";
-          nameInput.value = v.name;
-          nameInput.placeholder = "变量�?;
-          nameInput.style.flex = "1";
-          nameInput.onchange = (e) => {
-            v.name = e.target.value;
-            generateQuery();
-          };
-
-          const typeSelect = document.createElement("select");
-          typeSelect.style.flex = "1";
-          ["String", "Int", "Float", "Boolean", "ID", "[String]", "[Int]", "[ID]"].forEach((t) => {
-            const opt = document.createElement("option");
-            opt.value = t;
-            opt.textContent = t;
-            opt.selected = v.type === t;
-            typeSelect.appendChild(opt);
-          });
-          typeSelect.onchange = (e) => {
-            v.type = e.target.value;
-            generateQuery();
-          };
-
-          const reqLabel = document.createElement("label");
-          reqLabel.style.cssText =
-            "margin:0;display:flex;align-items:center;gap:0.25rem;white-space:nowrap;";
-          const reqCheck = document.createElement("input");
-          reqCheck.type = "checkbox";
-          reqCheck.checked = v.required;
-          reqCheck.onchange = (e) => {
-            v.required = e.target.checked;
-            generateQuery();
-          };
-          reqLabel.appendChild(reqCheck);
-          reqLabel.appendChild(document.createTextNode("必填"));
-
-          const defaultInput = document.createElement("input");
-          defaultInput.type = "text";
-          defaultInput.value = v.defaultValue;
-          defaultInput.placeholder = "默认�?;
-          defaultInput.style.flex = "1";
-          defaultInput.onchange = (e) => {
-            v.defaultValue = e.target.value;
-            generateQuery();
-          };
-
-          const delBtn = document.createElement("button");
-          delBtn.className = "outline secondary";
-          delBtn.style.padding = "0.25rem 0.5rem";
-          delBtn.textContent = "×";
-          delBtn.onclick = () => removeVariable(v.id);
-
-          row.appendChild(nameInput);
-          row.appendChild(typeSelect);
-          row.appendChild(reqLabel);
-          row.appendChild(defaultInput);
-          row.appendChild(delBtn);
-          container.appendChild(row);
-        });
-      }
-
-      // Root field management
-      function addRootField() {
-        const id = fieldId++;
-        rootFields.push({
-          id,
-          name: "",
-          alias: "",
-          args: [],
-          fields: []
-        });
-        renderFields();
-        generateQuery();
-      }
-
-      function removeRootField(id) {
-        rootFields = rootFields.filter((f) => f.id !== id);
-        renderFields();
-        generateQuery();
-      }
-
-      function renderFields() {
-        const container = document.getElementById("fieldsContainer");
-        container.replaceChildren();
-
-        rootFields.forEach((field) => {
-          const fieldEl = createFieldElement(field, true);
-          container.appendChild(fieldEl);
-        });
-      }
-
-      function createFieldElement(field, isRoot = false) {
-        const div = document.createElement("div");
-        div.className = "schema-type";
-
-        const header = document.createElement("div");
-        header.style.cssText = "display:flex;gap:0.5rem;align-items:center;margin-bottom:0.5rem;";
-
-        const aliasInput = document.createElement("input");
-        aliasInput.type = "text";
-        aliasInput.className = "alias-input";
-        aliasInput.value = field.alias || "";
-        aliasInput.placeholder = "别名";
-        aliasInput.onchange = (e) => {
-          field.alias = e.target.value;
-          generateQuery();
-        };
-
-        const nameInput = document.createElement("input");
-        nameInput.type = "text";
-        nameInput.value = field.name;
-        nameInput.placeholder = "字段�?;
-        nameInput.style.flex = "1";
-        nameInput.onchange = (e) => {
-          field.name = e.target.value;
-          generateQuery();
-        };
-
-        const delBtn = document.createElement("button");
-        delBtn.className = "outline secondary";
-        delBtn.style.padding = "0.25rem 0.5rem";
-        delBtn.textContent = "×";
-        delBtn.onclick = () => {
-          if (isRoot) {
-            removeRootField(field.id);
-          } else {
-            field.removed = true;
-            renderFields();
-            generateQuery();
-          }
-        };
-
-        header.appendChild(aliasInput);
-        header.appendChild(nameInput);
-        header.appendChild(delBtn);
-        div.appendChild(header);
-
-        // Arguments
-        const argsDetails = document.createElement("details");
-        const argsSummary = document.createElement("summary");
-        argsSummary.textContent = "参数 (" + field.args.length + ")";
-        argsDetails.appendChild(argsSummary);
-
-        const argsContainer = document.createElement("div");
-        field.args.forEach((arg, i) => {
-          const argRow = document.createElement("div");
-          argRow.className = "arg-row";
-
-          const argName = document.createElement("input");
-          argName.type = "text";
-          argName.value = arg.name;
-          argName.placeholder = "参数�?;
-          argName.style.flex = "1";
-          argName.onchange = (e) => {
-            arg.name = e.target.value;
-            generateQuery();
-          };
-
-          const argValue = document.createElement("input");
-          argValue.type = "text";
-          argValue.value = arg.value;
-          argValue.placeholder = "�?(使用 $变量�?引用变量)";
-          argValue.style.flex = "2";
-          argValue.onchange = (e) => {
-            arg.value = e.target.value;
-            generateQuery();
-          };
-
-          const argDel = document.createElement("button");
-          argDel.className = "outline secondary";
-          argDel.style.padding = "0.25rem 0.5rem";
-          argDel.textContent = "×";
-          argDel.onclick = () => {
-            field.args.splice(i, 1);
-            renderFields();
-            generateQuery();
-          };
-
-          argRow.appendChild(argName);
-          argRow.appendChild(argValue);
-          argRow.appendChild(argDel);
-          argsContainer.appendChild(argRow);
-        });
-        argsDetails.appendChild(argsContainer);
-
-        const addArgBtn = document.createElement("button");
-        addArgBtn.className = "outline";
-        addArgBtn.style.cssText = "padding:0.25rem 0.5rem;font-size:0.8rem;";
-        addArgBtn.textContent = "+ 参数";
-        addArgBtn.onclick = () => {
-          field.args.push({ name: "", value: "" });
-          renderFields();
-          generateQuery();
-        };
-        argsDetails.appendChild(addArgBtn);
-        div.appendChild(argsDetails);
-
-        // Nested fields
-        const fieldsDetails = document.createElement("details");
-        fieldsDetails.open = true;
-        const fieldsSummary = document.createElement("summary");
-        fieldsSummary.textContent =
-          "子字�?(" + field.fields.filter((f) => !f.removed).length + ")";
-        fieldsDetails.appendChild(fieldsSummary);
-
-        const fieldsContainer = document.createElement("div");
-        fieldsContainer.className = "nested-fields";
-
-        field.fields
-          .filter((f) => !f.removed)
-          .forEach((subField) => {
-            const subEl = createFieldElement(subField, false);
-            fieldsContainer.appendChild(subEl);
-          });
-        fieldsDetails.appendChild(fieldsContainer);
-
-        // Simple field input for quick add
-        const quickAddRow = document.createElement("div");
-        quickAddRow.style.cssText = "display:flex;gap:0.5rem;margin-top:0.5rem;";
-
-        const quickInput = document.createElement("input");
-        quickInput.type = "text";
-        quickInput.placeholder = "快速添加字�?(空格分隔多个)";
-        quickInput.style.flex = "1";
-
-        const quickAddBtn = document.createElement("button");
-        quickAddBtn.className = "outline";
-        quickAddBtn.style.cssText = "padding:0.25rem 0.5rem;font-size:0.8rem;";
-        quickAddBtn.textContent = "+ 添加";
-        quickAddBtn.onclick = () => {
-          const names = quickInput.value
-            .trim()
-            .split(/\s+/)
-            .filter((n) => n);
-          names.forEach((name) => {
-            field.fields.push({
-              id: fieldId++,
-              name: name,
-              alias: "",
-              args: [],
-              fields: []
-            });
-          });
-          quickInput.value = "";
-          renderFields();
-          generateQuery();
-        };
-
-        quickAddRow.appendChild(quickInput);
-        quickAddRow.appendChild(quickAddBtn);
-        fieldsDetails.appendChild(quickAddRow);
-
-        // Add nested object field button
-        const addNestedBtn = document.createElement("button");
-        addNestedBtn.className = "outline";
-        addNestedBtn.style.cssText = "padding:0.25rem 0.5rem;font-size:0.8rem;margin-left:0.5rem;";
-        addNestedBtn.textContent = "+ 嵌套对象";
-        addNestedBtn.onclick = () => {
-          field.fields.push({
-            id: fieldId++,
-            name: "",
-            alias: "",
-            args: [],
-            fields: []
-          });
-          renderFields();
-          generateQuery();
-        };
-        quickAddRow.appendChild(addNestedBtn);
-
-        div.appendChild(fieldsDetails);
-
-        return div;
-      }
-
-      // Fragment management
-      window.addFragment = function () {
-        const id = fragmentId++;
-        fragments.push({
-          id,
-          name: "Fragment" + id,
-          onType: "",
-          fields: []
-        });
-        renderFragments();
-        generateQuery();
-      };
-
-      function removeFragment(id) {
-        fragments = fragments.filter((f) => f.id !== id);
-        renderFragments();
-        generateQuery();
-      }
-
-      function renderFragments() {
-        const container = document.getElementById("fragmentsContainer");
-        container.replaceChildren();
-
-        fragments.forEach((frag) => {
-          const div = document.createElement("div");
-          div.className = "schema-type";
-
-          const header = document.createElement("div");
-          header.style.cssText = "display:flex;gap:0.5rem;align-items:center;margin-bottom:0.5rem;";
-
-          const nameInput = document.createElement("input");
-          nameInput.type = "text";
-          nameInput.value = frag.name;
-          nameInput.placeholder = "Fragment 名称";
-          nameInput.style.flex = "1";
-          nameInput.onchange = (e) => {
-            frag.name = e.target.value;
-            generateQuery();
-          };
-
-          const onLabel = document.createElement("span");
-          onLabel.textContent = "on";
-          onLabel.style.padding = "0 0.25rem";
-
-          const typeInput = document.createElement("input");
-          typeInput.type = "text";
-          typeInput.value = frag.onType;
-          typeInput.placeholder = "类型�?;
-          typeInput.style.flex = "1";
-          typeInput.onchange = (e) => {
-            frag.onType = e.target.value;
-            generateQuery();
-          };
-
-          const delBtn = document.createElement("button");
-          delBtn.className = "outline secondary";
-          delBtn.style.padding = "0.25rem 0.5rem";
-          delBtn.textContent = "×";
-          delBtn.onclick = () => removeFragment(frag.id);
-
-          header.appendChild(nameInput);
-          header.appendChild(onLabel);
-          header.appendChild(typeInput);
-          header.appendChild(delBtn);
-          div.appendChild(header);
-
-          // Fields
-          const fieldsLabel = document.createElement("label");
-          fieldsLabel.textContent = "字段 (每行一�?";
-          const fieldsArea = document.createElement("textarea");
-          fieldsArea.rows = 3;
-          fieldsArea.value = frag.fields.join("\n");
-          fieldsArea.onchange = (e) => {
-            frag.fields = e.target.value.split("\n").filter((f) => f.trim());
-            generateQuery();
-          };
-          fieldsLabel.appendChild(fieldsArea);
-          div.appendChild(fieldsLabel);
-
-          container.appendChild(div);
-        });
-      }
-
-      // Query generation
-      function generateQuery() {
-        let query = "";
-        const opName = document.getElementById("operationName").value.trim();
-
-        // Build variable definition
-        let varDef = "";
-        if (variables.length > 0) {
-          const validVars = variables.filter((v) => v.name);
-          if (validVars.length > 0) {
-            const varParts = validVars.map((v) => {
-              let def = "$" + v.name + ": " + v.type;
-              if (v.required) def += "!";
-              if (v.defaultValue) def += " = " + formatValue(v.defaultValue, v.type);
-              return def;
-            });
-            varDef = "(" + varParts.join(", ") + ")";
-          }
-        }
-
-        // Operation line
-        query += operationType;
-        if (opName || varDef) {
-          query += " " + (opName || "");
-          query += varDef;
-        }
-        query += " {\n";
-
-        // Root fields
-        rootFields.forEach((field) => {
-          query += generateFieldQuery(field, 1);
-        });
-
-        query += "}\n";
-
-        // Fragments
-        fragments.forEach((frag) => {
-          if (frag.name && frag.onType) {
-            query += "\nfragment " + frag.name + " on " + frag.onType + " {\n";
-            frag.fields.forEach((f) => {
-              query += "  " + f + "\n";
-            });
-            query += "}\n";
-          }
-        });
-
-        document.getElementById("queryOutput").textContent = query;
-
-        // Generate variables JSON
-        const varsJson = {};
-        variables
-          .filter((v) => v.name && v.defaultValue)
-          .forEach((v) => {
-            varsJson[v.name] = parseDefaultValue(v.defaultValue, v.type);
-          });
-        document.getElementById("variablesOutput").textContent = JSON.stringify(varsJson, null, 2);
-
-        generateCurl();
-      }
-
-      function generateFieldQuery(field, indent) {
-        if (!field.name) return "";
-
-        const spaces = "  ".repeat(indent);
-        let line = spaces;
-
-        // Alias
-        if (field.alias) {
-          line += field.alias + ": ";
-        }
-
-        line += field.name;
-
-        // Arguments
-        if (field.args.length > 0) {
-          const validArgs = field.args.filter((a) => a.name && a.value);
-          if (validArgs.length > 0) {
-            const argParts = validArgs.map((a) => {
-              let val = a.value;
-              if (
-                !val.startsWith("$") &&
-                !val.startsWith('"') &&
-                !val.startsWith("[") &&
-                val !== "true" &&
-                val !== "false" &&
-                val !== "null" &&
-                isNaN(val)
-              ) {
-                val = '"' + val + '"';
-              }
-              return a.name + ": " + val;
-            });
-            line += "(" + argParts.join(", ") + ")";
-          }
-        }
-
-        // Nested fields
-        const nestedFields = field.fields.filter((f) => !f.removed);
-        if (nestedFields.length > 0) {
-          line += " {\n";
-          nestedFields.forEach((subField) => {
-            if (subField.fields && subField.fields.length > 0) {
-              line += generateFieldQuery(subField, indent + 1);
-            } else if (subField.name) {
-              line += "  ".repeat(indent + 1);
-              if (subField.alias) line += subField.alias + ": ";
-              line += subField.name + "\n";
+        let operationType = 'query';
+        let variables = [];
+        let rootFields = [];
+        let fieldId = 0;
+        let varId = 0;
+
+        // Theme Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const btn = document.getElementById('themeBtn');
+            const isDark = html.getAttribute('data-theme') !== 'light';
+            if (isDark) {
+                html.setAttribute('data-theme', 'light');
+                btn.innerHTML = '<span>☀️</span> 亮色模式';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.removeAttribute('data-theme');
+                btn.innerHTML = '<span>🌙</span> 暗色模式';
+                localStorage.setItem('theme', 'dark');
             }
-          });
-          line += spaces + "}\n";
-        } else {
-          line += "\n";
         }
 
-        return line;
-      }
-
-      function formatValue(value, type) {
-        if (type === "String" || type === "[String]") {
-          return '"' + value + '"';
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+            document.getElementById('themeBtn').innerHTML = '<span>☀️</span> 亮色模式';
         }
-        if (type === "Boolean") {
-          return value.toLowerCase() === "true" ? "true" : "false";
+
+        function setOp(type) {
+            operationType = type;
+            document.querySelectorAll('.op-tab').forEach(t => t.classList.toggle('active', t.textContent.toLowerCase() === type));
+            generate();
         }
-        return value;
-      }
 
-      function parseDefaultValue(value, type) {
-        if (type === "Int") return parseInt(value) || 0;
-        if (type === "Float") return parseFloat(value) || 0;
-        if (type === "Boolean") return value.toLowerCase() === "true";
-        if (type.startsWith("[")) {
-          try {
-            return JSON.parse(value);
-          } catch {
-            return value.split(",").map((v) => v.trim());
-          }
+        function addRootField() {
+            const id = fieldId++;
+            rootFields.push({ id, name: '', alias: '', args: [], fields: [] });
+            renderFields();
+            generate();
         }
-        return value;
-      }
 
-      function generateCurl() {
-        const endpoint = document.getElementById("endpoint").value;
-        const query = document.getElementById("queryOutput").textContent;
-        const vars = document.getElementById("variablesOutput").textContent;
+        function addSubField(parentField) {
+            const id = fieldId++;
+            parentField.fields.push({ id, name: '', alias: '', args: [], fields: [] });
+            renderFields();
+            generate();
+        }
 
-        const body = JSON.stringify({
-          query: query,
-          variables: JSON.parse(vars || "{}")
-        });
+        function removeField(id, list) {
+            const idx = list.findIndex(f => f.id === id);
+            if (idx > -1) {
+                list.splice(idx, 1);
+            } else {
+                list.forEach(f => removeField(id, f.fields));
+            }
+            renderFields();
+            generate();
+        }
 
-        const curl = `curl -X POST '${endpoint}' \\
+        function renderFields() {
+            const container = document.getElementById('fieldsContainer');
+            container.innerHTML = rootFields.map(f => renderFieldItem(f, rootFields)).join('');
+        }
+
+        function renderFieldItem(field, parentList) {
+            return `
+                <div class="field-card">
+                    <button style="position:absolute; top:0.5rem; right:0.5rem; border:none; background:none; color:var(--accent-red); cursor:pointer;" onclick="removeField(${field.id}, rootFields)">&times;</button>
+                    <div class="field-row">
+                        <input type="text" placeholder="别名" style="width:70px;" value="${field.alias}" oninput="field.alias=this.value; generate()">
+                        <input type="text" placeholder="字段名" style="flex:1" value="${field.name}" oninput="field.name=this.value; generate()">
+                    </div>
+                    <div class="nested-fields">
+                        ${field.fields.map(sub => renderFieldItem(sub, field.fields)).join('')}
+                        <button class="btn" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick="addSubField(rootFields.find(rf => findIn(rf, ${field.id})))">+ 子字段</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function findIn(root, id) {
+            if (root.id === id) return true;
+            return root.fields.some(f => findIn(f, id));
+        }
+
+        // Variable management
+        function addVariable() {
+            const id = varId++;
+            variables.push({ id, name: '', type: 'String', required: true, value: '' });
+            renderVariables();
+            generate();
+        }
+
+        function renderVariables() {
+            const container = document.getElementById('variablesContainer');
+            container.innerHTML = variables.map((v, i) => `
+                <div class="field-card">
+                    <div class="field-row">
+                        <input type="text" placeholder="变量名" value="${v.name}" oninput="variables[${i}].name=this.value; generate()">
+                        <select onchange="variables[${i}].type=this.value; generate()" style="background:var(--bg-surface); border:1px solid var(--border-subtle); color:var(--text-primary); border-radius:4px;">
+                            <option value="String">String</option>
+                            <option value="Int">Int</option>
+                            <option value="Boolean">Boolean</option>
+                            <option value="ID">ID</option>
+                        </select>
+                        <input type="text" placeholder="值" value="${v.value}" oninput="variables[${i}].value=this.value; generate()">
+                        <button onclick="variables.splice(${i}, 1); renderVariables(); generate()" style="color:var(--accent-red); border:none; background:none; cursor:pointer;">&times;</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function generate() {
+            let query = `${operationType} `;
+            
+            // Operation name and variables
+            const activeVars = variables.filter(v => v.name);
+            if (activeVars.length) {
+                query += `MyOperation(${activeVars.map(v => `$${v.name}: ${v.type}${v.required ? '!' : ''}`).join(', ')}) `;
+            }
+            
+            query += '{\n';
+            query += rootFields.map(f => generateFieldString(f, 1)).join('\n');
+            query += '\n}';
+
+            document.getElementById('queryOutput').textContent = query;
+
+            // Variables JSON
+            const varObj = {};
+            activeVars.forEach(v => varObj[v.name] = v.type === 'Int' ? parseInt(v.value) : v.value);
+            document.getElementById('variablesOutput').textContent = JSON.stringify(varObj, null, 2);
+
+            generateCurl(query, varObj);
+        }
+
+        function generateFieldString(f, indent) {
+            if (!f.name) return '';
+            const spaces = '  '.repeat(indent);
+            let str = spaces;
+            if (f.alias) str += `${f.alias}: `;
+            str += f.name;
+            if (f.fields.length) {
+                str += ' {\n';
+                str += f.fields.map(sub => generateFieldString(sub, indent + 1)).filter(s => s).join('\n');
+                str += `\n${spaces}}`;
+            }
+            return str;
+        }
+
+        function generateCurl(query, vars) {
+            const url = document.getElementById('endpoint').value || 'https://api.example.com/graphql';
+            const curl = `curl '${url}' \\
   -H 'Content-Type: application/json' \\
-  -d '${body.replace(/'/g, "'\\''")}'`;
-
-        document.getElementById("curlOutput").textContent = curl;
-      }
-
-      window.copyQuery = function () {
-        const query = document.getElementById("queryOutput").textContent;
-        navigator.clipboard.writeText(query).then(() => {
-          alert("查询已复制到剪贴板！");
-        });
-      };
-
-      window.copyVariables = function () {
-        const vars = document.getElementById("variablesOutput").textContent;
-        navigator.clipboard.writeText(vars).then(() => {
-          alert("变量已复制到剪贴板！");
-        });
-      };
-
-      window.copyCurl = function () {
-        const curl = document.getElementById("curlOutput").textContent;
-        navigator.clipboard.writeText(curl).then(() => {
-          alert("cURL 命令已复制到剪贴板！");
-        });
-      };
-
-      window.formatQuery = function () {
-        // Query is already formatted by generation
-        generateQuery();
-      };
-
-      function parseSchema() {
-        const sdl = document.getElementById("schemaInput").value;
-        // Basic SDL parsing - this is simplified
-        // In production, you'd use a proper GraphQL parser
-
-        // Extract types and fields
-        const typeRegex = /type\s+(\w+)\s*\{([^}]+)\}/g;
-        let match;
-        schema = { types: {} };
-
-        while ((match = typeRegex.exec(sdl)) !== null) {
-          const typeName = match[1];
-          const fieldsStr = match[2];
-          const fields = [];
-
-          const fieldRegex = /(\w+)(?:\(([^)]+)\))?:\s*([\[\]\w!]+)/g;
-          let fieldMatch;
-          while ((fieldMatch = fieldRegex.exec(fieldsStr)) !== null) {
-            fields.push({
-              name: fieldMatch[1],
-              args: fieldMatch[2] || "",
-              type: fieldMatch[3]
-            });
-          }
-
-          schema.types[typeName] = fields;
+  --data-binary '${JSON.stringify({ query, variables: vars })}'`;
+            document.getElementById('curlOutput').textContent = curl;
         }
 
-        alert("Schema 已解析！发现 " + Object.keys(schema.types).length + " 个类型�?);
-      }
+        function copyQuery() {
+            navigator.clipboard.writeText(document.getElementById('queryOutput').textContent);
+            showToast();
+        }
 
-      // Initialize
-      addRootField();
-      generateQuery();
+        function showToast() {
+            const t = document.getElementById('toast');
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
+        }
+
+        function parseSchema() {
+            // Simplified SDL parsing logic for demo
+            const sdl = document.getElementById('schemaInput').value;
+            if (!sdl) return;
+            // Real parser would use graphql-js or similar
+            alert('Schema 已记录并用于字段联想（演示版：手动输入字段名即可）');
+        }
+
+        const examples = {
+            blog: `type Post {\n  id: ID!\n  title: String!\n  content: String\n  author: User!\n}`,
+            ecommerce: `type Product {\n  id: ID!\n  name: String!\n  price: Float!\n  category: Category!\n}`
+        };
+
+        function loadExample(type) {
+            document.getElementById('schemaInput').value = examples[type];
+            parseSchema();
+        }
+
+        document.getElementById('endpoint').addEventListener('input', generate);
+
+        // Initial render
+        generate();
     </script>
-  </body>
+</body>
 </html>
-
