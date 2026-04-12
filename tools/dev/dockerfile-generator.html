@@ -1,1062 +1,759 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Dockerfile 生成�?- WebUtils</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dockerfile 生成器 - 在线可视化 Docker 构建文件工具 - WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="可视化生�?Dockerfile，支持多种语言和框架模�? />
-    <meta
-      name="keywords"
-      content="dockerfile docker 容器 生成�?node python go java nginx alpine"
-    />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link
-      rel="canonical"
-      href="https://essays4u.net/tools/dev/dockerfile-generator.html"
-    />
-
+    <meta name="description" content="专业在线 Dockerfile 生成器。支持 Node.js, Python, Go, Java, Nginx 等多种语言的最佳实践模板，可视化配置多阶段构建、非 Root 用户、健康检查等高级特性。">
+    <meta name="keywords" content="Dockerfile生成器,Docker构建,容器镜像,在线Docker工具,可视化Dockerfile,多阶段构建">
+    <meta name="author" content="WebUtils">
+    <link rel="canonical" href="https://essays4u.net/tools/dev/dockerfile-generator.html">
+    
     <!-- Open Graph -->
-    <meta property="og:title" content="Dockerfile 生成�?- WebUtils" />
-    <meta property="og:description" content="可视化生�?Dockerfile，支持多种语言和框架模�? />
-    <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/dev/dockerfile-generator.html"
-    />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:title" content="Dockerfile 生成器 - 在线可视化 Docker 构建文件工具">
+    <meta property="og:description" content="一键生成符合最佳实践的 Dockerfile。支持多语言模板与安全配置。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://essays4u.net/tools/dev/dockerfile-generator.html">
+    
+    <!-- JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Dockerfile 生成器",
+        "operatingSystem": "Web",
+        "applicationCategory": "DeveloperApplication",
+        "description": "可视化生成 Dockerfile 配置文件，支持多语言最佳实践模板。",
+        "offers": {
+            "@type": "Offer",
+            "price": "0"
+        }
+    }
+    </script>
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Dockerfile 生成�?- WebUtils" />
-    <meta name="twitter:description" content="可视化生�?Dockerfile，支持多种语言和框架模�? />
+    <!-- Google AdSense Placeholder -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-################" crossorigin="anonymous"></script>
 
     <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      :root {
-        --bg: #f8f9fa;
-        --card-bg: #fff;
-        --text: #212529;
-        --color-text-muted: #6c757d;
-        --border: #dee2e6;
-        --primary: #0d6efd;
-        --primary-hover: #0b5ed7;
-        --success: #198754;
-        --danger: #dc3545;
-        --shadow: 0 2px 8px rgb(0 0 0 / 8%);
-        --radius: 8px;
-      }
-
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-      }
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family:
-          system-ui,
-          -apple-system,
-          "Segoe UI",
-          Roboto,
-          sans-serif;
-        background: var(--bg-deep);
-        color: var(--text-primary);
-        margin: 0;
-        padding: 24px;
-        min-height: 100vh;
-      }
-
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-
-      .back-link {
-        display: inline-block;
-        margin-bottom: 16px;
-        color: var(--accent-cyan);
-        text-decoration: none;
-        font-size: 0.9rem;
-      }
-
-      .back-link:hover {
-        text-decoration: underline;
-      }
-
-      h1 {
-        font-size: 1.75rem;
-        margin: 0 0 8px;
-      }
-
-      .desc {
-        color: var(--text-muted);
-        margin: 0 0 24px;
-        font-size: 0.95rem;
-      }
-
-      .card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        padding: 20px;
-        box-shadow: var(--shadow);
-        margin-bottom: 20px;
-      }
-
-      .main-layout {
-        display: grid;
-        grid-template-columns: 350px 1fr;
-        gap: 20px;
-      }
-
-      @media (width <= 900px) {
-        .main-layout {
-          grid-template-columns: 1fr;
+        :root {
+            --primary-color: #3b82f6;
+            --primary-hover: #2563eb;
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #0f172a;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --accent-color: #60a5fa;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --warning-color: #f59e0b;
+            --radius: 12px;
+            --transition: all 0.3s ease;
         }
-      }
 
-      .form-section h3 {
-        font-size: 0.95rem;
-        margin: 0 0 16px;
-        color: var(--text-primary);
-        border-bottom: 1px solid var(--border-subtle);
-        padding-bottom: 8px;
-      }
-
-      .form-group {
-        margin-bottom: 16px;
-      }
-
-      .form-group label {
-        display: block;
-        font-size: 0.85rem;
-        color: var(--text-muted);
-        margin-bottom: 6px;
-      }
-
-      .form-group select,
-      .form-group input {
-        width: 100%;
-        padding: 10px 12px;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        background: var(--bg-card);
-        color: var(--text-primary);
-        font-size: 0.9rem;
-      }
-
-      .form-group select:focus,
-      .form-group input:focus {
-        outline: none;
-        border-color: var(--accent-cyan);
-      }
-
-      .form-group textarea {
-        width: 100%;
-        min-height: 80px;
-        padding: 10px 12px;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        background: var(--bg-card);
-        color: var(--text-primary);
-        font-size: 0.9rem;
-        font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
-        resize: vertical;
-      }
-
-      .form-group textarea:focus {
-        outline: none;
-        border-color: var(--accent-cyan);
-      }
-
-      .checkbox-group {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-      }
-
-      .checkbox-item {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 0.85rem;
-      }
-
-      .checkbox-item input[type="checkbox"] {
-        width: auto;
-      }
-
-      .templates {
-        margin-bottom: 20px;
-      }
-
-      .template-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
-      }
-
-      @media (width <= 500px) {
-        .template-grid {
-          grid-template-columns: repeat(2, 1fr);
+        [data-theme="light"] {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-input: #f1f5f9;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
         }
-      }
 
-      @media (max-width: 480px) {
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-          padding: 12px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            transition: var(--transition);
+            padding-top: 60px;
         }
-        .main-layout {
-          grid-template-columns: 1fr;
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        .config-panel,
-        .output-panel {
-          min-width: 0;
-          overflow: hidden;
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 10px 20px;
         }
-        .templates,
-        .form-section {
-          min-width: 0;
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
         }
-        .code-block {
-          font-size: 0.7rem;
-          white-space: pre-wrap;
-          word-break: break-all;
-          min-height: 200px;
-          padding: 12px;
+
+        .back-home {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .btn-row {
-          flex-direction: column;
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .btn-row button {
-          width: 100%;
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
         }
+
         h1 {
-          font-size: 1.3rem;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 950px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .card {
-          padding: 12px;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 25px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
         .template-grid {
-          grid-template-columns: 1fr 1fr;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
         }
-      }
 
-      .template-btn {
-        padding: 10px 12px;
-        font-size: 0.8rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        background: var(--bg-card);
-        color: var(--text-primary);
-        cursor: pointer;
-        transition: all 0.2s;
-        text-align: center;
-      }
+        .template-btn {
+            padding: 12px 8px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: var(--transition);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
 
-      .template-btn:hover {
-        border-color: var(--accent-cyan);
-        color: var(--accent-cyan);
-      }
+        .template-btn:hover {
+            border-color: var(--primary-color);
+            background: rgba(59, 130, 246, 0.1);
+        }
 
-      .template-btn.active {
-        border-color: var(--accent-cyan);
-        background: var(--accent-cyan);
-        color: #fff;
-      }
+        .template-btn.active {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: white;
+        }
 
-      .template-btn .icon {
-        display: block;
-        font-size: 1.2rem;
-        margin-bottom: 4px;
-      }
+        .template-icon {
+            font-size: 1.5rem;
+        }
 
-      .output-section h3 {
-        font-size: 0.95rem;
-        margin: 0 0 12px;
-        color: var(--text-primary);
-      }
+        .form-group {
+            margin-bottom: 15px;
+        }
 
-      .btn-row {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        margin-bottom: 16px;
-      }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
 
-      button {
-        padding: 10px 16px;
-        font-size: 0.95rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        background: var(--bg-card);
-        color: var(--text-primary);
-        cursor: pointer;
-        transition: all 0.2s;
-      }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
 
-      button:hover {
-        border-color: var(--accent-cyan);
-        color: var(--accent-cyan);
-      }
+        .form-group textarea {
+            height: 80px;
+            resize: vertical;
+            font-family: 'JetBrains Mono', monospace;
+        }
 
-      button.primary {
-        background: var(--accent-cyan);
-        border-color: var(--accent-cyan);
-        color: #fff;
-      }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
 
-      button.primary:hover {
-        background: var(--accent-cyan);
-        border-color: var(--accent-cyan);
-        color: #fff;
-      }
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-top: 20px;
+            padding: 15px;
+            background: var(--bg-input);
+            border-radius: 8px;
+        }
 
-      .code-block {
-        background: #1a1a2e;
-        color: var(--color-text-primary);
-        padding: 16px;
-        border-radius: var(--radius-md);
-        font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
-        font-size: 0.85rem;
-        overflow-x: auto;
-        white-space: pre;
-        line-height: 1.6;
-        min-height: 300px;
-        max-height: 500px;
-        overflow-y: auto;
-      }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
 
-      [data-theme="light"] .code-block {
-        background: var(--color-bg-card);
-        color: #333;
-      }
+        .checkbox-item input {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
 
-      .code-block .comment {
-        color: #6c757d;
-      }
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
 
-      .code-block .keyword {
-        color: #0dcaf0;
-      }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
 
-      .code-block .string {
-        color: #20c997;
-      }
+        .btn {
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-input);
+            color: var(--text-main);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-      .status {
-        font-size: 0.85rem;
-        margin-top: 12px;
-        min-height: 20px;
-      }
+        .btn:hover {
+            border-color: var(--primary-color);
+            background: var(--border-color);
+        }
 
-      .status.success {
-        color: var(--accent-green);
-      }
+        .btn-primary {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
 
-      .status.error {
-        color: var(--accent-red);
-      }
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
 
-      .tips {
-        margin-top: 20px;
-        padding: 16px;
-        background: var(--bg-deep);
-        border-radius: var(--radius-md);
-        font-size: 0.85rem;
-        color: var(--text-muted);
-      }
+        .code-block {
+            background: #1a1a2e;
+            color: #e8e8ed;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            min-height: 400px;
+            max-height: 600px;
+            overflow: auto;
+            white-space: pre;
+            border: 1px solid var(--border-color);
+        }
 
-      .tips h4 {
-        margin: 0 0 8px;
-        color: var(--text-primary);
-        font-size: 0.9rem;
-      }
+        .ad-container {
+            margin: 40px 0;
+            text-align: center;
+            min-height: 90px;
+            background: rgba(255, 255, 255, 0.02);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px dashed var(--border-color);
+            border-radius: var(--radius);
+        }
 
-      .tips ul {
-        margin: 0;
-        padding-left: 20px;
-      }
+        .article-section {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border-color);
+        }
 
-      .tips li {
-        margin-bottom: 4px;
-      }
+        .article-section h2 {
+            margin-bottom: 25px;
+            color: var(--primary-color);
+        }
 
-      footer {
-        text-align: center;
-        margin-top: 32px;
-        padding-top: 16px;
-        border-top: 1px solid var(--border-subtle);
-        color: var(--text-muted);
-        font-size: 0.85rem;
-      }
+        .article-section h3 {
+            margin: 30px 0 15px;
+        }
 
-      footer a {
-        color: var(--accent-cyan);
-        text-decoration: none;
-      }
+        .article-section p {
+            margin-bottom: 20px;
+            color: var(--text-muted);
+        }
 
-      footer a:hover {
-        text-decoration: underline;
-      }
+        .problem-solution {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin: 35px 0;
+        }
 
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
+        .ps-card {
+            background: rgba(59, 130, 246, 0.05);
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .ps-card.solution {
+            background: rgba(16, 185, 129, 0.05);
+            border-left-color: var(--success-color);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 40px 0;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+        }
+
+        @media (max-width: 600px) {
+            .problem-solution {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      Dockerfile 生成�?
-    </nav>
-    <div class="container">
-      <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">☀�?/button>
-      <h1>Dockerfile 生成�?/h1>
-      <p class="desc">可视化生�?Dockerfile，支持多种语言和框架的最佳实践模�?/p>
-
-      <div class="card">
-        <div class="main-layout">
-          <div class="config-panel">
-            <div class="templates">
-              <h3>快速模�?/h3>
-              <div class="template-grid">
-                <button class="template-btn" data-template="node">
-                  <span class="icon">📦</span>
-                  Node.js
-                </button>
-                <button class="template-btn" data-template="python">
-                  <span class="icon">🐍</span>
-                  Python
-                </button>
-                <button class="template-btn" data-template="go">
-                  <span class="icon">🐹</span>
-                  Go
-                </button>
-                <button class="template-btn" data-template="java">
-                  <span class="icon">�?/span>
-                  Java
-                </button>
-                <button class="template-btn" data-template="nginx">
-                  <span class="icon">🌐</span>
-                  Nginx
-                </button>
-                <button class="template-btn" data-template="static">
-                  <span class="icon">📄</span>
-                  Static
-                </button>
-              </div>
+</head>
+<body data-theme="dark">
+    <nav>
+        <div class="nav-content">
+            <a href="../../index.html" class="back-home">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                返回首页
+            </a>
+            <div style="position: absolute; left: 50%; transform: translateX(-50%); text-align: center;">
+                <span style="font-weight: 700; font-size: 1.1rem; color: var(--primary-color);">WebUtils</span>
             </div>
-
-            <div class="form-section">
-              <h3>基础配置</h3>
-
-              <div class="form-group">
-                <label>基础镜像</label>
-                <select id="baseImage">
-                  <option value="node:20-alpine">node:20-alpine</option>
-                  <option value="node:20-slim">node:20-slim</option>
-                  <option value="node:20">node:20</option>
-                  <option value="python:3.12-alpine">python:3.12-alpine</option>
-                  <option value="python:3.12-slim">python:3.12-slim</option>
-                  <option value="python:3.12">python:3.12</option>
-                  <option value="golang:1.22-alpine">golang:1.22-alpine</option>
-                  <option value="golang:1.22">golang:1.22</option>
-                  <option value="openjdk:21-slim">openjdk:21-slim</option>
-                  <option value="maven:3.9-eclipse-temurin-21">maven:3.9-eclipse-temurin-21</option>
-                  <option value="nginx:alpine">nginx:alpine</option>
-                  <option value="nginx:latest">nginx:latest</option>
-                  <option value="alpine:3.19">alpine:3.19</option>
-                  <option value="ubuntu:22.04">ubuntu:22.04</option>
-                  <option value="debian:bookworm-slim">debian:bookworm-slim</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label>工作目录</label>
-                <input type="text" id="workdir" value="/app" placeholder="/app" />
-              </div>
-
-              <div class="form-group">
-                <label>暴露端口</label>
-                <input type="text" id="port" value="3000" placeholder="3000, 8080" />
-              </div>
-
-              <div class="form-group">
-                <label>启动命令</label>
-                <input type="text" id="cmd" value="node server.js" placeholder="node server.js" />
-              </div>
-            </div>
-
-            <div class="form-section">
-              <h3>高级选项</h3>
-
-              <div class="form-group">
-                <label>环境变量 (每行一�? KEY=value)</label>
-                <textarea id="envVars" placeholder="NODE_ENV=production&#10;PORT=3000"></textarea>
-              </div>
-
-              <div class="form-group">
-                <label>额外依赖安装</label>
-                <textarea
-                  id="runCommands"
-                  placeholder="apk add --no-cache curl&#10;npm install -g pm2"
-                ></textarea>
-              </div>
-
-              <div class="form-group checkbox-group">
-                <label class="checkbox-item">
-                  <input type="checkbox" id="useMultiStage" />
-                  多阶段构�?
-                </label>
-                <label class="checkbox-item">
-                  <input type="checkbox" id="nonRoot" checked />
-                  �?root 用户
-                </label>
-                <label class="checkbox-item">
-                  <input type="checkbox" id="healthCheck" />
-                  健康检�?
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <div class="output-panel">
-            <div class="output-section">
-              <h3>生成�?Dockerfile</h3>
-              <div class="btn-row">
-                <button class="primary" id="btnGenerate">生成</button>
-                <button id="btnCopy">复制</button>
-                <button id="btnDownload">下载</button>
-                <button id="btnShare">分享</button>
-              </div>
-              <div class="code-block" id="output"># 选择模板或配置选项后点�?生成"</div>
-              <div id="status" class="status"></div>
-            </div>
-
-            <div class="tips">
-              <h4>最佳实践提�?/h4>
-              <ul>
-                <li>使用 alpine 镜像可以大幅减小镜像体积</li>
-                <li>多阶段构建可以分离构建环境和运行环境</li>
-                <li>使用�?root 用户运行以提高安全�?/li>
-                <li>合理使用 .dockerignore 排除不必要的文件</li>
-                <li>将不常变化的层放在前面以利用缓存</li>
-              </ul>
-            </div>
-          </div>
+            <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                <svg class="sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </button>
         </div>
-      </div>
+    </nav>
 
-      <footer>
-        <a href="https://github.com/chicogong/html-tools" target="_blank" rel="noreferrer">
-          GitHub
-        </a>
-        · 纯前端工�?· 无服务器 ·
-        <a href="../../index.html">WebUtils</a>
-      </footer>
+    <div class="container">
+        <header>
+            <h1>Dockerfile 生成器</h1>
+            <p class="subtitle">可视化配置 Docker 构建流程，生成高性能、安全的容器镜像定义</p>
+        </header>
+
+        <div id="ads-top" class="ad-container">
+            <!-- AdSense Placeholder -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-################"
+                 data-ad-slot="################"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+
+        <main>
+            <div class="main-grid">
+                <div class="card">
+                    <div class="card-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                        配置选项
+                    </div>
+
+                    <div class="template-grid">
+                        <button class="template-btn" onclick="applyTemplate('node')" data-template="node">
+                            <span class="template-icon">📦</span> Node.js
+                        </button>
+                        <button class="template-btn" onclick="applyTemplate('python')" data-template="python">
+                            <span class="template-icon">🐍</span> Python
+                        </button>
+                        <button class="template-btn" onclick="applyTemplate('go')" data-template="go">
+                            <span class="template-icon">🐹</span> Go
+                        </button>
+                        <button class="template-btn" onclick="applyTemplate('java')" data-template="java">
+                            <span class="template-icon">☕</span> Java
+                        </button>
+                        <button class="template-btn" onclick="applyTemplate('nginx')" data-template="nginx">
+                            <span class="template-icon">🌐</span> Nginx
+                        </button>
+                        <button class="template-btn" onclick="applyTemplate('static')" data-template="static">
+                            <span class="template-icon">📄</span> Static
+                        </button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>基础镜像</label>
+                        <select id="baseImage">
+                            <option value="node:20-alpine">node:20-alpine (推荐)</option>
+                            <option value="node:20-slim">node:20-slim</option>
+                            <option value="python:3.12-alpine">python:3.12-alpine</option>
+                            <option value="python:3.12-slim">python:3.12-slim</option>
+                            <option value="golang:1.22-alpine">golang:1.22-alpine</option>
+                            <option value="openjdk:21-slim">openjdk:21-slim</option>
+                            <option value="nginx:alpine">nginx:alpine</option>
+                            <option value="alpine:3.19">alpine:3.19</option>
+                            <option value="ubuntu:22.04">ubuntu:22.04</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>工作目录 (WORKDIR)</label>
+                        <input type="text" id="workdir" value="/app" placeholder="/app">
+                    </div>
+
+                    <div class="form-group">
+                        <label>暴露端口 (EXPOSE)</label>
+                        <input type="text" id="port" value="3000" placeholder="3000, 8080">
+                    </div>
+
+                    <div class="form-group">
+                        <label>启动命令 (CMD)</label>
+                        <input type="text" id="cmd" value="node server.js" placeholder="node server.js">
+                    </div>
+
+                    <div class="form-group">
+                        <label>环境变量 (ENV)</label>
+                        <textarea id="envVars" placeholder="NODE_ENV=production&#10;PORT=3000"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>额外运行命令 (RUN)</label>
+                        <textarea id="runCommands" placeholder="apk add --no-cache curl&#10;npm install -g pm2"></textarea>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="useMultiStage">
+                            <span>多阶段构建 (减小体积)</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="nonRoot" checked>
+                            <span>使用非 Root 用户 (安全)</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="healthCheck">
+                            <span>添加健康检查 (HEALTHCHECK)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="output-header">
+                        <div class="card-title" style="margin-bottom: 0; border: none; padding: 0;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                            生成的 Dockerfile
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-secondary" onclick="copyCode()">复制</button>
+                            <button class="btn btn-primary" onclick="downloadFile()">下载</button>
+                        </div>
+                    </div>
+                    <div class="code-block" id="output"># 正在生成...</div>
+                </div>
+            </div>
+
+            <div id="ads-middle" class="ad-container">
+                <!-- AdSense Placeholder -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-################"
+                     data-ad-slot="################"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+            </div>
+
+            <section class="article-section">
+                <h2>Dockerfile：定义你的标准运行环境</h2>
+                
+                <div class="problem-solution">
+                    <div class="ps-card">
+                        <h3>面临的挑战</h3>
+                        <p>“在我的机器上能运行”是开发者最常遇到的尴尬。环境配置的不一致导致了大量的调试时间浪费。同时，不规范的 Dockerfile 会产生巨大的镜像文件，不仅占用存储，更由于暴露了过多的系统权限而带来严重的安全风险。</p>
+                    </div>
+                    <div class="ps-card solution">
+                        <h3>我们的解决方案</h3>
+                        <p>Dockerfile 生成器通过可视化界面，将复杂的构建指令抽象为易懂的配置。它自动应用多阶段构建（Multi-stage Build）来剥离构建依赖，并强制执行“非 Root 用户运行”的安全策略，帮助您产出体积最小、安全性最高的生产级镜像。</p>
+                    </div>
+                </div>
+
+                <h3>编写优质 Dockerfile 的黄金法则</h3>
+                <p>一个好的 Dockerfile 应该具备：小体积、快速构建和安全性。本生成器内置了以下最佳实践：</p>
+                <ul>
+                    <li><strong>选择 Alpine 基础镜像</strong>: 尽可能使用基于 Alpine Linux 的镜像。它通常只有 5MB 大小，能显著降低拉取和存储成本。</li>
+                    <li><strong>合理安排指令顺序</strong>: 将不经常变动的指令（如安装依赖）放在前面，充分利用 Docker 的层缓存（Layer Caching）机制。</li>
+                    <li><strong>多阶段构建</strong>: 在第一阶段编译代码，在第二阶段仅拷贝编译后的产物。这可以减少 90% 以上的镜像体积。</li>
+                    <li><strong>最小权限原则</strong>: 默认创建并使用非 root 用户（如 <code>node</code> 或 <code>appuser</code>）来运行应用进程。</li>
+                </ul>
+
+                <h3>核心配置项解析</h3>
+                <ol>
+                    <li><strong>WORKDIR</strong>: 为后续指令设置工作目录。建议不要使用根目录，而是使用 <code>/app</code> 等专门目录。</li>
+                    <li><strong>EXPOSE</strong>: 声明容器运行时监听的端口。虽然这只是一个文档提示，但对容器间通信和负载均衡器配置至关重要。</li>
+                    <li><strong>ENV</strong>: 设置持久的环境变量，这些变量在构建过程和运行容器时都可用。</li>
+                    <li><strong>HEALTHCHECK</strong>: 让 Docker 引擎自动检测应用是否真的“健康”，而不仅仅是进程还在运行。</li>
+                </ol>
+
+                <h3>常见应用场景</h3>
+                <p>无论您是初学者还是经验丰富的 DevOps 工程师，本工具都能在以下场景中提供巨大帮助：</p>
+                <ul>
+                    <li><strong>新项目初始化</strong>: 为新创建的 Node.js 或 Go 项目快速生成符合生产标准的镜像定义。</li>
+                    <li><strong>旧项目容器化</strong>: 将传统的单体应用迁移到容器环境时，快速尝试不同的基础镜像和构建方案。</li>
+                    <li><strong>安全加固</strong>: 通过对比生成的配置，检查现有 Dockerfile 是否存在安全漏洞（如以 Root 身份运行）。</li>
+                </ul>
+
+                <h3>隐私与本地执行</h3>
+                <p>本工具采用纯前端技术实现。您配置的所有敏感信息（如私有镜像地址、环境变量）均在您的浏览器本地处理，绝不会上传到任何服务器。您的基础设施架构对我们是完全隐形的，确保了最高级别的安全性。</p>
+            </section>
+        </main>
+
+        <div id="ads-bottom" class="ad-container">
+            <!-- AdSense Placeholder -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-################"
+                 data-ad-slot="################"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+
+        <footer>
+            <p>&copy; 2026 WebUtils - 专业开发者的在线工具箱</p>
+        </footer>
     </div>
 
     <script>
-      var baseImageEl = document.getElementById("baseImage");
-      var workdirEl = document.getElementById("workdir");
-      var portEl = document.getElementById("port");
-      var cmdEl = document.getElementById("cmd");
-      var envVarsEl = document.getElementById("envVars");
-      var runCommandsEl = document.getElementById("runCommands");
-      var useMultiStageEl = document.getElementById("useMultiStage");
-      var nonRootEl = document.getElementById("nonRoot");
-      var healthCheckEl = document.getElementById("healthCheck");
-      var outputEl = document.getElementById("output");
-      var statusEl = document.getElementById("status");
-
-      var templates = {
-        node: {
-          baseImage: "node:20-alpine",
-          workdir: "/app",
-          port: "3000",
-          cmd: "node server.js",
-          envVars: "NODE_ENV=production",
-          runCommands: "",
-          multiStage: true,
-          nonRoot: true,
-          healthCheck: true
-        },
-        python: {
-          baseImage: "python:3.12-slim",
-          workdir: "/app",
-          port: "8000",
-          cmd: "python -m uvicorn main:app --host 0.0.0.0 --port 8000",
-          envVars: "PYTHONDONTWRITEBYTECODE=1\nPYTHONUNBUFFERED=1",
-          runCommands: "",
-          multiStage: false,
-          nonRoot: true,
-          healthCheck: true
-        },
-        go: {
-          baseImage: "golang:1.22-alpine",
-          workdir: "/app",
-          port: "8080",
-          cmd: "./main",
-          envVars: "GIN_MODE=release",
-          runCommands: "",
-          multiStage: true,
-          nonRoot: true,
-          healthCheck: true
-        },
-        java: {
-          baseImage: "maven:3.9-eclipse-temurin-21",
-          workdir: "/app",
-          port: "8080",
-          cmd: "java -jar app.jar",
-          envVars: "JAVA_OPTS=-Xmx512m",
-          runCommands: "",
-          multiStage: true,
-          nonRoot: true,
-          healthCheck: true
-        },
-        nginx: {
-          baseImage: "nginx:alpine",
-          workdir: "/usr/share/nginx/html",
-          port: "80",
-          cmd: 'nginx -g "daemon off;"',
-          envVars: "",
-          runCommands: "",
-          multiStage: false,
-          nonRoot: false,
-          healthCheck: true
-        },
-        static: {
-          baseImage: "nginx:alpine",
-          workdir: "/usr/share/nginx/html",
-          port: "80",
-          cmd: "",
-          envVars: "",
-          runCommands: "",
-          multiStage: false,
-          nonRoot: false,
-          healthCheck: false
+        // --- Theme Logic ---
+        const themeToggle = document.getElementById('themeToggle');
+        function initTheme() {
+            const saved = localStorage.getItem('theme') || 'dark';
+            document.body.setAttribute('data-theme', saved);
         }
-      };
-
-      function applyTemplate(name) {
-        var t = templates[name];
-        if (!t) return;
-
-        baseImageEl.value = t.baseImage;
-        workdirEl.value = t.workdir;
-        portEl.value = t.port;
-        cmdEl.value = t.cmd;
-        envVarsEl.value = t.envVars;
-        runCommandsEl.value = t.runCommands;
-        useMultiStageEl.checked = t.multiStage;
-        nonRootEl.checked = t.nonRoot;
-        healthCheckEl.checked = t.healthCheck;
-
-        document.querySelectorAll(".template-btn").forEach(function (btn) {
-          btn.classList.toggle("active", btn.dataset.template === name);
+        themeToggle.addEventListener('click', () => {
+            const current = document.body.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
         });
+        initTheme();
 
-        generate();
-      }
-
-      window.generate = function () {
-        var baseImage = baseImageEl.value;
-        var workdir = workdirEl.value || "/app";
-        var port = portEl.value;
-        var cmd = cmdEl.value;
-        var envVars = envVarsEl.value.trim();
-        var runCommands = runCommandsEl.value.trim();
-        var useMultiStage = useMultiStageEl.checked;
-        var nonRoot = nonRootEl.checked;
-        var healthCheck = healthCheckEl.checked;
-
-        var lines = [];
-
-        // Detect language/framework
-        var isNode = baseImage.includes("node");
-        var isPython = baseImage.includes("python");
-        var isGo = baseImage.includes("golang");
-        var isJava = baseImage.includes("maven") || baseImage.includes("openjdk");
-        var isNginx = baseImage.includes("nginx");
-
-        if (useMultiStage) {
-          // Multi-stage build
-          lines.push("# Build stage");
-
-          if (isNode) {
-            lines.push("FROM " + baseImage + " AS builder");
-            lines.push("WORKDIR " + workdir);
-            lines.push("");
-            lines.push("# Install dependencies first (better caching)");
-            lines.push("COPY package*.json ./");
-            lines.push("RUN npm ci --only=production");
-            lines.push("");
-            lines.push("# Copy source code");
-            lines.push("COPY . .");
-            lines.push("");
-            lines.push("# Production stage");
-            lines.push("FROM " + baseImage + " AS production");
-            lines.push("WORKDIR " + workdir);
-          } else if (isGo) {
-            lines.push("FROM " + baseImage + " AS builder");
-            lines.push("WORKDIR " + workdir);
-            lines.push("");
-            lines.push("# Download dependencies");
-            lines.push("COPY go.mod go.sum ./");
-            lines.push("RUN go mod download");
-            lines.push("");
-            lines.push("# Build");
-            lines.push("COPY . .");
-            lines.push("RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .");
-            lines.push("");
-            lines.push("# Production stage");
-            lines.push("FROM alpine:3.19 AS production");
-            lines.push("RUN apk --no-cache add ca-certificates");
-            lines.push("WORKDIR " + workdir);
-            lines.push("COPY --from=builder " + workdir + "/main .");
-          } else if (isJava) {
-            lines.push("FROM " + baseImage + " AS builder");
-            lines.push("WORKDIR " + workdir);
-            lines.push("");
-            lines.push("# Copy pom.xml and download dependencies");
-            lines.push("COPY pom.xml .");
-            lines.push("RUN mvn dependency:go-offline");
-            lines.push("");
-            lines.push("# Build");
-            lines.push("COPY src ./src");
-            lines.push("RUN mvn package -DskipTests");
-            lines.push("");
-            lines.push("# Production stage");
-            lines.push("FROM eclipse-temurin:21-jre-alpine AS production");
-            lines.push("WORKDIR " + workdir);
-            lines.push("COPY --from=builder " + workdir + "/target/*.jar app.jar");
-          }
-        } else {
-          // Single stage build
-          lines.push("FROM " + baseImage);
-          lines.push("");
-          lines.push("WORKDIR " + workdir);
-        }
-
-        // Environment variables
-        if (envVars) {
-          lines.push("");
-          lines.push("# Environment variables");
-          envVars.split("\n").forEach(function (env) {
-            env = env.trim();
-            if (env && env.includes("=")) {
-              lines.push("ENV " + env);
-            }
-          });
-        }
-
-        // Additional run commands
-        if (runCommands) {
-          lines.push("");
-          lines.push("# Additional setup");
-          runCommands.split("\n").forEach(function (cmd) {
-            cmd = cmd.trim();
-            if (cmd) {
-              lines.push("RUN " + cmd);
-            }
-          });
-        }
-
-        // Copy files (for single stage or after multi-stage)
-        if (!useMultiStage) {
-          lines.push("");
-          lines.push("# Copy application files");
-
-          if (isNode) {
-            lines.push("COPY package*.json ./");
-            lines.push("RUN npm ci --only=production");
-            lines.push("COPY . .");
-          } else if (isPython) {
-            lines.push("COPY requirements.txt .");
-            lines.push("RUN pip install --no-cache-dir -r requirements.txt");
-            lines.push("COPY . .");
-          } else if (isNginx) {
-            lines.push("COPY . .");
-          } else {
-            lines.push("COPY . .");
-          }
-        } else if (isNode) {
-          lines.push("");
-          lines.push("# Copy from builder");
-          lines.push("COPY --from=builder " + workdir + "/node_modules ./node_modules");
-          lines.push("COPY --from=builder " + workdir + " .");
-        }
-
-        // Non-root user
-        if (nonRoot && !isNginx) {
-          lines.push("");
-          lines.push("# Create non-root user");
-          if (baseImage.includes("alpine")) {
-            lines.push("RUN addgroup -g 1001 -S nodejs && adduser -S nextjs -u 1001");
-          } else {
-            lines.push(
-              "RUN groupadd -g 1001 nodejs && useradd -u 1001 -g nodejs -s /bin/sh nextjs"
-            );
-          }
-          lines.push("USER nextjs");
-        }
-
-        // Expose port
-        if (port) {
-          lines.push("");
-          lines.push("# Expose port");
-          port.split(",").forEach(function (p) {
-            p = p.trim();
-            if (p) {
-              lines.push("EXPOSE " + p);
-            }
-          });
-        }
-
-        // Health check
-        if (healthCheck && port) {
-          var firstPort = port.split(",")[0].trim();
-          lines.push("");
-          lines.push("# Health check");
-          if (isNginx) {
-            lines.push("HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \\");
-            lines.push("  CMD curl -f http://localhost:" + firstPort + "/ || exit 1");
-          } else {
-            lines.push("HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \\");
-            lines.push(
-              "  CMD wget --no-verbose --tries=1 --spider http://localhost:" +
-                firstPort +
-                "/health || exit 1"
-            );
-          }
-        }
-
-        // CMD
-        if (cmd) {
-          lines.push("");
-          lines.push("# Start command");
-          var cmdParts = cmd.split(" ").filter(Boolean);
-          lines.push('CMD ["' + cmdParts.join('", "') + '"]');
-        }
-
-        outputEl.textContent = lines.join("\n");
-        saveToUrl();
-      };
-
-      // Template buttons
-      document.querySelectorAll(".template-btn").forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          applyTemplate(btn.dataset.template);
-        });
-      });
-
-      // Generate button
-      document.getElementById("btnGenerate").addEventListener("click", generate);
-
-      // Auto-generate on input change
-      [
-        baseImageEl,
-        workdirEl,
-        portEl,
-        cmdEl,
-        envVarsEl,
-        runCommandsEl,
-        useMultiStageEl,
-        nonRootEl,
-        healthCheckEl
-      ].forEach(function (el) {
-        el.addEventListener("change", generate);
-        el.addEventListener("input", generate);
-      });
-
-      // Copy
-      document.getElementById("btnCopy").addEventListener("click", async function () {
-        try {
-          await navigator.clipboard.writeText(outputEl.textContent);
-          showStatus("已复制到剪贴�?, "success");
-        } catch (e) {
-          showStatus("复制失败", "error");
-        }
-      });
-
-      // Download
-      document.getElementById("btnDownload").addEventListener("click", function () {
-        var content = outputEl.textContent;
-        var blob = new Blob([content], { type: "text/plain" });
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement("a");
-        a.href = url;
-        a.download = "Dockerfile";
-        a.click();
-        URL.revokeObjectURL(url);
-        showStatus("已下�?Dockerfile", "success");
-      });
-
-      // Share
-      document.getElementById("btnShare").addEventListener("click", async function () {
-        saveToUrl();
-        try {
-          await navigator.clipboard.writeText(location.href);
-          showStatus("分享链接已复�?, "success");
-        } catch (e) {
-          showStatus("复制失败", "error");
-        }
-      });
-
-      function showStatus(msg, type) {
-        statusEl.textContent = msg;
-        statusEl.className = "status " + (type || "");
-      }
-
-      // URL state
-      function saveToUrl() {
-        var state = {
-          base: baseImageEl.value,
-          work: workdirEl.value,
-          port: portEl.value,
-          cmd: cmdEl.value,
-          env: envVarsEl.value,
-          run: runCommandsEl.value,
-          multi: useMultiStageEl.checked,
-          nonRoot: nonRootEl.checked,
-          health: healthCheckEl.checked
+        // --- Core Logic ---
+        const templates = {
+            node: { baseImage: "node:20-alpine", workdir: "/app", port: "3000", cmd: "node server.js", envVars: "NODE_ENV=production", runCommands: "", multiStage: true, nonRoot: true, healthCheck: true },
+            python: { baseImage: "python:3.12-slim", workdir: "/app", port: "8000", cmd: "python -m uvicorn main:app --host 0.0.0.0", envVars: "PYTHONDONTWRITEBYTECODE=1\nPYTHONUNBUFFERED=1", runCommands: "", multiStage: false, nonRoot: true, healthCheck: true },
+            go: { baseImage: "golang:1.22-alpine", workdir: "/app", port: "8080", cmd: "./main", envVars: "GIN_MODE=release", runCommands: "", multiStage: true, nonRoot: true, healthCheck: true },
+            java: { baseImage: "openjdk:21-slim", workdir: "/app", port: "8080", cmd: "java -jar app.jar", envVars: "JAVA_OPTS=-Xmx512m", runCommands: "", multiStage: true, nonRoot: true, healthCheck: true },
+            nginx: { baseImage: "nginx:alpine", workdir: "/usr/share/nginx/html", port: "80", cmd: 'nginx -g "daemon off;"', envVars: "", runCommands: "", multiStage: false, nonRoot: false, healthCheck: true },
+            static: { baseImage: "nginx:alpine", workdir: "/usr/share/nginx/html", port: "80", cmd: "", envVars: "", runCommands: "", multiStage: false, nonRoot: false, healthCheck: false }
         };
-        try {
-          history.replaceState(null, "", "#" + btoa(encodeURIComponent(JSON.stringify(state))));
-        } catch (e) {
-          // ignore
-        }
-      }
 
-      window.loadFromUrl = function () {
-        var hash = location.hash.slice(1);
-        if (!hash) return false;
-        try {
-          var state = JSON.parse(decodeURIComponent(atob(hash)));
-          if (state.base) baseImageEl.value = state.base;
-          if (state.work) workdirEl.value = state.work;
-          if (state.port !== undefined) portEl.value = state.port;
-          if (state.cmd !== undefined) cmdEl.value = state.cmd;
-          if (state.env !== undefined) envVarsEl.value = state.env;
-          if (state.run !== undefined) runCommandsEl.value = state.run;
-          if (state.multi !== undefined) useMultiStageEl.checked = state.multi;
-          if (state.nonRoot !== undefined) nonRootEl.checked = state.nonRoot;
-          if (state.health !== undefined) healthCheckEl.checked = state.health;
-          return true;
-        } catch (e) {
-          // ignore
-        }
-        return false;
-      };
+        const inputs = ['baseImage', 'workdir', 'port', 'cmd', 'envVars', 'runCommands', 'useMultiStage', 'nonRoot', 'healthCheck'];
 
-      // Theme
-      window.toggleTheme = function () {
-        var html = document.documentElement;
-        var btn = document.querySelector(".theme-toggle");
-        var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
-        html.setAttribute("data-theme", next);
-        btn.textContent = next === "dark" ? "🌙" : "☀�?;
-        localStorage.setItem("theme", next);
-      };
+        function applyTemplate(name) {
+            const t = templates[name];
+            if (!t) return;
+            document.getElementById("baseImage").value = t.baseImage;
+            document.getElementById("workdir").value = t.workdir;
+            document.getElementById("port").value = t.port;
+            document.getElementById("cmd").value = t.cmd;
+            document.getElementById("envVars").value = t.envVars;
+            document.getElementById("runCommands").value = t.runCommands;
+            document.getElementById("useMultiStage").checked = t.multiStage;
+            document.getElementById("nonRoot").checked = t.nonRoot;
+            document.getElementById("healthCheck").checked = t.healthCheck;
 
-      // Init
-      (function () {
-        var saved = localStorage.getItem("theme");
-        if (saved) {
-          document.documentElement.setAttribute("data-theme", saved);
-          var btn = document.querySelector(".theme-toggle");
-          if (btn) btn.textContent = saved === "dark" ? "🌙" : "☀�?;
+            document.querySelectorAll(".template-btn").forEach(btn => {
+                btn.classList.toggle("active", btn.dataset.template === name);
+            });
+            generate();
         }
 
-        if (!loadFromUrl()) {
-          applyTemplate("node");
-        } else {
-          generate();
+        function generate() {
+            const config = {};
+            inputs.forEach(id => {
+                const el = document.getElementById(id);
+                config[id] = el.type === 'checkbox' ? el.checked : el.value;
+            });
+
+            let lines = [];
+            const isNode = config.baseImage.includes("node");
+            const isGo = config.baseImage.includes("golang");
+            const isJava = config.baseImage.includes("openjdk") || config.baseImage.includes("maven");
+            const isPython = config.baseImage.includes("python");
+            const isNginx = config.baseImage.includes("nginx");
+
+            if (config.useMultiStage) {
+                lines.push("# Build Stage");
+                if (isNode) {
+                    lines.push(`FROM ${config.baseImage} AS builder\nWORKDIR ${config.workdir}\nCOPY package*.json ./\nRUN npm ci\nCOPY . .\nRUN npm run build`);
+                } else if (isGo) {
+                    lines.push(`FROM ${config.baseImage} AS builder\nWORKDIR ${config.workdir}\nCOPY go.mod go.sum ./\nRUN go mod download\nCOPY . .\nRUN CGO_ENABLED=0 GOOS=linux go build -o main .`);
+                } else if (isJava) {
+                    lines.push(`FROM maven:3.9-eclipse-temurin-21 AS builder\nWORKDIR ${config.workdir}\nCOPY pom.xml .\nRUN mvn dependency:go-offline\nCOPY src ./src\nRUN mvn package -DskipTests`);
+                }
+                lines.push("\n# Final Stage");
+                if (isNode) lines.push(`FROM ${config.baseImage.replace('alpine', 'slim')} AS production`);
+                else if (isGo) lines.push(`FROM alpine:3.19 AS production\nRUN apk add --no-cache ca-certificates`);
+                else if (isJava) lines.push(`FROM eclipse-temurin:21-jre-alpine AS production`);
+                else lines.push(`FROM ${config.baseImage} AS production`);
+                lines.push(`WORKDIR ${config.workdir}`);
+            } else {
+                lines.push(`FROM ${config.baseImage}\nWORKDIR ${config.workdir}`);
+            }
+
+            if (config.envVars.trim()) {
+                lines.push("\n# Environment variables");
+                config.envVars.trim().split("\n").forEach(env => {
+                    if (env.includes("=")) lines.push(`ENV ${env.trim()}`);
+                });
+            }
+
+            if (config.runCommands.trim()) {
+                lines.push("\n# Additional setup");
+                config.runCommands.trim().split("\n").forEach(cmd => {
+                    if (cmd.trim()) lines.push(`RUN ${cmd.trim()}`);
+                });
+            }
+
+            if (config.useMultiStage) {
+                lines.push("\n# Copy from builder");
+                if (isNode) lines.push("COPY --from=builder /app/dist ./dist\nCOPY --from=builder /app/node_modules ./node_modules");
+                else if (isGo) lines.push("COPY --from=builder /app/main .");
+                else if (isJava) lines.push("COPY --from=builder /app/target/*.jar app.jar");
+            } else {
+                lines.push("\n# Copy application files");
+                if (isNode) lines.push("COPY package*.json ./\nRUN npm ci --only=production\nCOPY . .");
+                else if (isPython) lines.push("COPY requirements.txt .\nRUN pip install --no-cache-dir -r requirements.txt\nCOPY . .");
+                else lines.push("COPY . .");
+            }
+
+            if (config.nonRoot && !isNginx) {
+                lines.push("\n# Security: Run as non-root user");
+                if (config.baseImage.includes("alpine")) {
+                    lines.push("RUN addgroup -S appgroup && adduser -S appuser -G appgroup");
+                } else {
+                    lines.push("RUN groupadd -r appgroup && useradd -r -g appgroup appuser");
+                }
+                lines.push("USER appuser");
+            }
+
+            if (config.port.trim()) {
+                lines.push(`\nEXPOSE ${config.port.trim()}`);
+            }
+
+            if (config.healthCheck && config.port.trim()) {
+                const p = config.port.split(",")[0].trim();
+                lines.push(`\nHEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \\\n  CMD wget --no-verbose --tries=1 --spider http://localhost:${p}/health || exit 1`);
+            }
+
+            if (config.cmd.trim()) {
+                const cmdParts = config.cmd.trim().split(" ").filter(Boolean);
+                lines.push(`\nCMD ["${cmdParts.join('", "')}"]`);
+            }
+
+            document.getElementById("output").textContent = lines.join("\n");
         }
-      })();
+
+        window.copyCode = function() {
+            navigator.clipboard.writeText(document.getElementById("output").textContent).then(() => alert("Dockerfile 已复制"));
+        };
+
+        window.downloadFile = function() {
+            const blob = new Blob([document.getElementById("output").textContent], { type: "text/plain" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "Dockerfile";
+            a.click();
+            URL.revokeObjectURL(url);
+        };
+
+        inputs.forEach(id => {
+            const el = document.getElementById(id);
+            el.addEventListener(el.type === 'checkbox' ? 'change' : 'input', generate);
+        });
+
+        // Initial run
+        applyTemplate('node');
     </script>
-  </body>
+</body>
 </html>
-
