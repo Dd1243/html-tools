@@ -1,427 +1,397 @@
-<!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>TOML/YAML/JSON 转换�?- WebUtils</title>
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="TOML、YAML、JSON 配置格式互相转换" />
-    <meta name="keywords" content="toml yaml json 配置 转换 格式" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/dev/toml-yaml-json.html" />
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOML/YAML/JSON 转换器 - 在线配置文件格式转换工具 - WebUtils</title>
+    <meta name="description" content="专业的在线配置文件格式转换工具。支持 TOML、YAML、JSON 格式之间的相互转换。提供语法高亮、自动格式化、错误定位及一键拷贝功能。适用于 Kubernetes 配置、Rust 项目配置及各种 Web 开发场景。">
+    <meta name="keywords" content="TOML转JSON, YAML转JSON, JSON转YAML, 配置文件转换, TOML编辑器, YAML格式化, 开发者工具, WebUtils">
+    <meta name="author" content="WebUtils">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://essays4u.net/tools/dev/toml-yaml-json.html">
 
     <!-- Open Graph -->
-    <meta property="og:title" content="TOML/YAML/JSON 转换�?- WebUtils" />
-    <meta property="og:description" content="TOML、YAML、JSON 配置格式互相转换" />
-    <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/dev/toml-yaml-json.html"
-    />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:title" content="TOML/YAML/JSON 转换器 - 在线配置文件格式转换工具 - WebUtils">
+    <meta property="og:description" content="专业的在线配置文件格式转换工具。支持 TOML、YAML、JSON 相互转换与语法高亮。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://essays4u.net/tools/dev/toml-yaml-json.html">
+    <meta property="og:image" content="https://essays4u.net/social-preview.png">
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="TOML/YAML/JSON 转换�?- WebUtils" />
-    <meta name="twitter:description" content="TOML、YAML、JSON 配置格式互相转换" />
-    <!-- OG Image -->
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/theme/dracula.min.css">
 
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@iarna/toml@2.2.5/toml.min.js"></script>
     <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--color-bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-      }
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      body {
-        font-family: var(--font-sans);
-        background: var(--color-bg-deep);
-        color: var(--color-text-primary);
-        min-height: 100vh;
-        line-height: 1.6;
-      }
-      .bg-grid {
-        position: fixed;
-        inset: 0;
-        background-image:
-          linear-gradient(rgba(0, 245, 212, 0.03) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(0, 245, 212, 0.03) 1px, transparent 1px);
-        background-size: 50px 50px;
-        pointer-events: none;
-        z-index: 0;
-      }
-      .container {
-        position: relative;
-        z-index: 1;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem 1.5rem;
-      }
-      .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: var(--color-text-secondary);
-        text-decoration: none;
-        font-size: 0.9rem;
-        margin-bottom: 2rem;
-        padding: 0.5rem 0.75rem;
-        border-radius: var(--radius-sm);
-        transition: all 0.2s;
-      }
-      .back-link:hover {
-        color: var(--color-accent-cyan);
-        background: var(--color-bg-card);
-      }
-      h1 {
-        font-size: 2rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        background: linear-gradient(135deg, var(--color-text-primary), var(--color-accent-cyan));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-      .subtitle {
-        color: var(--color-text-secondary);
-        margin-bottom: 2rem;
-      }
-      .tabs {
-        display: flex;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-      }
-      .tab {
-        padding: 0.5rem 1rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        background: var(--color-bg-card);
-        color: var(--color-text-secondary);
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-      .tab:hover {
-        border-color: var(--color-accent-cyan);
-      }
-      .tab.active {
-        background: var(--color-accent-cyan);
-        color: var(--color-bg-deep);
-        border-color: var(--color-accent-cyan);
-      }
-      .editor-container {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
-      }
-      @media (max-width: 768px) {
-        .editor-container {
-          grid-template-columns: 1fr;
+        :root {
+            --primary-color: #f59e0b; /* Amber 500 */
+            --bg-deep: #0a0a0f;
+            --bg-surface: #12121a;
+            --bg-card: #1a1a24;
+            --text-primary: #e8e8ed;
+            --text-secondary: #8888a0;
+            --border-subtle: #2a2a3a;
+            --radius-lg: 12px;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
         }
-      }
-      .panel {
-        background: var(--color-bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-lg);
-        overflow: hidden;
-      }
-      .panel-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.75rem 1rem;
-        border-bottom: 1px solid var(--border-subtle);
-        background: var(--color-bg-surface);
-      }
-      .panel-title {
-        font-weight: 500;
-        color: var(--color-text-secondary);
-        font-size: 0.9rem;
-      }
-      textarea {
-        width: 100%;
-        height: 400px;
-        padding: 1rem;
-        border: none;
-        background: transparent;
-        color: var(--color-text-primary);
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-        resize: vertical;
-      }
-      textarea:focus {
-        outline: none;
-      }
-      .btn {
-        padding: 0.5rem 1rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        background: var(--bg-hover);
-        color: var(--color-text-primary);
-        cursor: pointer;
-        font-size: 0.85rem;
-        transition: all 0.2s;
-      }
-      .btn:hover {
-        border-color: var(--color-accent-cyan);
-        color: var(--color-accent-cyan);
-      }
-      .error {
-        color: #ff6b6b;
-        padding: 1rem;
-        font-size: 0.85rem;
-      }
-      footer {
-        margin-top: 3rem;
-        padding-top: 1.5rem;
-        border-top: 1px solid var(--border-subtle);
-        text-align: center;
-        color: var(--text-muted);
-        font-size: 0.85rem;
-      }
-      footer a {
-        color: var(--color-accent-cyan);
-        text-decoration: none;
-      }
 
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
+        [data-theme="light"] {
+            --bg-deep: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-card: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-subtle: #e2e8f0;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            padding: 2rem;
+        }
+
+        .tool-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .tool-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 992px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .editor-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            padding: 0.75rem 1.2rem;
+            background: rgba(0,0,0,0.05);
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .CodeMirror {
+            height: 500px;
+            font-family: var(--font-mono);
+            font-size: 14px;
+        }
+
+        .controls-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .convert-btn {
+            background: var(--primary-color);
+            border: none;
+            padding: 0.8rem 2.5rem;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .convert-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .ads-container {
+            margin: 2rem 0;
+            min-height: 90px;
+            background: var(--bg-card);
+            border: 1px dashed var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-lg);
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .content-section {
+            background: var(--bg-card);
+            padding: 2.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-subtle);
+            line-height: 1.8;
+            margin-top: 3rem;
+        }
+
+        .content-section h2 {
+            color: var(--primary-color);
+            margin-top: 2rem;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+
+        .error-badge {
+            background: #ef4444;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            display: none;
+        }
     </style>
-  </head>
-  <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      TOML/YAML/JSON 转换�?
-    </nav>
-    <div class="bg-grid"></div>
+</head>
+<body>
     <div class="container">
-      <a href="../../index.html" class="back-link">�?返回</a>
-      <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">🌙</button>
-      <h1>TOML/YAML/JSON 转换�?/h1>
-      <p class="subtitle">�?TOML、YAML、JSON 格式间互相转�?/p>
+        <nav aria-label="breadcrumb">
+            <ul>
+                <li><a href="/">首页</a></li>
+                <li><a href="/tools/dev/">开发者工具</a></li>
+                <li>TOML/YAML/JSON 转换器</li>
+            </ul>
+        </nav>
 
-      <div class="tabs">
-        <button class="tab active" data-format="json">JSON</button>
-        <button class="tab" data-format="yaml">YAML</button>
-        <button class="tab" data-format="toml">TOML</button>
-      </div>
+        <header class="tool-header">
+            <h1>TOML / YAML / JSON 转换器</h1>
+            <p>专业的配置文件格式互转工具，支持语法校验与自动格式化</p>
+        </header>
 
-      <div class="editor-container">
-        <div class="panel">
-          <div class="panel-header">
-            <span class="panel-title">
-              输入 (
-              <span id="inputFormat">JSON</span>
-              )
-            </span>
-            <button class="btn" onclick="clearInput()">清空</button>
-          </div>
-          <textarea id="input" placeholder="粘贴内容..."></textarea>
+        <div class="ads-container">
+            <!-- Google AdSense Placeholder -->
+            <span>广告位</span>
         </div>
-        <div class="panel">
-          <div class="panel-header">
-            <span class="panel-title">输出</span>
-            <button class="btn" onclick="copyOutput()">复制</button>
-          </div>
-          <div
-            id="output"
-            style="
-              height: 400px;
-              overflow: auto;
-              padding: 1rem;
-              font-family: &quot;JetBrains Mono&quot;, monospace;
-              font-size: 0.9rem;
-              white-space: pre-wrap;
-            "
-          ></div>
-        </div>
-      </div>
 
-      <footer>
-        <a href="https://github.com/chicogong/html-tools" target="_blank">GitHub</a>
-      </footer>
+        <div class="main-grid">
+            <!-- Source Editor -->
+            <div class="editor-card">
+                <div class="card-header">
+                    <div style="display:flex; align-items:center; gap:0.5rem">
+                        <span>源格式:</span>
+                        <select id="srcFormat" style="margin:0; padding:2px 10px; font-size:12px" onchange="updateSrcMode()">
+                            <option value="json">JSON</option>
+                            <option value="yaml" selected>YAML</option>
+                            <option value="toml">TOML</option>
+                        </select>
+                    </div>
+                    <div id="srcError" class="error-badge">语法错误</div>
+                    <button class="outline secondary" style="padding: 2px 10px; font-size: 12px;" onclick="clearSrc()">清空</button>
+                </div>
+                <textarea id="srcInput"></textarea>
+            </div>
+
+            <!-- Target Editor -->
+            <div class="editor-card">
+                <div class="card-header">
+                    <div style="display:flex; align-items:center; gap:0.5rem">
+                        <span>目标格式:</span>
+                        <select id="destFormat" style="margin:0; padding:2px 10px; font-size:12px" onchange="handleConvert()">
+                            <option value="json" selected>JSON</option>
+                            <option value="yaml">YAML</option>
+                            <option value="toml">TOML</option>
+                        </select>
+                    </div>
+                    <button class="outline secondary" style="padding: 2px 10px; font-size: 12px;" onclick="copyDest()">复制结果</button>
+                </div>
+                <textarea id="destOutput"></textarea>
+            </div>
+        </div>
+
+        <div class="controls-bar">
+            <button class="convert-btn" onclick="handleConvert()">
+                <i class="fas fa-exchange-alt"></i> 立即转换
+            </button>
+        </div>
+
+        <div class="ads-container">
+            <!-- Google AdSense Placeholder -->
+            <span>广告位</span>
+        </div>
+
+        <article class="content-section">
+            <h2>配置文件格式转换：为什么它如此重要？</h2>
+            <p>在现代软件开发中，不同的生态系统往往偏好不同的配置格式。例如，JavaScript 社区几乎离不开 **JSON**，Kubernetes 和 DevOps 领域则是 **YAML** 的天下，而 Rust 社区和许多现代 CLI 工具则倾向于使用更具可读性的 **TOML**。<strong>TOML/YAML/JSON 转换器</strong> 旨在打破这些格式壁垒，让您在不同项目间无缝切换。</p>
+
+            <h3>核心格式特点对比</h3>
+            <ul>
+                <li><strong>JSON (JavaScript Object Notation):</strong> 最通用的数据交换格式，机器读取效率极高，但不支持注释，且在大规模手动编辑时容易出错。</li>
+                <li><strong>YAML (YAML Ain't Markup Language):</strong> 极简的视觉风格，支持注释，非常适合描述复杂的层级关系，但对缩进极其敏感。</li>
+                <li><strong>TOML (Tom's Obvious, Minimal Language):</strong> 旨在成为最易读的配置文件格式。它通过“节”（Sections）来组织数据，在处理平面或浅层嵌套配置时表现极佳。</li>
+            </ul>
+
+            <h3>解决的具体开发场景</h3>
+            <p>1. <strong>Kubernetes 清单调试：</strong> 将复杂的 YAML 转换为 JSON 格式，以便利用现有的 JSON Schema 校验工具或进行自动化脚本处理。</p>
+            <p>2. <strong>项目配置迁移：</strong> 将旧项目的 `package.json` 内容迁移到 Rust 项目的 `Cargo.toml` 结构中，或反之亦然。</p>
+            <p>3. <strong>API 响应预览：</strong> 许多 API 返回冗长的 JSON。将其转换为 YAML 格式可以更清晰地观察层级结构，方便文档编写。</p>
+
+            <h3>如何高效使用本工具？</h3>
+            <p>左侧输入框支持语法高亮和基础校验。如果您输入的格式不正确，顶部会弹出错误提示。转换后的结果会自动进行美化（Pretty-print）处理。如果您处理的是大文件，本工具采用了高效的解析引擎，确保转换过程流畅不卡顿。</p>
+        </article>
     </div>
+
+    <div class="theme-toggle secondary" onclick="toggleTheme()">
+        <i class="fas fa-moon" id="themeIcon"></i>
+    </div>
+
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/yaml/yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/toml/toml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@iarna/toml@2.2.5/toml.min.js"></script>
+
     <script>
-      let currentFormat = "json";
-      const tabs = document.querySelectorAll(".tab");
-      const input = document.getElementById("input");
-      const output = document.getElementById("output");
+        let srcEditor, destEditor;
 
-      tabs.forEach((tab) => {
-        tab.addEventListener("click", () => {
-          tabs.forEach((t) => t.classList.remove("active"));
-          tab.classList.add("active");
-          currentFormat = tab.dataset.format;
-          document.getElementById("inputFormat").textContent = currentFormat.toUpperCase();
-          convert();
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            document.getElementById('themeIcon').className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+            
+            initEditors();
         });
-      });
 
-      input.addEventListener("input", convert);
+        function initEditors() {
+            srcEditor = CodeMirror.fromTextArea(document.getElementById('srcInput'), {
+                mode: 'text/yaml',
+                theme: 'dracula',
+                lineNumbers: true,
+                autoCloseBrackets: true,
+                matchBrackets: true
+            });
 
-      function parse(text, format) {
-        if (!text.trim()) return null;
-        switch (format) {
-          case "json":
-            return JSON.parse(text);
-          case "yaml":
-            return jsyaml.load(text);
-          case "toml":
-            return TOML.parse(text);
+            destEditor = CodeMirror.fromTextArea(document.getElementById('destOutput'), {
+                mode: 'application/json',
+                theme: 'dracula',
+                lineNumbers: true,
+                readOnly: true
+            });
+
+            // Sample data
+            srcEditor.setValue(`name: WebUtils
+version: 1.0.0
+features:
+  - Conversion
+  - Formatting
+  - SEO Optimized
+author:
+  name: Developer
+  link: https://essays4u.net`);
+
+            handleConvert();
         }
-      }
 
-      function stringify(obj, format) {
-        switch (format) {
-          case "json":
-            return JSON.stringify(obj, null, 2);
-          case "yaml":
-            return jsyaml.dump(obj, { indent: 2 });
-          case "toml":
-            return TOML.stringify(obj);
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            const newTheme = isDark ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            icon.className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+            localStorage.setItem('theme', newTheme);
+            
+            const cmTheme = isDark ? 'default' : 'dracula';
+            srcEditor.setOption('theme', cmTheme);
+            destEditor.setOption('theme', cmTheme);
         }
-      }
 
-      function convert() {
-        const text = input.value;
-        if (!text.trim()) {
-          output.innerHTML = '<span style="color:var(--text-muted)">转换结果将显示在这里</span>';
-          return;
+        function updateSrcMode() {
+            const format = document.getElementById('srcFormat').value;
+            const modeMap = { json: 'application/json', yaml: 'text/yaml', toml: 'text/x-toml' };
+            srcEditor.setOption('mode', modeMap[format]);
         }
-        try {
-          const obj = parse(text, currentFormat);
-          const formats = ["json", "yaml", "toml"].filter((f) => f !== currentFormat);
-          let result = "";
-          formats.forEach((f) => {
-            result += `<div style="color:var(--color-accent-cyan);margin-bottom:.5rem">=== ${f.toUpperCase()} ===</div>`;
-            result += stringify(obj, f) + "\n\n";
-          });
-          output.textContent = "";
-          output.innerHTML = result;
-        } catch (e) {
-          output.innerHTML = '<span class="error">解析错误: ' + e.message + "</span>";
+
+        function handleConvert() {
+            const srcFormat = document.getElementById('srcFormat').value;
+            const destFormat = document.getElementById('destFormat').value;
+            const input = srcEditor.getValue().trim();
+            const errorBadge = document.getElementById('srcError');
+
+            if (!input) return;
+
+            try {
+                errorBadge.style.display = 'none';
+                let data;
+
+                // 1. Parse Source
+                if (srcFormat === 'json') {
+                    data = JSON.parse(input);
+                } else if (srcFormat === 'yaml') {
+                    data = jsyaml.load(input);
+                } else if (srcFormat === 'toml') {
+                    data = TOML.parse(input);
+                }
+
+                // 2. Convert to Target
+                let output = '';
+                if (destFormat === 'json') {
+                    output = JSON.stringify(data, null, 2);
+                    destEditor.setOption('mode', 'application/json');
+                } else if (destFormat === 'yaml') {
+                    output = jsyaml.dump(data);
+                    destEditor.setOption('mode', 'text/yaml');
+                } else if (destFormat === 'toml') {
+                    output = TOML.stringify(data);
+                    destEditor.setOption('mode', 'text/x-toml');
+                }
+
+                destEditor.setValue(output);
+            } catch (e) {
+                errorBadge.style.display = 'block';
+                errorBadge.innerText = '错误: ' + e.message.split('\n')[0];
+            }
         }
-      }
 
-      window.clearInput = function () {
-        input.value = "";
-        convert();
-      };
-
-      window.copyOutput = function () {
-        navigator.clipboard.writeText(output.textContent);
-      };
-
-      // Sample
-      input.value =
-        '{\n  "name": "example",\n  "version": "1.0.0",\n  "dependencies": {\n    "lodash": "^4.17.21"\n  }\n}';
-      convert();
-
-      window.toggleTheme = function () {
-        const html = document.documentElement;
-        const btn = document.querySelector(".theme-toggle");
-        const next = html.getAttribute("data-theme") === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", next);
-        btn.textContent = next === "light" ? "☀�? : "🌙";
-        localStorage.setItem("theme", next);
-      };
-      (function () {
-        const saved = localStorage.getItem("theme");
-        if (saved) {
-          document.documentElement.setAttribute("data-theme", saved);
-          const btn = document.querySelector(".theme-toggle");
-          if (btn) btn.textContent = saved === "light" ? "☀�? : "🌙";
+        function clearSrc() {
+            srcEditor.setValue('');
+            destEditor.setValue('');
         }
-      })();
+
+        function copyDest() {
+            const text = destEditor.getValue();
+            navigator.clipboard.writeText(text).then(() => alert('转换结果已复制！'));
+        }
     </script>
-  </body>
+</body>
 </html>
-

@@ -1,775 +1,588 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN" data-theme="light">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>表格线生成器 - WebUtils</title>
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="表格线生成器 - WebUtils" />
-    <meta name="keywords" content="table-border,dev,tools,webutils" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/dev/table-border.html" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>表格线生成器 - 在线 ASCII 表格绘制与 Markdown 表格生成工具 - WebUtils</title>
+    <meta name="description" content="专业的在线表格线生成器。支持 ASCII 表格、Markdown 表格、HTML 表格等多种格式生成。提供单线、双线、圆角、粗线等多种边框样式，支持实时编辑、行列增删及内容对齐。适用于文档编写、代码注释及数据库设计。">
+    <meta name="keywords" content="表格线生成器, ASCII Table Generator, Markdown表格生成, HTML表格转换, 文本表格绘制, 开发者工具, WebUtils">
+    <meta name="author" content="WebUtils">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://essays4u.net/tools/dev/table-border.html">
 
     <!-- Open Graph -->
-    <meta property="og:title" content="表格线生成器 - WebUtils" />
-    <meta property="og:description" content="表格线生成器 - WebUtils" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/dev/table-border.html" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
+    <meta property="og:title" content="表格线生成器 - 在线 ASCII 表格绘制与 Markdown 表格生成工具 - WebUtils">
+    <meta property="og:description" content="专业的在线表格线生成器。支持 ASCII、Markdown、HTML 多种格式生成。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://essays4u.net/tools/dev/table-border.html">
+    <meta property="og:image" content="https://essays4u.net/social-preview.png">
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="表格线生成器 - WebUtils" />
-    <meta name="twitter:description" content="表格线生成器 - WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      body {
-        min-height: 100vh;
-      }
-
-      .container {
-        max-width: 1000px;
-        padding: 1rem 2rem;
-      }
-
-      header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-      }
-
-      header h1 {
-        margin: 0;
-      }
-
-      .theme-toggle {
-        background: none;
-        border: none;
-        cursor: pointer;
-        font-size: 1.5rem;
-        padding: 0.5rem;
-      }
-
-      .controls {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-      }
-
-      .control-group label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 500;
-      }
-
-      .control-group input,
-      .control-group select {
-        margin: 0;
-      }
-
-      .style-options {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        margin-bottom: 1.5rem;
-      }
-
-      .style-btn {
-        padding: 0.5rem 1rem;
-        font-family: var(--font-mono);
-      }
-
-      .style-btn.active {
-        background: var(--pico-primary);
-        color: var(--pico-primary-inverse);
-      }
-
-      .table-editor {
-        background: var(--pico-card-background-color);
-        border-radius: var(--pico-border-radius);
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-      }
-
-      .table-editor h3 {
-        margin: 0 0 1rem;
-      }
-
-      .cell-inputs {
-        display: grid;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-      }
-
-      .cell-row {
-        display: flex;
-        gap: 0.5rem;
-      }
-
-      .cell-input {
-        flex: 1;
-        margin: 0;
-        padding: 0.5rem;
-        font-family: var(--font-mono);
-        min-width: 0;
-      }
-
-      .row-controls {
-        display: flex;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-      }
-
-      .preview-section {
-        background: var(--pico-card-background-color);
-        border-radius: var(--pico-border-radius);
-        padding: 1.5rem;
-      }
-
-      .preview-section h3 {
-        margin: 0 0 1rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .preview-output {
-        background: var(--pico-code-background-color);
-        border-radius: var(--pico-border-radius);
-        padding: 1rem;
-        font-family: var(--font-mono);
-        white-space: pre;
-        overflow-x: auto;
-        line-height: 1.4;
-      }
-
-      .char-reference {
-        margin-top: 1.5rem;
-      }
-
-      .char-reference h3 {
-        margin-bottom: 1rem;
-      }
-
-      .char-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-        gap: 0.5rem;
-      }
-
-      .char-item {
-        background: var(--pico-card-background-color);
-        border-radius: var(--pico-border-radius);
-        padding: 0.75rem;
-        text-align: center;
-        cursor: pointer;
-        border: 1px solid var(--pico-muted-border-color);
-        transition: all 0.2s;
-      }
-
-      .char-item:hover {
-        border-color: var(--pico-primary);
-        transform: translateY(-1px);
-      }
-
-      .char-item .char {
-        font-size: 1.5rem;
-        font-family: var(--font-mono);
-      }
-
-      .char-item .name {
-        font-size: 0.75rem;
-        opacity: 0.7;
-        margin-top: 0.25rem;
-      }
-
-      .toast {
-        position: fixed;
-        bottom: 2rem;
-        left: 50%;
-        transform: translateX(-50%) translateY(100px);
-        background: var(--pico-primary);
-        color: var(--pico-primary-inverse);
-        padding: 0.75rem 1.5rem;
-        border-radius: var(--pico-border-radius);
-        opacity: 0;
-        transition:
-          transform 0.3s,
-          opacity 0.3s;
-        z-index: 1000;
-      }
-
-      .toast.show {
-        transform: translateX(-50%) translateY(0);
-        opacity: 1;
-      }
-
-      @media (max-width: 768px) {
-        .cell-input {
-          font-size: 0.8rem;
-          padding: 0.4rem;
+        :root {
+            --primary-color: #10b981;
+            --bg-deep: #0a0a0f;
+            --bg-surface: #12121a;
+            --bg-card: #1a1a24;
+            --text-primary: #e8e8ed;
+            --text-secondary: #8888a0;
+            --border-subtle: #2a2a3a;
+            --radius-lg: 12px;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
         }
-      }
 
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
+        [data-theme="light"] {
+            --bg-deep: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-card: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-subtle: #e2e8f0;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            padding: 2rem;
+        }
+
+        .tool-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .tool-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #10b981, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 992px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .config-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .config-item label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.4rem;
+        }
+
+        .config-item input, .config-item select {
+            margin-bottom: 0;
+            padding: 6px 10px;
+            font-size: 0.9rem;
+        }
+
+        .table-editor-container {
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+            background: var(--bg-deep);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .editor-table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .editor-table td {
+            padding: 4px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .editor-table input {
+            border: none;
+            background: transparent;
+            margin-bottom: 0;
+            padding: 4px 8px;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            min-width: 100px;
+        }
+
+        .editor-table input:focus {
+            background: rgba(16, 185, 129, 0.1);
+            outline: none;
+        }
+
+        .preview-area {
+            position: relative;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            white-space: pre;
+            overflow-x: auto;
+            min-height: 300px;
+            border: 1px solid #333;
+        }
+
+        .preview-area.light {
+            background: #fdf6e3;
+            color: #586e75;
+            border-color: #eee8d5;
+        }
+
+        .style-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .style-card {
+            padding: 0.5rem;
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .style-card.active {
+            border-color: var(--primary-color);
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .style-card:hover:not(.active) {
+            border-color: var(--text-secondary);
+        }
+
+        .ads-container {
+            margin: 2rem 0;
+            min-height: 90px;
+            background: var(--bg-card);
+            border: 1px dashed var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-lg);
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .content-section {
+            background: var(--bg-card);
+            padding: 2.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-subtle);
+            line-height: 1.8;
+            margin-top: 3rem;
+        }
+
+        .content-section h2 {
+            color: var(--primary-color);
+            margin-top: 2rem;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .btn-group button {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+            margin-bottom: 0;
+        }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      表格线生成器
-    </nav>
+</head>
+<body>
     <div class="container">
-      <header>
-        <h1>📊 表格线生成器</h1>
-        <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">🌓</button>
-      </header>
+        <nav aria-label="breadcrumb">
+            <ul>
+                <li><a href="/">首页</a></li>
+                <li><a href="/tools/dev/">开发者工具</a></li>
+                <li>表格线生成器</li>
+            </ul>
+        </nav>
 
-      <div class="controls">
-        <div class="control-group">
-          <label>行数</label>
-          <input type="number" id="rowCount" value="3" min="1" max="10" onchange="updateTable()" />
+        <header class="tool-header">
+            <h1>表格线生成器</h1>
+            <p>专业的 ASCII 与 Markdown 表格绘图工具，让文档更专业</p>
+        </header>
+
+        <div class="ads-container">
+            <!-- Google AdSense Placeholder -->
+            <span>广告位</span>
         </div>
-        <div class="control-group">
-          <label>列数</label>
-          <input type="number" id="colCount" value="3" min="1" max="8" onchange="updateTable()" />
+
+        <div class="main-grid">
+            <!-- Left Panel: Editor -->
+            <div class="panel">
+                <div style="font-weight:700; margin-bottom:1rem">
+                    <i class="fas fa-edit"></i> 内容编辑
+                </div>
+
+                <div class="config-group">
+                    <div class="config-item">
+                        <label>对齐方式</label>
+                        <select id="alignment" onchange="renderAll()">
+                            <option value="left">左对齐</option>
+                            <option value="center">居中</option>
+                            <option value="right">右对齐</option>
+                        </select>
+                    </div>
+                    <div class="config-item">
+                        <label>边距 (Padding)</label>
+                        <input type="number" id="padding" value="1" min="0" max="5" onchange="renderAll()">
+                    </div>
+                </div>
+
+                <div class="table-editor-container">
+                    <table class="editor-table" id="editorTable">
+                        <!-- Table content dynamically generated -->
+                    </table>
+                </div>
+
+                <div class="btn-group">
+                    <button class="outline secondary" onclick="addRow()"><i class="fas fa-plus"></i> 加行</button>
+                    <button class="outline secondary" onclick="removeRow()"><i class="fas fa-minus"></i> 减行</button>
+                    <button class="outline secondary" onclick="addCol()"><i class="fas fa-plus"></i> 加列</button>
+                    <button class="outline secondary" onclick="removeCol()"><i class="fas fa-minus"></i> 减列</button>
+                    <button class="outline secondary" onclick="clearContent()"><i class="fas fa-trash"></i> 清空</button>
+                </div>
+            </div>
+
+            <!-- Right Panel: Preview & Styles -->
+            <div class="panel">
+                <div style="font-weight:700; margin-bottom:1rem">
+                    <i class="fas fa-paint-brush"></i> 样式与预览
+                </div>
+
+                <div class="style-grid" id="styleGrid">
+                    <!-- Styles injected here -->
+                </div>
+
+                <div class="config-group">
+                    <div class="config-item">
+                        <label>导出类型</label>
+                        <select id="exportType" onchange="renderAll()">
+                            <option value="ascii">ASCII / Unicode</option>
+                            <option value="markdown">Markdown</option>
+                            <option value="html">HTML Table</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="preview-area" id="previewArea">
+                    <!-- Preview content -->
+                </div>
+
+                <div class="btn-group" style="margin-top: 1rem">
+                    <button class="primary" onclick="copyResult()"><i class="fas fa-copy"></i> 复制代码</button>
+                    <button class="outline" onclick="downloadText()"><i class="fas fa-download"></i> 下载文本</button>
+                    <button class="outline secondary" onclick="togglePreviewTheme()"><i class="fas fa-adjust"></i> 切换背景</button>
+                </div>
+            </div>
         </div>
-        <div class="control-group">
-          <label>对齐方式</label>
-          <select id="alignment" onchange="generateTable()">
-            <option value="left">左对�?/option>
-            <option value="center">居中</option>
-            <option value="right">右对�?/option>
-          </select>
+
+        <div class="ads-container">
+            <!-- Google AdSense Placeholder -->
+            <span>广告位</span>
         </div>
-      </div>
 
-      <h3>边框样式</h3>
-      <div class="style-options" id="styleOptions"></div>
+        <article class="content-section">
+            <h2>表格线生成器：提升技术文档的可读性</h2>
+            <p>在编写 README.md、代码注释、或是发送 Slack/钉钉消息时，结构化的数据往往比纯文本更易于理解。<strong>表格线生成器</strong> 为您提供了一个可视化的界面，让您可以像操作 Excel 一样轻松创建复杂的文本表格。</p>
 
-      <div class="table-editor">
-        <h3>表格内容</h3>
-        <div class="cell-inputs" id="cellInputs"></div>
-        <div class="row-controls">
-          <button class="outline" onclick="addRow()">+ 添加�?/button>
-          <button class="outline" onclick="removeRow()">- 删除�?/button>
-          <button class="outline" onclick="addCol()">+ 添加�?/button>
-          <button class="outline" onclick="removeCol()">- 删除�?/button>
-        </div>
-      </div>
+            <h3>核心功能亮点</h3>
+            <ul>
+                <li><strong>海量样式支持：</strong> 从最基础的 ASCII `+--+` 样式，到精美的 Unicode 单线、双线、圆角、粗线，甚至是 Markdown 原生表格样式。</li>
+                <li><strong>自适应对齐：</strong> 支持内容左对齐、居中和右对齐，工具会自动计算每列的最佳宽度。</li>
+                <li><strong>多格式一键转换：</strong> 同样的表格内容，可以在 ASCII、Markdown 和 HTML 之间无缝切换。</li>
+                <li><strong>所见即所得：</strong> 左侧编辑区实时同步到右侧预览区，无需手动调整空格。</li>
+            </ul>
 
-      <div class="preview-section">
-        <h3>
-          <span>预览</span>
-          <button onclick="copyTable()">复制表格</button>
-        </h3>
-        <div class="preview-output" id="previewOutput"></div>
-      </div>
+            <h3>解决的具体问题</h3>
+            <p>1. <strong>代码注释中的数据库设计：</strong> 开发者经常需要在代码头部用注释展示表结构，手打空格非常费劲。本工具生成的 ASCII 表格可以直接粘贴到代码注释中。</p>
+            <p>2. <strong>Markdown 文档编写：</strong> 复杂的 Markdown 表格手动编写极其繁琐。通过本工具的可视化增删行列，可以快速生成符合规范的 Markdown 源码。</p>
+            <p>3. <strong>跨平台消息同步：</strong> 在即时通讯软件中，由于字体原因，普通空格对齐往往会乱掉。使用本工具生成的 Unicode 字符表格在绝大多数现代设备上都能完美保持对齐。</p>
 
-      <div class="char-reference">
-        <h3>📋 表格字符参�?/h3>
-        <div class="char-grid" id="charGrid"></div>
-      </div>
+            <h3>如何使用高级功能？</h3>
+            <p>点击“加行”或“加列”按钮可以快速扩展表格规模。在单元格中输入内容后，右侧预览会实时更新。如果您需要将表格用于 React 或 Vue 项目，切换到 HTML 模式即可获得干净的 `<table>` 结构代码。</p>
+        </article>
+    </div>
 
-      <div class="toast" id="toast"></div>
+    <div class="theme-toggle secondary" onclick="toggleTheme()">
+        <i class="fas fa-moon" id="themeIcon"></i>
     </div>
 
     <script>
-      const borderStyles = {
-        ascii: {
-          name: "ASCII",
-          chars: {
-            topLeft: "+",
-            topRight: "+",
-            bottomLeft: "+",
-            bottomRight: "+",
-            horizontal: "-",
-            vertical: "|",
-            topMid: "+",
-            bottomMid: "+",
-            leftMid: "+",
-            rightMid: "+",
-            cross: "+"
-          }
-        },
-        single: {
-          name: "单线",
-          chars: {
-            topLeft: "�?,
-            topRight: "�?,
-            bottomLeft: "�?,
-            bottomRight: "�?,
-            horizontal: "─",
-            vertical: "�?,
-            topMid: "�?,
-            bottomMid: "�?,
-            leftMid: "�?,
-            rightMid: "�?,
-            cross: "�?
-          }
-        },
-        double: {
-          name: "双线",
-          chars: {
-            topLeft: "�?,
-            topRight: "�?,
-            bottomLeft: "�?,
-            bottomRight: "�?,
-            horizontal: "�?,
-            vertical: "�?,
-            topMid: "�?,
-            bottomMid: "�?,
-            leftMid: "�?,
-            rightMid: "�?,
-            cross: "�?
-          }
-        },
-        rounded: {
-          name: "圆角",
-          chars: {
-            topLeft: "�?,
-            topRight: "�?,
-            bottomLeft: "�?,
-            bottomRight: "�?,
-            horizontal: "─",
-            vertical: "�?,
-            topMid: "�?,
-            bottomMid: "�?,
-            leftMid: "�?,
-            rightMid: "�?,
-            cross: "�?
-          }
-        },
-        heavy: {
-          name: "粗线",
-          chars: {
-            topLeft: "�?,
-            topRight: "�?,
-            bottomLeft: "�?,
-            bottomRight: "�?,
-            horizontal: "�?,
-            vertical: "�?,
-            topMid: "�?,
-            bottomMid: "�?,
-            leftMid: "�?,
-            rightMid: "�?,
-            cross: "�?
-          }
-        },
-        dashed: {
-          name: "虚线",
-          chars: {
-            topLeft: "�?,
-            topRight: "�?,
-            bottomLeft: "�?,
-            bottomRight: "�?,
-            horizontal: "�?,
-            vertical: "�?,
-            topMid: "�?,
-            bottomMid: "�?,
-            leftMid: "�?,
-            rightMid: "�?,
-            cross: "�?
-          }
-        }
-      };
+        let tableData = [
+            ["ID", "Name", "Status"],
+            ["1", "Alice", "Active"],
+            ["2", "Bob", "Pending"]
+        ];
 
-      const boxChars = [
-        { char: "─", name: "横线" },
-        { char: "�?, name: "竖线" },
-        { char: "�?, name: "左上�? },
-        { char: "�?, name: "右上�? },
-        { char: "�?, name: "左下�? },
-        { char: "�?, name: "右下�? },
-        { char: "�?, name: "左T" },
-        { char: "�?, name: "右T" },
-        { char: "�?, name: "上T" },
-        { char: "�?, name: "下T" },
-        { char: "�?, name: "十字" },
-        { char: "�?, name: "双横" },
-        { char: "�?, name: "双竖" },
-        { char: "�?, name: "双左�? },
-        { char: "�?, name: "双右�? },
-        { char: "�?, name: "双左�? },
-        { char: "�?, name: "双右�? },
-        { char: "�?, name: "双左T" },
-        { char: "�?, name: "双右T" },
-        { char: "�?, name: "双上T" },
-        { char: "�?, name: "双下T" },
-        { char: "�?, name: "双十�? },
-        { char: "�?, name: "粗横" },
-        { char: "�?, name: "粗竖" }
-      ];
+        const styles = {
+            ascii: { name: 'ASCII (+-)', topLeft: '+', topRight: '+', bottomLeft: '+', bottomRight: '+', horiz: '-', vert: '|', topMid: '+', bottomMid: '+', leftMid: '+', rightMid: '+', cross: '+' },
+            single: { name: '单线 (─│)', topLeft: '┌', topRight: '┐', bottomLeft: '└', bottomRight: '┘', horiz: '─', vert: '│', topMid: '┬', bottomMid: '┴', leftMid: '├', rightMid: '┤', cross: '┼' },
+            double: { name: '双线 (═║)', topLeft: '╔', topRight: '╗', bottomLeft: '╚', bottomRight: '╝', horiz: '═', vert: '║', topMid: '╦', bottomMid: '╩', leftMid: '╠', rightMid: '╣', cross: '╬' },
+            rounded: { name: '圆角 (╭╮)', topLeft: '╭', topRight: '╮', bottomLeft: '╰', bottomRight: '╯', horiz: '─', vert: '│', topMid: '┬', bottomMid: '┴', leftMid: '├', rightMid: '┤', cross: '┼' },
+            heavy: { name: '粗线 (┏┓)', topLeft: '┏', topRight: '┓', bottomLeft: '┗', bottomRight: '┛', horiz: '━', vert: '┃', topMid: '┳', bottomMid: '┻', leftMid: '┣', rightMid: '┫', cross: '╋' }
+        };
 
-      let currentStyle = "single";
-      let tableData = [
-        ["标题1", "标题2", "标题3"],
-        ["内容A", "内容B", "内容C"],
-        ["数据1", "数据2", "数据3"]
-      ];
+        let currentStyleKey = 'single';
 
-      function init() {
-        renderStyleOptions();
-        renderCellInputs();
-        renderCharGrid();
-        generateTable();
-
-        const savedTheme = localStorage.getItem("table-border-theme");
-        if (savedTheme) {
-          document.documentElement.setAttribute("data-theme", savedTheme);
-        } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-          document.documentElement.setAttribute("data-theme", "dark");
-        }
-      }
-
-      function renderStyleOptions() {
-        const container = document.getElementById("styleOptions");
-        while (container.firstChild) {
-          container.removeChild(container.firstChild);
-        }
-
-        Object.keys(borderStyles).forEach(function (styleId) {
-          const style = borderStyles[styleId];
-          const btn = document.createElement("button");
-          btn.className = "style-btn" + (styleId === currentStyle ? " active" : "");
-          btn.textContent =
-            style.name + " " + style.chars.topLeft + style.chars.horizontal + style.chars.topRight;
-          btn.onclick = function () {
-            selectStyle(styleId);
-          };
-          container.appendChild(btn);
-        });
-      }
-
-      window.selectStyle = function (styleId) {
-        currentStyle = styleId;
-        renderStyleOptions();
-        generateTable();
-      };
-
-      function renderCellInputs() {
-        const container = document.getElementById("cellInputs");
-        while (container.firstChild) {
-          container.removeChild(container.firstChild);
-        }
-
-        tableData.forEach(function (row, rowIndex) {
-          const rowDiv = document.createElement("div");
-          rowDiv.className = "cell-row";
-
-          row.forEach(function (cell, colIndex) {
-            const input = document.createElement("input");
-            input.type = "text";
-            input.className = "cell-input";
-            input.value = cell;
-            input.placeholder = "R" + (rowIndex + 1) + "C" + (colIndex + 1);
-            input.oninput = function () {
-              tableData[rowIndex][colIndex] = this.value;
-              generateTable();
-            };
-            rowDiv.appendChild(input);
-          });
-
-          container.appendChild(rowDiv);
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            document.getElementById('themeIcon').className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+            
+            renderStyleCards();
+            renderEditor();
+            renderAll();
         });
 
-        document.getElementById("rowCount").value = tableData.length;
-        document.getElementById("colCount").value = tableData[0].length;
-      }
-
-      function renderCharGrid() {
-        const grid = document.getElementById("charGrid");
-        while (grid.firstChild) {
-          grid.removeChild(grid.firstChild);
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            const newTheme = isDark ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            icon.className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+            localStorage.setItem('theme', newTheme);
         }
 
-        boxChars.forEach(function (item) {
-          const div = document.createElement("div");
-          div.className = "char-item";
-          div.onclick = function () {
-            copyText(item.char);
-          };
-          div.title = "点击复制";
-
-          const charSpan = document.createElement("div");
-          charSpan.className = "char";
-          charSpan.textContent = item.char;
-
-          const nameSpan = document.createElement("div");
-          nameSpan.className = "name";
-          nameSpan.textContent = item.name;
-
-          div.appendChild(charSpan);
-          div.appendChild(nameSpan);
-          grid.appendChild(div);
-        });
-      }
-
-      window.updateTable = function () {
-        const rows = parseInt(document.getElementById("rowCount").value) || 3;
-        const cols = parseInt(document.getElementById("colCount").value) || 3;
-
-        // Adjust rows
-        while (tableData.length < rows) {
-          const newRow = [];
-          for (let i = 0; i < tableData[0].length; i++) {
-            newRow.push("");
-          }
-          tableData.push(newRow);
-        }
-        while (tableData.length > rows) {
-          tableData.pop();
-        }
-
-        // Adjust columns
-        tableData.forEach(function (row) {
-          while (row.length < cols) {
-            row.push("");
-          }
-          while (row.length > cols) {
-            row.pop();
-          }
-        });
-
-        renderCellInputs();
-        generateTable();
-      };
-
-      window.addRow = function () {
-        const newRow = [];
-        for (let i = 0; i < tableData[0].length; i++) {
-          newRow.push("");
-        }
-        tableData.push(newRow);
-        renderCellInputs();
-        generateTable();
-      };
-
-      window.removeRow = function () {
-        if (tableData.length > 1) {
-          tableData.pop();
-          renderCellInputs();
-          generateTable();
-        }
-      };
-
-      window.addCol = function () {
-        tableData.forEach(function (row) {
-          row.push("");
-        });
-        renderCellInputs();
-        generateTable();
-      };
-
-      window.removeCol = function () {
-        if (tableData[0].length > 1) {
-          tableData.forEach(function (row) {
-            row.pop();
-          });
-          renderCellInputs();
-          generateTable();
-        }
-      };
-
-      function generateTable() {
-        const chars = borderStyles[currentStyle].chars;
-        const alignment = document.getElementById("alignment").value;
-
-        // Calculate column widths
-        const colWidths = [];
-        const numCols = tableData[0].length;
-
-        for (let col = 0; col < numCols; col++) {
-          let maxWidth = 0;
-          tableData.forEach(function (row) {
-            const cellWidth = getStringWidth(row[col] || "");
-            if (cellWidth > maxWidth) {
-              maxWidth = cellWidth;
-            }
-          });
-          colWidths.push(Math.max(maxWidth, 4));
-        }
-
-        const lines = [];
-
-        // Top border
-        let topLine = chars.topLeft;
-        colWidths.forEach(function (width, index) {
-          topLine += chars.horizontal.repeat(width + 2);
-          topLine += index < colWidths.length - 1 ? chars.topMid : chars.topRight;
-        });
-        lines.push(topLine);
-
-        // Data rows
-        tableData.forEach(function (row, rowIndex) {
-          let dataLine = chars.vertical;
-          row.forEach(function (cell, colIndex) {
-            const paddedCell = padString(cell || "", colWidths[colIndex], alignment);
-            dataLine += " " + paddedCell + " " + chars.vertical;
-          });
-          lines.push(dataLine);
-
-          // Row separator (except last row)
-          if (rowIndex < tableData.length - 1) {
-            let sepLine = chars.leftMid;
-            colWidths.forEach(function (width, index) {
-              sepLine += chars.horizontal.repeat(width + 2);
-              sepLine += index < colWidths.length - 1 ? chars.cross : chars.rightMid;
+        function renderStyleCards() {
+            const grid = document.getElementById('styleGrid');
+            grid.innerHTML = '';
+            Object.keys(styles).forEach(key => {
+                const card = document.createElement('div');
+                card.className = `style-card ${key === currentStyleKey ? 'active' : ''}`;
+                card.innerText = styles[key].name;
+                card.onclick = () => {
+                    currentStyleKey = key;
+                    renderStyleCards();
+                    renderAll();
+                };
+                grid.appendChild(card);
             });
-            lines.push(sepLine);
-          }
-        });
-
-        // Bottom border
-        let bottomLine = chars.bottomLeft;
-        colWidths.forEach(function (width, index) {
-          bottomLine += chars.horizontal.repeat(width + 2);
-          bottomLine += index < colWidths.length - 1 ? chars.bottomMid : chars.bottomRight;
-        });
-        lines.push(bottomLine);
-
-        document.getElementById("previewOutput").textContent = lines.join("\n");
-      }
-
-      function getStringWidth(str) {
-        let width = 0;
-        for (let i = 0; i < str.length; i++) {
-          const code = str.charCodeAt(i);
-          // Simple check for CJK characters (wider)
-          if (code >= 0x4e00 && code <= 0x9fff) {
-            width += 2;
-          } else {
-            width += 1;
-          }
         }
-        return width;
-      }
 
-      function padString(str, targetWidth, alignment) {
-        const currentWidth = getStringWidth(str);
-        const padding = targetWidth - currentWidth;
-
-        if (padding <= 0) return str;
-
-        if (alignment === "center") {
-          const leftPad = Math.floor(padding / 2);
-          const rightPad = padding - leftPad;
-          return " ".repeat(leftPad) + str + " ".repeat(rightPad);
-        } else if (alignment === "right") {
-          return " ".repeat(padding) + str;
-        } else {
-          return str + " ".repeat(padding);
+        function renderEditor() {
+            const table = document.getElementById('editorTable');
+            table.innerHTML = '';
+            tableData.forEach((row, rIdx) => {
+                const tr = document.createElement('tr');
+                row.forEach((cell, cIdx) => {
+                    const td = document.createElement('td');
+                    const input = document.createElement('input');
+                    input.value = cell;
+                    input.oninput = (e) => {
+                        tableData[rIdx][cIdx] = e.target.value;
+                        renderAll();
+                    };
+                    td.appendChild(input);
+                    tr.appendChild(td);
+                });
+                table.appendChild(tr);
+            });
         }
-      }
 
-      window.copyTable = function () {
-        const table = document.getElementById("previewOutput").textContent;
-        navigator.clipboard.writeText(table).then(function () {
-          showToast("表格已复制到剪贴�?);
-        });
-      };
+        function addRow() {
+            const colCount = tableData[0].length;
+            tableData.push(new Array(colCount).fill(""));
+            renderEditor();
+            renderAll();
+        }
 
-      window.copyText = function (text) {
-        navigator.clipboard.writeText(text).then(function () {
-          showToast("已复�? " + text);
-        });
-      };
+        function removeRow() {
+            if (tableData.length > 1) {
+                tableData.pop();
+                renderEditor();
+                renderAll();
+            }
+        }
 
-      function showToast(message) {
-        const toast = document.getElementById("toast");
-        toast.textContent = message;
-        toast.classList.add("show");
-        setTimeout(function () {
-          toast.classList.remove("show");
-        }, 2000);
-      }
+        function addCol() {
+            tableData.forEach(row => row.push(""));
+            renderEditor();
+            renderAll();
+        }
 
-      window.toggleTheme = function () {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute("data-theme");
-        const newTheme = currentTheme === "dark" ? "light" : "dark";
-        html.setAttribute("data-theme", newTheme);
-        localStorage.setItem("table-border-theme", newTheme);
-      };
+        function removeCol() {
+            if (tableData[0].length > 1) {
+                tableData.forEach(row => row.pop());
+                renderEditor();
+                renderAll();
+            }
+        }
 
-      init();
+        function clearContent() {
+            tableData = tableData.map(row => row.map(() => ""));
+            renderEditor();
+            renderAll();
+        }
+
+        function renderAll() {
+            const exportType = document.getElementById('exportType').value;
+            const preview = document.getElementById('previewArea');
+            
+            if (exportType === 'ascii') {
+                preview.innerText = generateAsciiTable();
+            } else if (exportType === 'markdown') {
+                preview.innerText = generateMarkdownTable();
+            } else if (exportType === 'html') {
+                preview.innerText = generateHtmlTable();
+            }
+        }
+
+        function generateAsciiTable() {
+            const style = styles[currentStyleKey];
+            const align = document.getElementById('alignment').value;
+            const padding = parseInt(document.getElementById('padding').value);
+            
+            // Calculate column widths
+            const colWidths = tableData[0].map((_, cIdx) => {
+                return Math.max(...tableData.map(row => row[cIdx].length)) + padding * 2;
+            });
+
+            const padStr = (str, width, align) => {
+                const s = String(str);
+                if (align === 'left') return s.padEnd(width);
+                if (align === 'right') return s.padStart(width);
+                const left = Math.floor((width - s.length) / 2);
+                const right = width - s.length - left;
+                return ' '.repeat(left) + s + ' '.repeat(right);
+            };
+
+            const borderLine = (left, mid, right, horiz) => {
+                return left + colWidths.map(w => horiz.repeat(w)).join(mid) + right;
+            };
+
+            let lines = [];
+            // Top border
+            lines.push(borderLine(style.topLeft, style.topMid, style.topRight, style.horiz));
+            
+            tableData.forEach((row, rIdx) => {
+                // Content line
+                const content = style.vert + row.map((cell, cIdx) => {
+                    const cellPadded = ' '.repeat(padding) + cell + ' '.repeat(padding);
+                    return padStr(cellPadded, colWidths[cIdx], align);
+                }).join(style.vert) + style.vert;
+                lines.push(content);
+
+                // Middle separator
+                if (rIdx < tableData.length - 1) {
+                    lines.push(borderLine(style.leftMid, style.cross, style.rightMid, style.horiz));
+                }
+            });
+
+            // Bottom border
+            lines.push(borderLine(style.bottomLeft, style.bottomMid, style.bottomRight, style.horiz));
+
+            return lines.join('\n');
+        }
+
+        function generateMarkdownTable() {
+            const align = document.getElementById('alignment').value;
+            const colWidths = tableData[0].map((_, cIdx) => {
+                return Math.max(...tableData.map(row => row[cIdx].length), 3);
+            });
+
+            const alignMap = { left: ':---', center: ':---:', right: '---:' };
+            
+            let lines = [];
+            // Header
+            lines.push('| ' + tableData[0].map((cell, i) => cell.padEnd(colWidths[i])).join(' | ') + ' |');
+            // Separator
+            lines.push('| ' + colWidths.map(w => alignMap[align].padEnd(w, '-')).join(' | ') + ' |');
+            // Body
+            for (let i = 1; i < tableData.length; i++) {
+                lines.push('| ' + tableData[i].map((cell, j) => cell.padEnd(colWidths[j])).join(' | ') + ' |');
+            }
+            return lines.join('\n');
+        }
+
+        function generateHtmlTable() {
+            let html = '<table>\n';
+            tableData.forEach((row, rIdx) => {
+                html += '  <tr>\n';
+                row.forEach(cell => {
+                    const tag = rIdx === 0 ? 'th' : 'td';
+                    html += `    <${tag}>${cell}</${tag}>\n`;
+                });
+                html += '  </tr>\n';
+            });
+            html += '</table>';
+            return html;
+        }
+
+        function copyResult() {
+            const text = document.getElementById('previewArea').innerText;
+            navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板！'));
+        }
+
+        function downloadText() {
+            const text = document.getElementById('previewArea').innerText;
+            const blob = new Blob([text], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'table.txt';
+            a.click();
+        }
+
+        function togglePreviewTheme() {
+            document.getElementById('previewArea').classList.toggle('light');
+        }
     </script>
-  </body>
+</body>
 </html>
-
