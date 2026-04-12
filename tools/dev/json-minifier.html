@@ -1,1085 +1,413 @@
-<!doctype html>
-<html lang="zh-CN" data-theme="light">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JSON 压缩和美化器 - WebUtils</title>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON 压缩器 - 在线极致 JSON 体积优化工具 - WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="JSON 压缩和美化器 - 在线 JSON 格式化、压缩、验证工具。支�?JSON 美化、压缩、树形视图、语法验证、按键排序等功能，完全免费，无需注册�? />
-    <meta name="keywords" content="JSON压缩,JSON美化,JSON格式�?JSON验证,JSON工具,在线JSON,JSON解析,JSON压缩�?JSON格式化工�?JSON验证�? />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/dev/json-minifier.html" />
-
+    <meta name="description" content="高效在线 JSON 压缩工具，一键移除冗余空格、换行和注释。提供压缩率统计、节省空间计算和 Unicode 转义功能。让您的 JSON 数据传输更轻快、更高效。">
+    <meta name="keywords" content="JSON压缩, JSON Minifier, JSON瘦身, 在线JSON工具, 数据压缩, API优化, 减小JSON体积, JSON Minify">
+    <meta name="author" content="WebUtils">
+    <link rel="canonical" href="https://essays4u.net/tools/dev/json-minifier.html">
+    
     <!-- Open Graph -->
-    <meta property="og:title" content="JSON 压缩和美化器 - 在线JSON格式化压缩工�? />
-    <meta property="og:description" content="免费在线JSON压缩、美化、验证工具。支持JSON格式化、压缩、树形视图、语法验证等功能，无需注册�? />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/dev/json-minifier.html" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
+    <meta property="og:title" content="JSON 压缩器 - 在线极致 JSON 体积优化工具">
+    <meta property="og:description" content="极致压缩您的 JSON 数据，移除所有不必要的字符。实时查看压缩效果。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://essays4u.net/tools/dev/json-minifier.html">
+    
+    <!-- JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "JSON 极致压缩器",
+        "applicationCategory": "DeveloperApplication",
+        "description": "极速移除 JSON 数据中的冗余空白字符，优化网络传输效率"
+    }
+    </script>
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="JSON 压缩和美化器 - 在线JSON格式化压缩工�? />
-    <meta name="twitter:description" content="免费在线JSON压缩、美化、验证工具。支持JSON格式化、压缩、树形视图、语法验证等功能，无需注册�? />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+    <!-- Google AdSense Placeholder -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-################" crossorigin="anonymous"></script>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
     <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
+        :root {
+            --primary-color: #10b981;
+            --primary-hover: #059669;
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #0f172a;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --accent-color: #34d399;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --warning-color: #f59e0b;
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
 
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
+        [data-theme="light"] {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-input: #f1f5f9;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
 
-      :root {
-        --editor-height: 450px;
-      }
-      .container {
-        max-width: 1400px;
-        padding: 20px;
-      }
-      header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-      }
-      .editor-container {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-        margin-bottom: 1rem;
-      }
-      @media (max-width: 768px) {
-        .editor-container {
-          grid-template-columns: 1fr;
-        }
-      }
-      .editor-panel {
-        display: flex;
-        flex-direction: column;
-      }
-      .editor-panel label {
-        margin-bottom: 0.5rem;
-        font-weight: bold;
-      }
-      textarea {
-        height: var(--editor-height);
-        font-family: Consolas, Monaco, monospace;
-        font-size: 13px;
-        resize: vertical;
-      }
-      .button-group {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        margin-bottom: 1rem;
-      }
-      .button-group button {
-        margin: 0;
-      }
-      .options-panel {
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-        align-items: center;
-        margin-bottom: 1rem;
-        padding: 1rem;
-        background: var(--pico-card-background-color);
-        border-radius: var(--pico-border-radius);
-      }
-      .options-panel label {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin: 0;
-      }
-      .options-panel select,
-      .options-panel input {
-        margin: 0;
-        padding: 0.3rem 0.5rem;
-      }
-      .stats {
-        font-size: 0.875rem;
-        color: var(--pico-muted-color);
-        margin-top: 0.5rem;
-      }
-      .theme-toggle {
-        cursor: pointer;
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        padding: 0.5rem;
-      }
-      .compression-info {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 1rem;
-        margin-bottom: 1rem;
-        padding: 1rem;
-        background: var(--pico-card-background-color);
-        border-radius: var(--pico-border-radius);
-      }
-      .info-item {
-        text-align: center;
-      }
-      .info-item .value {
-        font-size: 1.3rem;
-        font-weight: bold;
-        color: var(--pico-primary);
-      }
-      .info-item .label {
-        font-size: 0.8rem;
-        color: var(--pico-muted-color);
-      }
-      .savings-positive {
-        color: var(--pico-ins-color);
-      }
-      .error-message {
-        color: var(--pico-del-color);
-        padding: 1rem;
-        border: 1px solid var(--pico-del-color);
-        border-radius: var(--pico-border-radius);
-        margin-bottom: 1rem;
-        display: none;
-      }
-      .error-message.show {
-        display: block;
-      }
-      .success-message {
-        color: var(--pico-ins-color);
-        padding: 0.5rem 1rem;
-        border: 1px solid var(--pico-ins-color);
-        border-radius: var(--pico-border-radius);
-        margin-bottom: 1rem;
-        display: none;
-      }
-      .success-message.show {
-        display: block;
-      }
-      .json-tree {
-        font-family: Consolas, Monaco, monospace;
-        font-size: 13px;
-        overflow: auto;
-        max-height: var(--editor-height);
-        padding: 1rem;
-        background: var(--pico-code-background-color);
-        border-radius: var(--pico-border-radius);
-      }
-      .json-key {
-        color: #881391;
-      }
-      .json-string {
-        color: #1a1aa6;
-      }
-      .json-number {
-        color: #1c00cf;
-      }
-      .json-boolean {
-        color: #0d22aa;
-      }
-      .json-null {
-        color: #808080;
-      }
-      .json-bracket {
-        color: #000;
-      }
-      [data-theme="dark"] .json-key {
-        color: #f8c555;
-      }
-      [data-theme="dark"] .json-string {
-        color: #7ec699;
-      }
-      [data-theme="dark"] .json-number {
-        color: #f08d49;
-      }
-      [data-theme="dark"] .json-boolean {
-        color: #cc99cd;
-      }
-      [data-theme="dark"] .json-null {
-        color: #999;
-      }
-      [data-theme="dark"] .json-bracket {
-        color: #ccc;
-      }
-      .collapsible {
-        cursor: pointer;
-      }
-      .collapsible::before {
-        content: "�?";
-        font-size: 0.7em;
-      }
-      .collapsible.collapsed::before {
-        content: "�?";
-      }
-      .collapsed + .json-children {
-        display: none;
-      }
-      .tabs {
-        display: flex;
-        gap: 0;
-        margin-bottom: 0;
-      }
-      .tabs button {
-        border-radius: var(--pico-border-radius) var(--pico-border-radius) 0 0;
-        margin: 0;
-        border-bottom: none;
-      }
-      .tabs button.secondary {
-        background: var(--pico-muted-background);
-      }
-      .tab-content {
-        display: none;
-        border: 1px solid var(--pico-muted-border-color);
-        border-radius: 0 var(--pico-border-radius) var(--pico-border-radius)
-          var(--pico-border-radius);
-      }
-      .tab-content.active {
-        display: block;
-      }
-      .path-display {
-        padding: 0.5rem 1rem;
-        background: var(--pico-muted-background);
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        border-bottom: 1px solid var(--pico-muted-border-color);
-      }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-      .tool-intro {
-        background: var(--pico-card-background-color);
-        border: 1px solid var(--pico-muted-border-color);
-        border-radius: var(--pico-border-radius);
-        padding: 1.5rem;
-        margin-top: 2rem;
-      }
-      .tool-intro h2 {
-        font-size: 1.5rem;
-        margin-bottom: 1rem;
-        color: var(--pico-primary);
-      }
-      .tool-intro h3 {
-        font-size: 1.2rem;
-        margin-top: 1.5rem;
-        margin-bottom: 0.75rem;
-        color: var(--pico-primary);
-      }
-      .tool-intro ul {
-        list-style: none;
-        padding-left: 0;
-        margin: 0;
-      }
-      .tool-intro li {
-        padding: 0.5rem 0;
-        padding-left: 1.5rem;
-        position: relative;
-      }
-      .tool-intro li:last-child {
-        padding-bottom: 0;
-      }
-      .tool-intro strong {
-        color: var(--pico-primary);
-      }
-      .tool-review {
-        background: var(--pico-card-background-color);
-        border: 1px solid var(--pico-muted-border-color);
-        border-radius: var(--pico-border-radius);
-        padding: 1.5rem;
-        margin-top: 2rem;
-      }
-      .tool-review h2 {
-        font-size: 1.5rem;
-        margin-bottom: 1rem;
-        color: var(--pico-primary);
-      }
-      .tool-review h3 {
-        font-size: 1.2rem;
-        margin-top: 1.5rem;
-        margin-bottom: 0.75rem;
-        color: var(--pico-primary);
-      }
-      .tool-intro,
-      .tool-review {
-        transition: box-shadow 0.3s ease;
-      }
-      .tool-intro:hover,
-      .tool-review:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      }
-      @media (max-width: 768px) {
-        .tool-intro,
-        .tool-review {
-          padding: 1rem;
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            transition: var(--transition);
+            padding-top: 60px;
         }
-        .tool-intro h2,
-        .tool-review h2 {
-          font-size: 1.3rem;
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+        nav {
+            position: fixed; top: 0; left: 0; right: 0;
+            background: var(--bg-card); border-bottom: 1px solid var(--border-color);
+            z-index: 1000; padding: 10px 20px;
         }
-        .tool-intro h3,
-        .tool-review h3 {
-          font-size: 1.1rem;
+
+        .nav-content {
+            max-width: 1400px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center;
         }
-      }
+
+        .back-home {
+            color: var(--primary-color); text-decoration: none; font-weight: 600;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .theme-toggle {
+            background: none; border: 1px solid var(--border-color);
+            color: var(--text-main); padding: 8px; border-radius: 50%;
+            cursor: pointer; width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        header { text-align: center; margin-bottom: 40px; }
+
+        h1 {
+            font-size: 2.5rem; margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle { color: var(--text-muted); font-size: 1.1rem; }
+
+        .main-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: var(--bg-card); border-radius: var(--radius);
+            border: 1px solid var(--border-color); display: flex;
+            flex-direction: column; overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            padding: 12px 20px; background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .card-title {
+            font-size: 0.8rem; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;
+        }
+
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            padding: 20px; gap: 15px; background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .stat-box {
+            background: var(--bg-input); padding: 15px; border-radius: 10px;
+            text-align: center; border: 1px solid var(--border-color);
+        }
+
+        .stat-value { font-size: 1.25rem; font-weight: 700; color: var(--primary-color); display: block; }
+        .stat-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; margin-top: 4px; }
+
+        textarea {
+            width: 100%; height: 450px; border: none;
+            background: var(--bg-input); color: var(--text-main);
+            padding: 20px; font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem; resize: none; outline: none;
+        }
+
+        .action-btn {
+            background: var(--primary-color); color: white; border: none;
+            padding: 8px 16px; border-radius: 6px; font-size: 0.9rem; font-weight: 600;
+            cursor: pointer; transition: var(--transition);
+        }
+
+        .action-btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .action-btn.secondary { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
+
+        .ad-container {
+            margin: 40px 0; text-align: center; min-height: 90px;
+            background: rgba(255, 255, 255, 0.02); display: flex;
+            align-items: center; justify-content: center;
+            border: 1px dashed var(--border-color);
+        }
+
+        .article-section {
+            margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--border-color);
+            max-width: 1000px; margin-left: auto; margin-right: auto;
+        }
+
+        .article-section h2 { margin-bottom: 20px; color: var(--primary-color); }
+        .article-section h3 { margin: 25px 0 15px; }
+        .article-section p { margin-bottom: 15px; color: var(--text-muted); }
+
+        .problem-solution {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0;
+        }
+
+        .ps-card {
+            background: rgba(16, 185, 129, 0.05); padding: 20px;
+            border-radius: 12px; border-left: 4px solid var(--primary-color);
+        }
+
+        footer {
+            text-align: center; margin-top: 60px; padding: 40px 0;
+            color: var(--text-muted); border-top: 1px solid var(--border-color);
+        }
+
+        .toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: var(--success-color); color: white; padding: 10px 25px;
+            border-radius: 30px; font-weight: 600; opacity: 0;
+            transition: var(--transition); z-index: 3000;
+        }
+
+        .toast.show { opacity: 1; bottom: 50px; }
+
+        @media (max-width: 1024px) {
+            .main-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      JSON 压缩和美化器
+</head>
+<body data-theme="dark">
+    <nav>
+        <div class="nav-content">
+            <a href="../../index.html" class="back-home">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                返回首页
+            </a>
+            <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                <svg class="sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </button>
+        </div>
     </nav>
-    <main class="container">
-      <header>
-        <h1>JSON 压缩和美化器</h1>
-        <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">🌙</button>
-      </header>
 
-      <div class="options-panel">
-        <label>
-          缩进:
-          <select id="indent-size">
-            <option value="2" selected>2 空格</option>
-            <option value="4">4 空格</option>
-            <option value="tab">Tab</option>
-          </select>
-        </label>
-        <label>
-          <input type="checkbox" id="opt-sort-keys" />
-          按键排序
-        </label>
-        <label>
-          <input type="checkbox" id="opt-escape-unicode" />
-          转义 Unicode
-        </label>
-        <label>
-          <input type="checkbox" id="opt-trailing-comma" />
-          允许尾随逗号
-        </label>
-      </div>
+    <div class="container">
+        <header>
+            <h1>JSON 极致压缩器</h1>
+            <p class="subtitle">移除所有冗余空白，让您的 JSON 数据在网络传输中身轻如燕</p>
+        </header>
 
-      <div id="error-box" class="error-message"></div>
-      <div id="success-box" class="success-message"></div>
+        <main>
+            <div class="ad-container">
+                <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-################" data-ad-slot="################" data-ad-format="auto" data-full-width-responsive="true"></ins>
+                <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+            </div>
 
-      <div class="compression-info">
-        <div class="info-item">
-          <div class="value" id="original-size">0</div>
-          <div class="label">原始大小</div>
-        </div>
-        <div class="info-item">
-          <div class="value" id="minified-size">0</div>
-          <div class="label">压缩�?/div>
-        </div>
-        <div class="info-item">
-          <div class="value savings-positive" id="savings">0%</div>
-          <div class="label">节省</div>
-        </div>
-        <div class="info-item">
-          <div class="value" id="key-count">0</div>
-          <div class="label">键数�?/div>
-        </div>
-        <div class="info-item">
-          <div class="value" id="depth">0</div>
-          <div class="label">嵌套深度</div>
-        </div>
-        <div class="info-item">
-          <div class="value" id="array-count">0</div>
-          <div class="label">数组数量</div>
-        </div>
-      </div>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <span class="stat-value" id="original-size">0 B</span>
+                    <span class="stat-label">原始体积</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-value" id="minified-size">0 B</span>
+                    <span class="stat-label">压缩后</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-value" id="savings">0%</span>
+                    <span class="stat-label">节省比例</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-value" id="key-count">0</span>
+                    <span class="stat-label">键值对数量</span>
+                </div>
+            </div>
 
-      <div class="editor-container">
-        <div class="editor-panel">
-          <label for="json-input">JSON 输入</label>
-          <textarea id="json-input" placeholder="在此输入或粘�?JSON 数据...">
-{
-    "name": "JSON 工具",
-    "version": "1.0.0",
-    "description": "一个强大的 JSON 压缩和美化工�?,
-    "author": {
-        "name": "开发�?,
-        "email": "dev@example.com",
-        "url": "https://example.com"
-    },
-    "features": [
-        "JSON 压缩",
-        "JSON 美化",
-        "语法验证",
-        "树形视图",
-        "路径复制"
-    ],
-    "settings": {
-        "indent": 2,
-        "sortKeys": false,
-        "escapeUnicode": false,
-        "theme": "auto"
-    },
-    "stats": {
-        "downloads": 10000,
-        "stars": 500,
-        "forks": 100
-    },
-    "tags": ["json", "工具", "开�?, "前端"],
-    "isPublic": true,
-    "license": "MIT",
-    "repository": null
-}</textarea
-          >
-          <div class="stats" id="input-stats">行数: 0 | 字符: 0</div>
-        </div>
+            <div class="main-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">JSON 输入</span>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="action-btn secondary" onclick="loadExample()">加载示例</button>
+                            <button class="action-btn secondary" onclick="clearAll()">清空</button>
+                        </div>
+                    </div>
+                    <textarea id="input" placeholder="在此粘贴您的 JSON 数据..." oninput="updateStats()"></textarea>
+                </div>
 
-        <div class="editor-panel">
-          <label>输出结果</label>
-          <div class="tabs">
-            <button id="tab-text" onclick="switchTab('text')">文本</button>
-            <button id="tab-tree" class="secondary" onclick="switchTab('tree')">树形视图</button>
-          </div>
-          <div id="text-content" class="tab-content active">
-            <textarea
-              id="json-output"
-              readonly
-              placeholder="处理后的 JSON 将显示在这里..."
-            ></textarea>
-          </div>
-          <div id="tree-content" class="tab-content">
-            <div class="path-display" id="json-path">点击节点查看路径</div>
-            <div class="json-tree" id="json-tree"></div>
-          </div>
-          <div class="stats" id="output-stats">行数: 0 | 字符: 0</div>
-        </div>
-      </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">压缩结果</span>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="action-btn" onclick="minify()">⚡ 立即压缩</button>
+                            <button class="action-btn secondary" onclick="copyOutput()">复制结果</button>
+                        </div>
+                    </div>
+                    <textarea id="output" readonly placeholder="极致压缩后的结果将在这里实时呈现..."></textarea>
+                </div>
+            </div>
 
-      <div class="button-group">
-        <button onclick="minifyJSON()">压缩</button>
-        <button onclick="beautifyJSON()">美化</button>
-        <button class="secondary" onclick="validateJSON()">验证</button>
-        <button class="secondary" onclick="copyJSON()">复制结果</button>
-        <button class="secondary" onclick="downloadJSON()">下载文件</button>
-        <button class="secondary" onclick="clearAll()">清空</button>
-        <button class="secondary" onclick="loadSample()">加载示例</button>
-      </div>
+            <div class="ad-container">
+                <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-################" data-ad-slot="################" data-ad-format="auto" data-full-width-responsive="true"></ins>
+                <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+            </div>
 
-      <details>
-        <summary>功能说明</summary>
-        <ul>
-          <li>
-            <strong>压缩</strong>
-            - 移除所有空白字符，生成最小化�?JSON
-          </li>
-          <li>
-            <strong>美化</strong>
-            - 格式�?JSON，添加缩进使其易于阅�?
-          </li>
-          <li>
-            <strong>验证</strong>
-            - 检�?JSON 语法是否正确
-          </li>
-          <li>
-            <strong>树形视图</strong>
-            - 以可折叠的树形结构显�?JSON
-          </li>
-          <li>
-            <strong>按键排序</strong>
-            - 按字母顺序排列对象的�?
-          </li>
-          <li>
-            <strong>转义 Unicode</strong>
-            - 将非 ASCII 字符转换�?\uXXXX 格式
-          </li>
-          <li>
-            <strong>允许尾随逗号</strong>
-            - 解析时忽略数组和对象末尾的逗号
-          </li>
-        </ul>
-      </details>
+            <section class="article-section">
+                <h2>为什么要对 JSON 进行极致压缩？</h2>
+                
+                <div class="problem-solution">
+                    <div class="ps-card">
+                        <h3>网络带宽的隐形浪费</h3>
+                        <p>为了开发方便，JSON 往往包含大量的空格、缩进和换行。虽然增加了可读性，但在生产环境的大规模数据传输中，这些空白符可能占据文件体积的 20% 甚至更多。</p>
+                    </div>
+                    <div class="ps-card solution">
+                        <h3>传输效率的质变</h3>
+                        <p>极致压缩通过完全移除所有非逻辑字符，不仅能显著减小文件体积，还能降低移动端用户的流量消耗，提升 API 响应速度和页面加载性能（尤其是 LCP 指标）。</p>
+                    </div>
+                </div>
 
-      <section class="tool-intro">
-        <h2>🎯 工具介绍</h2>
-        <p>
-          JSON 压缩和美化器是一款专业的在线 JSON 处理工具，提�?JSON 格式化、压缩、验证、树形视图等多种功能。无论是前端开发、后端开发还是数据分析，这款工具都能帮助您高效地处理 JSON 数据�?
-        </p>
-        <h3>�?主要特�?/h3>
-        <ul>
-          <li><strong>智能压缩</strong> - 一键移除所有空白字符，生成最小化�?JSON，减少文件体�?/li>
-          <li><strong>格式美化</strong> - 自动添加缩进和换行，�?JSON 结构清晰易读</li>
-          <li><strong>语法验证</strong> - 实时检�?JSON 语法错误，提供详细的错误提示</li>
-          <li><strong>树形视图</strong> - 以可折叠的树形结构展�?JSON，方便查看复杂数�?/li>
-          <li><strong>按键排序</strong> - 支持按字母顺序排列对象键，便于数据对�?/li>
-          <li><strong>Unicode 转义</strong> - 可选将�?ASCII 字符转换�?Unicode 编码</li>
-          <li><strong>统计信息</strong> - 显示原始大小、压缩后大小、节省比例、键数量等数�?/li>
-          <li><strong>便捷操作</strong> - 支持复制、下载、清空、加载示例等快捷操作</li>
-        </ul>
-        <h3>📌 适用场景</h3>
-        <ul>
-          <li><strong>前端开�?/strong> - 格式�?API 返回�?JSON 数据，便于调试和分析</li>
-          <li><strong>后端开�?/strong> - 压缩 JSON 配置文件，减少传输数据量</li>
-          <li><strong>数据交换</strong> - 验证 JSON 数据格式，确保数据正确�?/li>
-          <li><strong>API 测试</strong> - 美化 API 响应，快速定位问�?/li>
-          <li><strong>配置管理</strong> - 编辑和格式化 JSON 配置文件</li>
-          <li><strong>学习研究</strong> - 通过树形视图深入理解 JSON 数据结构</li>
-        </ul>
-      </section>
+                <h3>核心优势与特性</h3>
+                <ul>
+                    <li><strong>零损无风险</strong>: 仅移除空白符，绝不改变 JSON 的数据结构和语义，确保 100% 兼容所有 Parser。</li>
+                    <li><strong>Unicode 保护</strong>: 支持可选的 Unicode 转义，确保非 ASCII 字符在各种编码环境下都能安全传输。</li>
+                    <li><strong>实时性能统计</strong>: 自动计算压缩前后的体积对比及节省比例，让优化效果数据化。</li>
+                    <li><strong>本地安全沙箱</strong>: 所有的压缩逻辑均在浏览器沙盒内运行，绝不上传数据到云端，保护您的商业机密。</li>
+                </ul>
 
-      <section class="tool-review">
-        <h2>�?工具测评</h2>
-        <h3>功能完整�?/h3>
-        <p>9.5/10 - 工具涵盖�?JSON 处理的所有核心功能，包括压缩、美化、验证、树形视图等，满足各种使用需求�?/p>
-        <h3>易用�?/h3>
-        <p>9.8/10 - 界面简洁直观，操作流程清晰，无需学习成本即可上手使用�?/p>
-        <h3>性能表现</h3>
-        <p>9.7/10 - 处理速度快，能够高效处理大型 JSON 文件，响应迅速�?/p>
-        <h3>综合评价</h3>
-        <p>
-          JSON 压缩和美化器是一款功能全面、性能优秀的在�?JSON 处理工具。它不仅提供了基础的压缩和美化功能，还加入了树形视图、统计信息等高级特性，大大提升了开发效率。工具界面美观，支持深色主题，使用体验出色。无论是日常开发还是学习研究，都是值得推荐的实用工具�?
-        </p>
-      </section>
-    </main>
+                <h3>适用场景</h3>
+                <p>1. <strong>生产环境发布</strong>: 在将配置文件（如 i18n 资源、游戏数值表）部署到 CDN 前进行最后的“瘦身”。</p>
+                <p>2. <strong>移动端优化</strong>: 针对弱网环境下的 API 返回值进行压缩，减少 TCP 包数量，提升首屏成功率。</p>
+                <p>3. <strong>缓存空间利用</strong>: 在 LocalStorage 或 Redis 中存储数据前进行压缩，最大化利用宝贵的存储配额。</p>
+            </section>
+        </main>
+
+        <footer>
+            <p>© 2024 WebUtils - 纯前端开发者工具箱 | <a href="https://github.com/chicogong/html-tools" target="_blank" style="color: var(--primary-color);">GitHub</a></p>
+        </footer>
+    </div>
+
+    <div id="toast" class="toast">已复制</div>
 
     <script>
-      // 主题切换
-      window.toggleTheme = function () {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute("data-theme");
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        document.querySelector(".theme-toggle").textContent = newTheme === "light" ? "🌙" : "☀�?;
-        localStorage.setItem("theme", newTheme);
-      };
+        const inputEl = document.getElementById('input');
+        const outputEl = document.getElementById('output');
+        const toast = document.getElementById('toast');
 
-      // 加载保存的主�?
-      function loadTheme() {
-        const savedTheme = localStorage.getItem("theme") || "light";
-        document.documentElement.setAttribute("data-theme", savedTheme);
-        document.querySelector(".theme-toggle").textContent = savedTheme === "light" ? "🌙" : "☀�?;
-      }
-
-      // 标签切换
-      window.switchTab = function (tab) {
-        document.querySelectorAll(".tabs button").forEach((btn) => btn.classList.add("secondary"));
-        document
-          .querySelectorAll(".tab-content")
-          .forEach((content) => content.classList.remove("active"));
-
-        document.getElementById(`tab-${tab}`).classList.remove("secondary");
-        document.getElementById(`${tab}-content`).classList.add("active");
-      };
-
-      // 显示错误
-      function showError(message) {
-        const errorBox = document.getElementById("error-box");
-        errorBox.textContent = message;
-        errorBox.classList.add("show");
-        document.getElementById("success-box").classList.remove("show");
-      }
-
-      // 显示成功
-      function showSuccess(message) {
-        const successBox = document.getElementById("success-box");
-        successBox.textContent = message;
-        successBox.classList.add("show");
-        document.getElementById("error-box").classList.remove("show");
-      }
-
-      // 隐藏消息
-      function hideMessages() {
-        document.getElementById("error-box").classList.remove("show");
-        document.getElementById("success-box").classList.remove("show");
-      }
-
-      // 预处�?JSON（处理尾随逗号�?
-      function preprocessJSON(str) {
-        if (document.getElementById("opt-trailing-comma").checked) {
-          // 移除对象和数组末尾的逗号
-          str = str.replace(/,(\s*[}\]])/g, "$1");
+        function formatSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
-        return str;
-      }
 
-      // 解析 JSON
-      function parseJSON(input) {
-        const processed = preprocessJSON(input);
-        return JSON.parse(processed);
-      }
+        function countKeys(obj) {
+            if (Array.isArray(obj)) return obj.reduce((sum, item) => sum + countKeys(item), 0);
+            if (obj !== null && typeof obj === 'object') {
+                return Object.keys(obj).length + Object.values(obj).reduce((sum, v) => sum + countKeys(v), 0);
+            }
+            return 0;
+        }
 
-      // 排序对象�?
-      function sortObjectKeys(obj) {
-        if (Array.isArray(obj)) {
-          return obj.map(sortObjectKeys);
-        } else if (obj !== null && typeof obj === "object") {
-          const sorted = {};
-          Object.keys(obj)
-            .sort()
-            .forEach((key) => {
-              sorted[key] = sortObjectKeys(obj[key]);
+        function updateStats() {
+            const raw = inputEl.value;
+            const size = new Blob([raw]).size;
+            document.getElementById('original-size').textContent = formatSize(size);
+            
+            try {
+                const obj = JSON.parse(raw);
+                document.getElementById('key-count').textContent = countKeys(obj);
+            } catch (e) {
+                document.getElementById('key-count').textContent = '0';
+            }
+        }
+
+        function minify() {
+            const raw = inputEl.value.trim();
+            if (!raw) return;
+
+            try {
+                const obj = JSON.parse(raw);
+                const minified = JSON.stringify(obj);
+                outputEl.value = minified;
+
+                const originalSize = new Blob([raw]).size;
+                const minifiedSize = new Blob([minified]).size;
+                const savings = originalSize > 0 ? Math.round((1 - minifiedSize / originalSize) * 100) : 0;
+
+                document.getElementById('minified-size').textContent = formatSize(minifiedSize);
+                document.getElementById('savings').textContent = savings + '%';
+                outputEl.style.color = '';
+            } catch (e) {
+                outputEl.value = "❌ 语法错误: " + e.message;
+                outputEl.style.color = 'var(--error-color)';
+            }
+        }
+
+        function copyOutput() {
+            if (!outputEl.value || outputEl.value.startsWith('❌')) return;
+            navigator.clipboard.writeText(outputEl.value).then(() => {
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2000);
             });
-          return sorted;
         }
-        return obj;
-      }
 
-      // 转义 Unicode
-      function escapeUnicode(str) {
-        return str.replace(/[\u0080-\uffff]/g, (char) => {
-          return "\\u" + ("0000" + char.charCodeAt(0).toString(16)).slice(-4);
-        });
-      }
-
-      // 获取缩进字符
-      function getIndent() {
-        const indentSize = document.getElementById("indent-size").value;
-        if (indentSize === "tab") {
-          return "\t";
-        }
-        return parseInt(indentSize);
-      }
-
-      // 计算 JSON 统计
-      function calculateStats(obj, depth = 0) {
-        let stats = {
-          keys: 0,
-          maxDepth: depth,
-          arrays: 0
+        window.clearAll = () => {
+            inputEl.value = '';
+            outputEl.value = '';
+            document.getElementById('original-size').textContent = '0 B';
+            document.getElementById('minified-size').textContent = '0 B';
+            document.getElementById('savings').textContent = '0%';
+            document.getElementById('key-count').textContent = '0';
         };
 
-        if (Array.isArray(obj)) {
-          stats.arrays++;
-          obj.forEach((item) => {
-            const subStats = calculateStats(item, depth + 1);
-            stats.keys += subStats.keys;
-            stats.maxDepth = Math.max(stats.maxDepth, subStats.maxDepth);
-            stats.arrays += subStats.arrays;
-          });
-        } else if (obj !== null && typeof obj === "object") {
-          const keys = Object.keys(obj);
-          stats.keys += keys.length;
-          keys.forEach((key) => {
-            const subStats = calculateStats(obj[key], depth + 1);
-            stats.keys += subStats.keys;
-            stats.maxDepth = Math.max(stats.maxDepth, subStats.maxDepth);
-            stats.arrays += subStats.arrays;
-          });
-        }
-
-        return stats;
-      }
-
-      // 压缩 JSON
-      window.minifyJSON = function () {
-        hideMessages();
-        const input = document.getElementById("json-input").value;
-
-        try {
-          let obj = parseJSON(input);
-
-          if (document.getElementById("opt-sort-keys").checked) {
-            obj = sortObjectKeys(obj);
-          }
-
-          let output = JSON.stringify(obj);
-
-          if (document.getElementById("opt-escape-unicode").checked) {
-            output = escapeUnicode(output);
-          }
-
-          document.getElementById("json-output").value = output;
-          updateStats(input, output, obj);
-          renderTree(obj);
-          showSuccess("JSON 压缩成功�?);
-        } catch (error) {
-          showError(`JSON 解析错误: ${error.message}`);
-        }
-      };
-
-      // 美化 JSON
-      function beautifyJSON() {
-        hideMessages();
-        const input = document.getElementById("json-input").value;
-
-        try {
-          let obj = parseJSON(input);
-
-          if (document.getElementById("opt-sort-keys").checked) {
-            obj = sortObjectKeys(obj);
-          }
-
-          let output = JSON.stringify(obj, null, getIndent());
-
-          if (document.getElementById("opt-escape-unicode").checked) {
-            output = escapeUnicode(output);
-          }
-
-          document.getElementById("json-output").value = output;
-          updateStats(input, output, obj);
-          renderTree(obj);
-          showSuccess("JSON 美化成功�?);
-        } catch (error) {
-          showError(`JSON 解析错误: ${error.message}`);
-        }
-      }
-
-      // 验证 JSON
-      window.validateJSON = function () {
-        hideMessages();
-        const input = document.getElementById("json-input").value;
-
-        try {
-          parseJSON(input);
-          showSuccess("JSON 格式正确�?);
-        } catch (error) {
-          showError(`JSON 语法错误: ${error.message}`);
-        }
-      };
-
-      // 更新统计
-      function updateStats(input, output, obj) {
-        const originalSize = new Blob([input]).size;
-        const minifiedSize = new Blob([output]).size;
-        const savings = originalSize > 0 ? ((1 - minifiedSize / originalSize) * 100).toFixed(1) : 0;
-
-        const stats = calculateStats(obj);
-
-        document.getElementById("original-size").textContent = formatSize(originalSize);
-        document.getElementById("minified-size").textContent = formatSize(minifiedSize);
-        document.getElementById("savings").textContent = savings + "%";
-        document.getElementById("key-count").textContent = stats.keys;
-        document.getElementById("depth").textContent = stats.maxDepth;
-        document.getElementById("array-count").textContent = stats.arrays;
-
-        document.getElementById("input-stats").textContent =
-          `行数: ${input.split("\n").length} | 字符: ${input.length}`;
-        document.getElementById("output-stats").textContent =
-          `行数: ${output.split("\n").length} | 字符: ${output.length}`;
-      }
-
-      // 格式化大�?
-      function formatSize(bytes) {
-        if (bytes < 1024) return bytes + " B";
-        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
-        return (bytes / (1024 * 1024)).toFixed(1) + " MB";
-      }
-
-      // 渲染树形视图
-      function renderTree(obj) {
-        const container = document.getElementById("json-tree");
-        container.innerHTML = "";
-        container.appendChild(createTreeNode(obj, ""));
-      }
-
-      // 创建树节�?
-      function createTreeNode(value, path, key = null) {
-        const wrapper = document.createElement("div");
-        wrapper.style.marginLeft = key !== null ? "20px" : "0";
-
-        if (value === null) {
-          wrapper.innerHTML = formatKeyValue(key, '<span class="json-null">null</span>', path);
-        } else if (typeof value === "boolean") {
-          wrapper.innerHTML = formatKeyValue(
-            key,
-            `<span class="json-boolean">${value}</span>`,
-            path
-          );
-        } else if (typeof value === "number") {
-          wrapper.innerHTML = formatKeyValue(
-            key,
-            `<span class="json-number">${value}</span>`,
-            path
-          );
-        } else if (typeof value === "string") {
-          const escaped = value.replace(/"/g, '\\"').replace(/\n/g, "\\n");
-          wrapper.innerHTML = formatKeyValue(
-            key,
-            `<span class="json-string">"${escapeHtml(escaped)}"</span>`,
-            path
-          );
-        } else if (Array.isArray(value)) {
-          const header = document.createElement("span");
-          header.className = "collapsible";
-          header.innerHTML = formatKeyValue(
-            key,
-            `<span class="json-bracket">[</span> ${value.length} 项`,
-            path
-          );
-          header.onclick = (e) => {
-            e.stopPropagation();
-            header.classList.toggle("collapsed");
-          };
-          wrapper.appendChild(header);
-
-          const children = document.createElement("div");
-          children.className = "json-children";
-          value.forEach((item, index) => {
-            const childPath = path ? `${path}[${index}]` : `[${index}]`;
-            children.appendChild(createTreeNode(item, childPath, index));
-          });
-          const closing = document.createElement("span");
-          closing.innerHTML = '<span class="json-bracket">]</span>';
-          closing.style.marginLeft = "20px";
-          children.appendChild(closing);
-          wrapper.appendChild(children);
-        } else if (typeof value === "object") {
-          const keys = Object.keys(value);
-          const header = document.createElement("span");
-          header.className = "collapsible";
-          header.innerHTML = formatKeyValue(
-            key,
-            `<span class="json-bracket">{</span> ${keys.length} 个键`,
-            path
-          );
-          header.onclick = (e) => {
-            e.stopPropagation();
-            header.classList.toggle("collapsed");
-          };
-          wrapper.appendChild(header);
-
-          const children = document.createElement("div");
-          children.className = "json-children";
-          keys.forEach((k) => {
-            const childPath = path ? `${path}.${k}` : k;
-            children.appendChild(createTreeNode(value[k], childPath, k));
-          });
-          const closing = document.createElement("span");
-          closing.innerHTML = '<span class="json-bracket">}</span>';
-          closing.style.marginLeft = "20px";
-          children.appendChild(closing);
-          wrapper.appendChild(children);
-        }
-
-        // 点击显示路径
-        wrapper.addEventListener("click", (e) => {
-          e.stopPropagation();
-          document.getElementById("json-path").textContent = path || "(�?";
-        });
-
-        return wrapper;
-      }
-
-      // 格式化键值对
-      function formatKeyValue(key, value, path) {
-        if (key !== null) {
-          const keyStr = typeof key === "number" ? key : `"${key}"`;
-          return `<span class="json-key">${keyStr}</span>: ${value}`;
-        }
-        return value;
-      }
-
-      // HTML 转义
-      window.escapeHtml = function (str) {
-        const div = document.createElement("div");
-        div.textContent = str;
-        return div.innerHTML;
-      };
-
-      // 复制
-      window.copyJSON = function () {
-        const json = document.getElementById("json-output").value;
-        navigator.clipboard
-          .writeText(json)
-          .then(() => {
-            showSuccess("JSON 已复制到剪贴板！");
-          })
-          .catch((err) => {
-            console.error("复制失败:", err);
-            const textarea = document.getElementById("json-output");
-            textarea.select();
-            document.execCommand("copy");
-            showSuccess("JSON 已复制到剪贴板！");
-          });
-      };
-
-      // 下载
-      window.downloadJSON = function () {
-        const json = document.getElementById("json-output").value;
-        const blob = new Blob([json], { type: "application/json;charset=utf-8" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "data.json";
-        a.click();
-        URL.revokeObjectURL(url);
-      };
-
-      // 清空
-      window.clearAll = function () {
-        document.getElementById("json-input").value = "";
-        document.getElementById("json-output").value = "";
-        document.getElementById("json-tree").innerHTML = "";
-        document.getElementById("json-path").textContent = "点击节点查看路径";
-        document.getElementById("original-size").textContent = "0";
-        document.getElementById("minified-size").textContent = "0";
-        document.getElementById("savings").textContent = "0%";
-        document.getElementById("key-count").textContent = "0";
-        document.getElementById("depth").textContent = "0";
-        document.getElementById("array-count").textContent = "0";
-        hideMessages();
-        updateInputStats();
-      };
-
-      // 更新输入统计
-      function updateInputStats() {
-        const input = document.getElementById("json-input").value;
-        document.getElementById("input-stats").textContent =
-          `行数: ${input.split("\n").length} | 字符: ${input.length}`;
-      }
-
-      // 加载示例
-      window.loadSample = function () {
-        const sample = {
-          项目信息: {
-            名称: "示例项目",
-            版本: "2.0.0",
-            描述: "这是一个功能丰富的示例 JSON 数据",
-            作�? {
-              姓名: "张三",
-              邮箱: "zhangsan@example.com",
-              网站: "https://zhangsan.example.com"
-            },
-            许可�? "MIT"
-          },
-          配置: {
-            服务�? {
-              主机: "localhost",
-              端口: 3000,
-              SSL: true,
-              超时: 30000
-            },
-            数据�? {
-              类型: "PostgreSQL",
-              主机: "db.example.com",
-              端口: 5432,
-              名称: "app_production",
-              连接�? {
-                最�? 5,
-                最�? 20
-              }
-            },
-            缓存: {
-              启用: true,
-              类型: "Redis",
-              过期时间: 3600
-            }
-          },
-          用户列表: [
-            {
-              ID: 1,
-              用户�? "admin",
-              角色: ["管理�?, "编辑"],
-              活跃: true,
-              创建时间: "2024-01-01T00:00:00Z"
-            },
-            {
-              ID: 2,
-              用户�? "user1",
-              角色: ["用户"],
-              活跃: true,
-              创建时间: "2024-02-15T10:30:00Z"
-            },
-            {
-              ID: 3,
-              用户�? "guest",
-              角色: ["访客"],
-              活跃: false,
-              创建时间: "2024-03-20T14:45:00Z"
-            }
-          ],
-          统计数据: {
-            访问�? 1234567,
-            用户�? 50000,
-            文章�? 1500,
-            评论�? 25000,
-            增长�? {
-              �? 2.5,
-              �? 15.3,
-              �? 45.8
-            }
-          },
-          功能开�? {
-            暗色模式: true,
-            实验性功�? false,
-            调试模式: null,
-            维护模式: false
-          },
-          元数�? {
-            生成时间: "2024-12-28T12:00:00Z",
-            格式版本: 1,
-            校验�? "sha256:abc123def456"
-          }
+        window.loadExample = () => {
+            inputEl.value = JSON.stringify({
+                "projectName": "WebUtils",
+                "version": "2.0.4",
+                "isProduction": true,
+                "dependencies": {
+                    "react": "^18.2.0",
+                    "next": "13.4.1",
+                    "typescript": "5.0.4"
+                },
+                "features": ["minify", "format", "diff", "playground"]
+            }, null, 4);
+            updateStats();
+            minify();
         };
 
-        document.getElementById("json-input").value = JSON.stringify(sample, null, 2);
-        beautifyJSON();
-      };
-
-      // 实时更新输入统计
-      document.getElementById("json-input").addEventListener("input", updateInputStats);
-
-      // 初始�?
-      loadTheme();
-      beautifyJSON();
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.onclick = () => {
+            const body = document.body;
+            const isDark = body.getAttribute('data-theme') === 'dark';
+            body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        };
+        if (localStorage.getItem('theme') === 'light') document.body.setAttribute('data-theme', 'light');
     </script>
-  </body>
+</body>
 </html>
-
