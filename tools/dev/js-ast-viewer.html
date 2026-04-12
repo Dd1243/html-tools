@@ -1,737 +1,360 @@
-<!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JavaScript AST查看�?- WebUtils</title>
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript AST 查看器 - 在线抽象语法树解析工具 - WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="JavaScript AST查看�?- WebUtils" />
-    <meta name="keywords" content="js-ast-viewer,dev,tools,webutils" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/dev/js-ast-viewer.html" />
+    <meta name="description" content="在线 JavaScript AST 查看器，基于 Acorn 编译器。实时解析 JS 代码并生成抽象语法树 (AST)，支持树形视图与 JSON 格式。前端工程师深入理解编译器、Babel 插件及 ESLint 原理的必备工具。">
+    <meta name="keywords" content="JS AST, 抽象语法树, JavaScript解析器, Acorn, Babel原理, 编译器, 前端工程化, AST可视化">
+    <meta name="author" content="WebUtils">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://essays4u.net/tools/dev/js-ast-viewer.html">
 
     <!-- Open Graph -->
-    <meta property="og:title" content="JavaScript AST查看�?- WebUtils" />
-    <meta property="og:description" content="JavaScript AST查看�?- WebUtils" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/dev/js-ast-viewer.html" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
+    <meta property="og:title" content="JavaScript AST 查看器 - 在线抽象语法树解析工具">
+    <meta property="og:description" content="实时可视化 JavaScript 抽象语法树，探索代码的底层结构。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://essays4u.net/tools/dev/js-ast-viewer.html">
+    <meta property="og:image" content="https://essays4u.net/social-preview.png">
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="JavaScript AST查看�?- WebUtils" />
-    <meta name="twitter:description" content="JavaScript AST查看�?- WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-
+    <!-- Acorn Parser -->
     <script src="https://cdn.jsdelivr.net/npm/acorn@8.11.2/dist/acorn.min.js"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Design System CSS -->
+    <link rel="stylesheet" href="../../templates/design-system.css">
+
     <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      :root {
-        --bg-primary: #0a0a0f;
-        --bg-secondary: #12121a;
-        --bg-tertiary: #1a1a25;
-        --color-text-primary: #fff;
-        --color-text-secondary: #88a;
-        --accent: #f7df1e;
-        --border: #2a2a3a;
-        --success: #22c55e;
-        --node-type: #f97316;
-        --node-key: #3b82f6;
-        --node-string: #22c55e;
-        --node-number: #a855f7;
-        --node-keyword: #ec4899;
-      }
-      [data-theme="light"] {
-        --bg-primary: #f8fafc;
-        --bg-secondary: #fff;
-        --bg-tertiary: #f1f5f9;
-        --color-text-primary: #1e293b;
-        --color-text-secondary: #64748b;
-        --border: #e2e8f0;
-      }
-      body {
-        font-family: var(--font-sans);
-        background: var(--bg-deep);
-        color: var(--color-text-primary);
-        min-height: 100vh;
-      }
-      .header {
-        background: linear-gradient(135deg, #f7df1e, #d4c41a);
-        padding: 2rem;
-        text-align: center;
-      }
-      .header h1,
-      .header p {
-        color: var(--color-text-primary);
-      }
-      .nav {
-        max-width: 1600px;
-        margin: 0 auto 1rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .back-link {
-        color: rgba(0, 0, 0, 0.7);
-        text-decoration: none;
-        font-size: 0.9rem;
-      }
-      .theme-toggle {
-        background: rgba(0, 0, 0, 0.2);
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
-        color: var(--color-text-primary);
-        cursor: pointer;
-      }
-      .header h1 {
-        font-size: 2rem;
-        margin-bottom: 0.5rem;
-      }
-      .header p {
-        opacity: 0.8;
-      }
-      .container {
-        max-width: 1600px;
-        margin: 0 auto;
-        padding: 1.5rem;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
-        height: calc(100vh - 180px);
-      }
-      .panel {
-        background: var(--bg-secondary);
-        border-radius: 1rem;
-        border: 1px solid var(--border-subtle);
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-      }
-      .panel-header {
-        padding: 1rem 1.5rem;
-        background: var(--bg-tertiary);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid var(--border-subtle);
-      }
-      .panel-header h3 {
-        font-size: 0.95rem;
-        font-weight: 600;
-      }
-      .panel-actions {
-        display: flex;
-        gap: 0.5rem;
-      }
-      .btn {
-        padding: 0.5rem 1rem;
-        background: var(--accent-cyan);
-        color: var(--color-text-primary);
-        border: none;
-        border-radius: 0.375rem;
-        cursor: pointer;
-        font-size: 0.85rem;
-        font-weight: 500;
-      }
-      .btn:hover {
-        opacity: 0.9;
-      }
-      .btn-secondary {
-        background: var(--bg-tertiary);
-        color: var(--color-text-primary);
-        border: 1px solid var(--border-subtle);
-      }
-      .panel-content {
-        flex: 1;
-        overflow: auto;
-        position: relative;
-      }
-      textarea {
-        width: 100%;
-        height: 100%;
-        padding: 1rem;
-        background: transparent;
-        border: none;
-        color: var(--color-text-primary);
-        font-family: Monaco, Menlo, Consolas, monospace;
-        font-size: 0.9rem;
-        resize: none;
-        line-height: 1.6;
-      }
-      textarea:focus {
-        outline: none;
-      }
-      .ast-tree {
-        padding: 1rem;
-        font-family: Monaco, Menlo, Consolas, monospace;
-        font-size: 0.85rem;
-        line-height: 1.5;
-      }
-      .ast-node {
-        margin-left: 1.5rem;
-        position: relative;
-      }
-      .ast-node::before {
-        content: "";
-        position: absolute;
-        left: -1rem;
-        top: 0;
-        bottom: 0;
-        width: 1px;
-        background: var(--border-subtle);
-      }
-      .ast-node:last-child::before {
-        height: 0.75rem;
-      }
-      .ast-node::after {
-        content: "";
-        position: absolute;
-        left: -1rem;
-        top: 0.75rem;
-        width: 0.75rem;
-        height: 1px;
-        background: var(--border-subtle);
-      }
-      .node-toggle {
-        cursor: pointer;
-        user-select: none;
-        display: inline-block;
-        width: 1rem;
-        color: var(--color-text-secondary);
-      }
-      .node-toggle:hover {
-        color: var(--color-text-primary);
-      }
-      .node-type {
-        color: var(--node-type);
-        font-weight: 600;
-      }
-      .node-key {
-        color: var(--node-key);
-      }
-      .node-string {
-        color: var(--node-string);
-      }
-      .node-number {
-        color: var(--node-number);
-      }
-      .node-keyword {
-        color: var(--node-keyword);
-      }
-      .node-children {
-        overflow: hidden;
-      }
-      .node-children.collapsed {
-        display: none;
-      }
-      .node-line {
-        padding: 0.125rem 0;
-      }
-      .node-line:hover {
-        background: var(--bg-tertiary);
-        border-radius: 0.25rem;
-      }
-      .examples {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        padding: 0.75rem 1rem;
-        border-bottom: 1px solid var(--border-subtle);
-      }
-      .example-btn {
-        padding: 0.375rem 0.75rem;
-        background: var(--bg-tertiary);
-        border: 1px solid var(--border-subtle);
-        border-radius: 0.375rem;
-        color: var(--color-text-secondary);
-        cursor: pointer;
-        font-size: 0.8rem;
-      }
-      .example-btn:hover {
-        border-color: var(--accent-cyan);
-        color: var(--color-text-primary);
-      }
-      .error-message {
-        padding: 1rem;
-        color: #ef4444;
-        font-family: var(--font-mono);
-      }
-      .stats {
-        padding: 0.5rem 1rem;
-        background: var(--bg-tertiary);
-        border-top: 1px solid var(--border-subtle);
-        font-size: 0.8rem;
-        color: var(--color-text-secondary);
-        display: flex;
-        gap: 1.5rem;
-      }
-      .view-toggle {
-        display: flex;
-        gap: 0.25rem;
-        background: var(--bg-deep);
-        padding: 0.25rem;
-        border-radius: 0.375rem;
-      }
-      .view-btn {
-        padding: 0.375rem 0.75rem;
-        background: transparent;
-        border: none;
-        color: var(--color-text-secondary);
-        cursor: pointer;
-        font-size: 0.8rem;
-        border-radius: 0.25rem;
-      }
-      .view-btn.active {
-        background: var(--accent-cyan);
-        color: var(--color-text-primary);
-      }
-      .json-view {
-        white-space: pre-wrap;
-        overflow-wrap: break-word;
-      }
-      @media (max-width: 900px) {
-        .container {
-          grid-template-columns: 1fr;
-          height: auto;
+        .ast-container {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 20px;
+            height: 600px;
+            margin-bottom: 32px;
+        }
+        @media (max-width: 1024px) {
+            .ast-container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            .editor-panel, .tree-panel {
+                height: 500px;
+            }
         }
         .panel {
-          min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
         }
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
+        .panel-header {
+            padding: 12px 20px;
+            background: var(--bg-input);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .panel-content {
+            flex: 1;
+            overflow: auto;
+            padding: 0;
+        }
+        #code-editor {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+            padding: 20px;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            resize: none;
+            outline: none;
+        }
+        #ast-tree {
+            padding: 20px;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+        }
+        .ast-node {
+            margin-left: 20px;
+            border-left: 1px solid var(--border-color);
+            padding-left: 10px;
+        }
+        .node-key { color: var(--text-muted); }
+        .node-type { color: var(--accent); font-weight: 600; }
+        .node-val-string { color: var(--success); }
+        .node-val-number { color: var(--warning); }
+        .toggle-btn {
+            cursor: pointer;
+            user-select: none;
+            margin-right: 5px;
+            color: var(--text-muted);
+        }
+        .article-section {
+            margin-top: 64px;
+            padding-top: 48px;
+            border-top: 1px solid var(--border-color);
+        }
+        .article-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .article-content h2 {
+            margin: 32px 0 16px;
+            font-size: 1.75rem;
+        }
+        .article-content p {
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+        .ads-placeholder {
+            margin: 32px 0;
+            padding: 24px;
+            background: var(--bg-input);
+            border: 1px dashed var(--border-color);
+            border-radius: var(--radius-md);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      JavaScript AST查看�?
-    </nav>
-    <div class="header">
-      <div class="nav">
-        <button class="theme-toggle" onclick="toggleTheme()">🌓 主题</button>
-      </div>
-      <h1>🌳 JavaScript AST查看�?/h1>
-      <p>解析JavaScript代码并可视化抽象语法�?/p>
-    </div>
-
-    <div class="container">
-      <div class="panel">
-        <div class="panel-header">
-          <h3>📝 JavaScript代码</h3>
-          <div class="panel-actions">
-            <button class="btn btn-secondary" onclick="clearCode()">清空</button>
-            <button class="btn" onclick="parseCode()">解析 AST</button>
-          </div>
-        </div>
-        <div class="examples">
-          <button class="example-btn" onclick="loadExample('function')">函数</button>
-          <button class="example-btn" onclick="loadExample('class')">�?/button>
-          <button class="example-btn" onclick="loadExample('arrow')">箭头函数</button>
-          <button class="example-btn" onclick="loadExample('async')">Async/Await</button>
-          <button class="example-btn" onclick="loadExample('destructure')">解构</button>
-          <button class="example-btn" onclick="loadExample('spread')">展开运算�?/button>
-        </div>
-        <div class="panel-content">
-          <textarea id="codeEditor" placeholder="输入JavaScript代码...">
-function greet(name) {
-  const message = `Hello, ${name}!`;
-  console.log(message);
-  return message;
-}
-
-greet('World');</textarea
-          >
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-header">
-          <h3>🌳 AST结构</h3>
-          <div class="panel-actions">
-            <div class="view-toggle">
-              <button class="view-btn active" onclick="setView('tree')">树形</button>
-              <button class="view-btn" onclick="setView('json')">JSON</button>
+</head>
+<body>
+    <div class="container-lg">
+        <header class="header">
+            <div class="header-left">
+                <a href="../../index.html" class="back-btn">
+                    <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M10 12L6 8L10 4" />
+                    </svg>
+                </a>
+                <div class="title-group">
+                    <h1>JavaScript AST 查看器</h1>
+                    <p>可视化抽象语法树，探索 JavaScript 代码的底层结构</p>
+                </div>
             </div>
-            <button class="btn btn-secondary" onclick="expandAll()">展开全部</button>
-            <button class="btn btn-secondary" onclick="collapseAll()">折叠全部</button>
-            <button class="btn btn-secondary" onclick="copyAST()">复制</button>
-          </div>
-        </div>
-        <div class="panel-content">
-          <div class="ast-tree" id="astOutput">
-            <span style="color: var(--color-text-secondary)">点击"解析 AST"按钮查看语法�?/span>
-          </div>
-        </div>
-        <div class="stats" id="stats">
-          <span>节点�? -</span>
-          <span>深度: -</span>
-        </div>
-      </div>
+            <div class="header-right">
+                <button class="btn btn-icon" id="theme-toggle">
+                    <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M8 12a4 4 0 100-8 4 4 0 000 8zM8 1v1M8 14v1M1 8h1M14 8h1" />
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <main>
+            <div id="ads-top" class="ads-placeholder">
+                Google AdSense 广告位 - 顶部
+            </div>
+
+            <section class="ast-container">
+                <div class="panel editor-panel">
+                    <div class="panel-header">
+                        <span class="form-label" style="margin: 0;">源代码</span>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-sm" onclick="loadExample()">加载示例</button>
+                            <button class="btn btn-sm btn-primary" onclick="parse()">解析</button>
+                        </div>
+                    </div>
+                    <div class="panel-content">
+                        <textarea id="code-editor" spellcheck="false">function hello(world) {
+  console.log("Hello " + world);
+  return 42;
+}</textarea>
+                    </div>
+                </div>
+
+                <div class="panel tree-panel">
+                    <div class="panel-header">
+                        <span class="form-label" style="margin: 0;">AST 结构 (Acorn)</span>
+                        <button class="btn btn-sm" onclick="copyAST()">复制 JSON</button>
+                    </div>
+                    <div class="panel-content">
+                        <div id="ast-tree"></div>
+                    </div>
+                </div>
+            </section>
+
+            <div id="ads-middle" class="ads-placeholder">
+                Google AdSense 广告位 - 中部
+            </div>
+
+            <article class="article-section">
+                <div class="article-content">
+                    <h2>什么是抽象语法树 (AST)？</h2>
+                    <p>抽象语法树（Abstract Syntax Tree，简称 AST）是源代码语法结构的树状表示。它以树的形式表现编程语言的语法结构，树上的每个节点都表示源代码中的一个结构。</p>
+                    <p>之所以说它是“抽象”的，是因为它不依赖于具体的语法细节（比如括号、分号等），而是专注于代码的逻辑结构。例如，一个函数声明在 AST 中会被表示为一个 <code>FunctionDeclaration</code> 节点，包含函数名、参数列表和函数体等属性。</p>
+
+                    <h2>AST 的工作流程</h2>
+                    <p>JavaScript 引擎（如 V8）或编译器（如 Babel）在处理代码时通常经过以下步骤：</p>
+                    <ul>
+                        <li><strong>词法分析 (Lexical Analysis)：</strong> 将代码字符串分解成一个个最小单元（Token），如关键字、变量名、操作符等。</li>
+                        <li><strong>语法分析 (Syntactic Analysis)：</strong> 根据语言的语法规则，将 Token 序列组合成树状结构，即生成 AST。</li>
+                        <li><strong>转换 (Transformation)：</strong> 遍历 AST 并根据需要修改节点（Babel 的核心逻辑）。</li>
+                        <li><strong>生成 (Generation)：</strong> 将修改后的 AST 重新转换回代码字符串。</li>
+                    </ul>
+
+                    <h2>AST 在前端工程化中的应用</h2>
+                    <p>AST 是现代前端开发的幕后功臣，几乎所有的工程化工具都离不开它：</p>
+                    <ul>
+                        <li><strong>Babel：</strong> 将 ES6+ 代码转换为向下兼容的 ES5 代码。</li>
+                        <li><strong>ESLint：</strong> 通过检查 AST 中的特定节点模式来发现潜在的 Bug 或风格问题。</li>
+                        <li><strong>Prettier：</strong> 将代码解析为 AST 后，根据统一的规范重新生成格式化后的代码。</li>
+                        <li><strong>Terser/UglifyJS：</strong> 通过分析 AST 来进行变量重命名、死代码删除等混淆和压缩操作。</li>
+                        <li><strong>CSS-in-JS：</strong> 如 Styled Components，利用 AST 提取组件中的样式定义。</li>
+                    </ul>
+
+                    <h2>常见的 AST 节点类型</h2>
+                    <p>在 JavaScript 的 AST 中，你会经常看到以下类型的节点：</p>
+                    <ul>
+                        <li><code>Identifier</code>: 标识符，如变量名、函数名。</li>
+                        <li><code>Literal</code>: 字面量，如字符串、数字、布尔值。</li>
+                        <li><code>VariableDeclaration</code>: 变量声明，如 <code>let x = 1</code>。</li>
+                        <li><code>BinaryExpression</code>: 二元表达式，如 <code>a + b</code>。</li>
+                        <li><code>CallExpression</code>: 函数调用，如 <code>foo()</code>。</li>
+                    </ul>
+
+                    <h2>总结</h2>
+                    <p>掌握 AST 不仅能帮助你更好地理解 JavaScript 的运行机制，还能让你具备编写各种自动化工具的能力。如果你想深入学习，可以尝试查阅 <code>ESTree</code> 规范，它是目前 JavaScript 社区最广泛遵循的 AST 结构标准。</p>
+                </div>
+            </article>
+
+            <div id="ads-bottom" class="ads-placeholder">
+                Google AdSense 广告位 - 底部
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>© 2024 WebUtils - 纯前端开发者工具箱 | <a href="https://github.com/chicogong/html-tools" target="_blank">GitHub</a></p>
+        </footer>
     </div>
+
+    <div id="toast" class="toast">已复制</div>
 
     <script>
-      window.toggleTheme = function () {
-        const theme = document.body.getAttribute("data-theme") === "light" ? "dark" : "light";
-        document.body.setAttribute("data-theme", theme);
-        localStorage.setItem("theme", theme);
-      };
-      document.body.setAttribute("data-theme", localStorage.getItem("theme") || "dark");
+        const editor = document.getElementById('code-editor');
+        const treeContainer = document.getElementById('ast-tree');
+        let lastAST = null;
 
-      let currentAST = null;
-      let currentView = "tree";
-
-      function parseCode() {
-        const code = document.getElementById("codeEditor").value;
-
-        try {
-          currentAST = acorn.parse(code, {
-            ecmaVersion: 2022,
-            sourceType: "module",
-            locations: true
-          });
-
-          renderAST();
-          updateStats();
-        } catch (e) {
-          document.getElementById("astOutput").innerHTML =
-            `<div class="error-message">解析错误: ${escapeHtml(e.message)}</div>`;
-          document.getElementById("stats").innerHTML = "<span>解析失败</span>";
-        }
-      }
-
-      function renderAST() {
-        const output = document.getElementById("astOutput");
-
-        if (currentView === "tree") {
-          output.innerHTML = renderTreeNode(currentAST, "Program");
-        } else {
-          output.innerHTML = `<div class="json-view">${syntaxHighlight(JSON.stringify(currentAST, null, 2))}</div>`;
-        }
-      }
-
-      function renderTreeNode(node, key = "", depth = 0) {
-        if (node === null || node === undefined) {
-          return '<span class="node-keyword">null</span>';
-        }
-
-        if (typeof node !== "object") {
-          if (typeof node === "string") {
-            return `<span class="node-string">"${escapeHtml(node)}"</span>`;
-          }
-          if (typeof node === "number") {
-            return `<span class="node-number">${node}</span>`;
-          }
-          if (typeof node === "boolean") {
-            return `<span class="node-keyword">${node}</span>`;
-          }
-          return escapeHtml(String(node));
-        }
-
-        if (Array.isArray(node)) {
-          if (node.length === 0) return "[]";
-
-          const items = node
-            .map(
-              (item, i) => `
-                    <div class="ast-node">
-                        <div class="node-line">
-                            <span class="node-key">[${i}]</span>: ${renderTreeNode(item, "", depth + 1)}
-                        </div>
-                    </div>
-                `
-            )
-            .join("");
-
-          return `[<div class="node-children">${items}</div>]`;
-        }
-
-        // Object node
-        const type = node.type;
-        const id = "node-" + Math.random().toString(36).substr(2, 9);
-
-        const entries = Object.entries(node).filter(
-          ([k]) => !["loc", "start", "end", "range"].includes(k)
-        );
-
-        if (entries.length === 0) return "{}";
-
-        const content = entries
-          .map(([k, v]) => {
-            const isType = k === "type";
-            return `
-                    <div class="ast-node">
-                        <div class="node-line">
-                            <span class="node-key">${k}</span>: ${isType ? `<span class="node-type">${escapeHtml(v)}</span>` : renderTreeNode(v, k, depth + 1)}
-                        </div>
-                    </div>
-                `;
-          })
-          .join("");
-
-        const header = type ? `<span class="node-type">${type}</span>` : "{";
-
-        return `
-                <span class="node-toggle" onclick="toggleNode('${id}')">�?/span>
-                ${header}
-                <div class="node-children" id="${id}">
-                    ${content}
-                </div>
-                }
-            `;
-      }
-
-      window.toggleNode = function (id) {
-        const node = document.getElementById(id);
-        const toggle = node.previousElementSibling.previousElementSibling;
-        node.classList.toggle("collapsed");
-        toggle.textContent = node.classList.contains("collapsed") ? "�? : "�?;
-      };
-
-      window.expandAll = function () {
-        document.querySelectorAll(".node-children").forEach((n) => n.classList.remove("collapsed"));
-        document.querySelectorAll(".node-toggle").forEach((t) => (t.textContent = "�?));
-      };
-
-      window.collapseAll = function () {
-        document.querySelectorAll(".node-children").forEach((n) => n.classList.add("collapsed"));
-        document.querySelectorAll(".node-toggle").forEach((t) => (t.textContent = "�?));
-      };
-
-      window.setView = function (view) {
-        currentView = view;
-        document.querySelectorAll(".view-btn").forEach((b) => b.classList.remove("active"));
-        event.target.classList.add("active");
-        if (currentAST) renderAST();
-      };
-
-      function updateStats() {
-        let nodeCount = 0;
-        let maxDepth = 0;
-
-        function traverse(node, depth) {
-          if (!node || typeof node !== "object") return;
-
-          if (node.type) {
-            nodeCount++;
-            maxDepth = Math.max(maxDepth, depth);
-          }
-
-          for (const key of Object.keys(node)) {
-            if (Array.isArray(node[key])) {
-              node[key].forEach((child) => traverse(child, depth + 1));
-            } else if (typeof node[key] === "object") {
-              traverse(node[key], depth + 1);
+        function parse() {
+            const code = editor.value;
+            try {
+                const ast = acorn.parse(code, {
+                    ecmaVersion: 'latest',
+                    sourceType: 'module'
+                });
+                lastAST = ast;
+                treeContainer.innerHTML = '';
+                treeContainer.appendChild(renderNode(ast, 'Root'));
+            } catch (e) {
+                treeContainer.innerHTML = `<div style="color: var(--error); padding: 10px; border: 1px solid var(--error); border-radius: 4px;">解析错误: ${e.message}</div>`;
             }
-          }
         }
 
-        traverse(currentAST, 0);
-        document.getElementById("stats").innerHTML = `
-                <span>节点�? ${nodeCount}</span>
-                <span>最大深�? ${maxDepth}</span>
-            `;
-      }
+        function renderNode(node, key) {
+            const container = document.createElement('div');
+            container.className = 'ast-node';
 
-      function syntaxHighlight(json) {
-        return json.replace(
-          /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
-          (match) => {
-            let cls = "node-number";
-            if (/^"/.test(match)) {
-              if (/:$/.test(match)) {
-                cls = "node-key";
-              } else {
-                cls = "node-string";
-              }
-            } else if (/true|false/.test(match)) {
-              cls = "node-keyword";
-            } else if (/null/.test(match)) {
-              cls = "node-keyword";
+            const header = document.createElement('div');
+            header.style.display = 'flex';
+            header.style.alignItems = 'center';
+
+            if (node && typeof node === 'object') {
+                const toggle = document.createElement('span');
+                toggle.className = 'toggle-btn';
+                toggle.textContent = '▼';
+                toggle.onclick = () => {
+                    const children = header.nextSibling;
+                    if (children.style.display === 'none') {
+                        children.style.display = 'block';
+                        toggle.textContent = '▼';
+                    } else {
+                        children.style.display = 'none';
+                        toggle.textContent = '▶';
+                    }
+                };
+                header.appendChild(toggle);
             }
-            return `<span class="${cls}">${match}</span>`;
-          }
-        );
-      }
 
-      window.escapeHtml = function (str) {
-        return String(str).replace(
-          /[&<>"']/g,
-          (m) =>
-            ({
-              "&": "&amp;",
-              "<": "&lt;",
-              ">": "&gt;",
-              '"': "&quot;",
-              "'": "&#39;"
-            })[m]
-        );
-      };
+            const keySpan = document.createElement('span');
+            keySpan.className = 'node-key';
+            keySpan.textContent = key + ': ';
+            header.appendChild(keySpan);
 
-      window.copyAST = function () {
-        if (!currentAST) return;
-        navigator.clipboard.writeText(JSON.stringify(currentAST, null, 2));
-        alert("AST已复制到剪贴�?);
-      };
+            if (node && node.type) {
+                const typeSpan = document.createElement('span');
+                typeSpan.className = 'node-type';
+                typeSpan.textContent = node.type;
+                header.appendChild(typeSpan);
+            } else if (node === null) {
+                const valSpan = document.createElement('span');
+                valSpan.textContent = 'null';
+                header.appendChild(valSpan);
+            } else if (typeof node !== 'object') {
+                const valSpan = document.createElement('span');
+                valSpan.className = typeof node === 'string' ? 'node-val-string' : 'node-val-number';
+                valSpan.textContent = typeof node === 'string' ? `"${node}"` : node;
+                header.appendChild(valSpan);
+            } else if (Array.isArray(node)) {
+                const typeSpan = document.createElement('span');
+                typeSpan.textContent = `Array(${node.length})`;
+                header.appendChild(typeSpan);
+            }
 
-      window.clearCode = function () {
-        document.getElementById("codeEditor").value = "";
-        document.getElementById("astOutput").innerHTML =
-          '<span style="color: var(--color-text-secondary);">点击"解析 AST"按钮查看语法�?/span>';
-        document.getElementById("stats").innerHTML = "<span>节点�? -</span><span>深度: -</span>";
-        currentAST = null;
-      };
+            container.appendChild(header);
 
-      window.loadExample = function (type) {
-        const examples = {
-          function: `function add(a, b) {
-  return a + b;
-}
+            if (node && typeof node === 'object') {
+                const children = document.createElement('div');
+                Object.keys(node).forEach(k => {
+                    if (k === 'start' || k === 'end' || k === 'loc') return;
+                    children.appendChild(renderNode(node[k], k));
+                });
+                container.appendChild(children);
+            }
 
-const result = add(1, 2);`,
-          class: `class Animal {
-  constructor(name) {
-    this.name = name;
-  }
-  
-  speak() {
-    console.log(\`\${this.name} makes a sound.\`);
-  }
-}
+            return container;
+        }
 
-class Dog extends Animal {
-  speak() {
-    console.log(\`\${this.name} barks.\`);
-  }
-}`,
-          arrow: `const add = (a, b) => a + b;
+        function loadExample() {
+            editor.value = `const add = (a, b) => a + b;\n\nconsole.log(add(5, 10));`;
+            parse();
+        }
 
-const multiply = (a, b) => {
-  const result = a * b;
-  return result;
-};
+        function copyAST() {
+            if (!lastAST) return;
+            navigator.clipboard.writeText(JSON.stringify(lastAST, null, 2)).then(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2000);
+            });
+        }
 
-const numbers = [1, 2, 3].map(n => n * 2);`,
-          async: `async function fetchData(url) {
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error:', error);
-    throw error;
-  }
-}`,
-          destructure: `const { name, age, address: { city } } = person;
-
-const [first, second, ...rest] = numbers;
-
-function greet({ name = 'Guest', greeting = 'Hello' }) {
-  return \`\${greeting}, \${name}!\`;
-}`,
-          spread: `const arr1 = [1, 2, 3];
-const arr2 = [...arr1, 4, 5];
-
-const obj1 = { a: 1, b: 2 };
-const obj2 = { ...obj1, c: 3 };
-
-function sum(...numbers) {
-  return numbers.reduce((a, b) => a + b, 0);
-}`
+        // Theme Toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        themeToggle.onclick = () => {
+            const html = document.documentElement;
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
         };
 
-        document.getElementById("codeEditor").value = examples[type] || "";
-        parseCode();
-      };
-
-      // Auto-parse on load
-      parseCode();
-
-      // Keyboard shortcut
-      document.addEventListener("keydown", (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
-          e.preventDefault();
-          parseCode();
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
         }
-      });
-    </script>
-  </body>
-</html>
 
+        // Initial parse
+        parse();
+    </script>
+</body>
+</html>
