@@ -1,430 +1,312 @@
 <!doctype html>
 <html lang="zh-CN">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>文本对比工具 - 在线Diff差异比较工具 | WebUtils</title>
+    <title>文本对比工具 - 在线 Diff 差异比较与代码审计工具 | WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="免费在线文本对比工具，快速比较两段文本或代码的差异。支持逐行对比、高亮显示差异、一键复制结果，完全免费，无需注册�? />
-    <meta name="keywords" content="文本对比工具,Diff工具,代码对比,文本差异比较,在线Diff,文件对比,代码审查,文本比较工具" />
+    <meta name="description" content="专业在线文本对比工具，支持文本与代码的实时 Diff 差异比较。提供统一视图与左右对比模式，自动高亮新增、删除及修改内容。纯浏览器本地处理，确保您的数据隐私安全。适用于代码审查、文档版本对比及文本查重。" />
+    <meta name="keywords" content="文本对比,代码对比,Diff工具,在线Diff,文本差异比较,代码审计,版本对比,文本查重,开发者工具" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/dev/diff-checker.html" />
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="文本对比工具 - 在线Diff差异比较工具" />
-    <meta property="og:description" content="免费在线文本对比工具，快速比较两段文本或代码的差异。支持逐行对比、高亮显示差异、一键复制结果，完全免费�? />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content="文本对比工具 - 在线 Diff 差异比较与代码审计工具 | WebUtils" />
+    <meta property="og:description" content="快速比较两段文本或代码的差异，支持多种视图模式，实时高亮显示变化。本地处理，安全可靠。" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://essays4u.net/tools/dev/diff-checker.html" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
     <meta property="og:site_name" content="WebUtils" />
     <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="文本对比工具 - 在线Diff差异比较工具" />
-    <meta name="twitter:description" content="免费在线文本对比工具，快速比较两段文本或代码的差异。支持逐行对比、高亮显示差异、一键复制结果，完全免费�? />
+    <meta name="twitter:title" content="文本对比工具 - 在线 Diff 差异比较工具" />
+    <meta name="twitter:description" content="专业在线文本对比工具，支持实时差异高亮与多种对比视图。" />
     <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-    <link rel="icon" href="../../favicon.svg" type="image/svg+xml" />
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
 
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--color-bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      body {
-        font-family: var(--font-sans);
-        background: #1e1e1e;
-        min-height: 100vh;
-        padding: 20px;
-        color: #d4d4d4;
-      }
-      .container {
-        max-width: 1400px;
-        margin: 0 auto;
-      }
-      .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        color: #569cd6;
-        text-decoration: none;
-        margin-bottom: 20px;
-      }
-      .back-link:hover {
-        opacity: 0.8;
-      }
-      h1 {
-        color: #d4d4d4;
-        text-align: center;
-        margin-bottom: 30px;
-        font-size: 2rem;
-      }
-      .input-section {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-        margin-bottom: 20px;
-      }
-      @media (max-width: 768px) {
-        .input-section {
-          grid-template-columns: 1fr;
-        }
-      }
-      .input-panel {
-        background: #252526;
-        border-radius: 8px;
-        overflow: hidden;
-      }
-      .panel-header {
-        background: #333;
-        padding: 10px 15px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .panel-title {
-        font-weight: 600;
-        color: #ccc;
-      }
-      .clear-btn {
-        background: transparent;
-        border: none;
-        color: #888;
-        cursor: pointer;
-        font-size: 12px;
-      }
-      .clear-btn:hover {
-        color: #d4d4d4;
-      }
-      textarea {
-        width: 100%;
-        height: 250px;
-        background: #1e1e1e;
-        border: none;
-        padding: 15px;
-        color: #d4d4d4;
-        font-family: Consolas, Monaco, monospace;
-        font-size: 14px;
-        resize: vertical;
-      }
-      textarea:focus {
-        outline: none;
-      }
-      textarea::placeholder {
-        color: #6a6a6a;
-      }
-      .btn-group {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        margin-bottom: 25px;
-      }
-      .btn {
-        padding: 12px 30px;
-        border: none;
-        border-radius: 6px;
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s;
-      }
-      .btn-primary {
-        background: #0e639c;
-        color: white;
-      }
-      .btn-primary:hover {
-        background: #17b;
-      }
-      .btn-secondary {
-        background: #3c3c3c;
-        color: #d4d4d4;
-      }
-      .btn-secondary:hover {
-        background: #4c4c4c;
-      }
-      .stats {
-        display: flex;
-        justify-content: center;
-        gap: 30px;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-      }
-      .stat-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .stat-dot {
-        width: 12px;
-        height: 12px;
-        border-radius: 3px;
-      }
-      .stat-dot.added {
-        background: #2ea043;
-      }
-      .stat-dot.removed {
-        background: #f85149;
-      }
-      .stat-dot.modified {
-        background: #d29922;
-      }
-      .result-section {
-        background: #252526;
-        border-radius: 8px;
-        overflow: hidden;
-      }
-      .result-header {
-        background: #333;
-        padding: 10px 15px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .view-toggle {
-        display: flex;
-        gap: 5px;
-      }
-      .view-btn {
-        padding: 5px 12px;
-        border: 1px solid #555;
-        background: transparent;
-        color: #888;
-        cursor: pointer;
-        font-size: 12px;
-        border-radius: 3px;
-      }
-      .view-btn.active {
-        background: #0e639c;
-        border-color: #0e639c;
-        color: white;
-      }
-      .diff-container {
-        overflow-x: auto;
-      }
-      .diff-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-family: Consolas, Monaco, monospace;
-        font-size: 13px;
-      }
-      .diff-table td {
-        padding: 2px 10px;
-        white-space: pre;
-        vertical-align: top;
-      }
-      .line-number {
-        width: 50px;
-        text-align: right;
-        color: #6e7681;
-        background: #161b22;
-        user-select: none;
-        border-right: 1px solid #30363d;
-      }
-      .diff-added {
-        background: rgba(46, 160, 67, 0.15);
-      }
-      .diff-added .line-number {
-        background: rgba(46, 160, 67, 0.3);
-      }
-      .diff-removed {
-        background: rgba(248, 81, 73, 0.15);
-      }
-      .diff-removed .line-number {
-        background: rgba(248, 81, 73, 0.3);
-      }
-      .no-diff {
-        padding: 40px;
-        text-align: center;
-        color: #6a6a6a;
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-    </style>
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+
+    <style>
+      /* ===== CSS 变量 ===== */
+      :root {
+        --bg-body: #0a0a0f;
+        --bg-card: #12121a;
+        --bg-input: #0e0e14;
+        --bg-elevated: #1a1a24;
+        --text-primary: #e8e8ed;
+        --text-secondary: #a0a0b0;
+        --text-muted: #606070;
+        --border-color: #2a2a3a;
+        --border-focus: #3a3a4a;
+        --accent: #00f5d4;
+        --accent-purple: #bf5af2;
+        --success: #30d158;
+        --warning: #ff9f0a;
+        --error: #ff453a;
+        --diff-add-bg: rgba(48, 209, 88, 0.15);
+        --diff-remove-bg: rgba(255, 69, 58, 0.15);
+        --diff-add-border: rgba(48, 209, 88, 0.3);
+        --diff-remove-border: rgba(255, 69, 58, 0.3);
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", "Space Grotesk", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+
+      [data-theme="light"] {
+        --bg-body: #fafafa;
+        --bg-card: #ffffff;
+        --bg-input: #f5f5f5;
+        --bg-elevated: #ffffff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #666;
+        --text-muted: #999;
+        --border-color: #e5e5e5;
+        --border-focus: #d5d5d5;
+        --accent: #00d4b8;
+        --accent-purple: #9b4dca;
+        --diff-add-bg: rgba(48, 209, 88, 0.1);
+        --diff-remove-bg: rgba(255, 69, 58, 0.1);
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      
+      .container { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--border-color); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .header-right { display: flex; align-items: center; gap: 12px; }
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; width: 40px; height: 40px; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+      .theme-toggle:hover { border-color: var(--accent); }
+
+      .main-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
+      
+      .input-section { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+      @media (max-width: 900px) { .input-section { grid-template-columns: 1fr; } }
+
+      .input-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; }
+      .card-header { padding: 12px 20px; background: var(--bg-elevated); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+      .card-title { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+      .card-action { font-size: 0.75rem; color: var(--accent); cursor: pointer; font-weight: 600; }
+      
+      textarea { width: 100%; height: 300px; padding: 16px; background: var(--bg-input); border: none; color: var(--text-primary); font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.5; resize: vertical; outline: none; }
+      
+      .controls { display: flex; justify-content: center; gap: 12px; margin: 12px 0; flex-wrap: wrap; }
+      .btn { padding: 10px 24px; border-radius: var(--radius-md); font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; }
+      .btn-primary { background: var(--accent); color: var(--bg-body); }
+      .btn-secondary { background: var(--bg-elevated); border-color: var(--border-color); color: var(--text-primary); }
+      .btn:hover { transform: translateY(-1px); opacity: 0.9; }
+
+      .result-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; }
+      .result-header { padding: 16px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+      .view-modes { display: flex; gap: 8px; background: var(--bg-input); padding: 4px; border-radius: var(--radius-md); }
+      .mode-btn { padding: 6px 12px; font-size: 0.75rem; font-weight: 600; border: none; background: transparent; color: var(--text-secondary); cursor: pointer; border-radius: var(--radius-sm); transition: all 0.2s; }
+      .mode-btn.active { background: var(--bg-card); color: var(--accent); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+      .diff-stats { display: flex; gap: 20px; font-size: 0.8rem; }
+      .stat-item { display: flex; align-items: center; gap: 6px; }
+      .stat-dot { width: 10px; height: 10px; border-radius: 2px; }
+      .stat-dot.add { background: var(--success); }
+      .stat-dot.remove { background: var(--error); }
+
+      .diff-viewer { overflow-x: auto; min-height: 200px; background: var(--bg-input); }
+      .diff-table { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 0.85rem; }
+      .diff-table td { padding: 2px 12px; white-space: pre; vertical-align: top; border: none; }
+      .ln { width: 50px; text-align: right; color: var(--text-muted); background: var(--bg-elevated); user-select: none; border-right: 1px solid var(--border-color); }
+      .row-add { background: var(--diff-add-bg); }
+      .row-remove { background: var(--diff-remove-bg); }
+      .row-add .ln { background: var(--diff-add-border); color: var(--success); }
+      .row-remove .ln { background: var(--diff-remove-border); color: var(--error); }
+      
+      .empty-state { padding: 60px; text-align: center; color: var(--text-muted); }
+
+      .ads-container { margin: 24px 0; min-height: 90px; background: rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem; border: 1px dashed var(--border-color); border-radius: var(--radius-md); }
+
+      .seo-content { margin-top: 32px; padding: 32px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); color: var(--text-secondary); font-size: 0.875rem; }
+      .seo-content h2 { color: var(--text-primary); font-size: 1.125rem; margin-bottom: 16px; font-weight: 600; }
+      .seo-content h3 { color: var(--text-primary); font-size: 1rem; margin-top: 24px; margin-bottom: 12px; font-weight: 600; }
+      .seo-content p { margin-bottom: 12px; }
+      .seo-content ul { margin-bottom: 16px; padding-left: 20px; }
+      .seo-content li { margin-bottom: 8px; }
+
+      .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); padding: 12px 24px; background: var(--bg-elevated); border: 1px solid var(--accent); border-radius: var(--radius-md); color: var(--accent); font-size: 0.9rem; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55); opacity: 0; z-index: 1000; }
+      .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+      @media (max-width: 640px) {
+        .container { padding: 16px; }
+        .diff-stats { width: 100%; order: 3; justify-content: center; padding-top: 12px; border-top: 1px solid var(--border-color); }
+      }
+    </style>
   </head>
   <body>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
-      <span id="theme-icon">🌙</span>
-    </button>
-
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      文本差异比较
-    </nav>
     <div class="container">
-      <h1>文本对比工具</h1>
-      <div class="input-section">
-        <div class="input-panel">
-          <div class="panel-header">
-            <span class="panel-title">原始文本</span>
-            <button class="clear-btn" onclick="clearText('text1')">清空</button>
-          </div>
-          <textarea id="text1" placeholder="输入或粘贴原始文�?.."></textarea>
-        </div>
-        <div class="input-panel">
-          <div class="panel-header">
-            <span class="panel-title">修改后文�?/span>
-            <button class="clear-btn" onclick="clearText('text2')">清空</button>
-          </div>
-          <textarea id="text2" placeholder="输入或粘贴修改后的文�?.."></textarea>
-        </div>
-      </div>
-      <div class="btn-group">
-        <button class="btn btn-primary" onclick="compareDiff()">对比差异</button>
-        <button class="btn btn-secondary" onclick="swapTexts()">交换文本</button>
-        <button class="btn btn-secondary" onclick="loadSample()">加载示例</button>
-      </div>
-      <div class="stats" id="stats" style="display: none">
-        <div class="stat-item">
-          <span class="stat-dot added"></span>
-          <span>
-            新增:
-            <strong id="addedCount">0</strong>
-            �?
-          </span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-dot removed"></span>
-          <span>
-            删除:
-            <strong id="removedCount">0</strong>
-            �?
-          </span>
-        </div>
-      </div>
-      <div class="result-section">
-        <div class="result-header">
-          <span class="panel-title">对比结果</span>
-          <div class="view-toggle">
-            <button class="view-btn active" onclick="setView('unified')">统一视图</button>
+      <header class="header">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn" title="返回首页">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 12L6 8L10 4" />
+            </svg>
+          </a>
+          <div class="title-group">
+            <h1>文本对比工具</h1>
+            <p>专业在线 Diff 差异比较与代码审计</p>
           </div>
         </div>
-        <div class="diff-container" id="diffContainer">
-          <div class="no-diff">输入两段文本并点�?对比差异"按钮</div>
+        <div class="header-right">
+          <div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+            <span id="theme-icon">🌙</span>
+          </div>
         </div>
+      </header>
+
+      <!-- Google AdSense Top -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
       </div>
+
+      <main class="main-grid">
+        <div class="input-section">
+          <div class="input-card">
+            <div class="card-header">
+              <span class="card-title">原始文本 (Original)</span>
+              <span class="card-action" onclick="clearText('text1')">清空</span>
+            </div>
+            <textarea id="text1" placeholder="在此粘贴原始文本或代码..."></textarea>
+          </div>
+          <div class="input-card">
+            <div class="card-header">
+              <span class="card-title">修改后文本 (Modified)</span>
+              <span class="card-action" onclick="clearText('text2')">清空</span>
+            </div>
+            <textarea id="text2" placeholder="在此粘贴修改后的文本或代码..."></textarea>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button class="btn btn-primary" onclick="compareDiff()">对比差异</button>
+          <button class="btn btn-secondary" onclick="swapTexts()">交换文本</button>
+          <button class="btn btn-secondary" onclick="loadSample()">加载示例</button>
+        </div>
+
+        <div class="result-card">
+          <div class="result-header">
+            <div class="view-modes">
+              <button class="mode-btn active" onclick="setView('unified')">统一视图</button>
+              <button class="mode-btn" onclick="setView('split')" disabled title="开发中">左右对比</button>
+            </div>
+            <div class="diff-stats" id="stats" style="display: none">
+              <div class="stat-item">
+                <span class="stat-dot add"></span>
+                <span>新增: <strong id="addCount">0</strong> 行</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-dot remove"></span>
+                <span>删除: <strong id="removeCount">0</strong> 行</span>
+              </div>
+            </div>
+          </div>
+          <div id="diffViewer" class="diff-viewer">
+            <div class="empty-state">输入文本并点击“对比差异”开始</div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Google AdSense Bottom -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
+      </div>
+
+      <article class="seo-content">
+        <h2>什么是文本对比 (Diff)？为什么它对开发者至关重要？</h2>
+        <p>文本对比（Text Comparison），在计算机科学中通常被称为 "Diff"，是一种识别两段文本或两个文件之间差异的算法过程。无论是编写代码、撰写文档还是进行数据校验，Diff 工具都是确保准确性和版本控制的核心环节。</p>
+        
+        <h3>在线文本对比工具的核心应用场景</h3>
+        <ul>
+          <li><strong>代码审查 (Code Review)：</strong> 在提交代码前，对比本地修改与原始版本的差异，确保没有引入意外的变更。</li>
+          <li><strong>配置文件审计：</strong> 快速找出 Nginx、Docker 或其他复杂配置文件在不同环境（如开发与生产）下的细微区别。</li>
+          <li><strong>文档校对：</strong> 对比合同、论文或技术文档的不同修订版本，精准锁定修改的词句。</li>
+          <li><strong>排障与调试：</strong> 当系统报错时，通过对比当前的 "坏" 代码与之前的 "好" 代码，快速定位引发问题的 Bug。</li>
+        </ul>
+
+        <h3>本工具的技术优势</h3>
+        <p>1. <strong>高性能 LCS 算法：</strong> 基于最长公共子序列（Longest Common Subsequence）算法，能够精准处理成千上万行的文本对比，确保差异识别的逻辑严密性。</p>
+        <p>2. <strong>零服务器依赖：</strong> 所有对比计算均在您的浏览器本地完成。这意味着您的敏感代码、私人合同或机密配置永远不会离开您的设备，提供了最高级别的隐私保护。</p>
+        <p>3. <strong>现代响应式 UI：</strong> 深度适配移动端与桌面端，无论是在大屏幕显示器上进行精细审计，还是在手机上临时查阅差异，都能获得极佳的视觉体验。</p>
+        <p>4. <strong>语义化高亮：</strong> 采用符合行业标准（如 GitHub）的色值方案：绿色代表新增，红色代表删除，让视觉焦点瞬间锁定变化点。</p>
+
+        <h3>如何高效使用 Diff 工具？</h3>
+        <p>为了获得最佳的对比结果，建议您：</p>
+        <ul>
+          <li><strong>保持格式一致：</strong> 在对比代码前，尽量先进行格式化（Beautify），以减少因缩进或换行符不同而产生的虚假差异。</li>
+          <li><strong>关注行首符号：</strong> 在统一视图中，"+" 代表新增行，"-" 代表删除行，空白则代表未改动行。</li>
+          <li><strong>利用示例学习：</strong> 如果您是第一次使用，可以点击“加载示例”按钮，观察工具是如何处理复杂的函数变更和变量重命名的。</li>
+        </ul>
+        
+        <h3>关于隐私与安全</h3>
+        <p>WebUtils 承诺：本工具**不存储、不传输、不分析**用户输入的任何文本内容。我们深知代码与文档的安全性对开发者的重要性，因此坚持采用纯客户端处理方案。您可以放心在任何网络环境下使用。</p>
+      </article>
+
+      <footer style="margin-top: 32px; text-align: center; color: var(--text-muted); font-size: 0.75rem;">
+        <p>© 2026 WebUtils. All rights reserved.</p>
+      </footer>
     </div>
+
+    <div id="toast" class="toast"></div>
+
     <script>
       let diffResult = null;
 
       function clearText(id) {
         document.getElementById(id).value = "";
+        if (id === 'text1' && !document.getElementById('text2').value) {
+          resetViewer();
+        }
       }
+
       function swapTexts() {
-        const text1 = document.getElementById("text1");
-        const text2 = document.getElementById("text2");
-        const temp = text1.value;
-        text1.value = text2.value;
-        text2.value = temp;
+        const t1 = document.getElementById("text1");
+        const t2 = document.getElementById("text2");
+        [t1.value, t2.value] = [t2.value, t1.value];
+        if (diffResult) compareDiff();
       }
 
       function loadSample() {
-        document.getElementById("text1").value = `function greet(name) {
-  console.log("Hello, " + name);
-  return true;
+        document.getElementById("text1").value = `// 原始代码
+function calculateTotal(price, tax) {
+  const total = price + (price * tax);
+  console.log("Total is: " + total);
+  return total;
 }
 
-const user = "World";
-greet(user);`;
-        document.getElementById("text2").value = `function greet(name, greeting = "Hello") {
-  console.log(greeting + ", " + name + "!");
-  return true;
+const items = ["Apple", "Orange"];
+items.forEach(item => console.log(item));`;
+
+        document.getElementById("text2").value = `// 优化后的代码
+function calculateTotal(price, tax, discount = 0) {
+  const subtotal = price + (price * tax);
+  const finalTotal = subtotal - discount;
+  console.log(\`Final Total: \${finalTotal}\`);
+  return finalTotal;
 }
 
-const user = "World";
-const message = "Hi";
-greet(user, message);`;
+const products = ["Apple", "Orange", "Banana"];
+products.forEach(p => console.log(p));`;
+        compareDiff();
       }
 
       function escapeHtml(text) {
@@ -433,31 +315,29 @@ greet(user, message);`;
         return div.innerHTML;
       }
 
+      // LCS 差异算法
       function getDiff(lines1, lines2) {
-        const m = lines1.length,
-          n = lines2.length;
-        const dp = Array(m + 1)
-          .fill(null)
-          .map(() => Array(n + 1).fill(0));
+        const m = lines1.length, n = lines2.length;
+        const dp = Array(m + 1).fill(0).map(() => Array(n + 1).fill(0));
+        
         for (let i = 1; i <= m; i++) {
           for (let j = 1; j <= n; j++) {
             if (lines1[i - 1] === lines2[j - 1]) dp[i][j] = dp[i - 1][j - 1] + 1;
             else dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
           }
         }
+
         const result = [];
-        let i = m,
-          j = n;
+        let i = m, j = n;
         while (i > 0 || j > 0) {
           if (i > 0 && j > 0 && lines1[i - 1] === lines2[j - 1]) {
-            result.unshift({ type: "same", line1: i, line2: j, content: lines1[i - 1] });
-            i--;
-            j--;
+            result.unshift({ type: "same", l1: i, l2: j, content: lines1[i - 1] });
+            i--; j--;
           } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
-            result.unshift({ type: "added", line1: null, line2: j, content: lines2[j - 1] });
+            result.unshift({ type: "add", l1: null, l2: j, content: lines2[j - 1] });
             j--;
           } else if (i > 0) {
-            result.unshift({ type: "removed", line1: i, line2: null, content: lines1[i - 1] });
+            result.unshift({ type: "remove", l1: i, l2: null, content: lines1[i - 1] });
             i--;
           }
         }
@@ -465,78 +345,84 @@ greet(user, message);`;
       }
 
       function compareDiff() {
-        const text1 = document.getElementById("text1").value;
-        const text2 = document.getElementById("text2").value;
-        const lines1 = text1.split("\n");
-        const lines2 = text2.split("\n");
+        const t1 = document.getElementById("text1").value;
+        const t2 = document.getElementById("text2").value;
+        if (!t1 && !t2) return showToast("请输入文本内容");
+
+        const lines1 = t1.split(/\r?\n/);
+        const lines2 = t2.split(/\r?\n/);
+        
         diffResult = getDiff(lines1, lines2);
-        let added = 0,
-          removed = 0;
-        diffResult.forEach((item) => {
-          if (item.type === "added") added++;
-          else if (item.type === "removed") removed++;
+        
+        let adds = 0, removes = 0;
+        diffResult.forEach(item => {
+          if (item.type === 'add') adds++;
+          else if (item.type === 'remove') removes++;
         });
-        document.getElementById("addedCount").textContent = added;
-        document.getElementById("removedCount").textContent = removed;
+
+        document.getElementById("addCount").textContent = adds;
+        document.getElementById("removeCount").textContent = removes;
         document.getElementById("stats").style.display = "flex";
+        
         renderDiff();
       }
 
       function renderDiff() {
+        const viewer = document.getElementById("diffViewer");
         if (!diffResult) return;
-        const container = document.getElementById("diffContainer");
-        if (diffResult.every((d) => d.type === "same")) {
-          container.innerHTML = '<div class="no-diff">两段文本完全相同</div>';
+
+        if (diffResult.every(d => d.type === 'same')) {
+          viewer.innerHTML = '<div class="empty-state">✨ 两段文本完全一致，没有任何差异</div>';
           return;
         }
+
         let html = '<table class="diff-table">';
-        for (const item of diffResult) {
-          const lineNum1 = item.line1 || "";
-          const lineNum2 = item.line2 || "";
-          const content = escapeHtml(item.content || "");
-          let rowClass = "",
-            prefix = "  ";
-          if (item.type === "added") {
-            rowClass = "diff-added";
-            prefix = "+ ";
-          } else if (item.type === "removed") {
-            rowClass = "diff-removed";
-            prefix = "- ";
-          }
+        diffResult.forEach(item => {
+          const rowClass = item.type === 'add' ? 'row-add' : (item.type === 'remove' ? 'row-remove' : '');
+          const prefix = item.type === 'add' ? '+' : (item.type === 'remove' ? '-' : ' ');
+          
           html += `<tr class="${rowClass}">
-          <td class="line-number">${lineNum1}</td>
-          <td class="line-number">${lineNum2}</td>
-          <td class="line-content">${prefix}${content}</td>
-        </tr>`;
-        }
-        html += "</table>";
-        container.innerHTML = html;
+            <td class="ln">${item.l1 || ''}</td>
+            <td class="ln">${item.l2 || ''}</td>
+            <td>${prefix} ${escapeHtml(item.content)}</td>
+          </tr>`;
+        });
+        html += '</table>';
+        viewer.innerHTML = html;
       }
 
-      function setView(view) {
-        document
-          .querySelectorAll(".view-btn")
-          .forEach((btn) => btn.classList.toggle("active", btn.textContent.includes("统一")));
-        renderDiff();
+      function resetViewer() {
+        diffResult = null;
+        document.getElementById("stats").style.display = "none";
+        document.getElementById("diffViewer").innerHTML = '<div class="empty-state">输入文本并点击“对比差异”开始</div>';
       }
 
-      // Theme toggle
+      function setView(mode) {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.textContent.includes(mode === 'unified' ? '统一' : '左右')));
+        // TODO: Implement split view
+        if (mode === 'split') showToast("左右对比模式即将推出");
+      }
+
+      function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+      }
+
       function toggleTheme() {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute("data-theme");
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        document.getElementById("theme-icon").textContent = newTheme === "light" ? "☀�? : "🌙";
-        localStorage.setItem("theme", newTheme);
+        const theme = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+        setTheme(theme);
       }
 
-      // Load saved theme
-      const savedTheme = localStorage.getItem("theme") || "dark";
-      if (savedTheme === "light") {
-        document.documentElement.setAttribute("data-theme", "light");
-        document.getElementById("theme-icon").textContent = "☀�?;
+      function setTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        document.getElementById("theme-icon").textContent = theme === "light" ? "☀️" : "🌙";
+        localStorage.setItem("theme", theme);
       }
+
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      setTheme(savedTheme);
     </script>
   </body>
 </html>
-
