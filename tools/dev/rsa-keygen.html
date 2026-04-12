@@ -1,482 +1,265 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>RSA 密钥对生成器 - WebUtils</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>RSA 密钥对生成器 - 在线生成公钥与私钥 (PKCS#8/JWK) | WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="生成 RSA 公私钥对" />
-    <meta name="keywords" content="rsa 密钥对生成器" />
+    <meta name="description" content="专业级在线 RSA 密钥对生成工具。支持 1024、2048、4096 位密钥长度，提供 PKCS#8 (PEM) 与 JWK (JSON) 两种导出格式。密钥完全在浏览器本地生成，不经过任何服务器，确保绝对隐私与安全。适用于 API 认证、数据加密及 SSH 配置。" />
+    <meta name="keywords" content="RSA密钥生成器, RSA Key Generator, 公钥私钥生成, PEM格式, JWK格式, PKCS8导出, 在线加密工具, WebUtils" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/dev/rsa-keygen.html" />
 
     <!-- Open Graph -->
-    <meta property="og:title" content="RSA 密钥对生成器 - WebUtils" />
-    <meta property="og:description" content="生成 RSA 公私钥对" />
+    <meta property="og:title" content="RSA 密钥对生成器 - 在线生成公钥与私钥 | WebUtils" />
+    <meta property="og:description" content="本地生成 RSA 密钥对，支持多种格式与高强度长度。" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://essays4u.net/tools/dev/rsa-keygen.html" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="RSA 密钥对生成器 - WebUtils" />
-    <meta name="twitter:description" content="生成 RSA 公私钥对" />
-    <!-- OG Image -->
     <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
     <style>
       :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
+        --bg-body: #0a0a0f;
+        --bg-card: #12121a;
         --bg-input: #0e0e14;
+        --bg-elevated: #1a1a24;
         --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --text-secondary: #a0a0b0;
+        --text-muted: #606070;
+        --border-color: #2a2a3a;
+        --border-focus: #3a3a4a;
+        --accent: #00f5d4;
+        --accent-purple: #bf5af2;
+        --success: #30d158;
+        --warning: #ff9f0a;
+        --error: #ff453a;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", "Space Grotesk", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
       }
 
       [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
+        --bg-body: #fafafa;
+        --bg-card: #ffffff;
         --bg-input: #f5f5f5;
+        --bg-elevated: #ffffff;
         --text-primary: #1a1a1a;
         --text-secondary: #666;
         --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        --border-color: #e5e5e5;
+        --border-focus: #d5d5d5;
+        --accent: #00d4b8;
+        --accent-purple: #9b4dca;
       }
 
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-      }
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
-      * {
-        box-sizing: border-box;
-      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      
+      .container { max-width: 1000px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--border-color); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .header-right { display: flex; align-items: center; gap: 12px; }
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; width: 40px; height: 40px; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
 
-      body {
-        font-family:
-          system-ui,
-          -apple-system,
-          "Segoe UI",
-          Roboto,
-          sans-serif;
-        background: var(--bg-deep);
-        color: var(--text-primary);
-        margin: 0;
-        padding: 24px;
-        min-height: 100vh;
-      }
-      .container {
-        max-width: 1000px;
-        margin: 0 auto;
-      }
+      .alert-banner { background: rgba(255, 159, 10, 0.1); border: 1px solid var(--warning); color: var(--warning); padding: 16px 20px; border-radius: var(--radius-md); margin-bottom: 24px; font-size: 0.875rem; display: flex; gap: 12px; align-items: center; }
 
-      .back-link {
-        display: inline-block;
-        margin-bottom: 16px;
-        color: var(--accent-cyan);
-        text-decoration: none;
-        font-size: 0.9rem;
-      }
-      .back-link:hover {
-        text-decoration: underline;
-      }
-      h1 {
-        font-size: 1.75rem;
-        margin: 0 0 8px;
-      }
-      .desc {
-        color: var(--text-muted);
-        margin: 0 0 24px;
-        font-size: 0.95rem;
-      }
+      .config-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 24px; }
+      .config-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px; }
+      .config-item label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; }
+      select { width: 100%; padding: 10px 16px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary); font-size: 0.875rem; outline: none; }
+      select:focus { border-color: var(--accent); }
 
-      .card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        padding: 20px;
-        box-shadow: var(--shadow);
-        margin-bottom: 20px;
-      }
-      .btn-row {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        margin-bottom: 16px;
-      }
+      .generate-btn { width: 100%; padding: 14px; background: var(--accent); color: var(--bg-body); border: none; border-radius: var(--radius-md); font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+      .generate-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+      .generate-btn:active { transform: translateY(0); }
+      .generate-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-      button {
-        padding: 10px 16px;
-        font-size: 0.95rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        background: var(--bg-card);
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-      button:hover {
-        border-color: var(--accent-cyan);
-        color: var(--accent-cyan);
-      }
-      button.primary {
-        background: var(--accent-cyan);
-        border-color: var(--accent-cyan);
-        color: #fff;
-      }
-      button.primary:hover {
-        background: var(--accent-cyan);
-        border-color: var(--accent-cyan);
-        color: #fff;
-      }
-      button:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-      .options {
-        display: flex;
-        gap: 16px;
-        flex-wrap: wrap;
-        align-items: center;
-        margin-bottom: 16px;
-      }
-      .options label {
-        display: inline;
-        font-weight: normal;
-        margin: 0;
-      }
+      .keys-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; margin-top: 24px; }
+      .key-panel { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; display: flex; flex-direction: column; }
+      .key-header { padding: 12px 20px; background: var(--bg-input); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+      .key-title { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+      .badge { font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: 800; }
+      .badge-public { background: var(--success); color: #fff; }
+      .badge-private { background: var(--error); color: #fff; }
 
-      select {
-        padding: 8px 12px;
-        font-size: 0.9rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        background: var(--bg-card);
-      }
-      .key-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-        gap: 20px;
-      }
-      .key-section h3 {
-        font-size: 1rem;
-        margin: 0 0 12px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
+      .key-textarea { flex: 1; min-height: 250px; padding: 16px; background: var(--bg-card); border: none; color: var(--text-primary); font-family: var(--font-mono); font-size: 0.75rem; resize: none; outline: none; line-height: 1.5; }
+      
+      .key-actions { padding: 12px 20px; background: var(--bg-input); border-top: 1px solid var(--border-color); display: flex; gap: 8px; }
+      .action-btn { flex: 1; padding: 8px; background: var(--bg-elevated); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+      .action-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-      .key-section h3 .badge {
-        font-size: 0.75rem;
-        padding: 2px 8px;
-        border-radius: 4px;
-        font-weight: normal;
-      }
-      .key-section h3 .badge.public {
-        background: var(--accent-green);
-        color: #fff;
-      }
-      .key-section h3 .badge.private {
-        background: var(--accent-red);
-        color: #fff;
-      }
+      .ads-container { margin: 32px 0; min-height: 100px; background: rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem; border: 1px dashed var(--border-color); border-radius: 12px; overflow: hidden; }
 
-      textarea {
-        width: 100%;
-        min-height: 200px;
-        padding: 12px;
-        font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
-        font-size: 0.8rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        resize: vertical;
-        line-height: 1.4;
-      }
+      .seo-content { margin-top: 48px; padding: 40px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); color: var(--text-secondary); font-size: 0.875rem; line-height: 1.8; }
+      .seo-content h2 { color: var(--text-primary); font-size: 1.5rem; margin-bottom: 24px; font-weight: 700; border-left: 5px solid var(--accent); padding-left: 20px; }
+      .seo-content h3 { color: var(--text-primary); font-size: 1.2rem; margin-top: 32px; margin-bottom: 16px; font-weight: 600; }
+      .seo-content p { margin-bottom: 20px; }
+      .seo-content ul { margin-bottom: 24px; padding-left: 28px; }
+      .seo-content li { margin-bottom: 12px; }
+      .seo-content strong { color: var(--accent); }
 
-      textarea:focus {
-        outline: none;
-        border-color: var(--accent-cyan);
-        box-shadow: 0 0 0 3px rgb(13, 110, 253, 0.15);
-      }
-      .key-actions {
-        margin-top: 8px;
-        display: flex;
-        gap: 8px;
-      }
-      .key-actions button {
-        padding: 6px 12px;
-        font-size: 0.85rem;
-      }
-      .status {
-        font-size: 0.85rem;
-        margin-top: 12px;
-        min-height: 20px;
-      }
-      .status.success {
-        color: var(--accent-green);
-      }
-      .status.error {
-        color: var(--accent-red);
-      }
+      .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); background: var(--accent); color: var(--bg-body); padding: 8px 16px; border-radius: var(--radius-md); font-weight: 600; font-size: 0.875rem; z-index: 1000; opacity: 0; pointer-events: none; transition: all 0.3s; }
+      .toast.show { opacity: 1; transform: translateX(-50%) translateY(-10px); }
 
-      .warning {
-        background: #fff3cd;
-        border: 1px solid #ffc107;
-        border-radius: var(--radius-md);
-        padding: 12px 16px;
-        font-size: 0.9rem;
-        margin-bottom: 20px;
-      }
-
-      footer {
-        text-align: center;
-        margin-top: 32px;
-        padding-top: 16px;
-        border-top: 1px solid var(--border-subtle);
-        color: var(--text-muted);
-        font-size: 0.85rem;
-      }
-      footer a {
-        color: var(--accent-cyan);
-        text-decoration: none;
-      }
-      footer a:hover {
-        text-decoration: underline;
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-      @media (max-width: 480px) {
-        body {
-          padding: 12px;
-        }
-        .container {
-          max-width: 100%;
-          overflow-x: hidden;
-        }
-        h1 {
-          font-size: 1.3rem;
-        }
-        .card {
-          padding: 12px;
-        }
-        .grid,
-        .keys-grid {
-          grid-template-columns: 1fr !important;
-        }
-        .key-section {
-          min-width: 0;
-          max-width: 100%;
-          overflow: hidden;
-        }
-        .key-section textarea {
-          min-width: 0;
-          max-width: 100%;
-          font-size: 0.65rem;
-        }
-        .key-actions {
-          flex-wrap: wrap;
-        }
-        .key-actions button {
-          flex: 1;
-          min-width: 80px;
-        }
-        .btn-row {
-          flex-direction: column;
-        }
-        .btn-row button {
-          width: 100%;
-        }
-        pre,
-        code,
-        textarea {
-          font-size: 0.7rem;
-          white-space: pre-wrap;
-          word-break: break-all;
-        }
+      @media (max-width: 640px) {
+        .container { padding: 16px; }
+        .header { flex-direction: column; align-items: stretch; }
+        .header-right { margin-top: -48px; align-self: flex-end; }
+        .keys-grid { grid-template-columns: 1fr; }
       }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
   </head>
   <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      RSA 密钥对生成器
-    </nav>
     <div class="container">
-      <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">☀�?/button>
-      <h1>RSA 密钥对生成器</h1>
-      <p class="desc">生成 RSA 公钥和私钥对，支持多种密钥长�?/p>
-
-      <div class="warning">
-        ⚠️ 密钥仅在浏览器中生成，不会上传到服务器。但请勿在生产环境中使用此工具生成的密钥�?
-      </div>
-
-      <div class="card">
-        <div class="options">
-          <label>
-            密钥长度:
-            <select id="keySize">
-              <option value="1024">1024 �?(不安�?</option>
-              <option value="2048" selected>2048 �?(推荐)</option>
-              <option value="4096">4096 �?(高安�?</option>
-            </select>
-          </label>
-          <label>
-            格式:
-            <select id="format">
-              <option value="pkcs8" selected>PKCS#8 (PEM)</option>
-              <option value="jwk">JWK (JSON)</option>
-            </select>
-          </label>
-        </div>
-
-        <div class="btn-row">
-          <button id="btnGenerate" class="primary">生成密钥�?/button>
-        </div>
-
-        <div id="status" class="status"></div>
-
-        <div class="key-grid">
-          <div class="key-section">
-            <h3>
-              公钥
-              <span class="badge public">Public Key</span>
-            </h3>
-            <textarea id="publicKey" readonly placeholder="公钥将显示在这里..."></textarea>
-            <div class="key-actions">
-              <button id="btnCopyPublic">复制</button>
-              <button id="btnDownloadPublic">下载</button>
-            </div>
-          </div>
-          <div class="key-section">
-            <h3>
-              私钥
-              <span class="badge private">Private Key</span>
-            </h3>
-            <textarea id="privateKey" readonly placeholder="私钥将显示在这里..."></textarea>
-            <div class="key-actions">
-              <button id="btnCopyPrivate">复制</button>
-              <button id="btnDownloadPrivate">下载</button>
-            </div>
+      <header class="header">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn" title="返回首页">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 12L6 8L10 4" />
+            </svg>
+          </a>
+          <div class="title-group">
+            <h1>RSA 密钥对生成器</h1>
+            <p>本地生成高强度公私钥对，支持 PEM 与 JWK 导出</p>
           </div>
         </div>
+        <div class="header-right">
+          <div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+            <span id="theme-icon">🌙</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="alert-banner">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span><strong>隐私安全保证：</strong> 所有密钥均在您的浏览器本地生成，绝不会上传到任何服务器。</span>
       </div>
 
-      <footer>
-        <a href="https://github.com/chicogong/html-tools" target="_blank" rel="noreferrer">
-          View source
-        </a>
-        · 纯前端工�?· 无服务器 ·
-        <a href="../../index.html">WebUtils</a>
+      <main>
+        <section class="config-card">
+          <div class="config-grid">
+            <div class="config-item">
+              <label>密钥长度 (Key Size)</label>
+              <select id="keySize">
+                <option value="1024">1024 位 (低强度/不安全)</option>
+                <option value="2048" selected>2048 位 (标准/推荐)</option>
+                <option value="4096">4096 位 (高强度/银行级)</option>
+              </select>
+            </div>
+            <div class="config-item">
+              <label>导出格式 (Format)</label>
+              <select id="keyFormat">
+                <option value="pkcs8" selected>PKCS#8 (PEM 格式)</option>
+                <option value="jwk">JWK (JSON Web Key)</option>
+              </select>
+            </div>
+          </div>
+          <button class="generate-btn" id="generateBtn" onclick="generateKeys()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            生成 RSA 密钥对
+          </button>
+        </section>
+
+        <div class="keys-grid">
+          <section class="key-panel">
+            <div class="key-header">
+              <div class="key-title">公钥 <span class="badge badge-public">PUBLIC</span></div>
+              <span id="publicStatus" style="font-size: 0.6rem; color: var(--success); opacity: 0;">已复制</span>
+            </div>
+            <textarea id="publicKey" class="key-textarea" readonly placeholder="点击上方按钮生成密钥..."></textarea>
+            <div class="key-actions">
+              <button class="action-btn" onclick="copyKey('publicKey', 'publicStatus')">复制公钥</button>
+              <button class="action-btn" onclick="downloadKey('publicKey', 'public_key')">下载 .pem</button>
+            </div>
+          </section>
+
+          <section class="key-panel">
+            <div class="key-header">
+              <div class="key-title">私钥 <span class="badge badge-private">PRIVATE</span></div>
+              <span id="privateStatus" style="font-size: 0.6rem; color: var(--success); opacity: 0;">已复制</span>
+            </div>
+            <textarea id="privateKey" class="key-textarea" readonly placeholder="私钥包含敏感信息，请妥善保存..."></textarea>
+            <div class="key-actions">
+              <button class="action-btn" onclick="copyKey('privateKey', 'privateStatus')">复制私钥</button>
+              <button class="action-btn" onclick="downloadKey('privateKey', 'private_key')">下载 .pem</button>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <!-- Google AdSense Placeholder -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
+      </div>
+
+      <article class="seo-content">
+        <h2>RSA 密钥对生成器：解决安全认证与加密的核心痛点</h2>
+        <p>在现代网络架构中，<strong>RSA 非对称加密</strong> 是保障数据传输安全、实现 API 签名认证以及 SSH 远程登录的基石。然而，手动使用 OpenSSL 命令行工具生成密钥不仅门槛高，还容易因为参数配置不当导致安全漏洞。本工具旨在提供一个<strong>零门槛、高性能、绝对隐私</strong>的在线生成方案。</p>
+
+        <h3>1. 为什么选择在线本地生成 (Browser-Side Generation)？</h3>
+        <p>很多开发者担心在线工具会存储生成的私钥。本工具基于浏览器的 <strong>Web Crypto API</strong> 实现，其核心优势在于：</p>
+        <ul>
+          <li><strong>私密性：</strong> 密钥生成逻辑完全运行在您的浏览器沙盒内，没有任何网络请求将密钥发送至后端。</li>
+          <li><strong>速度：</strong> 利用硬件加速，即使生成 4096 位的高强度密钥也能在数秒内完成。</li>
+          <li><strong>合规性：</strong> 生成的 PKCS#8 格式 PEM 文件可直接用于 Java, Python, Node.js 等主流后端环境。</li>
+        </ul>
+
+        <h3>2. 密钥长度与格式的专业建议</h3>
+        <p>作为项目落地专家，我建议在不同场景下采用以下配置：</p>
+        <ol>
+          <li><strong>标准 Web 应用：</strong> 选择 <strong>2048 位</strong> 密钥。它在安全强度与加解密性能之间达到了完美的平衡，是目前绝大多数场景的行业标准。</li>
+          <li><strong>金融/政府级安全：</strong> 必须选择 <strong>4096 位</strong>。虽然性能开销增加约 4-8 倍，但能有效抵御已知的所有暴力破解尝试。</li>
+          <li><strong>现代前端交互：</strong> 建议使用 <strong>JWK (JSON Web Key)</strong> 格式。它能直接被前端加密库（如 Jose, WebCrypto）识别，无需繁琐的 PEM 解析步骤。</li>
+        </ol>
+
+        <h3>3. 常见实战问题解答 (FAQ)</h3>
+        <p><strong>Q: 什么是 PKCS#1 与 PKCS#8 的区别？</strong><br>
+        A: PKCS#1 是旧版的 RSA 专属标准，而 <strong>PKCS#8</strong> 是更通用的标准，支持更多加密算法。本工具默认导出 PKCS#8，因为它具有更好的跨语言兼容性。</p>
+        
+        <p><strong>Q: 导出的公钥为什么看起来比私钥短很多？</strong><br>
+        A: 这是非对称加密的特性。公钥只包含模数 (Modulus) 和指数 (Exponent)，而私钥则包含了用于加速计算的多个素数因子。在 RSA-2048 中，私钥通常约 1.6KB，而公钥仅约 450 字节。</p>
+
+        <p><strong>Q: 如何在 Linux 服务器上使用生成的密钥？</strong><br>
+        A: 下载私钥文件后，使用 <code>chmod 600 private_key.pem</code> 修改权限，即可用于 <code>ssh -i</code> 登录或配置 Nginx 的 SSL 证书。公钥则需添加到服务器的 <code>~/.ssh/authorized_keys</code> 文件中。</p>
+      </article>
+
+      <footer style="margin-top: 32px; text-align: center; color: var(--text-muted); font-size: 0.75rem;">
+        <p>© 2026 WebUtils. All rights reserved.</p>
       </footer>
     </div>
 
+    <div class="toast" id="toast">操作成功</div>
+
     <script>
-      var keySizeEl = document.getElementById("keySize");
-      var formatEl = document.getElementById("format");
-      var publicKeyEl = document.getElementById("publicKey");
-      var privateKeyEl = document.getElementById("privateKey");
-      var statusEl = document.getElementById("status");
-      var btnGenerate = document.getElementById("btnGenerate");
+      async function generateKeys() {
+        const size = parseInt(document.getElementById('keySize').value);
+        const format = document.getElementById('keyFormat').value;
+        const btn = document.getElementById('generateBtn');
+        const pubArea = document.getElementById('publicKey');
+        const privArea = document.getElementById('privateKey');
 
-      function showStatus(msg, type) {
-        statusEl.textContent = msg;
-        statusEl.className = "status " + (type || "");
-      }
-
-      function arrayBufferToBase64(buffer) {
-        var bytes = new Uint8Array(buffer);
-        var binary = "";
-        for (var i = 0; i < bytes.length; i++) {
-          binary += String.fromCharCode(bytes[i]);
-        }
-        return btoa(binary);
-      }
-
-      function formatPEM(base64, type) {
-        var lines = [];
-        for (var i = 0; i < base64.length; i += 64) {
-          lines.push(base64.slice(i, i + 64));
-        }
-        return "-----BEGIN " + type + "-----\n" + lines.join("\n") + "\n-----END " + type + "-----";
-      }
-
-      window.generateKeys = async function () {
-        var keySize = parseInt(keySizeEl.value, 10);
-        var format = formatEl.value;
-
-        btnGenerate.disabled = true;
-        showStatus("正在生成密钥...", "");
+        btn.disabled = true;
+        btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="spinning"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> 正在生成密钥...';
 
         try {
-          var keyPair = await crypto.subtle.generateKey(
+          const keyPair = await window.crypto.subtle.generateKey(
             {
               name: "RSA-OAEP",
-              modulusLength: keySize,
+              modulusLength: size,
               publicExponent: new Uint8Array([1, 0, 1]),
               hash: "SHA-256"
             },
@@ -484,83 +267,94 @@
             ["encrypt", "decrypt"]
           );
 
-          if (format === "jwk") {
-            var publicJwk = await crypto.subtle.exportKey("jwk", keyPair.publicKey);
-            var privateJwk = await crypto.subtle.exportKey("jwk", keyPair.privateKey);
-            publicKeyEl.value = JSON.stringify(publicJwk, null, 2);
-            privateKeyEl.value = JSON.stringify(privateJwk, null, 2);
+          if (format === 'jwk') {
+            const pubJwk = await window.crypto.subtle.exportKey("jwk", keyPair.publicKey);
+            const privJwk = await window.crypto.subtle.exportKey("jwk", keyPair.privateKey);
+            pubArea.value = JSON.stringify(pubJwk, null, 2);
+            privArea.value = JSON.stringify(privJwk, null, 2);
           } else {
-            var publicSpki = await crypto.subtle.exportKey("spki", keyPair.publicKey);
-            var privatePkcs8 = await crypto.subtle.exportKey("pkcs8", keyPair.privateKey);
-            publicKeyEl.value = formatPEM(arrayBufferToBase64(publicSpki), "PUBLIC KEY");
-            privateKeyEl.value = formatPEM(arrayBufferToBase64(privatePkcs8), "PRIVATE KEY");
+            const pubSpki = await window.crypto.subtle.exportKey("spki", keyPair.publicKey);
+            const privPkcs8 = await window.crypto.subtle.exportKey("pkcs8", keyPair.privateKey);
+            pubArea.value = formatPEM(arrayBufferToBase64(pubSpki), "PUBLIC KEY");
+            privArea.value = formatPEM(arrayBufferToBase64(privPkcs8), "PRIVATE KEY");
           }
-
-          showStatus("密钥对生成成�?(" + keySize + " �?", "success");
+          showToast('密钥对生成成功');
         } catch (e) {
-          showStatus("生成失败: " + e.message, "error");
+          alert('生成失败: ' + e.message);
         } finally {
-          btnGenerate.disabled = false;
+          btn.disabled = false;
+          btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> 生成 RSA 密钥对';
         }
+      }
+
+      function arrayBufferToBase64(buffer) {
+        let binary = '';
+        const bytes = new Uint8Array(buffer);
+        for (let i = 0; i < bytes.byteLength; i++) {
+          binary += String.fromCharCode(bytes[i]);
+        }
+        return window.btoa(binary);
+      }
+
+      function formatPEM(base64, label) {
+        const lines = base64.match(/.{1,64}/g) || [];
+        return `-----BEGIN ${label}-----\n${lines.join('\n')}\n-----END ${label}-----`;
+      }
+
+      window.copyKey = (id, statusId) => {
+        const el = document.getElementById(id);
+        const status = document.getElementById(statusId);
+        if (!el.value) return;
+        
+        navigator.clipboard.writeText(el.value).then(() => {
+          status.style.opacity = '1';
+          setTimeout(() => status.style.opacity = '0', 2000);
+          showToast('已复制到剪贴板');
+        });
       };
 
-      window.download = function (content, filename) {
-        var blob = new Blob([content], { type: "text/plain" });
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement("a");
+      window.downloadKey = (id, name) => {
+        const content = document.getElementById(id).value;
+        if (!content) return;
+        const format = document.getElementById('keyFormat').value;
+        const ext = format === 'jwk' ? '.json' : '.pem';
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
         a.href = url;
-        a.download = filename;
+        a.download = name + ext;
         a.click();
         URL.revokeObjectURL(url);
       };
 
-      btnGenerate.onclick = generateKeys;
+      function showToast(msg) {
+        const toast = document.getElementById("toast");
+        toast.textContent = msg;
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 2000);
+      }
 
-      document.getElementById("btnCopyPublic").onclick = async function () {
-        if (publicKeyEl.value) {
-          await navigator.clipboard.writeText(publicKeyEl.value);
-          showStatus("公钥已复�?, "success");
-        }
-      };
+      // Theme logic
+      window.toggleTheme = () => {
+        const theme = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+        setTheme(theme);
+      }
+      function setTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        document.getElementById("theme-icon").textContent = theme === "light" ? "☀️" : "🌙";
+        localStorage.setItem("theme", theme);
+      }
+      function initTheme() {
+        const savedTheme = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        setTheme(savedTheme || (prefersDark ? "dark" : "light"));
+      }
 
-      document.getElementById("btnCopyPrivate").onclick = async function () {
-        if (privateKeyEl.value) {
-          await navigator.clipboard.writeText(privateKeyEl.value);
-          showStatus("私钥已复�?, "success");
-        }
-      };
-
-      document.getElementById("btnDownloadPublic").onclick = function () {
-        if (publicKeyEl.value) {
-          var ext = formatEl.value === "jwk" ? "json" : "pem";
-          download(publicKeyEl.value, "public_key." + ext);
-        }
-      };
-
-      document.getElementById("btnDownloadPrivate").onclick = function () {
-        if (privateKeyEl.value) {
-          var ext = formatEl.value === "jwk" ? "json" : "pem";
-          download(privateKeyEl.value, "private_key." + ext);
-        }
-      };
-
-      window.toggleTheme = function () {
-        const html = document.documentElement;
-        const btn = document.querySelector(".theme-toggle");
-        const next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
-        html.setAttribute("data-theme", next);
-        btn.textContent = next === "dark" ? "🌙" : "☀�?;
-        localStorage.setItem("theme", next);
-      };
-      (function () {
-        const saved = localStorage.getItem("theme");
-        if (saved) {
-          document.documentElement.setAttribute("data-theme", saved);
-          const btn = document.querySelector(".theme-toggle");
-          if (btn) btn.textContent = saved === "dark" ? "🌙" : "☀�?;
-        }
-      })();
+      initTheme();
     </script>
+    <style>
+      @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      .spinning { animation: spin 1s linear infinite; }
+    </style>
   </body>
 </html>
-
