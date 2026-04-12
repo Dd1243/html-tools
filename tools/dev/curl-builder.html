@@ -2,554 +2,340 @@
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>cURL 命令生成�?- WebUtils</title>
-    <meta property="og:title" content="cURL 命令生成�?- WebUtils" />
-    <meta
-      property="og:description"
-      content="cURL 命令生成器：在线实用工具，免费在线使用，无需安装"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cURL 命令生成器 - 在线可视化构建 HTTP 请求 | WebUtils</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="专业在线 cURL 命令生成器，支持可视化构建 GET, POST, PUT, DELETE 等 HTTP 请求。提供请求头 (Headers)、查询参数 (Query Params)、请求体 (Body) 及身份验证配置。一键生成符合标准的 cURL 脚本，助您快速调试 API。纯本地处理，保护您的 API 密钥隐私。" />
+    <meta name="keywords" content="cURL生成器,cURL命令,API调试,HTTP请求,在线工具,开发者工具,curl builder,REST API测试" />
+    <meta name="author" content="WebUtils" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://essays4u.net/tools/dev/curl-builder.html" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content="cURL 命令生成器 - 在线可视化构建 | WebUtils" />
+    <meta property="og:description" content="快速构建复杂的 cURL 命令，支持所有 HTTP 方法、Headers 和 Body。简单、直观、安全。" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://essays4u.net/tools/dev/curl-builder.html" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
     <meta property="og:site_name" content="WebUtils" />
     <meta property="og:locale" content="zh_CN" />
-    <link rel="canonical" href="https://essays4u.net/tools/dev/curl-builder.html" />
-    <meta name="description" content="可视化生�?cURL 命令" />
-    <meta name="keywords" content="curl builder 命令 HTTP 请求 API" />
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
 
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="cURL 命令生成器 - 提升 API 调试效率" />
+    <meta name="twitter:description" content="可视化配置请求参数，实时生成 cURL 脚本，一键复制代码。" />
+    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
 
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        font-family: system-ui, sans-serif;
-        background: var(--bg-deep);
-        color: var(--text-primary);
-        margin: 0;
-        padding: 24px;
-        min-height: 100vh;
-      }
-      .container {
-        max-width: 900px;
-        margin: 0 auto;
-      }
-      .back-link {
-        display: inline-block;
-        margin-bottom: 16px;
-        color: var(--accent-cyan);
-        text-decoration: none;
-      }
-      h1 {
-        font-size: 1.75rem;
-        margin: 0 0 8px;
-      }
-      .desc {
-        color: var(--text-muted);
-        margin: 0 0 24px;
-      }
-      .card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        padding: 20px;
-        box-shadow: var(--shadow);
-        margin-bottom: 20px;
-      }
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-      }
-      .form-group {
-        margin-bottom: 16px;
-      }
-      .form-group label {
-        display: block;
-        font-weight: 500;
-        margin-bottom: 8px;
-      }
-      .form-group input,
-      .form-group select,
-      .form-group textarea {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        background: var(--bg-deep);
-        color: var(--text-primary);
-        font-family: inherit;
-      }
-      .form-group textarea {
-        height: 100px;
-        resize: vertical;
-        font-family: ui-monospace, monospace;
-        font-size: 0.85rem;
-      }
-      .form-row {
-        display: grid;
-        grid-template-columns: 100px 1fr;
-        gap: 12px;
-      }
-      .method-url {
-        display: flex;
-        gap: 12px;
-      }
-      .method-url select {
-        width: 120px;
-        flex-shrink: 0;
-      }
-      .method-url input {
-        flex: 1;
-      }
-      .headers-list {
-        margin-bottom: 12px;
-      }
-      .header-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr 40px;
-        gap: 8px;
-        margin-bottom: 8px;
-        align-items: center;
-      }
-      .header-row input {
-        padding: 8px;
-        font-size: 0.9rem;
-      }
-      .delete-btn {
-        padding: 8px;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        background: var(--bg-card);
-        color: var(--text-muted);
-        cursor: pointer;
-      }
-      .delete-btn:hover {
-        color: #dc3545;
-        border-color: #dc3545;
-      }
-      .add-btn {
-        padding: 8px 16px;
-        border: 1px dashed var(--border-subtle);
-        border-radius: var(--radius-md);
-        background: transparent;
-        color: var(--text-muted);
-        cursor: pointer;
-        width: 100%;
-      }
-      .add-btn:hover {
-        border-color: var(--accent-cyan);
-        color: var(--accent-cyan);
-      }
-      .checkbox-group {
-        display: flex;
-        gap: 16px;
-        flex-wrap: wrap;
-      }
-      .checkbox-group label {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        cursor: pointer;
-        font-weight: normal;
-      }
-      .result {
-        padding: 16px;
-        background: var(--bg-deep);
-        border-radius: var(--radius-md);
-        margin-top: 20px;
-      }
-      .result .label {
-        font-size: 0.85rem;
-        color: var(--text-muted);
-        margin-bottom: 8px;
-      }
-      .result .command {
-        font-family: ui-monospace, monospace;
-        font-size: 0.85rem;
-        color: var(--accent-cyan);
-        word-break: break-all;
-        line-height: 1.6;
-        white-space: pre-wrap;
-      }
-      .btn-row {
-        display: flex;
-        gap: 12px;
-        margin-top: 16px;
-      }
-      .btn {
-        padding: 10px 20px;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        background: var(--bg-card);
-        color: var(--text-primary);
-        cursor: pointer;
-      }
-      .btn:hover {
-        border-color: var(--accent-cyan);
-        color: var(--accent-cyan);
-      }
-      .btn.primary {
-        background: var(--accent-cyan);
-        border-color: var(--accent-cyan);
-        color: #fff;
-      }
-      footer {
-        text-align: center;
-        margin-top: 32px;
-        padding-top: 16px;
-        border-top: 1px solid var(--border-subtle);
-        color: var(--text-muted);
-        font-size: 0.85rem;
-      }
-      footer a {
-        color: var(--accent-cyan);
-        text-decoration: none;
-      }
-    </style>
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+
+    <style>
+      /* ===== CSS 变量 ===== */
+      :root {
+        --bg-body: #0a0a0f;
+        --bg-card: #12121a;
+        --bg-input: #0e0e14;
+        --bg-elevated: #1a1a24;
+        --text-primary: #e8e8ed;
+        --text-secondary: #a0a0b0;
+        --text-muted: #606070;
+        --border-color: #2a2a3a;
+        --border-focus: #3a3a4a;
+        --accent: #00f5d4;
+        --accent-purple: #bf5af2;
+        --success: #30d158;
+        --warning: #ff9f0a;
+        --error: #ff453a;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", "Space Grotesk", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+
+      [data-theme="light"] {
+        --bg-body: #fafafa;
+        --bg-card: #ffffff;
+        --bg-input: #f5f5f5;
+        --bg-elevated: #ffffff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #666;
+        --text-muted: #999;
+        --border-color: #e5e5e5;
+        --border-focus: #d5d5d5;
+        --accent: #00d4b8;
+        --accent-purple: #9b4dca;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      
+      .container { max-width: 1000px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--border-color); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .header-right { display: flex; align-items: center; gap: 12px; }
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; width: 40px; height: 40px; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+      .theme-toggle:hover { border-color: var(--accent); }
+
+      .main-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; }
+      
+      .section-padding { padding: 24px; border-bottom: 1px solid var(--border-color); }
+      .section-title { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+      .form-row { display: grid; grid-template-columns: 120px 1fr; gap: 12px; margin-bottom: 16px; }
+      .form-select, .form-input, .form-textarea { width: 100%; padding: 10px 14px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary); font-size: 0.9rem; outline: none; transition: all 0.2s; }
+      .form-select:focus, .form-input:focus, .form-textarea:focus { border-color: var(--accent); }
+      .form-textarea { height: 100px; resize: vertical; font-family: var(--font-mono); }
+
+      .kv-list { display: flex; flex-direction: column; gap: 8px; }
+      .kv-row { display: grid; grid-template-columns: 1fr 1fr 40px; gap: 8px; align-items: center; }
+      .remove-btn { color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+      .remove-btn:hover { color: var(--error); }
+      
+      .add-btn { padding: 8px; border: 1px dashed var(--border-color); border-radius: var(--radius-md); background: transparent; color: var(--text-muted); cursor: pointer; font-size: 0.8rem; margin-top: 8px; width: 100%; transition: all 0.2s; }
+      .add-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+      .options-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+      .checkbox-label { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-secondary); cursor: pointer; }
+      .checkbox-label input { accent-color: var(--accent); }
+
+      .result-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; }
+      .result-header { padding: 12px 20px; background: var(--bg-elevated); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+      .result-body { padding: 20px; background: var(--bg-input); position: relative; }
+      pre { font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); margin: 0; white-space: pre-wrap; word-break: break-all; }
+      .copy-btn { padding: 6px 12px; background: var(--accent); border: none; border-radius: var(--radius-sm); color: var(--bg-body); font-size: 0.7rem; font-weight: 700; cursor: pointer; }
+
+      .ads-container { margin: 24px 0; min-height: 90px; background: rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem; border: 1px dashed var(--border-color); border-radius: var(--radius-md); }
+
+      .seo-content { margin-top: 32px; padding: 32px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); color: var(--text-secondary); font-size: 0.875rem; }
+      .seo-content h2 { color: var(--text-primary); font-size: 1.125rem; margin-bottom: 16px; font-weight: 600; }
+      .seo-content h3 { color: var(--text-primary); font-size: 1rem; margin-top: 24px; margin-bottom: 12px; font-weight: 600; }
+      .seo-content p { margin-bottom: 12px; }
+      .seo-content ul { margin-bottom: 16px; padding-left: 20px; }
+      .seo-content li { margin-bottom: 8px; }
+
+      .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); padding: 12px 24px; background: var(--bg-elevated); border: 1px solid var(--accent); border-radius: var(--radius-md); color: var(--accent); font-size: 0.9rem; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55); opacity: 0; z-index: 1000; }
+      .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+      @media (max-width: 640px) {
+        .container { padding: 16px; }
+        .form-row { grid-template-columns: 1fr; }
+      }
+    </style>
   </head>
   <body>
     <div class="container">
-      <a href="../../index.html" class="back-link">�?返回工具列表</a>
-      <button class="theme-toggle" onclick="toggleTheme()">☀�?/button>
-      <h1>cURL 命令生成�?/h1>
-      <p class="desc">可视化生�?cURL HTTP 请求命令</p>
-
-      <div class="card">
-        <div class="form-group">
-          <label>请求方法�?URL</label>
-          <div class="method-url">
-            <select id="method" onchange="buildCurl()">
-              <option value="GET">GET</option>
-              <option value="POST">POST</option>
-              <option value="PUT">PUT</option>
-              <option value="PATCH">PATCH</option>
-              <option value="DELETE">DELETE</option>
-              <option value="HEAD">HEAD</option>
-              <option value="OPTIONS">OPTIONS</option>
-            </select>
-            <input
-              type="text"
-              id="url"
-              placeholder="https://api.example.com/endpoint"
-              oninput="buildCurl()"
-              value="https://api.example.com/users"
-            />
+      <header class="header">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn" title="返回首页">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 12L6 8L10 4" />
+            </svg>
+          </a>
+          <div class="title-group">
+            <h1>cURL 命令生成器</h1>
+            <p>可视化构建、调试并生成标准 cURL 请求脚本</p>
           </div>
         </div>
-
-        <div class="form-group">
-          <label>请求�?/label>
-          <div class="headers-list" id="headersList">
-            <div class="header-row">
-              <input
-                type="text"
-                placeholder="Header 名称"
-                value="Content-Type"
-                oninput="buildCurl()"
-              />
-              <input
-                type="text"
-                placeholder="Header �?
-                value="application/json"
-                oninput="buildCurl()"
-              />
-              <button class="delete-btn" onclick="removeHeader(this)">×</button>
-            </div>
-            <div class="header-row">
-              <input
-                type="text"
-                placeholder="Header 名称"
-                value="Authorization"
-                oninput="buildCurl()"
-              />
-              <input
-                type="text"
-                placeholder="Header �?
-                value="Bearer YOUR_TOKEN"
-                oninput="buildCurl()"
-              />
-              <button class="delete-btn" onclick="removeHeader(this)">×</button>
-            </div>
-          </div>
-          <button class="add-btn" onclick="addHeader()">+ 添加请求�?/button>
-        </div>
-
-        <div class="form-group">
-          <label>请求�?(JSON)</label>
-          <textarea id="body" placeholder='"key": "value"' oninput="buildCurl()">
-{"name": "John", "email": "john@example.com"}</textarea
-          >
-        </div>
-
-        <div class="form-group">
-          <label>认证</label>
-          <div class="form-row">
-            <select id="authType" onchange="buildCurl()">
-              <option value="none">�?/option>
-              <option value="basic">Basic Auth</option>
-              <option value="bearer">Bearer Token</option>
-            </select>
-            <input
-              type="text"
-              id="authValue"
-              placeholder="用户�?密码 �?Token"
-              oninput="buildCurl()"
-            />
+        <div class="header-right">
+          <div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+            <span id="theme-icon">🌙</span>
           </div>
         </div>
+      </header>
 
-        <div class="form-group">
-          <label>选项</label>
-          <div class="checkbox-group">
-            <label>
-              <input type="checkbox" id="optVerbose" onchange="buildCurl()" />
-              详细输出 (-v)
-            </label>
-            <label>
-              <input type="checkbox" id="optInsecure" onchange="buildCurl()" />
-              忽略 SSL (-k)
-            </label>
-            <label>
-              <input type="checkbox" id="optLocation" checked onchange="buildCurl()" />
-              跟随重定�?(-L)
-            </label>
-            <label>
-              <input type="checkbox" id="optSilent" onchange="buildCurl()" />
-              静默模式 (-s)
-            </label>
-            <label>
-              <input type="checkbox" id="optOutput" onchange="buildCurl()" />
-              输出到文�?
-            </label>
-          </div>
-        </div>
-
-        <div class="form-group" id="outputFileGroup" style="display: none">
-          <label>输出文件�?/label>
-          <input type="text" id="outputFile" placeholder="response.json" oninput="buildCurl()" />
-        </div>
-
-        <div class="form-group">
-          <label>超时设置 (�?</label>
-          <input
-            type="number"
-            id="timeout"
-            placeholder="不限�?
-            oninput="buildCurl()"
-            style="width: 150px"
-          />
-        </div>
-
-        <div class="result">
-          <div class="label">生成�?cURL 命令</div>
-          <div class="command" id="command">curl -X GET "https://api.example.com/users"</div>
-        </div>
-
-        <div class="btn-row">
-          <button class="btn primary" onclick="copyCommand()">复制命令</button>
-          <button class="btn" onclick="resetForm()">重置</button>
-        </div>
+      <!-- Google AdSense Top -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
       </div>
 
-      <footer>
-        纯前端工�?· 无服务器 ·
-        <a href="../../index.html">WebUtils</a>
+      <main>
+        <div class="main-card">
+          <div class="section-padding">
+            <div class="section-title">🔗 请求设置</div>
+            <div class="form-row">
+              <select id="method" class="form-select" onchange="updateCurl()">
+                <option value="GET">GET</option>
+                <option value="POST">POST</option>
+                <option value="PUT">PUT</option>
+                <option value="DELETE">DELETE</option>
+                <option value="PATCH">PATCH</option>
+                <option value="HEAD">HEAD</option>
+              </select>
+              <input type="text" id="url" class="form-input" placeholder="https://api.example.com/resource" oninput="updateCurl()">
+            </div>
+          </div>
+
+          <div class="section-padding">
+            <div class="section-title">📝 请求头 (Headers)</div>
+            <div id="headersList" class="kv-list"></div>
+            <button class="add-btn" onclick="addKV('headers')">+ 添加请求头</button>
+          </div>
+
+          <div class="section-padding">
+            <div class="section-title">🔍 查询参数 (Query Params)</div>
+            <div id="paramsList" class="kv-list"></div>
+            <button class="add-btn" onclick="addKV('params')">+ 添加查询参数</button>
+          </div>
+
+          <div class="section-padding">
+            <div class="section-title">📦 请求体 (Body)</div>
+            <textarea id="body" class="form-textarea" placeholder='{"key": "value"}' oninput="updateCurl()"></textarea>
+          </div>
+
+          <div class="section-padding">
+            <div class="section-title">⚙️ 高级选项</div>
+            <div class="options-grid">
+              <label class="checkbox-label"><input type="checkbox" id="insecure" onchange="updateCurl()"> 忽略 SSL 检查 (-k)</label>
+              <label class="checkbox-label"><input type="checkbox" id="verbose" onchange="updateCurl()"> 输出详细日志 (-v)</label>
+              <label class="checkbox-label"><input type="checkbox" id="location" onchange="updateCurl()"> 跟随重定向 (-L)</label>
+              <label class="checkbox-label"><input type="checkbox" id="compressed" onchange="updateCurl()"> 启用压缩 (--compressed)</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-card">
+          <div class="result-header">
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">cURL 命令 (cURL Command)</span>
+            <button class="copy-btn" onclick="copyCurl()">复制命令</button>
+          </div>
+          <div class="result-body">
+            <pre id="curlOutput"></pre>
+          </div>
+        </div>
+      </main>
+
+      <!-- Google AdSense Bottom -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
+      </div>
+
+      <article class="seo-content">
+        <h2>为什么 cURL 命令生成器是开发者调试 API 的必备工具？</h2>
+        <p>cURL（Client URL）是一个功能强大的命令行工具，用于与服务器进行数据传输。在 API 开发、测试和运维过程中，cURL 是跨平台调试请求的标准方式。然而，手动编写包含多个 Headers、复杂 JSON Body 或特殊身份验证信息的 cURL 命令不仅耗时，而且极易出现转义错误。本工具旨在通过直观的可视化界面，助您零误差生成完美的 cURL 脚本。</p>
+        
+        <h3>可视化构建 cURL 请求的核心优势</h3>
+        <ul>
+          <li><strong>避免转义陷阱：</strong> 在命令行中处理 JSON 中的双引号或特殊字符往往需要复杂的反斜杠转义。本工具自动处理这些细节，确保生成的命令在终端直接可用。</li>
+          <li><strong>参数化管理：</strong> 无论是 Header 还是 URL Query 参数，都能通过键值对（KV）形式清晰管理，无需在长长的 URL 字符串中手动拼接。</li>
+          <li><strong>一键生成生产脚本：</strong> 生成的命令遵循最佳实践（如使用 `-X` 指定方法，使用 `-H` 传递头信息），方便您直接放入 Shell 脚本或 CI/CD 流水线中。</li>
+          <li><strong>快速调试高级功能：</strong> 轻松启用 `-L` 跟随重定向、`-k` 忽略 SSL 证书校验或 `-v` 查看详细握手日志，无需死记硬背 cURL 的上百个参数开关。</li>
+        </ul>
+
+        <h3>如何高效调试不同类型的 API？</h3>
+        <p><strong>RESTful API 调试：</strong> 选择对应的 GET/POST 方法，添加 `Content-Type: application/json` 和 `Authorization` 头，然后在 Body 区域填入 JSON 数据即可。</p>
+        <p><strong>文件上传测试：</strong> cURL 支持强大的表单数据传输。虽然本工具目前侧重于文本请求，但您可以参考生成的格式快速扩展 `-F` 参数进行文件上传调试。</p>
+        <p><strong>排查网络连接问题：</strong> 通过启用“详细日志 (-v)”选项，您可以观察完整的 DNS 解析过程、TCP 握手以及 SSL 证书验证详情，是定位 502/504 错误或证书过期问题的利器。</p>
+
+        <h3>关于隐私与数据安全</h3>
+        <p>WebUtils 深知 API 请求中可能包含敏感的 API Key、Token 或用户隐私数据。因此，本工具坚持**纯客户端处理**原则：您的所有输入仅在浏览器本地进行逻辑拼接，绝不会上传到我们的服务器。您可以放心处理任何生产环境的 API 调试任务。</p>
+      </article>
+
+      <footer style="margin-top: 32px; text-align: center; color: var(--text-muted); font-size: 0.75rem;">
+        <p>© 2026 WebUtils. All rights reserved.</p>
       </footer>
     </div>
 
+    <div id="toast" class="toast"></div>
+
     <script>
-      function getHeaders() {
-        const rows = document.querySelectorAll("#headersList .header-row");
-        const headers = [];
-        rows.forEach((row) => {
-          const inputs = row.querySelectorAll("input");
-          const name = inputs[0].value.trim();
-          const value = inputs[1].value.trim();
-          if (name && value) {
-            headers.push({ name, value });
-          }
-        });
-        return headers;
-      }
-
-      function addHeader() {
-        const list = document.getElementById("headersList");
-        const row = document.createElement("div");
-        row.className = "header-row";
+      function addKV(type, k = '', v = '') {
+        const container = document.getElementById(type + 'List');
+        const row = document.createElement('div');
+        row.className = 'kv-row';
         row.innerHTML = `
-        <input type="text" placeholder="Header 名称" oninput="buildCurl()" />
-        <input type="text" placeholder="Header �? oninput="buildCurl()" />
-        <button class="delete-btn" onclick="removeHeader(this)">×</button>
-      `;
-        list.appendChild(row);
+          <input type="text" class="form-input k" placeholder="Key" value="${k}" oninput="updateCurl()">
+          <input type="text" class="form-input v" placeholder="Value" value="${v}" oninput="updateCurl()">
+          <div class="remove-btn" onclick="this.parentElement.remove(); updateCurl()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </div>
+        `;
+        container.appendChild(row);
+        updateCurl();
       }
 
-      function removeHeader(btn) {
-        btn.parentElement.remove();
-        buildCurl();
-      }
-
-      function buildCurl() {
-        const method = document.getElementById("method").value;
-        const url = document.getElementById("url").value.trim();
-        const body = document.getElementById("body").value.trim();
-        const authType = document.getElementById("authType").value;
-        const authValue = document.getElementById("authValue").value.trim();
-        const headers = getHeaders();
-
-        const verbose = document.getElementById("optVerbose").checked;
-        const insecure = document.getElementById("optInsecure").checked;
-        const location = document.getElementById("optLocation").checked;
-        const silent = document.getElementById("optSilent").checked;
-        const outputEnabled = document.getElementById("optOutput").checked;
-        const outputFile = document.getElementById("outputFile").value.trim();
-        const timeout = document.getElementById("timeout").value.trim();
-
-        document.getElementById("outputFileGroup").style.display = outputEnabled ? "block" : "none";
-
-        let parts = ["curl"];
-
-        // Method (skip for GET)
-        if (method !== "GET") {
-          parts.push(`-X ${method}`);
+      function updateCurl() {
+        const method = document.getElementById('method').value;
+        let url = document.getElementById('url').value.trim() || 'https://api.example.com';
+        const body = document.getElementById('body').value.trim();
+        
+        // 处理参数
+        const params = new URLSearchParams();
+        document.querySelectorAll('#paramsList .kv-row').forEach(row => {
+          const k = row.querySelector('.k').value.trim();
+          const v = row.querySelector('.v').value.trim();
+          if (k) params.append(k, v);
+        });
+        const paramStr = params.toString();
+        if (paramStr) {
+          url += (url.includes('?') ? '&' : '?') + paramStr;
         }
 
-        // Options
-        if (verbose) parts.push("-v");
-        if (insecure) parts.push("-k");
-        if (location) parts.push("-L");
-        if (silent) parts.push("-s");
+        let curl = `curl -X ${method} "${url}"`;
 
-        // Timeout
-        if (timeout) {
-          parts.push(`--max-time ${timeout}`);
-        }
-
-        // Auth
-        if (authType === "basic" && authValue) {
-          parts.push(`-u "${authValue}"`);
-        } else if (authType === "bearer" && authValue) {
-          parts.push(`-H "Authorization: Bearer ${authValue}"`);
-        }
-
-        // Headers
-        headers.forEach((h) => {
-          parts.push(`-H "${h.name}: ${h.value}"`);
+        // 处理 Headers
+        document.querySelectorAll('#headersList .kv-row').forEach(row => {
+          const k = row.querySelector('.k').value.trim();
+          const v = row.querySelector('.v').value.trim();
+          if (k) curl += ` \\\n  -H "${k}: ${v}"`;
         });
 
-        // Body
-        if (body && ["POST", "PUT", "PATCH"].includes(method)) {
-          const escapedBody = body.replace(/"/g, '\\"');
-          parts.push(`-d "${escapedBody}"`);
+        // 处理 Body
+        if (body && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
+          // 简单的双引号转义
+          const escapedBody = body.replace(/"/g, '\\"').replace(/\n/g, '');
+          curl += ` \\\n  -d "${escapedBody}"`;
         }
 
-        // Output file
-        if (outputEnabled && outputFile) {
-          parts.push(`-o ${outputFile}`);
-        }
+        // 处理选项
+        if (document.getElementById('insecure').checked) curl += ` \\\n  -k`;
+        if (document.getElementById('verbose').checked) curl += ` \\\n  -v`;
+        if (document.getElementById('location').checked) curl += ` \\\n  -L`;
+        if (document.getElementById('compressed').checked) curl += ` \\\n  --compressed`;
 
-        // URL
-        parts.push(`"${url || "https://example.com"}"`);
-
-        document.getElementById("command").textContent = parts.join(" \\\n  ");
+        document.getElementById('curlOutput').textContent = curl;
       }
 
-      function copyCommand() {
-        const cmd = document.getElementById("command").textContent.replace(/\\\n\s+/g, " ");
-        navigator.clipboard.writeText(cmd);
+      function copyCurl() {
+        const code = document.getElementById('curlOutput').textContent;
+        navigator.clipboard.writeText(code).then(() => showToast("cURL 命令已复制"));
       }
 
-      function resetForm() {
-        document.getElementById("method").value = "GET";
-        document.getElementById("url").value = "";
-        document.getElementById("body").value = "";
-        document.getElementById("authType").value = "none";
-        document.getElementById("authValue").value = "";
-        document.getElementById("headersList").innerHTML = `
-        <div class="header-row">
-          <input type="text" placeholder="Header 名称" oninput="buildCurl()" />
-          <input type="text" placeholder="Header �? oninput="buildCurl()" />
-          <button class="delete-btn" onclick="removeHeader(this)">×</button>
-        </div>
-      `;
-        document.querySelectorAll(".checkbox-group input").forEach((cb) => (cb.checked = false));
-        document.getElementById("optLocation").checked = true;
-        document.getElementById("timeout").value = "";
-        buildCurl();
+      function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
       }
-
-      buildCurl();
 
       function toggleTheme() {
-        const html = document.documentElement;
-        const next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
-        html.setAttribute("data-theme", next);
-        document.querySelector(".theme-toggle").textContent = next === "dark" ? "🌙" : "☀�?;
-        localStorage.setItem("theme", next);
+        const theme = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+        setTheme(theme);
       }
-      (function () {
-        const saved = localStorage.getItem("theme");
-        if (saved) {
-          document.documentElement.setAttribute("data-theme", saved);
-          document.querySelector(".theme-toggle").textContent = saved === "dark" ? "🌙" : "☀�?;
-        }
-      })();
+
+      function setTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        document.getElementById("theme-icon").textContent = theme === "light" ? "☀️" : "🌙";
+        localStorage.setItem("theme", theme);
+      }
+
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      setTheme(savedTheme);
+      
+      // 默认添加一个常用的 Header
+      addKV('headers', 'Content-Type', 'application/json');
+      updateCurl();
     </script>
   </body>
 </html>
-
