@@ -1,578 +1,348 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>MIME 类型查询 - WebUtils</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>MIME 类型查询工具 - 文件扩展名与 Content-Type 对照表 | WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="查询文件扩展名对应的 MIME 类型" />
-    <meta name="keywords" content="mime 类型 扩展�?content-type 文件类型" />
+    <meta name="description" content="在线查询常见文件扩展名对应的 MIME 类型（Content-Type）。涵盖文本、图片、音视频、字体及各种应用程序格式。支持实时搜索与分类筛选，开发者调试 HTTP 响应头必备工具。" />
+    <meta name="keywords" content="MIME类型, Content-Type, 文件扩展名, mime lookup, http header, 文件格式查询, 开发者工具" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/dev/mime-lookup.html" />
 
     <!-- Open Graph -->
-    <meta property="og:title" content="MIME 类型查询 - WebUtils" />
-    <meta property="og:description" content="查询文件扩展名对应的 MIME 类型" />
+    <meta property="og:title" content="MIME 类型查询工具 - 文件扩展名与 Content-Type 对照表 | WebUtils" />
+    <meta property="og:description" content="快速定位文件扩展名对应的标准 MIME 类型，支持一键复制。" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://essays4u.net/tools/dev/mime-lookup.html" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="MIME 类型查询 - WebUtils" />
-    <meta name="twitter:description" content="查询文件扩展名对应的 MIME 类型" />
-    <!-- OG Image -->
     <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
     <style>
       :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
+        --bg-body: #0a0a0f;
+        --bg-card: #12121a;
         --bg-input: #0e0e14;
+        --bg-elevated: #1a1a24;
         --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --text-secondary: #a0a0b0;
+        --text-muted: #606070;
+        --border-color: #2a2a3a;
+        --border-focus: #3a3a4a;
+        --accent: #00f5d4;
+        --accent-purple: #bf5af2;
+        --success: #30d158;
+        --warning: #ff9f0a;
+        --error: #ff453a;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", "Space Grotesk", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
       }
 
       [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
+        --bg-body: #fafafa;
+        --bg-card: #ffffff;
         --bg-input: #f5f5f5;
+        --bg-elevated: #ffffff;
         --text-primary: #1a1a1a;
         --text-secondary: #666;
         --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        --border-color: #e5e5e5;
+        --border-focus: #d5d5d5;
+        --accent: #00d4b8;
+        --accent-purple: #9b4dca;
       }
 
-      :root {
-        --bg: #f8f9fa;
-        --card-bg: #fff;
-        --text: #212529;
-        --color-text-muted: #6c757d;
-        --border: #dee2e6;
-        --primary: #0d6efd;
-        --success: #198754;
-        --shadow: 0 2px 8px rgb(0, 0, 0, 0.08);
-        --radius: 8px;
-        --code-bg: #f1f3f5;
-      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      
+      .container { max-width: 1000px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--border-color); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .header-right { display: flex; align-items: center; gap: 12px; }
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; width: 40px; height: 40px; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+      .theme-toggle:hover { border-color: var(--accent); }
 
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-      }
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
-        background: var(--bg-deep);
-        color: var(--text-primary);
-        margin: 0;
-        padding: 24px;
-        min-height: 100vh;
-      }
-      .container {
-        max-width: 900px;
-        margin: 0 auto;
-      }
-      .back-link {
-        display: inline-block;
-        margin-bottom: 16px;
-        color: var(--accent-cyan);
-        text-decoration: none;
-        font-size: 0.9rem;
-      }
-      h1 {
-        font-size: 1.75rem;
-        margin: 0 0 8px;
-      }
-      .desc {
-        color: var(--text-muted);
-        margin: 0 0 24px;
-        font-size: 0.95rem;
-      }
-      .search-box {
-        margin-bottom: 20px;
-      }
-      .search-box input {
-        width: 100%;
-        padding: 14px 18px;
-        font-size: 1.1rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        background: var(--bg-card);
-        color: var(--text-primary);
-      }
-      .search-box input:focus {
-        outline: none;
-        border-color: var(--accent-cyan);
-        box-shadow: 0 0 0 3px rgb(13, 110, 253, 0.15);
-      }
-      .hint {
-        font-size: 0.85rem;
-        color: var(--text-muted);
-        margin-top: 8px;
-      }
-      .results {
-        margin-top: 20px;
-      }
-      .result-item {
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        padding: 16px;
-        margin-bottom: 12px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .result-item .ext {
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: var(--accent-cyan);
-        min-width: 80px;
-      }
-      .result-item .mime {
-        font-family: ui-monospace, monospace;
-        font-size: 0.95rem;
-        flex: 1;
-        margin: 0 16px;
-      }
-      .result-item .copy-btn {
-        padding: 6px 12px;
-        font-size: 0.85rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: 4px;
-        background: var(--bg-card);
-        color: var(--text-primary);
-        cursor: pointer;
-      }
-      .result-item .copy-btn:hover {
-        border-color: var(--accent-cyan);
-        color: var(--accent-cyan);
-      }
-      .category-section {
-        margin-bottom: 24px;
-      }
-      .category-title {
-        font-size: 1.1rem;
-        margin: 0 0 12px;
-        padding-bottom: 8px;
-        border-bottom: 2px solid var(--accent-cyan);
-      }
-      .stats {
-        display: flex;
-        gap: 24px;
-        margin-bottom: 24px;
-        flex-wrap: wrap;
-      }
-      .stat-item {
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        padding: 16px 24px;
-        text-align: center;
-      }
-      .stat-item .number {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--accent-cyan);
-      }
-      .stat-item .label {
-        font-size: 0.85rem;
-        color: var(--text-muted);
-      }
-      footer {
-        text-align: center;
-        margin-top: 32px;
-        padding-top: 16px;
-        border-top: 1px solid var(--border-subtle);
-        color: var(--text-muted);
-        font-size: 0.85rem;
-      }
-      footer a {
-        color: var(--accent-cyan);
-        text-decoration: none;
-      }
+      .ads-container { margin: 24px 0; min-height: 90px; background: rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem; border: 1px dashed var(--border-color); border-radius: var(--radius-md); }
 
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-      @media (max-width: 480px) {
-        body {
-          padding: 12px;
-        }
-        h1 {
-          font-size: 1.3rem;
-        }
-        .card {
-          padding: 12px;
-        }
-        .grid {
-          grid-template-columns: 1fr !important;
-        }
-        .btn-row {
-          flex-direction: column;
-        }
-        .btn-row button {
-          width: 100%;
-        }
-        pre,
-        code {
-          font-size: 0.7rem;
-          white-space: pre-wrap;
-          word-break: break-all;
-        }
-        table {
-          font-size: 0.75rem;
-        }
-        th,
-        td {
-          padding: 6px 8px;
-        }
-        .result-item {
-          flex-wrap: wrap;
-          gap: 8px;
-        }
-        .result-item .ext {
-          min-width: auto;
-        }
-        .result-item .mime {
-          flex: none;
-          width: 100%;
-          margin: 0;
-          font-size: 0.8rem;
-          word-break: break-all;
-        }
-        .result-item .copy-btn {
-          margin-left: auto;
-        }
+      .main-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; }
+      
+      .search-section { padding: 24px; border-bottom: 1px solid var(--border-color); }
+      .search-input { width: 100%; padding: 12px 16px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary); font-size: 1rem; outline: none; transition: all 0.2s; }
+      .search-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(0, 245, 212, 0.1); }
+
+      .filter-tabs { display: flex; gap: 8px; padding: 16px 24px; background: var(--bg-body); border-bottom: 1px solid var(--border-color); overflow-x: auto; white-space: nowrap; }
+      .tab-btn { padding: 6px 12px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text-secondary); font-size: 0.8125rem; cursor: pointer; transition: all 0.2s; }
+      .tab-btn:hover { border-color: var(--accent); color: var(--accent); }
+      .tab-btn.active { background: var(--accent); color: var(--bg-body); border-color: var(--accent); font-weight: 600; }
+
+      .results-table { width: 100%; border-collapse: collapse; }
+      .results-table th { text-align: left; padding: 12px 24px; background: var(--bg-input); font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border-color); }
+      .results-table td { padding: 16px 24px; border-bottom: 1px solid var(--border-color); font-size: 0.875rem; color: var(--text-primary); transition: all 0.2s; }
+      .results-table tr:last-child td { border-bottom: none; }
+      .results-table tr:hover td { background: rgba(0, 245, 212, 0.02); }
+
+      .ext-cell { font-family: var(--font-mono); font-weight: 600; color: var(--accent); width: 120px; }
+      .mime-cell { font-family: var(--font-mono); color: var(--text-secondary); }
+      .desc-cell { color: var(--text-muted); font-size: 0.8125rem; }
+      
+      .copy-btn { padding: 4px 8px; background: var(--bg-elevated); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-muted); font-size: 0.7rem; cursor: pointer; transition: all 0.2s; }
+      .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+      .empty-state { padding: 48px; text-align: center; color: var(--text-muted); font-size: 0.875rem; }
+
+      .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); background: var(--accent); color: var(--bg-body); padding: 8px 16px; border-radius: var(--radius-md); font-weight: 600; font-size: 0.875rem; z-index: 1000; opacity: 0; pointer-events: none; transition: all 0.3s; }
+      .toast.show { opacity: 1; transform: translateX(-50%) translateY(-10px); }
+
+      .seo-content { margin-top: 32px; padding: 32px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); color: var(--text-secondary); font-size: 0.875rem; }
+      .seo-content h2 { color: var(--text-primary); font-size: 1.125rem; margin-bottom: 16px; font-weight: 600; border-left: 4px solid var(--accent); padding-left: 12px; }
+      .seo-content h3 { color: var(--text-primary); font-size: 1rem; margin-top: 24px; margin-bottom: 12px; font-weight: 600; }
+      .seo-content p { margin-bottom: 12px; }
+      .seo-content ul { margin-bottom: 16px; padding-left: 20px; }
+      .seo-content li { margin-bottom: 8px; }
+
+      @media (max-width: 640px) {
+        .container { padding: 16px; }
+        .header { flex-direction: column; align-items: stretch; }
+        .header-right { margin-top: -48px; align-self: flex-end; }
+        .results-table th:nth-child(3), .results-table td:nth-child(3) { display: none; }
       }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
   </head>
   <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      MIME 类型查询
-    </nav>
     <div class="container">
-      <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">☀�?/button>
-      <h1>MIME 类型查询</h1>
-      <p class="desc">查询文件扩展名对应的 MIME 类型，或根据 MIME 类型查找扩展�?/p>
+      <header class="header">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn" title="返回首页">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 12L6 8L10 4" />
+            </svg>
+          </a>
+          <div class="title-group">
+            <h1>MIME 类型查询</h1>
+            <p>快速定位文件扩展名对应的标准 Content-Type 响应头</p>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+            <span id="theme-icon">🌙</span>
+          </div>
+        </div>
+      </header>
 
-      <div class="stats" id="stats"></div>
-
-      <div class="search-box">
-        <input
-          type="text"
-          id="search"
-          placeholder="输入扩展名（�?.jpg）或 MIME 类型（如 image/jpeg�?
-          autofocus
-        />
-        <div class="hint">支持搜索：扩展名、MIME 类型、描�?/div>
+      <!-- Google AdSense Placeholder -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
       </div>
 
-      <div class="results" id="results"></div>
+      <main class="main-card">
+        <section class="search-section">
+          <input type="text" id="searchInput" class="search-input" placeholder="搜索扩展名 (如: .json) 或类型名称 (如: video)..." />
+        </section>
 
-      <footer>
-        <a
-          href="https://github.com/chicogong/html-tools/blob/main/tools/dev/mime-lookup.html"
-          target="_blank"
-        >
-          View source
-        </a>
-        · 纯前端工�?· 无服务器 ·
-        <a href="../../index.html">WebUtils</a>
+        <nav class="filter-tabs" id="filterTabs">
+          <!-- Tabs injected by JS -->
+        </nav>
+
+        <div style="overflow-x: auto;">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>扩展名</th>
+                <th>MIME 类型</th>
+                <th>说明</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="resultsBody">
+              <!-- Rows injected by JS -->
+            </tbody>
+          </table>
+          <div id="emptyState" class="empty-state" style="display: none;">未找到匹配的结果</div>
+        </div>
+      </main>
+
+      <!-- Google AdSense Placeholder -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
+      </div>
+
+      <article class="seo-content">
+        <h2>什么是 MIME 类型 (Content-Type)？</h2>
+        <p><strong>MIME 类型</strong>（多用途互联网邮件扩展，Multipurpose Internet Mail Extensions），现在通常被称为<strong>媒体类型 (Media Type)</strong>，是互联网标准，用于指示文档、文件或字节流的性质和格式。在 Web 开发中，服务器通过 HTTP 响应头中的 <code>Content-Type</code> 来告诉浏览器如何处理接收到的内容。</p>
+
+        <h3>1. 为什么正确配置 MIME 类型至关重要？</h3>
+        <p>浏览器并不总是根据文件扩展名来决定如何渲染文件。如果一个 <code>.css</code> 文件被服务器错误地识别为 <code>text/plain</code>，浏览器可能会拒绝将其作为样式表加载，从而导致页面布局混乱。同样，错误的 MIME 类型配置也可能导致浏览器弹出不必要的下载对话框，或者无法正确播放嵌入的音视频内容。</p>
+
+        <h3>2. 常见的 MIME 类型结构</h3>
+        <p>一个标准的 MIME 类型通常由类型 (Type) 和子类型 (Subtype) 组成，中间用斜杠分隔：</p>
+        <ul>
+          <li><strong>text/html：</strong> HTML 文档。</li>
+          <li><strong>image/webp：</strong> WebP 格式图片。</li>
+          <li><strong>application/json：</strong> JSON 数据格式。</li>
+          <li><strong>video/mp4：</strong> MP4 视频文件。</li>
+        </ul>
+
+        <h3>3. 开发者如何使用本查询工具？</h3>
+        <p>本工具为开发者提供了一站式的对照参考。无论您是在配置 Nginx 服务器的 <code>mime.types</code> 文件，还是在 Node.js 中设置 API 的响应头，只需输入扩展名，即可立即获取标准的 Content-Type 字符串。我们涵盖了从传统的 <code>.pdf</code> 到现代的 <code>.wasm</code>、<code>.mjs</code> 等所有常用格式。</p>
+
+        <h3>4. 安全性提示：MIME 嗅探 (Sniffing)</h3>
+        <p>为了安全起见，许多现代服务器会发送 <code>X-Content-Type-Options: nosniff</code> 响应头。这意味着浏览器必须严格遵守服务器提供的 MIME 类型，而不能尝试根据内容猜测类型。因此，确保您的服务器能够为每个静态资源返回正确的 Content-Type 是构建安全、健壮网站的关键。</p>
+
+        <h3>常见问题 (FAQ)</h3>
+        <p><strong>Q: <code>application/javascript</code> 和 <code>text/javascript</code> 有什么区别？</strong><br>
+        A: 根据最新的规范，<code>text/javascript</code> 是推荐使用的类型。尽管 <code>application/javascript</code> 在过去很流行，但现在已逐渐被废弃。</p>
+        <p><strong>Q: 找不到我需要的扩展名怎么办？</strong><br>
+        A: 对于不常见的私有格式，通用做法是使用 <code>application/octet-stream</code>，这会提示浏览器将内容作为二进制流下载。</p>
+      </article>
+
+      <footer style="margin-top: 32px; text-align: center; color: var(--text-muted); font-size: 0.75rem;">
+        <p>© 2026 WebUtils. All rights reserved.</p>
       </footer>
     </div>
 
+    <div class="toast" id="toast">已复制到剪贴板</div>
+
     <script>
-      const MIME_TYPES = {
-        文本: [
-          { ext: ".txt", mime: "text/plain", desc: "纯文�? },
-          { ext: ".html", mime: "text/html", desc: "HTML 网页" },
-          { ext: ".htm", mime: "text/html", desc: "HTML 网页" },
-          { ext: ".css", mime: "text/css", desc: "CSS 样式�? },
-          { ext: ".csv", mime: "text/csv", desc: "CSV 数据" },
-          { ext: ".xml", mime: "text/xml", desc: "XML 文档" },
-          { ext: ".md", mime: "text/markdown", desc: "Markdown 文档" }
-        ],
-        "JavaScript/JSON": [
-          { ext: ".js", mime: "text/javascript", desc: "JavaScript" },
-          { ext: ".mjs", mime: "text/javascript", desc: "ES Module" },
-          { ext: ".json", mime: "application/json", desc: "JSON 数据" },
-          { ext: ".map", mime: "application/json", desc: "Source Map" },
-          { ext: ".ts", mime: "text/typescript", desc: "TypeScript" },
-          { ext: ".tsx", mime: "text/typescript-jsx", desc: "TypeScript JSX" },
-          { ext: ".jsx", mime: "text/jsx", desc: "JavaScript JSX" }
-        ],
-        图片: [
-          { ext: ".jpg", mime: "image/jpeg", desc: "JPEG 图片" },
-          { ext: ".jpeg", mime: "image/jpeg", desc: "JPEG 图片" },
-          { ext: ".png", mime: "image/png", desc: "PNG 图片" },
-          { ext: ".gif", mime: "image/gif", desc: "GIF 图片" },
-          { ext: ".webp", mime: "image/webp", desc: "WebP 图片" },
-          { ext: ".svg", mime: "image/svg+xml", desc: "SVG 矢量�? },
-          { ext: ".ico", mime: "image/x-icon", desc: "ICO 图标" },
-          { ext: ".bmp", mime: "image/bmp", desc: "BMP 位图" },
-          { ext: ".tiff", mime: "image/tiff", desc: "TIFF 图片" },
-          { ext: ".avif", mime: "image/avif", desc: "AVIF 图片" }
-        ],
-        音频: [
-          { ext: ".mp3", mime: "audio/mpeg", desc: "MP3 音频" },
-          { ext: ".wav", mime: "audio/wav", desc: "WAV 音频" },
-          { ext: ".ogg", mime: "audio/ogg", desc: "OGG 音频" },
-          { ext: ".m4a", mime: "audio/mp4", desc: "M4A 音频" },
-          { ext: ".flac", mime: "audio/flac", desc: "FLAC 无损" },
-          { ext: ".aac", mime: "audio/aac", desc: "AAC 音频" },
-          { ext: ".webm", mime: "audio/webm", desc: "WebM 音频" }
-        ],
-        视频: [
-          { ext: ".mp4", mime: "video/mp4", desc: "MP4 视频" },
-          { ext: ".webm", mime: "video/webm", desc: "WebM 视频" },
-          { ext: ".ogg", mime: "video/ogg", desc: "OGG 视频" },
-          { ext: ".avi", mime: "video/x-msvideo", desc: "AVI 视频" },
-          { ext: ".mov", mime: "video/quicktime", desc: "QuickTime" },
-          { ext: ".mkv", mime: "video/x-matroska", desc: "MKV 视频" },
-          { ext: ".wmv", mime: "video/x-ms-wmv", desc: "WMV 视频" }
-        ],
-        文档: [
-          { ext: ".pdf", mime: "application/pdf", desc: "PDF 文档" },
-          { ext: ".doc", mime: "application/msword", desc: "Word 文档" },
-          {
-            ext: ".docx",
-            mime: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            desc: "Word 文档"
-          },
-          { ext: ".xls", mime: "application/vnd.ms-excel", desc: "Excel 表格" },
-          {
-            ext: ".xlsx",
-            mime: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            desc: "Excel 表格"
-          },
-          { ext: ".ppt", mime: "application/vnd.ms-powerpoint", desc: "PPT 演示" },
-          {
-            ext: ".pptx",
-            mime: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-            desc: "PPT 演示"
-          }
-        ],
-        压缩�? [
-          { ext: ".zip", mime: "application/zip", desc: "ZIP 压缩�? },
-          { ext: ".rar", mime: "application/vnd.rar", desc: "RAR 压缩�? },
-          { ext: ".7z", mime: "application/x-7z-compressed", desc: "7Z 压缩�? },
-          { ext: ".tar", mime: "application/x-tar", desc: "TAR 归档" },
-          { ext: ".gz", mime: "application/gzip", desc: "GZIP 压缩" },
-          { ext: ".bz2", mime: "application/x-bzip2", desc: "BZIP2 压缩" }
-        ],
-        字体: [
-          { ext: ".woff", mime: "font/woff", desc: "WOFF 字体" },
-          { ext: ".woff2", mime: "font/woff2", desc: "WOFF2 字体" },
-          { ext: ".ttf", mime: "font/ttf", desc: "TrueType 字体" },
-          { ext: ".otf", mime: "font/otf", desc: "OpenType 字体" },
-          { ext: ".eot", mime: "application/vnd.ms-fontobject", desc: "EOT 字体" }
-        ],
-        其他: [
-          { ext: ".wasm", mime: "application/wasm", desc: "WebAssembly" },
-          { ext: ".bin", mime: "application/octet-stream", desc: "二进制数�? },
-          { ext: ".exe", mime: "application/octet-stream", desc: "可执行文�? },
-          { ext: ".dmg", mime: "application/octet-stream", desc: "DMG 镜像" },
-          { ext: ".iso", mime: "application/octet-stream", desc: "ISO 镜像" },
-          { ext: ".apk", mime: "application/vnd.android.package-archive", desc: "Android APK" },
-          { ext: ".ipa", mime: "application/octet-stream", desc: "iOS IPA" }
-        ]
-      };
+      const mimeData = [
+        { ext: ".html", type: "text/html", category: "文本", desc: "超文本标记语言文档" },
+        { ext: ".css", type: "text/css", category: "文本", desc: "层叠样式表" },
+        { ext: ".js", type: "text/javascript", category: "文本", desc: "JavaScript 脚本" },
+        { ext: ".json", type: "application/json", category: "应用", desc: "JSON 数据格式" },
+        { ext: ".jsonld", type: "application/ld+json", category: "应用", desc: "JSON-LD 格式" },
+        { ext: ".xml", type: "application/xml", category: "文本", desc: "XML 文档" },
+        { ext: ".txt", type: "text/plain", category: "文本", desc: "纯文本文件" },
+        
+        { ext: ".png", type: "image/png", category: "图片", desc: "可移植网络图形" },
+        { ext: ".jpg", type: "image/jpeg", category: "图片", desc: "JPEG 图像" },
+        { ext: ".jpeg", type: "image/jpeg", category: "图片", desc: "JPEG 图像" },
+        { ext: ".gif", type: "image/gif", category: "图片", desc: "GIF 动画" },
+        { ext: ".webp", type: "image/webp", category: "图片", desc: "WebP 图像格式" },
+        { ext: ".svg", type: "image/svg+xml", category: "图片", desc: "可缩放矢量图形" },
+        { ext: ".ico", type: "image/vnd.microsoft.icon", category: "图片", desc: "图标文件" },
+        { ext: ".avif", type: "image/avif", category: "图片", desc: "AVIF 图像格式" },
 
-      function renderStats() {
-        const container = document.getElementById("stats");
-        let total = 0;
-        const catCount = Object.keys(MIME_TYPES).length;
-        Object.values(MIME_TYPES).forEach(function (items) {
-          total += items.length;
-        });
+        { ext: ".mp3", type: "audio/mpeg", category: "音频", desc: "MP3 音频" },
+        { ext: ".wav", type: "audio/wav", category: "音频", desc: "WAVE 音频" },
+        { ext: ".ogg", type: "audio/ogg", category: "音频", desc: "Ogg 音频" },
+        { ext: ".m4a", type: "audio/x-m4a", category: "音频", desc: "M4A 音频" },
+        
+        { ext: ".mp4", type: "video/mp4", category: "视频", desc: "MP4 视频" },
+        { ext: ".webm", type: "video/webm", category: "视频", desc: "WebM 视频" },
+        { ext: ".ogv", type: "video/ogg", category: "视频", desc: "Ogg 视频" },
+        { ext: ".mov", type: "video/quicktime", category: "视频", desc: "QuickTime 视频" },
 
-        const stats = [
-          { number: total, label: "总条目数" },
-          { number: catCount, label: "分类�? }
-        ];
+        { ext: ".pdf", type: "application/pdf", category: "应用", desc: "PDF 文档" },
+        { ext: ".zip", type: "application/zip", category: "应用", desc: "ZIP 压缩包" },
+        { ext: ".rar", type: "application/x-rar-compressed", category: "应用", desc: "RAR 压缩包" },
+        { ext: ".7z", type: "application/x-7z-compressed", category: "应用", desc: "7z 压缩包" },
+        { ext: ".wasm", type: "application/wasm", category: "应用", desc: "WebAssembly 字节码" },
+        { ext: ".sh", type: "application/x-sh", category: "应用", desc: "Shell 脚本" },
+        { ext: ".tar", type: "application/x-tar", category: "应用", desc: "Tape Archive 文件" },
 
-        stats.forEach(function (s) {
-          const item = document.createElement("div");
-          item.className = "stat-item";
-          const num = document.createElement("div");
-          num.className = "number";
-          num.textContent = s.number;
-          const label = document.createElement("div");
-          label.className = "label";
-          label.textContent = s.label;
-          item.appendChild(num);
-          item.appendChild(label);
-          container.appendChild(item);
-        });
+        { ext: ".woff", type: "font/woff", category: "字体", desc: "Web 开放字体格式" },
+        { ext: ".woff2", type: "font/woff2", category: "字体", desc: "Web 开放字体格式 2.0" },
+        { ext: ".ttf", type: "font/ttf", category: "字体", desc: "TrueType 字体" },
+        { ext: ".otf", type: "font/otf", category: "字体", desc: "OpenType 字体" }
+      ];
+
+      let currentCategory = "全部";
+      let searchQuery = "";
+
+      function init() {
+        renderTabs();
+        renderResults();
+        
+        document.getElementById("searchInput").oninput = (e) => {
+          searchQuery = e.target.value.toLowerCase();
+          renderResults();
+        };
       }
 
-      function renderResults(filter) {
-        const container = document.getElementById("results");
-        container.innerHTML = "";
-        const search = (filter || "").toLowerCase().replace(/^\./, "");
+      function renderTabs() {
+        const tabs = ["全部", "文本", "图片", "音频", "视频", "应用", "字体"];
+        const container = document.getElementById("filterTabs");
+        container.innerHTML = tabs.map(t => `
+          <button class="tab-btn ${t === currentCategory ? 'active' : ''}" onclick="setCategory('${t}')">${t}</button>
+        `).join("");
+      }
 
-        Object.keys(MIME_TYPES).forEach(function (cat) {
-          const items = MIME_TYPES[cat].filter(function (item) {
-            if (!search) return true;
-            return (
-              item.ext.toLowerCase().includes(search) ||
-              item.mime.toLowerCase().includes(search) ||
-              item.desc.toLowerCase().includes(search)
-            );
-          });
+      window.setCategory = (cat) => {
+        currentCategory = cat;
+        renderTabs();
+        renderResults();
+      };
 
-          if (items.length === 0) return;
-
-          const section = document.createElement("div");
-          section.className = "category-section";
-
-          const title = document.createElement("h2");
-          title.className = "category-title";
-          title.textContent = cat + " (" + items.length + ")";
-          section.appendChild(title);
-
-          items.forEach(function (item) {
-            const row = document.createElement("div");
-            row.className = "result-item";
-
-            const ext = document.createElement("div");
-            ext.className = "ext";
-            ext.textContent = item.ext;
-
-            const mime = document.createElement("div");
-            mime.className = "mime";
-            mime.textContent = item.mime;
-            mime.title = item.desc;
-
-            const copyBtn = document.createElement("button");
-            copyBtn.className = "copy-btn";
-            copyBtn.textContent = "复制";
-            copyBtn.addEventListener("click", async function () {
-              try {
-                await navigator.clipboard.writeText(item.mime);
-                copyBtn.textContent = "�?;
-                setTimeout(function () {
-                  copyBtn.textContent = "复制";
-                }, 1000);
-              } catch (e) {}
-            });
-
-            row.appendChild(ext);
-            row.appendChild(mime);
-            row.appendChild(copyBtn);
-            section.appendChild(row);
-          });
-
-          container.appendChild(section);
+      function renderResults() {
+        const body = document.getElementById("resultsBody");
+        const empty = document.getElementById("emptyState");
+        
+        let filtered = mimeData.filter(item => {
+          const matchesCat = currentCategory === "全部" || item.category === currentCategory;
+          const matchesSearch = item.ext.toLowerCase().includes(searchQuery) || 
+                               item.type.toLowerCase().includes(searchQuery) ||
+                               item.desc.toLowerCase().includes(searchQuery);
+          return matchesCat && matchesSearch;
         });
 
-        if (container.children.length === 0) {
-          const noResult = document.createElement("div");
-          noResult.style.textAlign = "center";
-          noResult.style.padding = "40px";
-          noResult.style.color = "var(--text-muted)";
-          noResult.textContent = "没有找到匹配�?MIME 类型";
-          container.appendChild(noResult);
+        filtered.sort((a, b) => a.ext.localeCompare(b.ext));
+
+        if (filtered.length === 0) {
+          body.innerHTML = "";
+          empty.style.display = "block";
+        } else {
+          empty.style.display = "none";
+          body.innerHTML = filtered.map(item => `
+            <tr>
+              <td class="ext-cell">${item.ext}</td>
+              <td class="mime-cell">${item.type}</td>
+              <td class="desc-cell">${item.desc}</td>
+              <td><button class="copy-btn" onclick="copyMime('${item.type}')">复制</button></td>
+            </tr>
+          `).join("");
         }
       }
 
-      document.getElementById("search").addEventListener("input", function (e) {
-        renderResults(e.target.value);
-      });
-
-      renderStats();
-      renderResults();
-
-      window.toggleTheme = function () {
-        const html = document.documentElement;
-        const btn = document.querySelector(".theme-toggle");
-        const next = html.getAttribute("data-theme") === "dark" ? "" : "dark";
-        html.setAttribute("data-theme", next);
-        btn.textContent = next === "dark" ? "🌙" : "☀�?;
-        localStorage.setItem("theme", next || "light");
+      window.copyMime = (text) => {
+        navigator.clipboard.writeText(text).then(() => {
+          const toast = document.getElementById("toast");
+          toast.textContent = `已复制: ${text}`;
+          toast.classList.add("show");
+          setTimeout(() => toast.classList.remove("show"), 2000);
+        });
       };
-      (function () {
-        const saved = localStorage.getItem("theme");
-        if (saved === "dark") {
-          document.documentElement.setAttribute("data-theme", "dark");
-          const btn = document.querySelector(".theme-toggle");
-          if (btn) btn.textContent = "🌙";
-        }
-      })();
+
+      // Theme logic
+      window.toggleTheme = () => {
+        const theme = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+        setTheme(theme);
+      }
+      function setTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        document.getElementById("theme-icon").textContent = theme === "light" ? "☀️" : "🌙";
+        localStorage.setItem("theme", theme);
+      }
+      function initTheme() {
+        const savedTheme = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        setTheme(savedTheme || (prefersDark ? "dark" : "light"));
+      }
+
+      initTheme();
+      init();
     </script>
   </body>
 </html>
-

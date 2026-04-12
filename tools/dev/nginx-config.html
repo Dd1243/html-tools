@@ -1,953 +1,464 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="light">
+<html lang="zh-CN" data-theme="dark">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nginx 配置生成�?- WebUtils</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Nginx 配置生成器 - 高性能 Web 服务器配置在线构建工具 | WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Nginx 配置生成�?- WebUtils" />
-    <meta name="keywords" content="nginx-config,dev,tools,webutils" />
+    <meta name="description" content="在线生成高性能 Nginx 配置文件。支持反向代理、负载均衡、SSL/HTTPS 优化、Gzip 压缩、缓存控制及安全加固配置。提供常用场景模板，助力快速部署生产级 Web 服务。" />
+    <meta name="keywords" content="nginx config generator, nginx配置生成, 反向代理配置, 负载均衡, ssl配置, nginx安全优化, web服务器配置" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/dev/nginx-config.html" />
 
     <!-- Open Graph -->
-    <meta property="og:title" content="Nginx 配置生成�?- WebUtils" />
-    <meta property="og:description" content="Nginx 配置生成�?- WebUtils" />
+    <meta property="og:title" content="Nginx 配置生成器 - 高性能 Web 服务器配置在线构建工具 | WebUtils" />
+    <meta property="og:description" content="快速构建符合最佳实践的 Nginx 配置文件，支持多种场景一键生成。" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://essays4u.net/tools/dev/nginx-config.html" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
     <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Nginx 配置生成�?- WebUtils" />
-    <meta name="twitter:description" content="Nginx 配置生成�?- WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
     <style>
       :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
+        --bg-body: #0a0a0f;
+        --bg-card: #12121a;
         --bg-input: #0e0e14;
+        --bg-elevated: #1a1a24;
         --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --text-secondary: #a0a0b0;
+        --text-muted: #606070;
+        --border-color: #2a2a3a;
+        --border-focus: #3a3a4a;
+        --accent: #00f5d4;
+        --accent-purple: #bf5af2;
+        --success: #30d158;
+        --warning: #ff9f0a;
+        --error: #ff453a;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", "Space Grotesk", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
       }
 
       [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
+        --bg-body: #fafafa;
+        --bg-card: #ffffff;
         --bg-input: #f5f5f5;
+        --bg-elevated: #ffffff;
         --text-primary: #1a1a1a;
         --text-secondary: #666;
         --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        --border-color: #e5e5e5;
+        --border-focus: #d5d5d5;
+        --accent: #00d4b8;
+        --accent-purple: #9b4dca;
       }
 
-      body {
-        padding: 1rem;
-      }
-      .container {
-        max-width: 1400px;
-      }
-      .grid-layout {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      
+      .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--border-color); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .header-right { display: flex; align-items: center; gap: 12px; }
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; width: 40px; height: 40px; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+
+      .main-grid { display: grid; grid-template-columns: 450px 1fr; gap: 24px; }
+
+      .config-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; display: flex; flex-direction: column; }
+      .config-tabs { display: flex; background: var(--bg-input); border-bottom: 1px solid var(--border-color); }
+      .config-tab { flex: 1; padding: 12px; border: none; background: none; color: var(--text-muted); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; transition: all 0.2s; }
+      .config-tab.active { color: var(--accent); background: var(--bg-card); border-bottom: 2px solid var(--accent); }
+
+      .config-content { padding: 24px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; max-height: 700px; }
+      
+      .form-group { display: flex; flex-direction: column; gap: 6px; }
+      .form-group label { font-size: 0.8125rem; font-weight: 600; color: var(--text-secondary); }
+      .form-group input, .form-group select { width: 100%; padding: 10px 14px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary); font-size: 0.875rem; outline: none; }
+      .form-group input:focus { border-color: var(--accent); }
+
+      .checkbox-row { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+      .checkbox-row input { width: auto; }
+      .checkbox-row span { font-size: 0.8125rem; color: var(--text-secondary); }
+
+      .output-pane { position: sticky; top: 24px; display: flex; flex-direction: column; gap: 16px; }
+      .code-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; }
+      .code-header { padding: 12px 20px; background: var(--bg-input); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+      .code-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+      
+      pre { padding: 20px; font-family: var(--font-mono); font-size: 0.8125rem; color: var(--text-primary); overflow-x: auto; max-height: 600px; background: var(--bg-card); }
+      .copy-btn { padding: 6px 16px; background: var(--accent); color: var(--bg-body); border: none; border-radius: 4px; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
+
+      .preset-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+      .preset-btn { padding: 6px 12px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text-secondary); font-size: 0.75rem; cursor: pointer; transition: all 0.2s; }
+      .preset-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+      .ads-container { margin: 24px 0; min-height: 90px; background: rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem; border: 1px dashed var(--border-color); border-radius: 12px; }
+
+      .seo-content { margin-top: 32px; padding: 32px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); color: var(--text-secondary); font-size: 0.875rem; }
+      .seo-content h2 { color: var(--text-primary); font-size: 1.125rem; margin-bottom: 16px; font-weight: 600; border-left: 4px solid var(--accent); padding-left: 12px; }
+      .seo-content h3 { color: var(--text-primary); font-size: 1rem; margin-top: 24px; margin-bottom: 12px; font-weight: 600; }
+      .seo-content p { margin-bottom: 12px; }
+      .seo-content ul { margin-bottom: 16px; padding-left: 20px; }
+      .seo-content li { margin-bottom: 8px; }
+
+      .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); background: var(--accent); color: var(--bg-body); padding: 8px 16px; border-radius: var(--radius-md); font-weight: 600; font-size: 0.875rem; z-index: 1000; opacity: 0; pointer-events: none; transition: all 0.3s; }
+      .toast.show { opacity: 1; transform: translateX(-50%) translateY(-10px); }
+
       @media (max-width: 992px) {
-        .grid-layout {
-          grid-template-columns: 1fr;
-        }
+        .main-grid { grid-template-columns: 1fr; }
+        .output-pane { position: static; }
       }
-
-      /* Override Pico CSS grid for mobile */
-      @media (max-width: 576px) {
-        .grid-layout {
-          grid-template-columns: 1fr;
-        }
-        .grid {
-          grid-template-columns: 1fr !important;
-        }
-        body {
-          padding: 0.5rem;
-        }
-        .btn-group {
-          flex-direction: column;
-        }
-        .btn-group button {
-          width: 100%;
-        }
-        .server-header {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 0.5rem;
-        }
-        pre {
-          font-size: 0.7rem;
-          padding: 0.5rem;
-          word-break: break-all;
-          white-space: pre-wrap;
-        }
-        .output-section {
-          position: static;
-        }
-        h1 {
-          font-size: 1.5rem;
-        }
-        article header div {
-          flex-direction: column;
-          align-items: flex-start !important;
-          gap: 0.5rem;
-        }
-        .container {
-          padding: 0;
-        }
-        article {
-          padding: 0.75rem;
-        }
-      }
-      .server-card {
-        background: var(--pico-card-background-color);
-        border: 1px solid var(--pico-muted-border-color);
-        border-radius: var(--pico-border-radius);
-        padding: 1rem;
-        margin-bottom: 1rem;
-      }
-      .server-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0.5rem;
-      }
-      .server-header h4 {
-        margin: 0;
-      }
-      .location-item {
-        background: var(--pico-background-color);
-        padding: 0.75rem;
-        border-radius: var(--pico-border-radius);
-        margin-bottom: 0.5rem;
-        border: 1px solid var(--pico-muted-border-color);
-      }
-      pre {
-        background: var(--pico-code-background-color);
-        padding: 1rem;
-        border-radius: var(--pico-border-radius);
-        overflow-x: auto;
-        max-height: 70vh;
-        font-size: 0.85rem;
-      }
-      .btn-group {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-      }
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        z-index: 1000;
-      }
-      details {
-        margin-bottom: 0.5rem;
-      }
-      .output-section {
-        position: sticky;
-        top: 1rem;
-      }
-      .template-btn {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.8rem;
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
+      @media (max-width: 640px) {
+        .container { padding: 16px; }
+        .header { flex-direction: column; align-items: stretch; }
+        .header-right { margin-top: -48px; align-self: flex-end; }
       }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
   </head>
   <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      Nginx 配置生成�?
-    </nav>
-    <button class="theme-toggle outline" onclick="toggleTheme()">🌓 主题</button>
+    <div class="container">
+      <header class="header">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn" title="返回首页">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 12L6 8L10 4" />
+            </svg>
+          </a>
+          <div class="title-group">
+            <h1>Nginx 配置生成器</h1>
+            <p>基于最佳实践，快速构建高性能生产级 Nginx 配置文件</p>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+            <span id="theme-icon">🌙</span>
+          </div>
+        </div>
+      </header>
 
-    <main class="container">
-      <h1>⚙️ Nginx 配置生成�?/h1>
-      <p>可视化创�?nginx.conf 配置文件</p>
-
-      <div class="grid-layout">
-        <section>
-          <article>
-            <header>
-              <h3>全局配置</h3>
-            </header>
-            <div class="grid">
-              <label>
-                Worker 进程�?
-                <input type="text" id="workerProcesses" value="auto" onchange="generateConfig()" />
-              </label>
-              <label>
-                Worker 连接�?
-                <input
-                  type="number"
-                  id="workerConnections"
-                  value="1024"
-                  onchange="generateConfig()"
-                />
-              </label>
-            </div>
-            <label>
-              <input type="checkbox" id="sendfile" checked onchange="generateConfig()" />
-              启用 sendfile
-            </label>
-            <label>
-              <input type="checkbox" id="tcpNopush" checked onchange="generateConfig()" />
-              启用 tcp_nopush
-            </label>
-            <label>
-              <input type="checkbox" id="gzip" checked onchange="generateConfig()" />
-              启用 Gzip 压缩
-            </label>
-          </article>
-
-          <article>
-            <header>
-              <h3>快速模�?/h3>
-            </header>
-            <div class="btn-group">
-              <button class="template-btn outline" onclick="addTemplate('static')">静态网�?/button>
-              <button class="template-btn outline" onclick="addTemplate('spa')">SPA应用</button>
-              <button class="template-btn outline" onclick="addTemplate('proxy')">反向代理</button>
-              <button class="template-btn outline" onclick="addTemplate('php')">PHP-FPM</button>
-              <button class="template-btn outline" onclick="addTemplate('loadbalance')">
-                负载均衡
-              </button>
-              <button class="template-btn outline" onclick="addTemplate('ssl')">HTTPS</button>
-            </div>
-          </article>
-
-          <article>
-            <header>
-              <div style="display: flex; justify-content: space-between; align-items: center">
-                <h3>Upstream 配置</h3>
-                <button class="outline" onclick="addUpstream()">+ 添加</button>
-              </div>
-            </header>
-            <div id="upstreamsContainer"></div>
-          </article>
-
-          <article>
-            <header>
-              <div style="display: flex; justify-content: space-between; align-items: center">
-                <h3>Server 配置</h3>
-                <button class="outline" onclick="addServer()">+ 添加 Server</button>
-              </div>
-            </header>
-            <div id="serversContainer"></div>
-          </article>
-        </section>
-
-        <section class="output-section">
-          <article>
-            <header>
-              <div style="display: flex; justify-content: space-between; align-items: center">
-                <h3>生成结果</h3>
-                <div class="btn-group">
-                  <button class="outline" onclick="copyOutput()">📋 复制</button>
-                  <button class="outline" onclick="downloadFile()">💾 下载</button>
-                </div>
-              </div>
-            </header>
-            <pre><code id="output"></code></pre>
-          </article>
-        </section>
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
       </div>
-    </main>
+
+      <div class="preset-bar">
+        <button class="preset-btn" onclick="applyPreset('spa')">单页应用 (Vue/React)</button>
+        <button class="preset-btn" onclick="applyPreset('node-proxy')">Node.js 反向代理</button>
+        <button class="preset-btn" onclick="applyPreset('static')">静态资源服务器</button>
+        <button class="preset-btn" onclick="applyPreset('php')">PHP-FPM 配置</button>
+        <button class="preset-btn" onclick="applyPreset('security')">安全加固模板</button>
+      </div>
+
+      <main class="main-grid">
+        <aside class="config-card">
+          <div class="config-tabs">
+            <button class="config-tab active" onclick="setTab('general')">通用</button>
+            <button class="config-tab" onclick="setTab('server')">Server</button>
+            <button class="config-tab" onclick="setTab('proxy')">代理</button>
+            <button class="config-tab" onclick="setTab('opt')">优化</button>
+          </div>
+          
+          <div class="config-content" id="configGeneral">
+            <div class="form-group">
+              <label>Worker 进程数</label>
+              <select id="worker_processes" onchange="update()">
+                <option value="auto">auto (推荐)</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="4">4</option>
+                <option value="8">8</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Worker 连接数</label>
+              <input type="number" id="worker_connections" value="1024" oninput="update()" />
+            </div>
+            <div class="checkbox-row">
+              <input type="checkbox" id="sendfile" checked onchange="update()" />
+              <span onclick="toggleCheck('sendfile')">启用 sendfile (提高文件传输性能)</span>
+            </div>
+            <div class="checkbox-row">
+              <input type="checkbox" id="tcp_nopush" checked onchange="update()" />
+              <span onclick="toggleCheck('tcp_nopush')">启用 tcp_nopush</span>
+            </div>
+          </div>
+
+          <div class="config-content" id="configServer" style="display:none;">
+            <div class="form-group">
+              <label>监听端口</label>
+              <input type="text" id="listen" value="80" oninput="update()" />
+            </div>
+            <div class="form-group">
+              <label>服务器域名 (Server Name)</label>
+              <input type="text" id="server_name" value="example.com" oninput="update()" />
+            </div>
+            <div class="form-group">
+              <label>网站根目录 (Root)</label>
+              <input type="text" id="root" value="/var/www/html" oninput="update()" />
+            </div>
+            <div class="form-group">
+              <label>默认首页 (Index)</label>
+              <input type="text" id="index" value="index.html index.htm" oninput="update()" />
+            </div>
+          </div>
+
+          <div class="config-content" id="configProxy" style="display:none;">
+            <div class="checkbox-row">
+              <input type="checkbox" id="enable_proxy" onchange="update()" />
+              <span onclick="toggleCheck('enable_proxy')">启用反向代理</span>
+            </div>
+            <div class="form-group">
+              <label>后端地址 (Proxy Pass)</label>
+              <input type="text" id="proxy_pass" value="http://127.0.0.1:3000" oninput="update()" />
+            </div>
+            <div class="checkbox-row">
+              <input type="checkbox" id="proxy_set_header" checked onchange="update()" />
+              <span onclick="toggleCheck('proxy_set_header')">透传客户端真实 IP</span>
+            </div>
+            <div class="checkbox-row">
+              <input type="checkbox" id="proxy_buffering" checked onchange="update()" />
+              <span onclick="toggleCheck('proxy_buffering')">启用代理缓冲</span>
+            </div>
+          </div>
+
+          <div class="config-content" id="configOpt" style="display:none;">
+            <div class="checkbox-row">
+              <input type="checkbox" id="gzip" checked onchange="update()" />
+              <span onclick="toggleCheck('gzip')">启用 Gzip 压缩</span>
+            </div>
+            <div class="form-group">
+              <label>Gzip 压缩等级</label>
+              <input type="range" id="gzip_comp_level" min="1" max="9" value="6" oninput="update()" />
+            </div>
+            <div class="checkbox-row">
+              <input type="checkbox" id="security_headers" checked onchange="update()" />
+              <span onclick="toggleCheck('security_headers')">添加安全响应头 (HSTS, No-Sniff)</span>
+            </div>
+            <div class="checkbox-row">
+              <input type="checkbox" id="cache_static" onchange="update()" />
+              <span onclick="toggleCheck('cache_static')">静态资源缓存 (30天)</span>
+            </div>
+          </div>
+        </aside>
+
+        <section class="output-pane">
+          <div class="code-card">
+            <div class="code-header">
+              <span class="code-label">nginx.conf</span>
+              <button class="copy-btn" onclick="copyCode()">复制配置</button>
+            </div>
+            <pre id="codeOutput"></pre>
+          </div>
+
+          <div class="ads-container">
+            <span>广告展示区域 (AdSense Placeholder)</span>
+          </div>
+        </section>
+      </main>
+
+      <article class="seo-content">
+        <h2>Nginx 配置生成器：从入门到生产级调优</h2>
+        <p><strong>Nginx</strong> 是一款高性能的 HTTP 和反向代理服务器，也是目前全球使用最广泛的 Web 服务器软件之一。它的配置虽然灵活强大，但对于初学者来说，繁琐的指令和层级结构往往容易导致配置错误。本生成器旨在通过可视化界面，帮助开发者快速生成符合安全规范和性能要求的 Nginx 配置文件。</p>
+
+        <h3>1. Nginx 配置的核心层级结构</h3>
+        <p>Nginx 的配置文件通常由以下几个主要部分组成：</p>
+        <ul>
+          <li><strong>Main 层：</strong> 全局配置，如 <code>worker_processes</code>，决定了 Nginx 如何利用多核 CPU。</li>
+          <li><strong>Events 层：</strong> 配置网络连接模型，如 <code>worker_connections</code>，直接影响并发处理能力。</li>
+          <li><strong>Http 层：</strong> 包含 HTTP 相关的通用设置，如 <code>sendfile</code>、<code>gzip</code> 等。</li>
+          <li><strong>Server 层：</strong> 虚拟主机配置，定义域名、监听端口和 SSL 证书。</li>
+          <li><strong>Location 层：</strong> 路由匹配规则，处理特定的 URL 路径或反向代理请求。</li>
+        </ul>
+
+        <h3>2. 性能优化的关键点</h3>
+        <p><strong>Sendfile 与 Tcp_nopush：</strong> 开启 <code>sendfile</code> 可以让 Nginx 直接在内核中传输文件，避免了在用户空间和内核空间之间来回拷贝数据的开销。配合 <code>tcp_nopush</code>，可以将多个数据包合并发送，显著提升静态资源分发速度。</p>
+        <p><strong>Gzip 压缩：</strong> 通过在服务器端压缩文本资源（HTML, CSS, JS），可以减少 60% 以上的网络传输量，极大加快页面首屏加载速度。</p>
+
+        <h3>3. 安全加固最佳实践</h3>
+        <p>一个安全的 Nginx 配置不应仅仅是能跑通。通过添加 <code>X-Frame-Options</code> 可以防止点击劫持，<code>X-Content-Type-Options: nosniff</code> 可以防止 MIME 嗅探攻击。如果您启用了 HTTPS，<code>Strict-Transport-Security (HSTS)</code> 则是强制浏览器始终使用安全连接的必备响应头。</p>
+
+        <h3>4. 常见应用场景配置建议</h3>
+        <p><strong>SPA 应用 (Vue/React)：</strong> 对于单页应用，最关键的是处理前端路由。当用户刷新非首页路径时，Nginx 必须将请求重定向到 <code>index.html</code>，否则会出现 404 错误。</p>
+        <p><strong>Node.js 反向代理：</strong> Nginx 充当流量入口，将请求转发给后端的 Node.js 进程。此时，务必通过 <code>proxy_set_header</code> 将客户端的真实 IP (X-Real-IP) 传给后端，以便进行日志记录和限流控制。</p>
+
+        <h3>常见问题 (FAQ)</h3>
+        <p><strong>Q: 为什么修改配置后没有生效？</strong><br>
+        A: 修改 <code>nginx.conf</code> 后必须重启或重新加载配置。建议先执行 <code>nginx -t</code> 检查语法，然后使用 <code>nginx -s reload</code> 实现无缝重载。</p>
+        <p><strong>Q: Nginx 报 502 Bad Gateway 是什么意思？</strong><br>
+        A: 这通常意味着反向代理配置正确，但后端的上游服务器（如 Node.js 或 PHP-FPM）未启动或无法连接。请检查 <code>proxy_pass</code> 路径和后端进程状态。</p>
+      </article>
+
+      <footer style="margin-top: 32px; text-align: center; color: var(--text-muted); font-size: 0.75rem;">
+        <p>© 2026 WebUtils. All rights reserved.</p>
+      </footer>
+    </div>
+
+    <div class="toast" id="toast">已复制到剪贴板</div>
 
     <script>
-      let servers = [];
-      let upstreams = [];
-      let serverId = 0;
-      let upstreamId = 0;
-
-      window.toggleTheme = function () {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute("data-theme");
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
-      };
-
-      (function () {
-        const savedTheme = localStorage.getItem("theme") || "light";
-        document.documentElement.setAttribute("data-theme", savedTheme);
-      })();
-
-      const templates = {
-        static: {
-          listen: "80",
-          serverName: "example.com",
-          root: "/var/www/html",
-          locations: [{ path: "/", type: "static", tryFiles: "$uri $uri/ =404" }]
-        },
-        spa: {
-          listen: "80",
-          serverName: "app.example.com",
-          root: "/var/www/app/dist",
-          locations: [{ path: "/", type: "static", tryFiles: "$uri $uri/ /index.html" }]
-        },
-        proxy: {
-          listen: "80",
-          serverName: "api.example.com",
-          locations: [
-            { path: "/", type: "proxy", proxyPass: "http://localhost:3000", proxyHeaders: true }
-          ]
-        },
-        php: {
-          listen: "80",
-          serverName: "php.example.com",
-          root: "/var/www/php",
-          index: "index.php index.html",
-          locations: [
-            { path: "/", type: "static", tryFiles: "$uri $uri/ /index.php?$query_string" },
-            { path: "~ \\.php$", type: "fastcgi", fastcgiPass: "unix:/var/run/php/php-fpm.sock" }
-          ]
-        },
-        loadbalance: {
-          listen: "80",
-          serverName: "lb.example.com",
-          locations: [
-            { path: "/", type: "proxy", proxyPass: "http://backend", proxyHeaders: true }
-          ],
-          upstream: {
-            name: "backend",
-            servers: ["127.0.0.1:3001", "127.0.0.1:3002", "127.0.0.1:3003"]
-          }
-        },
-        ssl: {
-          listen: "443 ssl",
-          serverName: "secure.example.com",
-          ssl: true,
-          sslCert: "/etc/nginx/ssl/cert.pem",
-          sslKey: "/etc/nginx/ssl/key.pem",
-          root: "/var/www/secure",
-          locations: [{ path: "/", type: "static", tryFiles: "$uri $uri/ =404" }]
-        }
-      };
-
-      window.addTemplate = function (type) {
-        const tpl = templates[type];
-        if (tpl) {
-          if (tpl.upstream) {
-            addUpstream(tpl.upstream);
-          }
-          addServer(tpl);
-        }
-      };
-
-      window.addUpstream = function (template = null) {
-        const id = upstreamId++;
-        upstreams.push({
-          id,
-          name: template?.name || "backend_" + id,
-          method: "round_robin",
-          servers: template?.servers || ["127.0.0.1:3000"]
-        });
-        renderUpstreams();
-        generateConfig();
-      };
-
-      window.removeUpstream = function (id) {
-        upstreams = upstreams.filter((u) => u.id !== id);
-        renderUpstreams();
-        generateConfig();
-      };
-
-      function renderUpstreams() {
-        const container = document.getElementById("upstreamsContainer");
-        container.replaceChildren();
-
-        upstreams.forEach((upstream) => {
-          const card = document.createElement("div");
-          card.className = "server-card";
-
-          const header = document.createElement("div");
-          header.className = "server-header";
-          const title = document.createElement("h4");
-          title.textContent = "⚖️ " + upstream.name;
-          const delBtn = document.createElement("button");
-          delBtn.className = "outline secondary";
-          delBtn.textContent = "删除";
-          delBtn.onclick = () => removeUpstream(upstream.id);
-          header.appendChild(title);
-          header.appendChild(delBtn);
-          card.appendChild(header);
-
-          const grid = document.createElement("div");
-          grid.className = "grid";
-
-          const nameLabel = document.createElement("label");
-          nameLabel.textContent = "Upstream 名称";
-          const nameInput = document.createElement("input");
-          nameInput.type = "text";
-          nameInput.value = upstream.name;
-          nameInput.onchange = (e) => {
-            upstream.name = e.target.value;
-            renderUpstreams();
-            generateConfig();
-          };
-          nameLabel.appendChild(nameInput);
-
-          const methodLabel = document.createElement("label");
-          methodLabel.textContent = "负载均衡方式";
-          const methodSelect = document.createElement("select");
-          ["round_robin", "least_conn", "ip_hash"].forEach((m) => {
-            const opt = document.createElement("option");
-            opt.value = m;
-            opt.textContent =
-              m === "round_robin" ? "轮询" : m === "least_conn" ? "最少连�? : "IP哈希";
-            opt.selected = upstream.method === m;
-            methodSelect.appendChild(opt);
-          });
-          methodSelect.onchange = (e) => {
-            upstream.method = e.target.value;
-            generateConfig();
-          };
-          methodLabel.appendChild(methodSelect);
-
-          grid.appendChild(nameLabel);
-          grid.appendChild(methodLabel);
-          card.appendChild(grid);
-
-          const serversLabel = document.createElement("label");
-          serversLabel.textContent = "服务器列�?(每行一个，格式: host:port weight=N)";
-          const serversArea = document.createElement("textarea");
-          serversArea.value = upstream.servers.join("\n");
-          serversArea.rows = 3;
-          serversArea.onchange = (e) => {
-            upstream.servers = e.target.value.split("\n").filter((s) => s.trim());
-            generateConfig();
-          };
-          serversLabel.appendChild(serversArea);
-          card.appendChild(serversLabel);
-
-          container.appendChild(card);
-        });
+      function setTab(tab) {
+        document.querySelectorAll('.config-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.config-content').forEach(c => c.style.display = 'none');
+        
+        event.currentTarget.classList.add('active');
+        if (tab === 'general') document.getElementById('configGeneral').style.display = 'flex';
+        if (tab === 'server') document.getElementById('configServer').style.display = 'flex';
+        if (tab === 'proxy') document.getElementById('configProxy').style.display = 'flex';
+        if (tab === 'opt') document.getElementById('configOpt').style.display = 'flex';
       }
 
-      function addServer(template = null) {
-        const id = serverId++;
-        const server = {
-          id,
-          listen: template?.listen || "80",
-          serverName: template?.serverName || "localhost",
-          root: template?.root || "/var/www/html",
-          index: template?.index || "index.html index.htm",
-          ssl: template?.ssl || false,
-          sslCert: template?.sslCert || "",
-          sslKey: template?.sslKey || "",
-          locations: template?.locations ? JSON.parse(JSON.stringify(template.locations)) : []
+      function toggleCheck(id) {
+        const el = document.getElementById(id);
+        el.checked = !el.checked;
+        update();
+      }
+
+      function update() {
+        const config = {
+          worker_processes: document.getElementById('worker_processes').value,
+          worker_connections: document.getElementById('worker_connections').value,
+          sendfile: document.getElementById('sendfile').checked,
+          tcp_nopush: document.getElementById('tcp_nopush').checked,
+          listen: document.getElementById('listen').value,
+          server_name: document.getElementById('server_name').value,
+          root: document.getElementById('root').value,
+          index: document.getElementById('index').value,
+          enable_proxy: document.getElementById('enable_proxy').checked,
+          proxy_pass: document.getElementById('proxy_pass').value,
+          proxy_set_header: document.getElementById('proxy_set_header').checked,
+          proxy_buffering: document.getElementById('proxy_buffering').checked,
+          gzip: document.getElementById('gzip').checked,
+          gzip_comp_level: document.getElementById('gzip_comp_level').value,
+          security_headers: document.getElementById('security_headers').checked,
+          cache_static: document.getElementById('cache_static').checked
         };
-        servers.push(server);
-        renderServers();
-        generateConfig();
-      }
 
-      function removeServer(id) {
-        servers = servers.filter((s) => s.id !== id);
-        renderServers();
-        generateConfig();
-      }
+        let conf = `user  nginx;
+worker_processes  ${config.worker_processes};
 
-      function renderServers() {
-        const container = document.getElementById("serversContainer");
-        container.replaceChildren();
+error_log  /var/log/nginx/error.log warn;
+pid        /var/run/nginx.pid;
 
-        servers.forEach((server) => {
-          const card = document.createElement("div");
-          card.className = "server-card";
+events {
+    worker_connections  ${config.worker_connections};
+}
 
-          const header = document.createElement("div");
-          header.className = "server-header";
-          const title = document.createElement("h4");
-          title.textContent = "🖥�?" + server.serverName;
-          const delBtn = document.createElement("button");
-          delBtn.className = "outline secondary";
-          delBtn.textContent = "删除";
-          delBtn.onclick = () => removeServer(server.id);
-          header.appendChild(title);
-          header.appendChild(delBtn);
-          card.appendChild(header);
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
 
-          // Basic config
-          const grid1 = document.createElement("div");
-          grid1.className = "grid";
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
 
-          const listenLabel = document.createElement("label");
-          listenLabel.textContent = "监听端口";
-          const listenInput = document.createElement("input");
-          listenInput.type = "text";
-          listenInput.value = server.listen;
-          listenInput.onchange = (e) => {
-            server.listen = e.target.value;
-            generateConfig();
-          };
-          listenLabel.appendChild(listenInput);
+    access_log  /var/log/nginx/access.log  main;
 
-          const nameLabel = document.createElement("label");
-          nameLabel.textContent = "服务器名�?;
-          const nameInput = document.createElement("input");
-          nameInput.type = "text";
-          nameInput.value = server.serverName;
-          nameInput.onchange = (e) => {
-            server.serverName = e.target.value;
-            renderServers();
-            generateConfig();
-          };
-          nameLabel.appendChild(nameInput);
+    sendfile        ${config.sendfile ? 'on' : 'off'};
+    tcp_nopush      ${config.tcp_nopush ? 'on' : 'off'};
+    keepalive_timeout  65;
 
-          grid1.appendChild(listenLabel);
-          grid1.appendChild(nameLabel);
-          card.appendChild(grid1);
+    ${config.gzip ? `gzip  on;
+    gzip_disable "msie6";
+    gzip_comp_level ${config.gzip_comp_level};
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;` : '# gzip off;'}
 
-          const grid2 = document.createElement("div");
-          grid2.className = "grid";
+    server {
+        listen       ${config.listen};
+        server_name  ${config.server_name};
 
-          const rootLabel = document.createElement("label");
-          rootLabel.textContent = "根目�?;
-          const rootInput = document.createElement("input");
-          rootInput.type = "text";
-          rootInput.value = server.root;
-          rootInput.onchange = (e) => {
-            server.root = e.target.value;
-            generateConfig();
-          };
-          rootLabel.appendChild(rootInput);
+        root   ${config.root};
+        index  ${config.index};
 
-          const indexLabel = document.createElement("label");
-          indexLabel.textContent = "默认文件";
-          const indexInput = document.createElement("input");
-          indexInput.type = "text";
-          indexInput.value = server.index;
-          indexInput.onchange = (e) => {
-            server.index = e.target.value;
-            generateConfig();
-          };
-          indexLabel.appendChild(indexInput);
+        ${config.security_headers ? `add_header X-Frame-Options "SAMEORIGIN";
+        add_header X-XSS-Protection "1; mode=block";
+        add_header X-Content-Type-Options "nosniff";` : ''}
 
-          grid2.appendChild(rootLabel);
-          grid2.appendChild(indexLabel);
-          card.appendChild(grid2);
-
-          // SSL config
-          const sslDetails = document.createElement("details");
-          const sslSummary = document.createElement("summary");
-          sslSummary.textContent = "SSL/HTTPS 配置";
-          sslDetails.appendChild(sslSummary);
-
-          const sslCheck = document.createElement("label");
-          const sslCheckbox = document.createElement("input");
-          sslCheckbox.type = "checkbox";
-          sslCheckbox.checked = server.ssl;
-          sslCheckbox.onchange = (e) => {
-            server.ssl = e.target.checked;
-            generateConfig();
-          };
-          sslCheck.appendChild(sslCheckbox);
-          sslCheck.appendChild(document.createTextNode(" 启用 SSL"));
-          sslDetails.appendChild(sslCheck);
-
-          const certLabel = document.createElement("label");
-          certLabel.textContent = "SSL 证书路径";
-          const certInput = document.createElement("input");
-          certInput.type = "text";
-          certInput.value = server.sslCert;
-          certInput.placeholder = "/etc/nginx/ssl/cert.pem";
-          certInput.onchange = (e) => {
-            server.sslCert = e.target.value;
-            generateConfig();
-          };
-          certLabel.appendChild(certInput);
-          sslDetails.appendChild(certLabel);
-
-          const keyLabel = document.createElement("label");
-          keyLabel.textContent = "SSL 密钥路径";
-          const keyInput = document.createElement("input");
-          keyInput.type = "text";
-          keyInput.value = server.sslKey;
-          keyInput.placeholder = "/etc/nginx/ssl/key.pem";
-          keyInput.onchange = (e) => {
-            server.sslKey = e.target.value;
-            generateConfig();
-          };
-          keyLabel.appendChild(keyInput);
-          sslDetails.appendChild(keyLabel);
-
-          card.appendChild(sslDetails);
-
-          // Locations
-          const locDetails = document.createElement("details");
-          locDetails.open = true;
-          const locSummary = document.createElement("summary");
-          locSummary.textContent = "Location 配置 (" + server.locations.length + ")";
-          locDetails.appendChild(locSummary);
-
-          const locContainer = document.createElement("div");
-          server.locations.forEach((loc, i) => {
-            const locItem = createLocationItem(server, loc, i);
-            locContainer.appendChild(locItem);
-          });
-          locDetails.appendChild(locContainer);
-
-          const addLocBtn = document.createElement("button");
-          addLocBtn.className = "outline";
-          addLocBtn.textContent = "+ 添加 Location";
-          addLocBtn.onclick = () => {
-            server.locations.push({
-              path: "/api",
-              type: "proxy",
-              proxyPass: "http://localhost:3000"
-            });
-            renderServers();
-            generateConfig();
-          };
-          locDetails.appendChild(addLocBtn);
-          card.appendChild(locDetails);
-
-          container.appendChild(card);
-        });
-      }
-
-      function createLocationItem(server, loc, index) {
-        const item = document.createElement("div");
-        item.className = "location-item";
-
-        const header = document.createElement("div");
-        header.style.cssText =
-          "display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;";
-        const pathSpan = document.createElement("strong");
-        pathSpan.textContent = "location " + loc.path;
-        const delBtn = document.createElement("button");
-        delBtn.className = "outline secondary";
-        delBtn.style.padding = "0.25rem 0.5rem";
-        delBtn.textContent = "×";
-        delBtn.onclick = () => {
-          server.locations.splice(index, 1);
-          renderServers();
-          generateConfig();
-        };
-        header.appendChild(pathSpan);
-        header.appendChild(delBtn);
-        item.appendChild(header);
-
-        const grid = document.createElement("div");
-        grid.className = "grid";
-
-        const pathLabel = document.createElement("label");
-        pathLabel.textContent = "路径";
-        const pathInput = document.createElement("input");
-        pathInput.type = "text";
-        pathInput.value = loc.path;
-        pathInput.onchange = (e) => {
-          loc.path = e.target.value;
-          renderServers();
-          generateConfig();
-        };
-        pathLabel.appendChild(pathInput);
-
-        const typeLabel = document.createElement("label");
-        typeLabel.textContent = "类型";
-        const typeSelect = document.createElement("select");
-        [
-          { value: "static", text: "静态文�? },
-          { value: "proxy", text: "反向代理" },
-          { value: "fastcgi", text: "FastCGI" },
-          { value: "redirect", text: "重定�? }
-        ].forEach((t) => {
-          const opt = document.createElement("option");
-          opt.value = t.value;
-          opt.textContent = t.text;
-          opt.selected = loc.type === t.value;
-          typeSelect.appendChild(opt);
-        });
-        typeSelect.onchange = (e) => {
-          loc.type = e.target.value;
-          renderServers();
-          generateConfig();
-        };
-        typeLabel.appendChild(typeSelect);
-
-        grid.appendChild(pathLabel);
-        grid.appendChild(typeLabel);
-        item.appendChild(grid);
-
-        // Type-specific options
-        if (loc.type === "static") {
-          const tryLabel = document.createElement("label");
-          tryLabel.textContent = "try_files";
-          const tryInput = document.createElement("input");
-          tryInput.type = "text";
-          tryInput.value = loc.tryFiles || "";
-          tryInput.placeholder = "$uri $uri/ =404";
-          tryInput.onchange = (e) => {
-            loc.tryFiles = e.target.value;
-            generateConfig();
-          };
-          tryLabel.appendChild(tryInput);
-          item.appendChild(tryLabel);
-        } else if (loc.type === "proxy") {
-          const proxyLabel = document.createElement("label");
-          proxyLabel.textContent = "proxy_pass";
-          const proxyInput = document.createElement("input");
-          proxyInput.type = "text";
-          proxyInput.value = loc.proxyPass || "";
-          proxyInput.placeholder = "http://localhost:3000";
-          proxyInput.onchange = (e) => {
-            loc.proxyPass = e.target.value;
-            generateConfig();
-          };
-          proxyLabel.appendChild(proxyInput);
-          item.appendChild(proxyLabel);
-
-          const headersCheck = document.createElement("label");
-          const headersCheckbox = document.createElement("input");
-          headersCheckbox.type = "checkbox";
-          headersCheckbox.checked = loc.proxyHeaders !== false;
-          headersCheckbox.onchange = (e) => {
-            loc.proxyHeaders = e.target.checked;
-            generateConfig();
-          };
-          headersCheck.appendChild(headersCheckbox);
-          headersCheck.appendChild(document.createTextNode(" 添加代理�?));
-          item.appendChild(headersCheck);
-        } else if (loc.type === "fastcgi") {
-          const fcgiLabel = document.createElement("label");
-          fcgiLabel.textContent = "fastcgi_pass";
-          const fcgiInput = document.createElement("input");
-          fcgiInput.type = "text";
-          fcgiInput.value = loc.fastcgiPass || "";
-          fcgiInput.placeholder = "unix:/var/run/php/php-fpm.sock";
-          fcgiInput.onchange = (e) => {
-            loc.fastcgiPass = e.target.value;
-            generateConfig();
-          };
-          fcgiLabel.appendChild(fcgiInput);
-          item.appendChild(fcgiLabel);
-        } else if (loc.type === "redirect") {
-          const redirLabel = document.createElement("label");
-          redirLabel.textContent = "重定向目�?;
-          const redirInput = document.createElement("input");
-          redirInput.type = "text";
-          redirInput.value = loc.redirectTo || "";
-          redirInput.placeholder = "https://example.com$request_uri";
-          redirInput.onchange = (e) => {
-            loc.redirectTo = e.target.value;
-            generateConfig();
-          };
-          redirLabel.appendChild(redirInput);
-          item.appendChild(redirLabel);
-
-          const codeLabel = document.createElement("label");
-          codeLabel.textContent = "状态码";
-          const codeSelect = document.createElement("select");
-          ["301", "302", "307", "308"].forEach((c) => {
-            const opt = document.createElement("option");
-            opt.value = c;
-            opt.textContent = c;
-            opt.selected = loc.redirectCode === c;
-            codeSelect.appendChild(opt);
-          });
-          codeSelect.onchange = (e) => {
-            loc.redirectCode = e.target.value;
-            generateConfig();
-          };
-          codeLabel.appendChild(codeSelect);
-          item.appendChild(codeLabel);
+        location / {
+            ${config.enable_proxy ? `proxy_pass ${config.proxy_pass};
+            ${config.proxy_set_header ? `proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;` : ''}
+            proxy_buffering ${config.proxy_buffering ? 'on' : 'off'};` : 'try_files $uri $uri/ /index.html;'}
         }
 
-        return item;
+        ${config.cache_static ? `location ~* \\.(?:ico|css|js|gif|jpe?g|png|woff2?|eot|ttf|svg|webp|avif)$ {
+            expires 30d;
+            add_header Cache-Control "public";
+        }` : ''}
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   /usr/share/nginx/html;
+        }
+    }
+}`;
+
+        document.getElementById('codeOutput').textContent = conf;
       }
 
-      function generateConfig() {
-        const workerProcesses = document.getElementById("workerProcesses").value;
-        const workerConnections = document.getElementById("workerConnections").value;
-        const sendfile = document.getElementById("sendfile").checked;
-        const tcpNopush = document.getElementById("tcpNopush").checked;
-        const gzip = document.getElementById("gzip").checked;
+      window.applyPreset = (type) => {
+        const reset = () => {
+          document.getElementById('enable_proxy').checked = false;
+          document.getElementById('cache_static').checked = false;
+          document.getElementById('security_headers').checked = true;
+          document.getElementById('gzip').checked = true;
+        };
 
-        let config = "";
-        config += "worker_processes " + workerProcesses + ";\n\n";
-        config += "events {\n";
-        config += "    worker_connections " + workerConnections + ";\n";
-        config += "}\n\n";
-        config += "http {\n";
-        config += "    include       mime.types;\n";
-        config += "    default_type  application/octet-stream;\n\n";
-
-        if (sendfile) config += "    sendfile on;\n";
-        if (tcpNopush) config += "    tcp_nopush on;\n";
-
-        if (gzip) {
-          config += "\n    gzip on;\n";
-          config += "    gzip_vary on;\n";
-          config += "    gzip_min_length 1024;\n";
-          config +=
-            "    gzip_types text/plain text/css text/xml text/javascript application/javascript application/json application/xml;\n";
+        reset();
+        if (type === 'spa') {
+          document.getElementById('root').value = '/var/www/dist';
+        } else if (type === 'node-proxy') {
+          document.getElementById('enable_proxy').checked = true;
+          document.getElementById('proxy_pass').value = 'http://127.0.0.1:3000';
+        } else if (type === 'static') {
+          document.getElementById('cache_static').checked = true;
+        } else if (type === 'php') {
+          // Simplification for preset
+          document.getElementById('index').value = 'index.php index.html';
         }
+        update();
+      };
 
-        // Upstreams
-        if (upstreams.length > 0) {
-          config += "\n";
-          upstreams.forEach((upstream) => {
-            config += "    upstream " + upstream.name + " {\n";
-            if (upstream.method === "least_conn") {
-              config += "        least_conn;\n";
-            } else if (upstream.method === "ip_hash") {
-              config += "        ip_hash;\n";
-            }
-            upstream.servers.forEach((s) => {
-              if (s.trim()) {
-                config += "        server " + s.trim() + ";\n";
-              }
-            });
-            config += "    }\n\n";
-          });
-        }
-
-        // Servers
-        servers.forEach((server) => {
-          config += "\n    server {\n";
-          config += "        listen " + server.listen + ";\n";
-          config += "        server_name " + server.serverName + ";\n";
-
-          if (server.ssl) {
-            if (server.sslCert) config += "        ssl_certificate " + server.sslCert + ";\n";
-            if (server.sslKey) config += "        ssl_certificate_key " + server.sslKey + ";\n";
-            config += "        ssl_protocols TLSv1.2 TLSv1.3;\n";
-            config += "        ssl_prefer_server_ciphers on;\n";
-          }
-
-          if (server.root) config += "        root " + server.root + ";\n";
-          if (server.index) config += "        index " + server.index + ";\n";
-
-          server.locations.forEach((loc) => {
-            config += "\n        location " + loc.path + " {\n";
-
-            if (loc.type === "static") {
-              if (loc.tryFiles) {
-                config += "            try_files " + loc.tryFiles + ";\n";
-              }
-            } else if (loc.type === "proxy") {
-              if (loc.proxyPass) {
-                config += "            proxy_pass " + loc.proxyPass + ";\n";
-              }
-              if (loc.proxyHeaders !== false) {
-                config += "            proxy_set_header Host $host;\n";
-                config += "            proxy_set_header X-Real-IP $remote_addr;\n";
-                config +=
-                  "            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n";
-                config += "            proxy_set_header X-Forwarded-Proto $scheme;\n";
-              }
-            } else if (loc.type === "fastcgi") {
-              if (loc.fastcgiPass) {
-                config += "            fastcgi_pass " + loc.fastcgiPass + ";\n";
-                config += "            fastcgi_index index.php;\n";
-                config +=
-                  "            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;\n";
-                config += "            include fastcgi_params;\n";
-              }
-            } else if (loc.type === "redirect") {
-              const code = loc.redirectCode || "301";
-              if (loc.redirectTo) {
-                config += "            return " + code + " " + loc.redirectTo + ";\n";
-              }
-            }
-
-            config += "        }\n";
-          });
-
-          config += "    }\n";
-        });
-
-        config += "}\n";
-
-        document.getElementById("output").textContent = config;
-      }
-
-      window.copyOutput = function () {
-        const output = document.getElementById("output").textContent;
-        navigator.clipboard.writeText(output).then(() => {
-          alert("已复制到剪贴板！");
+      window.copyCode = () => {
+        const code = document.getElementById("codeOutput").textContent;
+        navigator.clipboard.writeText(code).then(() => {
+          const toast = document.getElementById("toast");
+          toast.classList.add("show");
+          setTimeout(() => toast.classList.remove("show"), 2000);
         });
       };
 
-      window.downloadFile = function () {
-        const output = document.getElementById("output").textContent;
-        const blob = new Blob([output], { type: "text/plain" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "nginx.conf";
-        a.click();
-        URL.revokeObjectURL(url);
-      };
+      // Theme logic
+      window.toggleTheme = () => {
+        const theme = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+        setTheme(theme);
+      }
+      function setTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        document.getElementById("theme-icon").textContent = theme === "light" ? "☀️" : "🌙";
+        localStorage.setItem("theme", theme);
+      }
+      function initTheme() {
+        const savedTheme = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        setTheme(savedTheme || (prefersDark ? "dark" : "light"));
+      }
 
-      // Initialize
-      generateConfig();
+      initTheme();
+      update();
     </script>
   </body>
 </html>
-

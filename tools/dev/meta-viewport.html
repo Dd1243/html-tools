@@ -1,593 +1,366 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Viewport Meta 生成�?- WebUtils</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Viewport Meta 生成器 - 响应式网页视口配置与 PWA 适配工具 | WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Viewport Meta 生成�?- WebUtils" />
-    <meta name="keywords" content="meta-viewport,dev,tools,webutils" />
+    <meta name="description" content="在线生成响应式网页所需的 Viewport Meta 标签。支持宽度、缩放、用户缩放限制、iOS 视口适配及 PWA 相关配置。提供详细的移动端适配指南与最佳实践。" />
+    <meta name="keywords" content="meta viewport, 视口标签, 响应式设计, 移动端适配, PWA配置, apple-mobile-web-app-capable, 网页缩放控制, viewport生成器" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/dev/meta-viewport.html" />
 
     <!-- Open Graph -->
-    <meta property="og:title" content="Viewport Meta 生成�?- WebUtils" />
-    <meta property="og:description" content="Viewport Meta 生成�?- WebUtils" />
+    <meta property="og:title" content="Viewport Meta 生成器 - 响应式网页视口配置与 PWA 适配工具 | WebUtils" />
+    <meta property="og:description" content="一键生成标准的移动端视口配置代码，助力完美响应式布局。" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://essays4u.net/tools/dev/meta-viewport.html" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
     <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Viewport Meta 生成�?- WebUtils" />
-    <meta name="twitter:description" content="Viewport Meta 生成�?- WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-    <meta name="description" content="生成响应式网页的viewport meta标签，支持各种配置选项" />
     <style>
       :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
+        --bg-body: #0a0a0f;
+        --bg-card: #12121a;
         --bg-input: #0e0e14;
+        --bg-elevated: #1a1a24;
         --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --text-secondary: #a0a0b0;
+        --text-muted: #606070;
+        --border-color: #2a2a3a;
+        --border-focus: #3a3a4a;
+        --accent: #00f5d4;
+        --accent-purple: #bf5af2;
+        --success: #30d158;
+        --warning: #ff9f0a;
+        --error: #ff453a;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", "Space Grotesk", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
       }
 
       [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
+        --bg-body: #fafafa;
+        --bg-card: #ffffff;
         --bg-input: #f5f5f5;
+        --bg-elevated: #ffffff;
         --text-primary: #1a1a1a;
         --text-secondary: #666;
         --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        --border-color: #e5e5e5;
+        --border-focus: #d5d5d5;
+        --accent: #00d4b8;
+        --accent-purple: #9b4dca;
       }
 
-      :root {
-        --bg-primary: #0a0a0f;
-        --bg-secondary: #12121a;
-        --bg-tertiary: #1a1a25;
-        --color-text-primary: #fff;
-        --color-text-secondary: #88a;
-        --accent: #6366f1;
-        --border: #2a2a3a;
-        --success: #22c55e;
-      }
-      [data-theme="light"] {
-        --bg-primary: #f8fafc;
-        --bg-secondary: #fff;
-        --bg-tertiary: #f1f5f9;
-        --color-text-primary: #1e293b;
-        --color-text-secondary: #64748b;
-        --border: #e2e8f0;
-      }
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      body {
-        font-family:
-          Inter,
-          -apple-system,
-          sans-serif;
-        font-size: 16px;
-        line-height: 1.6;
-        background: var(--bg-deep);
-        color: var(--color-text-primary);
-        min-height: 100vh;
-        padding: 2rem;
-      }
-      .container {
-        max-width: 800px;
-        margin: 0 auto;
-      }
-      .header {
-        text-align: center;
-        margin-bottom: 2rem;
-        position: relative;
-      }
-      .header h1 {
-        font-size: 2rem;
-        background: linear-gradient(135deg, var(--accent-cyan), #a855f7);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-      .header p {
-        color: var(--color-text-secondary);
-        margin-top: 0.5rem;
-      }
-      .back-link {
-        position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--accent-cyan);
-        text-decoration: none;
-        font-size: 0.875rem;
-      }
-      .theme-toggle {
-        position: absolute;
-        right: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        background: var(--bg-tertiary);
-        border: 1px solid var(--border-subtle);
-        color: var(--color-text-primary);
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        cursor: pointer;
-      }
-      .card {
-        background: var(--bg-secondary);
-        border: 1px solid var(--border-subtle);
-        border-radius: 16px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-      }
-      .preset-buttons {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        margin-bottom: 1.5rem;
-      }
-      .preset-btn {
-        padding: 0.5rem 1rem;
-        background: var(--bg-tertiary);
-        border: 1px solid var(--border-subtle);
-        border-radius: 20px;
-        color: var(--color-text-secondary);
-        cursor: pointer;
-        font-size: 0.75rem;
-      }
-      .preset-btn:hover {
-        border-color: var(--accent-cyan);
-        color: var(--accent-cyan);
-      }
-      .options-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-      }
-      .option-group {
-        padding: 1rem;
-        background: var(--bg-tertiary);
-        border-radius: 10px;
-      }
-      .option-group h4 {
-        font-size: 0.875rem;
-        margin-bottom: 0.75rem;
-        color: var(--color-text-primary);
-      }
-      .option-row {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        margin-bottom: 0.5rem;
-      }
-      .option-row label {
-        flex: 1;
-        font-size: 0.875rem;
-        color: var(--color-text-secondary);
-      }
-      select,
-      input[type="number"] {
-        padding: 0.5rem;
-        background: var(--bg-secondary);
-        border: 1px solid var(--border-subtle);
-        border-radius: 6px;
-        color: var(--color-text-primary);
-        font-size: 0.875rem;
-        width: 120px;
-      }
-      select:focus,
-      input:focus {
-        outline: none;
-        border-color: var(--accent-cyan);
-      }
-      .toggle {
-        position: relative;
-        width: 44px;
-        height: 24px;
-      }
-      .toggle input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-      }
-      .toggle-slider {
-        position: absolute;
-        cursor: pointer;
-        inset: 0;
-        background: var(--border-subtle);
-        border-radius: 12px;
-        transition: 0.3s;
-      }
-      .toggle-slider::before {
-        content: "";
-        position: absolute;
-        height: 18px;
-        width: 18px;
-        left: 3px;
-        bottom: 3px;
-        background: white;
-        border-radius: 50%;
-        transition: 0.3s;
-      }
-      .toggle input:checked + .toggle-slider {
-        background: var(--accent-cyan);
-      }
-      .toggle input:checked + .toggle-slider::before {
-        transform: translateX(20px);
-      }
-      .output-section {
-        margin-top: 1.5rem;
-      }
-      .output-section h3 {
-        font-size: 1rem;
-        margin-bottom: 0.75rem;
-      }
-      .code-output {
-        background: var(--bg-tertiary);
-        border-radius: 10px;
-        padding: 1rem;
-        font-family: Monaco, monospace;
-        font-size: 0.875rem;
-        word-break: break-all;
-        cursor: pointer;
-        border: 1px solid var(--border-subtle);
-      }
-      .code-output:hover {
-        border-color: var(--accent-cyan);
-      }
-      .toast {
-        position: fixed;
-        bottom: 2rem;
-        left: 50%;
-        transform: translateX(-50%);
-        padding: 0.75rem 1.5rem;
-        background: var(--accent-green);
-        color: white;
-        border-radius: 10px;
-        opacity: 0;
-        transition: opacity 0.3s;
-      }
-      .toast.show {
-        opacity: 1;
-      }
-      .info-box {
-        margin-top: 1rem;
-        padding: 1rem;
-        background: rgba(99, 102, 241, 0.1);
-        border: 1px solid rgba(99, 102, 241, 0.3);
-        border-radius: 10px;
-        font-size: 0.875rem;
-        color: var(--color-text-secondary);
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      
+      .container { max-width: 1000px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--border-color); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .header-right { display: flex; align-items: center; gap: 12px; }
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; width: 40px; height: 40px; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+      .theme-toggle:hover { border-color: var(--accent); }
+
+      .ads-container { margin: 24px 0; min-height: 90px; background: rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem; border: 1px dashed var(--border-color); border-radius: var(--radius-md); }
+
+      .main-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; }
+      
+      .config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 24px; }
+      .config-section { display: flex; flex-direction: column; gap: 16px; }
+      .section-title { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 8px; }
+
+      .form-group { display: flex; flex-direction: column; gap: 6px; }
+      .form-group label { font-size: 0.8125rem; font-weight: 600; color: var(--text-secondary); }
+      .form-group select, .form-group input { width: 100%; padding: 10px 14px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary); font-size: 0.875rem; outline: none; transition: all 0.2s; }
+      .form-group select:focus, .form-group input:focus { border-color: var(--accent); }
+      
+      .checkbox-group { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+      .checkbox-group input { width: auto; }
+      .checkbox-group span { font-size: 0.8125rem; color: var(--text-secondary); }
+
+      .output-section { padding: 24px; background: var(--bg-input); border-top: 1px solid var(--border-color); }
+      .output-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+      .output-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+      
+      .code-display { position: relative; }
+      pre { background: var(--bg-card); padding: 20px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-family: var(--font-mono); font-size: 0.8125rem; color: var(--text-primary); overflow-x: auto; white-space: pre-wrap; word-break: break-all; }
+      .copy-btn { position: absolute; top: 12px; right: 12px; padding: 6px 12px; background: var(--accent); color: var(--bg-body); border: none; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+      .copy-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+      .preset-bar { display: flex; gap: 8px; flex-wrap: wrap; padding: 16px 24px; background: var(--bg-body); border-top: 1px solid var(--border-color); }
+      .preset-btn { padding: 6px 12px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text-secondary); font-size: 0.75rem; cursor: pointer; transition: all 0.2s; }
+      .preset-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+      .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); background: var(--accent); color: var(--bg-body); padding: 8px 16px; border-radius: var(--radius-md); font-weight: 600; font-size: 0.875rem; z-index: 1000; opacity: 0; pointer-events: none; transition: all 0.3s; }
+      .toast.show { opacity: 1; transform: translateX(-50%) translateY(-10px); }
+
+      .seo-content { margin-top: 32px; padding: 32px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); color: var(--text-secondary); font-size: 0.875rem; }
+      .seo-content h2 { color: var(--text-primary); font-size: 1.125rem; margin-bottom: 16px; font-weight: 600; border-left: 4px solid var(--accent); padding-left: 12px; }
+      .seo-content h3 { color: var(--text-primary); font-size: 1rem; margin-top: 24px; margin-bottom: 12px; font-weight: 600; }
+      .seo-content p { margin-bottom: 12px; }
+      .seo-content ul { margin-bottom: 16px; padding-left: 20px; }
+      .seo-content li { margin-bottom: 8px; }
+
+      @media (max-width: 768px) {
+        .config-grid { grid-template-columns: 1fr; }
       }
       @media (max-width: 640px) {
-        .options-grid {
-          grid-template-columns: 1fr;
-        }
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-      .visually-hidden {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        margin: -1px;
-        padding: 0;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0;
+        .container { padding: 16px; }
+        .header { flex-direction: column; align-items: stretch; }
+        .header-right { margin-top: -48px; align-self: flex-end; }
       }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
   </head>
   <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      Viewport Meta 生成�?
-    </nav>
     <div class="container">
-      <div class="header">
-        <a href="../../index.html" class="back-link">�?返回</a>
-        <h1>📱 Viewport Meta 生成�?/h1>
-        <p>生成响应式网页的 viewport 标签</p>
-        <button class="theme-toggle" onclick="toggleTheme()" aria-label="🌓">🌓</button>
+      <header class="header">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn" title="返回首页">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 12L6 8L10 4" />
+            </svg>
+          </a>
+          <div class="title-group">
+            <h1>Viewport Meta 生成器</h1>
+            <p>为移动端网页配置最佳的视口属性与 PWA 适配</p>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+            <span id="theme-icon">🌙</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Google AdSense Placeholder -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
       </div>
 
-      <div class="card">
-        <div class="preset-buttons">
-          <button class="preset-btn" onclick="applyPreset('responsive')" aria-label="📱 标准响应�?>
-            📱 标准响应�?
-          </button>
-          <button class="preset-btn" onclick="applyPreset('fixed')" aria-label="🖥�?固定宽度">
-            🖥�?固定宽度
-          </button>
-          <button class="preset-btn" onclick="applyPreset('nozoom')" aria-label="🔒 禁止缩放">
-            🔒 禁止缩放
-          </button>
-          <button class="preset-btn" onclick="applyPreset('pwa')" aria-label="📲 PWA 推荐">
-            📲 PWA 推荐
-          </button>
-        </div>
-
-        <div class="options-grid">
-          <div class="option-group">
-            <h4>基本设置</h4>
-            <div class="option-row">
-              <label>宽度</label>
-              <select id="width" onchange="generate()">
-                <option value="device-width">device-width</option>
-                <option value="custom">自定�?/option>
+      <main class="main-card">
+        <div class="config-grid">
+          <div class="config-section">
+            <div class="section-title">核心视口设置</div>
+            <div class="form-group">
+              <label>宽度 (Width)</label>
+              <select id="vpWidth" onchange="update()">
+                <option value="device-width">设备宽度 (device-width)</option>
+                <option value="320">320px</option>
+                <option value="375">375px</option>
+                <option value="414">414px</option>
+                <option value="768">768px</option>
+                <option value="1024">1024px</option>
               </select>
             </div>
-            <div class="option-row" id="customWidthRow" style="display: none">
-              <label for="input------">自定义宽�?/label>
-              <input
-                type="number"
-                id="customWidth"
-                value="1024"
-                onchange="generate()"
-                aria-label="数字输入�?
-                placeholder="请输入数字输入框"
-              />
+            <div class="form-group">
+              <label>初始缩放 (Initial Scale)</label>
+              <input type="number" id="vpInitialScale" value="1.0" step="0.1" min="0" max="10" oninput="update()" />
             </div>
-            <div class="option-row">
-              <label for="input-----">初始缩放</label>
-              <input
-                type="number"
-                id="initialScale"
-                value="1"
-                min="0.1"
-                max="10"
-                step="0.1"
-                onchange="generate()"
-                aria-label="数字输入�?
-                placeholder="请输入数字输入框"
-              />
+            <div class="form-group">
+              <label>视口适配 (Viewport Fit)</label>
+              <select id="vpFit" onchange="update()">
+                <option value="">默认 (auto)</option>
+                <option value="cover">覆盖刘海屏 (cover)</option>
+                <option value="contain">包含内容 (contain)</option>
+              </select>
             </div>
           </div>
 
-          <div class="option-group">
-            <h4>缩放限制</h4>
-            <div class="option-row">
-              <label for="input-----">最小缩�?/label>
-              <input
-                type="number"
-                id="minimumScale"
-                value="1"
-                min="0.1"
-                max="10"
-                step="0.1"
-                onchange="generate()"
-                aria-label="数字输入�?
-                placeholder="请输入数字输入框"
-              />
+          <div class="config-section">
+            <div class="section-title">高级控制与 PWA</div>
+            <div class="form-group">
+              <label>最小/最大缩放</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="number" id="vpMinScale" placeholder="Min" step="0.1" oninput="update()" />
+                <input type="number" id="vpMaxScale" placeholder="Max" step="0.1" oninput="update()" />
+              </div>
             </div>
-            <div class="option-row">
-              <label for="input-----">最大缩�?/label>
-              <input
-                type="number"
-                id="maximumScale"
-                value="5"
-                min="0.1"
-                max="10"
-                step="0.1"
-                onchange="generate()"
-                aria-label="数字输入�?
-                placeholder="请输入数字输入框"
-              />
+            <div class="form-group">
+              <label>交互限制</label>
+              <label class="checkbox-group">
+                <input type="checkbox" id="vpUserScalable" checked onchange="update()" />
+                <span>允许用户手动缩放 (User Scalable)</span>
+              </label>
+              <label class="checkbox-group">
+                <input type="checkbox" id="vpShrinkToFit" onchange="update()" />
+                <span>iOS 9 缩放修正 (Shrink-to-fit)</span>
+              </label>
             </div>
-            <div class="option-row">
-              <label>允许用户缩放</label>
-              <label class="toggle">
-                <input type="checkbox" id="userScalable" checked onchange="generate()" />
-                <span class="toggle-slider"></span>
+            <div class="form-group">
+              <label>WebApp 增强 (iOS/PWA)</label>
+              <label class="checkbox-group">
+                <input type="checkbox" id="pwaCapable" onchange="update()" />
+                <span>启用 WebApp 全屏模式</span>
+              </label>
+              <label class="checkbox-group">
+                <input type="checkbox" id="pwaTranslucent" onchange="update()" />
+                <span>状态栏透明 (Black Translucent)</span>
               </label>
             </div>
           </div>
+        </div>
 
-          <div class="option-group">
-            <h4>iOS 特定</h4>
-            <div class="option-row">
-              <label>视口适配</label>
-              <select id="viewportFit" onchange="generate()">
-                <option value="">默认</option>
-                <option value="auto">auto</option>
-                <option value="contain">contain</option>
-                <option value="cover">cover</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="option-group">
-            <h4>其他选项</h4>
-            <div class="option-row">
-              <label>高度</label>
-              <select id="height" onchange="generate()">
-                <option value="">不设�?/option>
-                <option value="device-height">device-height</option>
-              </select>
-            </div>
-          </div>
+        <div class="preset-bar">
+          <button class="preset-btn" onclick="applyPreset('standard')">标准响应式</button>
+          <button class="preset-btn" onclick="applyPreset('no-zoom')">禁止缩放</button>
+          <button class="preset-btn" onclick="applyPreset('iphone-x')">iPhone 刘海屏适配</button>
+          <button class="preset-btn" onclick="applyPreset('pwa')">完整 PWA 模式</button>
         </div>
 
         <div class="output-section">
-          <h3>生成的代�?/h3>
-          <div class="code-output" id="output" onclick="copyCode()"></div>
+          <div class="output-header">
+            <span class="output-label">生成的 HTML 代码</span>
+          </div>
+          <div class="code-display">
+            <button class="copy-btn" onclick="copyCode()">复制代码</button>
+            <pre id="codeOutput"></pre>
+          </div>
         </div>
+      </main>
 
-        <div class="info-box">
-          💡
-          <strong>提示�?/strong>
-          点击代码即可复制。标准响应式网站推荐使用
-          <code>width=device-width, initial-scale=1.0</code>
-        </div>
+      <!-- Google AdSense Placeholder -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
       </div>
+
+      <article class="seo-content">
+        <h2>Viewport Meta 标签：响应式网页的核心配置指南</h2>
+        <p>在移动互联网时代，<strong>Viewport Meta</strong> 标签是网页开发中最重要的 <code>&lt;head&gt;</code> 元素之一。如果没有正确配置视口，移动浏览器会默认以 980px（通常是桌面端宽度）渲染页面，导致文字极其细小，用户必须通过双击或双指缩放才能阅读。本工具旨在帮助开发者生成最符合现代标准的视口配置代码。</p>
+
+        <h3>1. 为什么 <code>width=device-width</code> 如此重要？</h3>
+        <p>这一指令告诉浏览器，页面的宽度应该等于设备的物理宽度。配合 <code>initial-scale=1.0</code>，它可以确保页面在加载时以 1:1 的比例显示，而不会自动缩小。这是实现 <strong>响应式布局 (Responsive Design)</strong> 的第一步。</p>
+
+        <h3>2. 理解 <code>viewport-fit=cover</code></h3>
+        <p>随着 iPhone X 等“刘海屏”或“全面屏”设备的普及，网页内容可能会被屏幕顶部的刘海或底部的虚拟 Home 键遮挡。通过设置 <code>viewport-fit=cover</code>，网页可以扩展到屏幕的物理边界。开发者可以配合 CSS 变量 <code>safe-area-inset-*</code> 来确保核心交互内容留在安全区域内。</p>
+
+        <h3>3. 用户缩放 (User Scalable) 的争议与权衡</h3>
+        <p>设置 <code>user-scalable=no</code> 或限制 <code>maximum-scale</code> 可以防止用户在输入框聚焦时页面意外放大，提供更像原生 App 的体验。然而，出于<strong>可访问性 (Accessibility)</strong> 的考虑，苹果在 iOS 10+ 的 Safari 中默认忽略了禁止缩放的指令，以确保视力受损的用户仍能放大阅读。除非有极强的交互理由，通常建议保持用户缩放开启。</p>
+
+        <h3>4. PWA 与 WebApp 适配</h3>
+        <p>如果您希望您的网页在被用户“添加到主屏幕”后像原生 App 一样运行，除了视口配置外，还需要添加 <code>apple-mobile-web-app-capable</code> 等标签。本工具的“WebApp 增强”选项可以一键生成这些代码，隐藏浏览器地址栏和工具栏，提供沉浸式体验。</p>
+
+        <h3>常见问题解答 (FAQ)</h3>
+        <p><strong>Q: 为什么我在代码里写了禁止缩放，iOS 还是可以缩放？</strong><br>
+        A: 这是 iOS Safari 的系统级策略，旨在保护可访问性。如果您需要控制缩放，建议检查 CSS 布局是否导致了不必要的溢出，而不是强制禁止用户行为。</p>
+        <p><strong>Q: <code>shrink-to-fit=no</code> 有什么用？</strong><br>
+        A: 这是专门为 iOS 9 引入的，用于防止页面内容在宽度超出视口时自动缩小。在现代浏览器中，这已不再是必须项，但在追求极致兼容性时仍建议保留。</p>
+      </article>
+
+      <footer style="margin-top: 32px; text-align: center; color: var(--text-muted); font-size: 0.75rem;">
+        <p>© 2026 WebUtils. All rights reserved.</p>
+      </footer>
     </div>
-    <div class="toast" id="toast">已复制到剪贴�?/div>
+
+    <div class="toast" id="toast">已复制到剪贴板</div>
 
     <script>
-      window.toggleTheme = function () {
-        const t =
-          document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
-        document.documentElement.setAttribute("data-theme", t);
-        localStorage.setItem("theme", t);
-      };
-      document.documentElement.setAttribute("data-theme", localStorage.getItem("theme") || "dark");
+      function update() {
+        const width = document.getElementById("vpWidth").value;
+        const initialScale = document.getElementById("vpInitialScale").value;
+        const fit = document.getElementById("vpFit").value;
+        const minScale = document.getElementById("vpMinScale").value;
+        const maxScale = document.getElementById("vpMaxScale").value;
+        const scalable = document.getElementById("vpUserScalable").checked;
+        const shrink = document.getElementById("vpShrinkToFit").checked;
+        
+        const pwaCapable = document.getElementById("pwaCapable").checked;
+        const pwaTranslucent = document.getElementById("pwaTranslucent").checked;
 
-      document.getElementById("width").addEventListener("change", function () {
-        document.getElementById("customWidthRow").style.display =
-          this.value === "custom" ? "flex" : "none";
-        generate();
-      });
+        let parts = [];
+        parts.push(`width=${width}`);
+        parts.push(`initial-scale=${initialScale}`);
+        if (minScale) parts.push(`minimum-scale=${minScale}`);
+        if (maxScale) parts.push(`maximum-scale=${maxScale}`);
+        if (!scalable) parts.push(`user-scalable=no`);
+        if (shrink) parts.push(`shrink-to-fit=no`);
+        if (fit) parts.push(`viewport-fit=${fit}`);
 
-      window.applyPreset = function (preset) {
-        const presets = {
-          responsive: {
-            width: "device-width",
-            initialScale: 1,
-            minimumScale: 1,
-            maximumScale: 5,
-            userScalable: true,
-            viewportFit: "",
-            height: ""
-          },
-          fixed: {
-            width: "custom",
-            customWidth: 1024,
-            initialScale: 1,
-            minimumScale: 1,
-            maximumScale: 1,
-            userScalable: false,
-            viewportFit: "",
-            height: ""
-          },
-          nozoom: {
-            width: "device-width",
-            initialScale: 1,
-            minimumScale: 1,
-            maximumScale: 1,
-            userScalable: false,
-            viewportFit: "",
-            height: ""
-          },
-          pwa: {
-            width: "device-width",
-            initialScale: 1,
-            minimumScale: 1,
-            maximumScale: 5,
-            userScalable: true,
-            viewportFit: "cover",
-            height: ""
-          }
-        };
-        const p = presets[preset];
-        document.getElementById("width").value = p.width;
-        document.getElementById("customWidthRow").style.display =
-          p.width === "custom" ? "flex" : "none";
-        if (p.customWidth) document.getElementById("customWidth").value = p.customWidth;
-        document.getElementById("initialScale").value = p.initialScale;
-        document.getElementById("minimumScale").value = p.minimumScale;
-        document.getElementById("maximumScale").value = p.maximumScale;
-        document.getElementById("userScalable").checked = p.userScalable;
-        document.getElementById("viewportFit").value = p.viewportFit;
-        document.getElementById("height").value = p.height;
-        generate();
-      };
-
-      window.generate = function () {
-        const parts = [];
-        const width = document.getElementById("width").value;
-        if (width === "custom") {
-          parts.push("width=" + document.getElementById("customWidth").value);
-        } else {
-          parts.push("width=" + width);
+        let code = `<meta name="viewport" content="${parts.join(', ')}">`;
+        
+        if (pwaCapable) {
+          code += `\n<meta name="apple-mobile-web-app-capable" content="yes">`;
+          code += `\n<meta name="mobile-web-app-capable" content="yes">`;
+        }
+        if (pwaTranslucent) {
+          code += `\n<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">`;
         }
 
-        const height = document.getElementById("height").value;
-        if (height) parts.push("height=" + height);
+        document.getElementById("codeOutput").textContent = code;
+      }
 
-        parts.push("initial-scale=" + document.getElementById("initialScale").value);
-        parts.push("minimum-scale=" + document.getElementById("minimumScale").value);
-        parts.push("maximum-scale=" + document.getElementById("maximumScale").value);
-        parts.push(
-          "user-scalable=" + (document.getElementById("userScalable").checked ? "yes" : "no")
-        );
+      window.applyPreset = (type) => {
+        const controls = {
+          vpWidth: "device-width",
+          vpInitialScale: "1.0",
+          vpFit: "",
+          vpMinScale: "",
+          vpMaxScale: "",
+          vpUserScalable: true,
+          vpShrinkToFit: false,
+          pwaCapable: false,
+          pwaTranslucent: false
+        };
 
-        const viewportFit = document.getElementById("viewportFit").value;
-        if (viewportFit) parts.push("viewport-fit=" + viewportFit);
+        if (type === 'no-zoom') {
+          controls.vpMaxScale = "1.0";
+          controls.vpUserScalable = false;
+        } else if (type === 'iphone-x') {
+          controls.vpFit = "cover";
+        } else if (type === 'pwa') {
+          controls.pwaCapable = true;
+          controls.pwaTranslucent = true;
+        }
 
-        const meta = `<meta name="viewport" content="${parts.join(", ")}">`;
-        document.getElementById("output").textContent = meta;
+        Object.keys(controls).forEach(id => {
+          const el = document.getElementById(id);
+          if (el.type === 'checkbox') el.checked = controls[id];
+          else el.value = controls[id];
+        });
+        update();
       };
 
-      window.copyCode = function () {
-        navigator.clipboard.writeText(document.getElementById("output").textContent);
-        const toast = document.getElementById("toast");
-        toast.classList.add("show");
-        setTimeout(() => toast.classList.remove("show"), 2000);
+      window.copyCode = () => {
+        const code = document.getElementById("codeOutput").textContent;
+        navigator.clipboard.writeText(code).then(() => {
+          const toast = document.getElementById("toast");
+          toast.classList.add("show");
+          setTimeout(() => toast.classList.remove("show"), 2000);
+        });
       };
 
-      generate();
+      // Theme logic
+      window.toggleTheme = () => {
+        const theme = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+        setTheme(theme);
+      }
+      function setTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        document.getElementById("theme-icon").textContent = theme === "light" ? "☀️" : "🌙";
+        localStorage.setItem("theme", theme);
+      }
+      function initTheme() {
+        const savedTheme = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        setTheme(savedTheme || (prefersDark ? "dark" : "light"));
+      }
+
+      initTheme();
+      update();
     </script>
   </body>
 </html>
-
