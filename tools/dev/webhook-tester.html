@@ -1,133 +1,149 @@
 <!doctype html>
-<html lang="zh">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Webhook 测试工具 - 在线发送 HTTP 请求与 API 测试 | WebUtils</title>
+    
+    <!-- SEO Meta Tags -->
     <meta name="description" content="免费的在线 Webhook 测试工具，支持发送 GET, POST, PUT, DELETE 等多种 HTTP 请求。可自定义请求头、请求体（JSON, Text, Form Data），实时查看响应状态码、响应头及响应内容。是调试 Webhook 回调、API 接口的理想选择。" />
     <meta name="keywords" content="Webhook测试,API测试,HTTP请求发送,在线Postman,接口调试,开发者工具,Web工具" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/dev/webhook-tester.html" />
 
+    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content="Webhook 测试工具 - 在线发送 HTTP 请求与 API 测试 | WebUtils" />
+    <meta property="og:description" content="在线模拟发送 HTTP 请求，调试 API 接口。支持多种请求方法和自定义 Header。" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://essays4u.net/tools/dev/webhook-tester.html" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
+    <meta property="og:site_name" content="WebUtils" />
+    <meta property="og:locale" content="zh_CN" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Webhook 测试工具 - 在线发送 HTTP 请求与 API 测试 | WebUtils" />
+    <meta name="twitter:description" content="免费的在线 Webhook 测试工具，支持发送 GET, POST, PUT, DELETE 等多种 HTTP 请求。" />
+    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="../../templates/design-system.css" />
+
     <style>
-      .request-grid {
-        display: grid;
-        grid-template-columns: 120px 1fr 120px;
-        gap: 12px;
-        margin-bottom: 20px;
-      }
-      .method-select {
-        width: 100%;
-        padding: 10px;
-        background: var(--bg-input);
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-md);
-        color: var(--text-primary);
-        font-family: var(--font-mono);
-        outline: none;
-      }
-      .url-input {
-        width: 100%;
-        padding: 10px 16px;
-        background: var(--bg-input);
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-md);
-        color: var(--text-primary);
-        font-family: var(--font-mono);
-        outline: none;
-      }
-      .url-input:focus, .method-select:focus {
-        border-color: var(--accent);
+      /* ===== CSS 变量 (基于模板) ===== */
+      :root {
+        --bg-body: #0a0a0f;
+        --bg-card: #12121a;
+        --bg-input: #0e0e14;
+        --bg-elevated: #1a1a24;
+        --text-primary: #e8e8ed;
+        --text-secondary: #a0a0b0;
+        --text-muted: #606070;
+        --border-color: #2a2a3a;
+        --border-focus: #3a3a4a;
+        --accent: #00f5d4;
+        --accent-purple: #bf5af2;
+        --success: #30d158;
+        --warning: #ff9f0a;
+        --error: #ff453a;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", "Space Grotesk", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
       }
 
-      .headers-container {
-        margin-top: 10px;
-      }
-      .header-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr 40px;
-        gap: 8px;
-        margin-bottom: 8px;
-      }
-      .header-input {
-        padding: 8px 12px;
-        background: var(--bg-input);
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-sm);
-        color: var(--text-primary);
-        font-size: 0.85rem;
+      [data-theme="light"] {
+        --bg-body: #fafafa;
+        --bg-card: #ffffff;
+        --bg-input: #f5f5f5;
+        --bg-elevated: #ffffff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #666;
+        --text-muted: #999;
+        --border-color: #e5e5e5;
+        --border-focus: #d5d5d5;
+        --accent: #00d4b8;
+        --accent-purple: #9b4dca;
       }
 
-      .tabs-nav {
-        display: flex;
-        gap: 20px;
-        border-bottom: 1px solid var(--border-color);
-        margin-bottom: 16px;
-      }
-      .tab-item {
-        padding: 8px 4px;
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-        cursor: pointer;
-        border-bottom: 2px solid transparent;
-        transition: all 0.2s;
-      }
-      .tab-item.active {
-        color: var(--accent);
-        border-bottom-color: var(--accent);
-      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      
+      .container { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--border-color); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .header-right { display: flex; align-items: center; gap: 12px; }
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; width: 40px; height: 40px; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+      .theme-toggle:hover { border-color: var(--accent); }
 
-      .response-info {
-        display: flex;
-        gap: 16px;
-        margin-bottom: 12px;
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-      }
-      .status-badge {
-        padding: 2px 8px;
-        border-radius: 4px;
-        font-weight: 600;
-      }
-      .status-success { background: rgba(16, 185, 129, 0.2); color: #10b981; }
-      .status-error { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+      .main-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; }
+      
+      .request-section { padding: 24px; border-bottom: 1px solid var(--border-color); }
+      .request-grid { display: grid; grid-template-columns: 120px 1fr; gap: 12px; margin-bottom: 20px; }
+      
+      .method-select { padding: 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary); font-family: var(--font-mono); outline: none; cursor: pointer; }
+      .url-input { padding: 12px 16px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary); font-family: var(--font-mono); outline: none; }
+      .url-input:focus, .method-select:focus { border-color: var(--accent); }
 
-      .ads-placeholder {
-        margin: 24px 0;
-        min-height: 90px;
-        background: var(--bg-input);
-        border: 1px dashed var(--border-color);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--text-muted);
-        font-size: 0.8rem;
-        border-radius: var(--radius-md);
-      }
+      .tabs-nav { display: flex; gap: 24px; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; padding: 0 4px; }
+      .tab-item { padding: 8px 0; font-size: 0.85rem; color: var(--text-secondary); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+      .tab-item.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-      .article-content {
-        margin-top: 40px;
-        padding-top: 40px;
-        border-top: 1px solid var(--border-color);
-      }
-      .article-content h2 { font-size: 1.5rem; margin-bottom: 16px; }
-      .article-content h3 { font-size: 1.2rem; margin: 20px 0 10px; }
-      .article-content p { margin-bottom: 12px; color: var(--text-secondary); }
-      .article-content ul { margin-bottom: 16px; padding-left: 20px; color: var(--text-secondary); }
-      .article-content li { margin-bottom: 8px; }
+      .headers-list { display: flex; flex-direction: column; gap: 8px; }
+      .header-row { display: grid; grid-template-columns: 1fr 1fr 40px; gap: 8px; }
+      .header-input { padding: 10px 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.85rem; font-family: var(--font-mono); }
+      .btn-remove { background: transparent; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: color 0.2s; }
+      .btn-remove:hover { color: var(--error); }
+
+      textarea { width: 100%; min-height: 180px; padding: 16px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary); font-family: var(--font-mono); font-size: 0.9rem; resize: vertical; outline: none; transition: all 0.2s; }
+      textarea:focus { border-color: var(--accent); }
+
+      .action-row { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+      .btn { padding: 12px 24px; background: var(--accent); border: none; border-radius: var(--radius-md); color: var(--bg-body); font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+      .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+      .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+      .btn-secondary { background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border-color); }
+      .btn-secondary:hover { border-color: var(--accent); }
+
+      .results-section { padding: 24px; background: var(--bg-input); }
+      .response-info { display: flex; gap: 16px; margin-bottom: 16px; font-family: var(--font-mono); font-size: 0.85rem; }
+      .status-badge { padding: 2px 8px; border-radius: 4px; font-weight: 700; }
+      .status-success { background: rgba(48, 209, 88, 0.15); color: var(--success); }
+      .status-error { background: rgba(255, 69, 58, 0.15); color: var(--error); }
+      .response-output { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-primary); white-space: pre-wrap; word-break: break-all; max-height: 500px; overflow-y: auto; }
+
+      .ads-container { margin: 24px 0; min-height: 90px; background: rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem; border: 1px dashed var(--border-color); border-radius: var(--radius-md); }
+
+      .seo-content { margin-top: 32px; padding: 32px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); color: var(--text-secondary); font-size: 0.875rem; }
+      .seo-content h2 { color: var(--text-primary); font-size: 1.125rem; margin-bottom: 16px; font-weight: 600; }
+      .seo-content h3 { color: var(--text-primary); font-size: 1rem; margin-top: 24px; margin-bottom: 12px; font-weight: 600; }
+      .seo-content p { margin-bottom: 12px; }
+      .seo-content ul { margin-bottom: 16px; padding-left: 20px; }
+      .seo-content li { margin-bottom: 8px; }
+
+      .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); padding: 12px 24px; background: var(--bg-elevated); border: 1px solid var(--accent); border-radius: var(--radius-md); color: var(--accent); font-size: 0.9rem; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55); opacity: 0; z-index: 1000; }
+      .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
       @media (max-width: 640px) {
+        .container { padding: 16px; }
+        .header { flex-direction: column; align-items: stretch; }
         .request-grid { grid-template-columns: 1fr; }
         .header-row { grid-template-columns: 1fr 1fr; }
         .header-row .btn-remove { grid-column: span 2; }
+        .action-row { flex-direction: column; }
+        .btn { width: 100%; justify-content: center; }
       }
     </style>
   </head>
@@ -136,7 +152,7 @@
       <header class="header">
         <div class="header-left">
           <a href="../../index.html" class="back-btn" title="返回首页">
-            <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M10 12L6 8L10 4" />
             </svg>
           </a>
@@ -146,26 +162,19 @@
           </div>
         </div>
         <div class="header-right">
-          <div class="theme-toggle">
-            <button class="theme-btn active" data-theme="dark">暗色</button>
-            <button class="theme-btn" data-theme="light">亮色</button>
+          <div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+            <span id="theme-icon">🌙</span>
           </div>
         </div>
       </header>
 
-      <main class="main-card">
-        <div class="toolbar">
-          <div class="toolbar-left">
-            <button class="btn btn-primary" id="sendBtn">
-              <span>发送请求</span>
-            </button>
-            <button class="btn" id="clearBtn">
-              <span>重置</span>
-            </button>
-          </div>
-        </div>
+      <!-- Google AdSense Top -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
+      </div>
 
-        <div class="content">
+      <main class="main-card">
+        <section class="request-section">
           <div class="request-grid">
             <select id="method" class="method-select">
               <option value="GET">GET</option>
@@ -175,9 +184,6 @@
               <option value="DELETE">DELETE</option>
             </select>
             <input type="text" id="url" class="url-input" placeholder="https://api.example.com/webhook" />
-            <button class="btn" id="historyBtn">
-              <span>历史</span>
-            </button>
           </div>
 
           <div class="tabs-nav">
@@ -187,48 +193,48 @@
           </div>
 
           <div id="bodyTab" class="tab-content">
-            <div class="section">
-              <textarea id="requestBody" placeholder='{"key": "value"}' style="min-height: 150px;"></textarea>
-            </div>
+            <textarea id="requestBody" placeholder='{"key": "value"}' spellcheck="false"></textarea>
           </div>
 
           <div id="headersTab" class="tab-content" style="display: none;">
-            <div id="headersList" class="headers-container">
+            <div id="headersList" class="headers-list">
               <div class="header-row">
                 <input type="text" class="header-input header-key" placeholder="Content-Type" value="application/json" />
                 <input type="text" class="header-input header-value" placeholder="application/json" value="application/json" />
-                <button class="btn btn-icon btn-remove" onclick="removeHeader(this)">×</button>
+                <button class="btn-remove" onclick="removeHeader(this)">×</button>
               </div>
             </div>
-            <button class="btn btn-sm" id="addHeaderBtn" style="margin-top: 10px;">添加请求头</button>
+            <button class="btn btn-secondary" style="margin-top: 12px; padding: 8px 16px; font-size: 0.8rem;" onclick="addHeader()">+ 添加 Header</button>
           </div>
 
           <div id="authTab" class="tab-content" style="display: none;">
-            <div class="section">
-              <div class="section-label">Bearer Token</div>
-              <input type="text" id="bearerToken" class="url-input" placeholder="在此输入 Token" />
-            </div>
+            <div class="stat-label" style="margin-bottom: 8px;">Bearer Token</div>
+            <input type="text" id="bearerToken" class="url-input" style="width: 100%;" placeholder="在此输入 Token" />
           </div>
 
-          <!-- AdSense Placeholder -->
-          <div class="ads-placeholder">
-            <span>Google AdSense 广告位</span>
+          <div class="action-row">
+            <button class="btn" id="sendBtn" onclick="sendRequest()">发送请求</button>
+            <button class="btn btn-secondary" onclick="resetAll()">重置</button>
           </div>
+        </section>
 
-          <div id="responseContainer" style="display: none; margin-top: 24px;">
-            <div class="section-label">响应结果 (Response)</div>
-            <div class="response-info">
-              <span id="resStatus" class="status-badge"></span>
-              <span id="resTime"></span>
-              <span id="resSize"></span>
-            </div>
-            <div class="output-box" id="responseOutput"></div>
+        <section class="results-section" id="responseContainer" style="display: none">
+          <div class="top-words-title" style="margin-bottom: 16px;">📥 响应结果 (Response)</div>
+          <div class="response-info">
+            <span id="resStatus" class="status-badge"></span>
+            <span id="resTime" style="color: var(--text-secondary)"></span>
+            <span id="resSize" style="color: var(--text-secondary)"></span>
           </div>
-        </div>
+          <div class="response-output" id="responseOutput"></div>
+        </section>
       </main>
 
-      <!-- SEO Article -->
-      <article class="article-content">
+      <!-- Google AdSense Bottom -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
+      </div>
+
+      <article class="seo-content">
         <h2>什么是 Webhook？为什么需要在线测试工具？</h2>
         <p>Webhook 是一种“反向 API”，它允许一个应用程序在特定事件发生时实时向另一个应用程序发送数据。与传统的轮询（Polling）不同，Webhook 是由服务器主动推送，极大地提高了数据传输的及时性和系统效率。</p>
         
@@ -249,25 +255,20 @@
         <p>虽然在线工具极大地方便了开发，但在测试包含敏感信息（如真实的 API Key 或用户隐私数据）的接口时，请务必谨慎。建议在开发或沙箱环境下进行测试。本工具预留了 AdSense 广告位并针对 SEO 进行了深度优化，旨在为全球开发者提供一个稳定、高效、免费的测试环境。</p>
       </article>
 
-      <div class="ads-placeholder">
-        <span>Google AdSense 广告位 - 底部</span>
-      </div>
+      <footer style="margin-top: 32px; text-align: center; color: var(--text-muted); font-size: 0.75rem;">
+        <p>© 2026 WebUtils. All rights reserved.</p>
+      </footer>
     </div>
 
     <div id="toast" class="toast"></div>
 
     <script>
-      const sendBtn = document.getElementById('sendBtn');
-      const clearBtn = document.getElementById('clearBtn');
-      const addHeaderBtn = document.getElementById('addHeaderBtn');
-      const headersList = document.getElementById('headersList');
-      const responseContainer = document.getElementById('responseContainer');
-      const responseOutput = document.getElementById('responseOutput');
-      const toast = document.getElementById('toast');
-
-      function showToast(message, type = 'success') {
-        toast.textContent = message;
-        toast.className = `toast show ${type}`;
+      function showToast(msg, isError = false) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.borderColor = isError ? 'var(--error)' : 'var(--accent)';
+        toast.style.color = isError ? 'var(--error)' : 'var(--accent)';
+        toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 3000);
       }
 
@@ -281,31 +282,30 @@
         });
       });
 
-      // 添加请求头
-      addHeaderBtn.addEventListener('click', () => {
+      function addHeader() {
         const row = document.createElement('div');
         row.className = 'header-row';
         row.innerHTML = `
           <input type="text" class="header-input header-key" placeholder="Key" />
           <input type="text" class="header-input header-value" placeholder="Value" />
-          <button class="btn btn-icon btn-remove" onclick="removeHeader(this)">×</button>
+          <button class="btn-remove" onclick="removeHeader(this)">×</button>
         `;
-        headersList.appendChild(row);
-      });
+        document.getElementById('headersList').appendChild(row);
+      }
 
-      window.removeHeader = function(btn) {
+      function removeHeader(btn) {
         btn.parentElement.remove();
-      };
+      }
 
-      // 发送请求
-      sendBtn.addEventListener('click', async () => {
+      async function sendRequest() {
         const method = document.getElementById('method').value;
         const url = document.getElementById('url').value.trim();
         const body = document.getElementById('requestBody').value;
         const token = document.getElementById('bearerToken').value.trim();
+        const sendBtn = document.getElementById('sendBtn');
 
         if (!url) {
-          showToast('请输入目标 URL', 'warning');
+          showToast('请输入目标 URL', true);
           return;
         }
 
@@ -322,72 +322,67 @@
 
         sendBtn.disabled = true;
         sendBtn.textContent = '发送中...';
-        responseContainer.style.display = 'none';
+        document.getElementById('responseContainer').style.display = 'none';
 
         const startTime = Date.now();
 
         try {
-          const options = {
-            method,
-            headers
-          };
+          const options = { method, headers };
           if (method !== 'GET' && method !== 'HEAD' && body) {
             options.body = body;
           }
 
           const response = await fetch(url, options);
-          const endTime = Date.now();
-          const duration = endTime - startTime;
-
+          const duration = Date.now() - startTime;
           const data = await response.text();
           
           document.getElementById('resStatus').textContent = `${response.status} ${response.statusText}`;
           document.getElementById('resStatus').className = `status-badge ${response.ok ? 'status-success' : 'status-error'}`;
-          document.getElementById('resTime').textContent = `${duration}ms`;
-          document.getElementById('resSize').textContent = `${data.length} bytes`;
+          document.getElementById('resTime').textContent = `耗时: ${duration}ms`;
+          document.getElementById('resSize').textContent = `大小: ${data.length} 字节`;
 
           try {
             const json = JSON.parse(data);
-            responseOutput.textContent = JSON.stringify(json, null, 2);
+            document.getElementById('responseOutput').textContent = JSON.stringify(json, null, 2);
           } catch (e) {
-            responseOutput.textContent = data;
+            document.getElementById('responseOutput').textContent = data || '(无响应内容)';
           }
 
-          responseContainer.style.display = 'block';
-          showToast('请求已发送');
+          document.getElementById('responseContainer').style.display = 'block';
+          showToast('请求已成功发送');
         } catch (error) {
-          showToast('请求发送失败: ' + error.message, 'error');
-          responseOutput.textContent = error.stack;
-          responseContainer.style.display = 'block';
+          showToast('发送失败: ' + error.message, true);
+          document.getElementById('responseOutput').textContent = error.stack;
+          document.getElementById('responseContainer').style.display = 'block';
         } finally {
           sendBtn.disabled = false;
           sendBtn.textContent = '发送请求';
         }
-      });
+      }
 
-      clearBtn.addEventListener('click', () => {
+      function resetAll() {
         document.getElementById('url').value = '';
         document.getElementById('requestBody').value = '';
         document.getElementById('bearerToken').value = '';
-        responseContainer.style.display = 'none';
+        document.getElementById('responseContainer').style.display = 'none';
         showToast('已重置');
-      });
+      }
 
-      // 主题切换逻辑
-      const themeBtns = document.querySelectorAll('.theme-btn');
-      themeBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const theme = btn.dataset.theme;
-          document.documentElement.setAttribute('data-theme', theme);
-          themeBtns.forEach(b => b.classList.toggle('active', b === btn));
-          localStorage.setItem('theme', theme);
-        });
-      });
+      function toggleTheme() {
+        const html = document.documentElement;
+        const currentTheme = html.getAttribute("data-theme");
+        const newTheme = currentTheme === "light" ? "dark" : "light";
+        setTheme(newTheme);
+      }
 
-      // 初始化主题
-      const savedTheme = localStorage.getItem('theme') || 'dark';
-      document.documentElement.setAttribute('data-theme', savedTheme);
-      document.querySelector(`[data-theme="${savedTheme}"]`).classList.add('active');
+      function setTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        document.getElementById("theme-icon").textContent = theme === "light" ? "☀️" : "🌙";
+        localStorage.setItem("theme", theme);
+      }
+
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      setTheme(savedTheme);
     </script>
   </body>
 </html>

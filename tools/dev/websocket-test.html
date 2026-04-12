@@ -1,118 +1,142 @@
 <!doctype html>
-<html lang="zh">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WebSocket 测试客户端 - 在线调试 WebSocket 协议 | WebUtils</title>
+    
+    <!-- SEO Meta Tags -->
     <meta name="description" content="专业的在线 WebSocket 测试工具，支持 ws:// 和 wss:// 协议。提供实时连接状态监控、消息发送与接收日志、心跳包模拟、自动重连等功能。是开发实时应用、即时通讯系统、物联网设备的必备调试工具。" />
     <meta name="keywords" content="WebSocket测试,WebSocket客户端,wss测试,实时通讯调试,Socket测试,开发者工具,Web工具" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/dev/websocket-test.html" />
 
+    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content="WebSocket 测试客户端 - 在线调试 WebSocket 协议 | WebUtils" />
+    <meta property="og:description" content="实时双向数据流调试工具。支持 ws:// 和 wss:// 协议，提供详细的消息日志。" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://essays4u.net/tools/dev/websocket-test.html" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
+    <meta property="og:site_name" content="WebUtils" />
+    <meta property="og:locale" content="zh_CN" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="WebSocket 测试客户端 - 在线调试 WebSocket 协议 | WebUtils" />
+    <meta name="twitter:description" content="专业的在线 WebSocket 测试工具，支持 ws:// 和 wss:// 协议。" />
+    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="../../templates/design-system.css" />
+
     <style>
-      .connection-grid {
-        display: grid;
-        grid-template-columns: 1fr 140px;
-        gap: 12px;
-        margin-bottom: 20px;
+      /* ===== CSS 变量 (基于模板) ===== */
+      :root {
+        --bg-body: #0a0a0f;
+        --bg-card: #12121a;
+        --bg-input: #0e0e14;
+        --bg-elevated: #1a1a24;
+        --text-primary: #e8e8ed;
+        --text-secondary: #a0a0b0;
+        --text-muted: #606070;
+        --border-color: #2a2a3a;
+        --border-focus: #3a3a4a;
+        --accent: #00f5d4;
+        --accent-purple: #bf5af2;
+        --success: #30d158;
+        --warning: #ff9f0a;
+        --error: #ff453a;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", "Space Grotesk", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
       }
-      .ws-input {
-        width: 100%;
-        padding: 10px 16px;
-        background: var(--bg-input);
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-md);
-        color: var(--text-primary);
-        font-family: var(--font-mono);
-        outline: none;
+
+      [data-theme="light"] {
+        --bg-body: #fafafa;
+        --bg-card: #ffffff;
+        --bg-input: #f5f5f5;
+        --bg-elevated: #ffffff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #666;
+        --text-muted: #999;
+        --border-color: #e5e5e5;
+        --border-focus: #d5d5d5;
+        --accent: #00d4b8;
+        --accent-purple: #9b4dca;
       }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      
+      .container { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--border-color); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .header-right { display: flex; align-items: center; gap: 12px; }
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; width: 40px; height: 40px; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+      .theme-toggle:hover { border-color: var(--accent); }
+
+      .main-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; }
+      
+      .connection-section { padding: 24px; border-bottom: 1px solid var(--border-color); }
+      .connection-grid { display: grid; grid-template-columns: 1fr 140px; gap: 12px; margin-bottom: 20px; }
+      .ws-input { padding: 12px 16px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary); font-family: var(--font-mono); outline: none; }
       .ws-input:focus { border-color: var(--accent); }
 
-      .status-panel {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 12px 16px;
-        background: var(--bg-input);
-        border-radius: var(--radius-md);
-        margin-bottom: 20px;
-        font-size: 0.9rem;
-      }
-      .status-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: var(--text-muted);
-      }
+      .status-panel { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--bg-input); border-radius: var(--radius-md); margin-bottom: 20px; font-size: 0.9rem; border: 1px solid var(--border-color); }
+      .status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--text-muted); }
       .status-connected .status-dot { background: var(--success); box-shadow: 0 0 10px var(--success); }
       .status-disconnected .status-dot { background: var(--error); }
 
-      .log-container {
-        height: 400px;
-        background: var(--bg-input);
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-md);
-        overflow-y: auto;
-        padding: 12px;
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-      }
-      .log-item {
-        padding: 4px 8px;
-        border-radius: 4px;
-        line-height: 1.4;
-        word-break: break-all;
-      }
+      .log-container { height: 400px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); overflow-y: auto; padding: 12px; font-family: var(--font-mono); font-size: 0.85rem; display: flex; flex-direction: column; gap: 4px; }
+      .log-item { padding: 6px 10px; border-radius: 4px; line-height: 1.4; word-break: break-all; }
       .log-time { color: var(--text-muted); margin-right: 8px; font-size: 0.75rem; }
-      .log-in { background: rgba(16, 185, 129, 0.1); border-left: 3px solid var(--success); }
-      .log-out { background: rgba(59, 130, 246, 0.1); border-left: 3px solid #3b82f6; }
-      .log-system { color: var(--text-muted); font-style: italic; }
+      .log-in { background: rgba(48, 209, 88, 0.08); border-left: 3px solid var(--success); }
+      .log-out { background: rgba(0, 245, 212, 0.08); border-left: 3px solid var(--accent); }
+      .log-system { color: var(--text-muted); font-style: italic; background: rgba(255, 255, 255, 0.02); }
 
-      .message-input-area {
-        display: grid;
-        grid-template-columns: 1fr 100px;
-        gap: 12px;
-        margin-top: 20px;
-      }
+      .message-input-area { display: grid; grid-template-columns: 1fr 100px; gap: 12px; margin-top: 20px; }
+      textarea { width: 100%; min-height: 80px; padding: 12px 16px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary); font-family: inherit; font-size: 0.95rem; resize: vertical; outline: none; transition: all 0.2s; }
+      textarea:focus { border-color: var(--accent); }
 
-      .ads-placeholder {
-        margin: 24px 0;
-        min-height: 90px;
-        background: var(--bg-input);
-        border: 1px dashed var(--border-color);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--text-muted);
-        font-size: 0.8rem;
-        border-radius: var(--radius-md);
-      }
+      .action-row { display: flex; gap: 12px; flex-wrap: wrap; }
+      .btn { padding: 10px 20px; background: var(--accent); border: none; border-radius: var(--radius-md); color: var(--bg-body); font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+      .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+      .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+      .btn-secondary { background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border-color); }
+      .btn-secondary:hover { border-color: var(--accent); }
 
-      .article-content {
-        margin-top: 40px;
-        padding-top: 40px;
-        border-top: 1px solid var(--border-color);
-      }
-      .article-content h2 { font-size: 1.5rem; margin-bottom: 16px; }
-      .article-content h3 { font-size: 1.2rem; margin: 20px 0 10px; }
-      .article-content p { margin-bottom: 12px; color: var(--text-secondary); }
-      .article-content ul { margin-bottom: 16px; padding-left: 20px; color: var(--text-secondary); }
-      .article-content li { margin-bottom: 8px; }
+      .ads-container { margin: 24px 0; min-height: 90px; background: rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem; border: 1px dashed var(--border-color); border-radius: var(--radius-md); }
+
+      .seo-content { margin-top: 32px; padding: 32px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); color: var(--text-secondary); font-size: 0.875rem; }
+      .seo-content h2 { color: var(--text-primary); font-size: 1.125rem; margin-bottom: 16px; font-weight: 600; }
+      .seo-content h3 { color: var(--text-primary); font-size: 1rem; margin-top: 24px; margin-bottom: 12px; font-weight: 600; }
+      .seo-content p { margin-bottom: 12px; }
+      .seo-content ul { margin-bottom: 16px; padding-left: 20px; }
+      .seo-content li { margin-bottom: 8px; }
+
+      .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); padding: 12px 24px; background: var(--bg-elevated); border: 1px solid var(--accent); border-radius: var(--radius-md); color: var(--accent); font-size: 0.9rem; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55); opacity: 0; z-index: 1000; }
+      .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
       @media (max-width: 640px) {
+        .container { padding: 16px; }
+        .header { flex-direction: column; align-items: stretch; }
         .connection-grid { grid-template-columns: 1fr; }
         .message-input-area { grid-template-columns: 1fr; }
+        .action-row { flex-direction: column; }
+        .btn { width: 100%; justify-content: center; }
       }
     </style>
   </head>
@@ -121,7 +145,7 @@
       <header class="header">
         <div class="header-left">
           <a href="../../index.html" class="back-btn" title="返回首页">
-            <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M10 12L6 8L10 4" />
             </svg>
           </a>
@@ -131,58 +155,52 @@
           </div>
         </div>
         <div class="header-right">
-          <div class="theme-toggle">
-            <button class="theme-btn active" data-theme="dark">暗色</button>
-            <button class="theme-btn" data-theme="light">亮色</button>
+          <div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+            <span id="theme-icon">🌙</span>
           </div>
         </div>
       </header>
 
-      <main class="main-card">
-        <div class="toolbar">
-          <div class="toolbar-left">
-            <button class="btn btn-primary" id="connectBtn">
-              <span>连接</span>
-            </button>
-            <button class="btn" id="disconnectBtn" disabled>
-              <span>断开</span>
-            </button>
-            <button class="btn" id="clearLogsBtn">
-              <span>清空日志</span>
-            </button>
-          </div>
-        </div>
+      <!-- Google AdSense Top -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
+      </div>
 
-        <div class="content">
+      <main class="main-card">
+        <section class="connection-section">
           <div class="connection-grid">
             <input type="text" id="wsUrl" class="ws-input" placeholder="ws://echo.websocket.org 或 wss://..." value="wss://echo.websocket.org" />
-            <button class="btn" id="exampleBtn">示例服务器</button>
+            <div class="action-row">
+              <button class="btn" id="connectBtn" onclick="connect()">连接</button>
+              <button class="btn btn-secondary" id="disconnectBtn" onclick="disconnect()" disabled>断开</button>
+            </div>
           </div>
 
           <div id="statusPanel" class="status-panel status-disconnected">
             <div class="status-dot"></div>
-            <span id="statusText">未连接</span>
+            <span id="statusText" style="font-weight: 600;">未连接</span>
           </div>
 
-          <!-- AdSense Placeholder -->
-          <div class="ads-placeholder">
-            <span>Google AdSense 广告位</span>
-          </div>
-
-          <div class="section-label">消息日志 (Logs)</div>
+          <div class="top-words-title" style="margin-bottom: 12px; margin-top: 24px;">📝 消息日志 (Logs)</div>
           <div id="logContainer" class="log-container">
             <div class="log-item log-system">等待连接...</div>
           </div>
 
           <div class="message-input-area">
-            <textarea id="messageInput" placeholder="输入要发送的消息..." style="min-height: 80px;"></textarea>
-            <button class="btn btn-primary" id="sendBtn" disabled style="height: 100%;">发送</button>
+            <textarea id="messageInput" placeholder="输入要发送的消息..." spellcheck="false"></textarea>
+            <button class="btn" id="sendBtn" onclick="sendMessage()" disabled style="height: 100%; justify-content: center;">发送</button>
           </div>
-        </div>
+          
+          <button class="btn btn-secondary" style="margin-top: 16px; padding: 8px 16px; font-size: 0.8rem;" onclick="clearLogs()">清空日志</button>
+        </section>
       </main>
 
-      <!-- SEO Article -->
-      <article class="article-content">
+      <!-- Google AdSense Bottom -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
+      </div>
+
+      <article class="seo-content">
         <h2>什么是 WebSocket？它与 HTTP 有什么区别？</h2>
         <p>WebSocket 是一种在单个 TCP 连接上进行全双工通信的协议。与 HTTP 的“请求-响应”模式不同，WebSocket 允许服务器主动向客户端推送数据，非常适合需要高实时性的应用场景。</p>
         
@@ -204,44 +222,43 @@
         <p>首先，在输入框输入你的 WebSocket 服务地址（如 <code>wss://your-server.com/ws</code>）。点击“连接”后，如果连接成功，状态指示灯将变为绿色。你可以在下方发送区域输入任何文本，点击“发送”即可。所有通信内容都会带有时间戳显示在日志区域。本工具完全基于浏览器运行，不存储任何用户的通信数据，安全且高效。</p>
       </article>
 
-      <div class="ads-placeholder">
-        <span>Google AdSense 广告位 - 底部</span>
-      </div>
+      <footer style="margin-top: 32px; text-align: center; color: var(--text-muted); font-size: 0.75rem;">
+        <p>© 2026 WebUtils. All rights reserved.</p>
+      </footer>
     </div>
 
     <div id="toast" class="toast"></div>
 
     <script>
       let socket = null;
-      const wsUrl = document.getElementById('wsUrl');
-      const connectBtn = document.getElementById('connectBtn');
-      const disconnectBtn = document.getElementById('disconnectBtn');
-      const sendBtn = document.getElementById('sendBtn');
-      const messageInput = document.getElementById('messageInput');
-      const logContainer = document.getElementById('logContainer');
-      const statusPanel = document.getElementById('statusPanel');
-      const statusText = document.getElementById('statusText');
-      const toast = document.getElementById('toast');
 
-      function showToast(message, type = 'success') {
-        toast.textContent = message;
-        toast.className = `toast show ${type}`;
+      function showToast(msg, isError = false) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.borderColor = isError ? 'var(--error)' : 'var(--accent)';
+        toast.style.color = isError ? 'var(--error)' : 'var(--accent)';
+        toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 3000);
       }
 
       function addLog(message, type = 'system') {
+        const logContainer = document.getElementById('logContainer');
         const item = document.createElement('div');
         item.className = `log-item log-${type}`;
         const time = new Date().toLocaleTimeString();
-        item.innerHTML = `<span class="log-time">[${time}]</span>${message}`;
+        item.innerHTML = `<span class="log-time">[${time}]</span>${escapeHtml(message)}`;
         logContainer.appendChild(item);
         logContainer.scrollTop = logContainer.scrollHeight;
       }
 
-      connectBtn.addEventListener('click', () => {
-        const url = wsUrl.value.trim();
+      function escapeHtml(str) {
+        return String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      }
+
+      function connect() {
+        const url = document.getElementById('wsUrl').value.trim();
         if (!url) {
-          showToast('请输入 WebSocket 地址', 'warning');
+          showToast('请输入 WebSocket 地址', true);
           return;
         }
 
@@ -250,12 +267,12 @@
           addLog(`尝试连接到: ${url}`, 'system');
           
           socket.onopen = () => {
-            statusPanel.className = 'status-panel status-connected';
-            statusText.textContent = '已连接';
-            connectBtn.disabled = true;
-            disconnectBtn.disabled = false;
-            sendBtn.disabled = false;
-            addLog('连接已建立', 'system');
+            document.getElementById('statusPanel').className = 'status-panel status-connected';
+            document.getElementById('statusText').textContent = '已连接';
+            document.getElementById('connectBtn').disabled = true;
+            document.getElementById('disconnectBtn').disabled = false;
+            document.getElementById('sendBtn').disabled = false;
+            addLog('连接已成功建立', 'system');
             showToast('连接成功');
           };
 
@@ -264,68 +281,62 @@
           };
 
           socket.onclose = (event) => {
-            statusPanel.className = 'status-panel status-disconnected';
-            statusText.textContent = '未连接';
-            connectBtn.disabled = false;
-            disconnectBtn.disabled = true;
-            sendBtn.disabled = true;
+            document.getElementById('statusPanel').className = 'status-panel status-disconnected';
+            document.getElementById('statusText').textContent = '未连接';
+            document.getElementById('connectBtn').disabled = false;
+            document.getElementById('disconnectBtn').disabled = true;
+            document.getElementById('sendBtn').disabled = true;
             addLog(`连接已关闭 (代码: ${event.code})`, 'system');
             showToast('连接已断开', 'info');
           };
 
           socket.onerror = (error) => {
-            addLog(`发生错误: ${error.message || '未知错误'}`, 'system');
-            showToast('连接出错', 'error');
+            addLog(`WebSocket 错误`, 'system');
+            showToast('连接出错', true);
           };
         } catch (e) {
           addLog(`连接失败: ${e.message}`, 'system');
-          showToast('无效的地址', 'error');
+          showToast('无效的地址', true);
         }
-      });
+      }
 
-      disconnectBtn.addEventListener('click', () => {
-        if (socket) {
-          socket.close();
-        }
-      });
+      function disconnect() {
+        if (socket) socket.close();
+      }
 
-      sendBtn.addEventListener('click', () => {
-        const msg = messageInput.value;
+      function sendMessage() {
+        const input = document.getElementById('messageInput');
+        const msg = input.value;
         if (!msg) return;
         if (socket && socket.readyState === WebSocket.OPEN) {
           socket.send(msg);
           addLog(msg, 'out');
-          messageInput.value = '';
+          input.value = '';
         } else {
-          showToast('未连接到服务器', 'error');
+          showToast('连接未建立', true);
         }
-      });
+      }
 
-      document.getElementById('clearLogsBtn').addEventListener('click', () => {
-        logContainer.innerHTML = '';
+      function clearLogs() {
+        document.getElementById('logContainer').innerHTML = '';
         addLog('日志已清空', 'system');
-      });
+      }
 
-      document.getElementById('exampleBtn').addEventListener('click', () => {
-        wsUrl.value = 'wss://echo.websocket.org';
-        showToast('已载入示例服务器');
-      });
+      function toggleTheme() {
+        const html = document.documentElement;
+        const currentTheme = html.getAttribute("data-theme");
+        const newTheme = currentTheme === "light" ? "dark" : "light";
+        setTheme(newTheme);
+      }
 
-      // 主题切换逻辑
-      const themeBtns = document.querySelectorAll('.theme-btn');
-      themeBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const theme = btn.dataset.theme;
-          document.documentElement.setAttribute('data-theme', theme);
-          themeBtns.forEach(b => b.classList.toggle('active', b === btn));
-          localStorage.setItem('theme', theme);
-        });
-      });
+      function setTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        document.getElementById("theme-icon").textContent = theme === "light" ? "☀️" : "🌙";
+        localStorage.setItem("theme", theme);
+      }
 
-      // 初始化主题
-      const savedTheme = localStorage.getItem('theme') || 'dark';
-      document.documentElement.setAttribute('data-theme', savedTheme);
-      document.querySelector(`[data-theme="${savedTheme}"]`).classList.add('active');
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      setTheme(savedTheme);
     </script>
   </body>
 </html>

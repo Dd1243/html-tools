@@ -1,96 +1,146 @@
 <!doctype html>
-<html lang="zh">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>XML 格式化与压缩工具 - 在线美化及校验 XML | WebUtils</title>
+    
+    <!-- SEO Meta Tags -->
     <meta name="description" content="高效的在线 XML 格式化工具，支持自动缩进、美化、压缩及语法校验。提供多种缩进风格选择，实时预览处理结果，一键复制或下载。是开发者处理 XML 配置文件、数据交换文件的得力助手。" />
     <meta name="keywords" content="XML格式化,XML美化,XML压缩,XML校验,XML预览,开发者工具,Web工具" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/dev/xml-formatter.html" />
 
+    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content="XML 格式化与压缩工具 - 在线美化及校验 XML | WebUtils" />
+    <meta property="og:description" content="专业的 XML 代码美化、压缩及语法校验工具。支持多种缩进风格。" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://essays4u.net/tools/dev/xml-formatter.html" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
+    <meta property="og:site_name" content="WebUtils" />
+    <meta property="og:locale" content="zh_CN" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="XML 格式化与压缩工具 - 在线美化及校验 XML | WebUtils" />
+    <meta name="twitter:description" content="高效的在线 XML 格式化工具，支持自动缩进、美化、压缩及语法校验。" />
+    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="../../templates/design-system.css" />
+
     <style>
-      .editor-container {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 20px;
+      /* ===== CSS 变量 (基于模板) ===== */
+      :root {
+        --bg-body: #0a0a0f;
+        --bg-card: #12121a;
+        --bg-input: #0e0e14;
+        --bg-elevated: #1a1a24;
+        --text-primary: #e8e8ed;
+        --text-secondary: #a0a0b0;
+        --text-muted: #606070;
+        --border-color: #2a2a3a;
+        --border-focus: #3a3a4a;
+        --accent: #00f5d4;
+        --accent-purple: #bf5af2;
+        --success: #30d158;
+        --warning: #ff9f0a;
+        --error: #ff453a;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", "Space Grotesk", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
       }
-      .editor-label {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 8px;
-        font-size: 0.85rem;
-        color: var(--text-muted);
+
+      [data-theme="light"] {
+        --bg-body: #fafafa;
+        --bg-card: #ffffff;
+        --bg-input: #f5f5f5;
+        --bg-elevated: #ffffff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #666;
+        --text-muted: #999;
+        --border-color: #e5e5e5;
+        --border-focus: #d5d5d5;
+        --accent: #00d4b8;
+        --accent-purple: #9b4dca;
       }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
       
-      .settings-bar {
-        display: flex;
-        gap: 16px;
-        margin-bottom: 16px;
-        padding: 12px 16px;
-        background: var(--bg-input);
-        border-radius: var(--radius-md);
-        flex-wrap: wrap;
-      }
-      .setting-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 0.85rem;
-      }
-      .setting-select {
-        padding: 4px 8px;
-        background: var(--bg-card);
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-sm);
-        color: var(--text-primary);
-        font-size: 0.8rem;
-      }
+      .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--border-color); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .header-right { display: flex; align-items: center; gap: 12px; }
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; width: 40px; height: 40px; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+      .theme-toggle:hover { border-color: var(--accent); }
 
-      .ads-placeholder {
-        margin: 24px 0;
-        min-height: 90px;
-        background: var(--bg-input);
-        border: 1px dashed var(--border-color);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--text-muted);
-        font-size: 0.8rem;
-        border-radius: var(--radius-md);
-      }
+      .main-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; }
+      
+      .toolbar { padding: 16px 24px; background: var(--bg-elevated); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+      .toolbar-left { display: flex; gap: 12px; flex-wrap: wrap; }
+      
+      .settings-bar { padding: 12px 24px; border-bottom: 1px solid var(--border-color); display: flex; gap: 20px; align-items: center; background: var(--bg-input); }
+      .setting-item { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-secondary); }
+      .setting-select { padding: 6px 12px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.8rem; outline: none; }
 
-      .article-content {
-        margin-top: 40px;
-        padding-top: 40px;
-        border-top: 1px solid var(--border-color);
-      }
-      .article-content h2 { font-size: 1.5rem; margin-bottom: 16px; }
-      .article-content h3 { font-size: 1.2rem; margin: 20px 0 10px; }
-      .article-content p { margin-bottom: 12px; color: var(--text-secondary); }
-      .article-content ul { margin-bottom: 16px; padding-left: 20px; color: var(--text-secondary); }
-      .article-content li { margin-bottom: 8px; }
+      .editor-grid { display: grid; grid-template-columns: 1fr 1fr; }
+      .editor-pane { padding: 24px; border-right: 1px solid var(--border-color); }
+      .editor-pane:last-child { border-right: none; }
+      .pane-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; display: flex; justify-content: space-between; }
+      
+      textarea { width: 100%; height: 500px; padding: 16px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary); font-family: var(--font-mono); font-size: 0.9rem; line-height: 1.5; resize: none; outline: none; transition: all 0.2s; }
+      textarea:focus { border-color: var(--accent); }
+      textarea[readonly] { cursor: default; }
 
-      @media (min-width: 1024px) {
-        .editor-container { grid-template-columns: 1fr 1fr; }
+      .btn { padding: 10px 20px; background: var(--accent); border: none; border-radius: var(--radius-md); color: var(--bg-body); font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+      .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+      .btn-secondary { background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border-color); }
+      .btn-secondary:hover { border-color: var(--accent); }
+
+      .ads-container { margin: 24px 0; min-height: 90px; background: rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem; border: 1px dashed var(--border-color); border-radius: var(--radius-md); }
+
+      .seo-content { margin-top: 32px; padding: 32px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); color: var(--text-secondary); font-size: 0.875rem; }
+      .seo-content h2 { color: var(--text-primary); font-size: 1.125rem; margin-bottom: 16px; font-weight: 600; }
+      .seo-content h3 { color: var(--text-primary); font-size: 1rem; margin-top: 24px; margin-bottom: 12px; font-weight: 600; }
+      .seo-content p { margin-bottom: 12px; }
+      .seo-content ul { margin-bottom: 16px; padding-left: 20px; }
+      .seo-content li { margin-bottom: 8px; }
+
+      .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); padding: 12px 24px; background: var(--bg-elevated); border: 1px solid var(--accent); border-radius: var(--radius-md); color: var(--accent); font-size: 0.9rem; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55); opacity: 0; z-index: 1000; }
+      .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+      @media (max-width: 1024px) {
+        .editor-grid { grid-template-columns: 1fr; }
+        .editor-pane { border-right: none; border-bottom: 1px solid var(--border-color); }
+      }
+      @media (max-width: 640px) {
+        .container { padding: 16px; }
+        .header { flex-direction: column; align-items: stretch; }
+        .toolbar { flex-direction: column; align-items: stretch; }
+        .btn { width: 100%; justify-content: center; }
       }
     </style>
   </head>
   <body>
-    <div class="container" style="max-width: 1200px;">
+    <div class="container">
       <header class="header">
         <div class="header-left">
           <a href="../../index.html" class="back-btn" title="返回首页">
-            <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M10 12L6 8L10 4" />
             </svg>
           </a>
@@ -100,70 +150,59 @@
           </div>
         </div>
         <div class="header-right">
-          <div class="theme-toggle">
-            <button class="theme-btn active" data-theme="dark">暗色</button>
-            <button class="theme-btn" data-theme="light">亮色</button>
+          <div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+            <span id="theme-icon">🌙</span>
           </div>
         </div>
       </header>
 
+      <!-- Google AdSense Top -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
+      </div>
+
       <main class="main-card">
         <div class="toolbar">
           <div class="toolbar-left">
-            <button class="btn btn-primary" id="formatBtn">
-              <span>格式化 (Beautify)</span>
-            </button>
-            <button class="btn" id="minifyBtn">
-              <span>压缩 (Minify)</span>
-            </button>
-            <button class="btn" id="clearBtn">
-              <span>清空</span>
-            </button>
-            <button class="btn" id="exampleBtn">
-              <span>加载示例</span>
-            </button>
+            <button class="btn" onclick="processXml('format')">格式化 (Beautify)</button>
+            <button class="btn btn-secondary" onclick="processXml('minify')">压缩 (Minify)</button>
+            <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+            <button class="btn btn-secondary" onclick="loadExample()">加载示例</button>
           </div>
-          <div class="toolbar-right">
-            <button class="btn" id="copyBtn">
-              <span>复制结果</span>
-            </button>
+          <button class="btn btn-secondary" onclick="copyResult()">复制结果</button>
+        </div>
+
+        <div class="settings-bar">
+          <div class="setting-item">
+            <span>缩进大小:</span>
+            <select id="indentSize" class="setting-select">
+              <option value="2">2 空格</option>
+              <option value="4" selected>4 空格</option>
+              <option value="tab">Tab</option>
+            </select>
           </div>
         </div>
 
-        <div class="content">
-          <div class="settings-bar">
-            <div class="setting-item">
-              <span>缩进大小:</span>
-              <select id="indentSize" class="setting-select">
-                <option value="2">2 空格</option>
-                <option value="4" selected>4 空格</option>
-                <option value="tab">Tab</option>
-              </select>
-            </div>
+        <div class="editor-grid">
+          <div class="editor-pane">
+            <div class="pane-label">输入 XML</div>
+            <textarea id="xmlInput" placeholder="在此粘贴 XML 代码..." spellcheck="false"></textarea>
           </div>
-
-          <div class="editor-container">
-            <div class="editor-side">
-              <div class="editor-label">输入 XML</div>
-              <textarea id="xmlInput" placeholder="在此粘贴 XML 代码..." style="height: 500px;"></textarea>
-            </div>
-            <div class="editor-side">
-              <div class="editor-label">输出结果</div>
-              <textarea id="xmlOutput" readonly placeholder="处理结果将显示在这里..." style="height: 500px;"></textarea>
-            </div>
-          </div>
-
-          <!-- AdSense Placeholder -->
-          <div class="ads-placeholder">
-            <span>Google AdSense 广告位</span>
+          <div class="editor-pane">
+            <div class="pane-label">输出结果</div>
+            <textarea id="xmlOutput" readonly placeholder="处理结果将显示在这里..." spellcheck="false"></textarea>
           </div>
         </div>
       </main>
 
-      <!-- SEO Article -->
-      <article class="article-content">
+      <!-- Google AdSense Bottom -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
+      </div>
+
+      <article class="seo-content">
         <h2>深入了解 XML：数据交换的基石</h2>
-        <p>XML（可扩展标记语言）是一种用于存储和传输数据的标记语言。它被设计为具有自我描述性，能够跨平台、跨语言地交换复杂的数据结构。尽管 JSON 在 Web 开发中日益流行，但 XML 在企业级应用、配置文件（如 Android 的 strings.xml）和 Web 服务（如 SOAP）中依然占据着不可替代的地位。</p>
+        <p>XML（可扩展标记语言）是一种用于存储 and 传输数据的标记语言。它被设计为具有自我描述性，能够跨平台、跨语言地交换复杂的数据结构。尽管 JSON 在 Web 开发中日益流行，但 XML 在企业级应用、配置文件（如 Android 的 strings.xml）和 Web 服务（如 SOAP）中依然占据着不可替代的地位。</p>
         
         <h3>为什么需要 XML 格式化工具？</h3>
         <ul>
@@ -183,36 +222,29 @@
         <p>如果你的 XML 无法正常格式化，请检查：标签是否成对出现、属性值是否被引号包裹、是否存在非法字符（如单独的 <code>&</code> 符号应转义为 <code>&amp;</code>）。使用本工具的格式化功能，通常能通过缩进的变化直观地发现逻辑层级的错误。</p>
       </article>
 
-      <div class="ads-placeholder">
-        <span>Google AdSense 广告位 - 底部</span>
-      </div>
+      <footer style="margin-top: 32px; text-align: center; color: var(--text-muted); font-size: 0.75rem;">
+        <p>© 2026 WebUtils. All rights reserved.</p>
+      </footer>
     </div>
 
     <div id="toast" class="toast"></div>
 
     <script>
-      const xmlInput = document.getElementById('xmlInput');
-      const xmlOutput = document.getElementById('xmlOutput');
-      const formatBtn = document.getElementById('formatBtn');
-      const minifyBtn = document.getElementById('minifyBtn');
-      const clearBtn = document.getElementById('clearBtn');
-      const copyBtn = document.getElementById('copyBtn');
-      const exampleBtn = document.getElementById('exampleBtn');
-      const indentSizeSelect = document.getElementById('indentSize');
-      const toast = document.getElementById('toast');
-
-      function showToast(message, type = 'success') {
-        toast.textContent = message;
-        toast.className = `toast show ${type}`;
+      function showToast(msg, isError = false) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.borderColor = isError ? 'var(--error)' : 'var(--accent)';
+        toast.style.color = isError ? 'var(--error)' : 'var(--accent)';
+        toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 3000);
       }
 
       function formatXml(xml) {
         let formatted = '';
         let indent = '';
-        const size = indentSizeSelect.value === 'tab' ? '\t' : ' '.repeat(parseInt(indentSizeSelect.value));
+        const indentSize = document.getElementById('indentSize').value;
+        const size = indentSize === 'tab' ? '\t' : ' '.repeat(parseInt(indentSize));
         
-        // 简单的格式化逻辑
         xml.split(/>\s*</).forEach(function(node) {
           if (node.match(/^\/\w/)) {
             indent = indent.substring(size.length);
@@ -226,44 +258,40 @@
       }
 
       function processXml(action) {
-        const input = xmlInput.value.trim();
+        const input = document.getElementById('xmlInput').value.trim();
         if (!input) {
-          showToast('请输入 XML 代码', 'warning');
+          showToast('请输入 XML 代码', true);
           return;
         }
 
         try {
           if (action === 'format') {
-            // 预处理：先移除所有多余空格
             const cleanXml = input.replace(/>\s*</g, '><').trim();
-            xmlOutput.value = formatXml(cleanXml);
+            document.getElementById('xmlOutput').value = formatXml(cleanXml);
             showToast('格式化成功');
           } else if (action === 'minify') {
-            xmlOutput.value = input.replace(/>\s*</g, '><').trim();
+            document.getElementById('xmlOutput').value = input.replace(/>\s*</g, '><').trim();
             showToast('压缩成功');
           }
         } catch (e) {
-          showToast('XML 解析出错，请检查语法', 'error');
-          console.error(e);
+          showToast('处理出错，请检查语法', true);
         }
       }
 
-      formatBtn.addEventListener('click', () => processXml('format'));
-      minifyBtn.addEventListener('click', () => processXml('minify'));
-
-      clearBtn.addEventListener('click', () => {
-        xmlInput.value = '';
-        xmlOutput.value = '';
+      function clearAll() {
+        document.getElementById('xmlInput').value = '';
+        document.getElementById('xmlOutput').value = '';
         showToast('已清空');
-      });
+      }
 
-      copyBtn.addEventListener('click', () => {
-        if (!xmlOutput.value) return;
-        navigator.clipboard.writeText(xmlOutput.value).then(() => showToast('已复制到剪贴板'));
-      });
+      function copyResult() {
+        const output = document.getElementById('xmlOutput');
+        if (!output.value) return;
+        navigator.clipboard.writeText(output.value).then(() => showToast('已复制到剪贴板'));
+      }
 
-      exampleBtn.addEventListener('click', () => {
-        xmlInput.value = `<?xml version="1.0" encoding="UTF-8"?>
+      function loadExample() {
+        document.getElementById('xmlInput').value = `<?xml version="1.0" encoding="UTF-8"?>
 <note>
   <to>Tove</to>
   <from>Jani</from>
@@ -275,23 +303,24 @@
   </items>
 </note>`;
         processXml('format');
-      });
+        showToast('已加载示例');
+      }
 
-      // 主题切换逻辑
-      const themeBtns = document.querySelectorAll('.theme-btn');
-      themeBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const theme = btn.dataset.theme;
-          document.documentElement.setAttribute('data-theme', theme);
-          themeBtns.forEach(b => b.classList.toggle('active', b === btn));
-          localStorage.setItem('theme', theme);
-        });
-      });
+      function toggleTheme() {
+        const html = document.documentElement;
+        const currentTheme = html.getAttribute("data-theme");
+        const newTheme = currentTheme === "light" ? "dark" : "light";
+        setTheme(newTheme);
+      }
 
-      // 初始化主题
-      const savedTheme = localStorage.getItem('theme') || 'dark';
-      document.documentElement.setAttribute('data-theme', savedTheme);
-      document.querySelector(`[data-theme="${savedTheme}"]`).classList.add('active');
+      function setTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        document.getElementById("theme-icon").textContent = theme === "light" ? "☀️" : "🌙";
+        localStorage.setItem("theme", theme);
+      }
+
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      setTheme(savedTheme);
     </script>
   </body>
 </html>

@@ -1,80 +1,108 @@
 <!doctype html>
-<html lang="zh">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>URL 解析与构建工具 - 在线解析 URL 参数及结构 | WebUtils</title>
+    
+    <!-- SEO Meta Tags -->
     <meta name="description" content="功能强大的在线 URL 解析器，支持解析 URL 协议、主机名、端口、路径、查询参数和哈希值。支持自动解码、URL 构建、批量参数编辑，是开发者调试 API 和网页链接的必备工具。" />
     <meta name="keywords" content="URL解析器,URL构建器,URL参数提取,URL解码,URL编码,开发者工具,Web工具" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/dev/url-parser.html" />
 
+    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content="URL 解析与构建工具 - 在线解析 URL 参数及结构 | WebUtils" />
+    <meta property="og:description" content="快速拆解 URL 结构，管理查询参数。支持自动解码和 URL 构建。" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://essays4u.net/tools/dev/url-parser.html" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
+    <meta property="og:site_name" content="WebUtils" />
+    <meta property="og:locale" content="zh_CN" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="URL 解析与构建工具 - 在线解析 URL 参数及结构 | WebUtils" />
+    <meta name="twitter:description" content="功能强大的在线 URL 解析器，支持解析 URL 协议、主机名、端口、路径、查询参数和哈希值。" />
+    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="../../templates/design-system.css" />
+
     <style>
-      /* 特定工具的样式优化 */
-      .parts-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 16px;
-        margin-top: 20px;
+      /* ===== CSS 变量 (基于模板) ===== */
+      :root {
+        --bg-body: #0a0a0f;
+        --bg-card: #12121a;
+        --bg-input: #0e0e14;
+        --bg-elevated: #1a1a24;
+        --text-primary: #e8e8ed;
+        --text-secondary: #a0a0b0;
+        --text-muted: #606070;
+        --border-color: #2a2a3a;
+        --border-focus: #3a3a4a;
+        --accent: #00f5d4;
+        --accent-purple: #bf5af2;
+        --success: #30d158;
+        --warning: #ff9f0a;
+        --error: #ff453a;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", "Space Grotesk", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
       }
-      .part-card {
-        background: var(--bg-input);
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-md);
-        padding: 12px 16px;
+
+      [data-theme="light"] {
+        --bg-body: #fafafa;
+        --bg-card: #ffffff;
+        --bg-input: #f5f5f5;
+        --bg-elevated: #ffffff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #666;
+        --text-muted: #999;
+        --border-color: #e5e5e5;
+        --border-focus: #d5d5d5;
+        --accent: #00d4b8;
+        --accent-purple: #9b4dca;
       }
-      .part-label {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-        font-family: var(--font-mono);
-        margin-bottom: 4px;
-        display: flex;
-        justify-content: space-between;
-      }
-      .part-value {
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-        word-break: break-all;
-        color: var(--text-primary);
-      }
-      .params-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-      }
-      .params-table th, .params-table td {
-        text-align: left;
-        padding: 12px;
-        border-bottom: 1px solid var(--border-color);
-        font-size: 0.85rem;
-      }
-      .params-table th {
-        color: var(--text-muted);
-        font-weight: 500;
-        background: var(--bg-input);
-      }
-      .param-key { font-weight: 600; color: var(--accent); }
-      .param-value { font-family: var(--font-mono); color: var(--text-primary); }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
       
-      .structure-visual {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4px;
-        padding: 16px;
-        background: var(--bg-input);
-        border-radius: var(--radius-md);
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-        margin-bottom: 20px;
-      }
+      .container { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--border-color); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .header-right { display: flex; align-items: center; gap: 12px; }
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; width: 40px; height: 40px; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+      .theme-toggle:hover { border-color: var(--accent); }
+
+      .main-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; }
+      
+      .input-section { padding: 24px; border-bottom: 1px solid var(--border-color); }
+      textarea { width: 100%; min-height: 120px; padding: 16px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary); font-family: var(--font-mono); font-size: 0.95rem; line-height: 1.6; resize: vertical; outline: none; transition: all 0.2s; }
+      textarea:focus { border-color: var(--accent); }
+
+      .action-row { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+      .btn { padding: 10px 20px; background: var(--accent); border: none; border-radius: var(--radius-md); color: var(--bg-body); font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+      .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+      .btn-secondary { background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border-color); }
+      .btn-secondary:hover { border-color: var(--accent); }
+
+      .results-section { padding: 24px; background: var(--bg-input); }
+      
+      .structure-visual { display: flex; flex-wrap: wrap; gap: 4px; padding: 16px; background: var(--bg-card); border-radius: var(--radius-md); font-family: var(--font-mono); font-size: 0.9rem; margin-bottom: 24px; border: 1px solid var(--border-color); }
       .v-part { padding: 2px 6px; border-radius: 4px; color: #fff; }
       .v-protocol { background: #ef4444; }
       .v-host { background: #3b82f6; }
@@ -84,31 +112,38 @@
       .v-hash { background: #ec4899; }
       .v-sep { color: var(--text-muted); }
 
-      .ads-placeholder {
-        margin: 24px 0;
-        min-height: 90px;
-        background: var(--bg-input);
-        border: 1px dashed var(--border-color);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--text-muted);
-        font-size: 0.8rem;
-        border-radius: var(--radius-md);
-      }
+      .parts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 32px; }
+      .part-card { background: var(--bg-card); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); }
+      .part-label { font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; display: flex; justify-content: space-between; align-items: center; }
+      .part-value { font-size: 0.9rem; font-weight: 500; color: var(--text-primary); font-family: var(--font-mono); word-break: break-all; }
+      .copy-icon { cursor: pointer; color: var(--text-muted); transition: color 0.2s; }
+      .copy-icon:hover { color: var(--accent); }
 
-      .article-content {
-        margin-top: 40px;
-        padding-top: 40px;
-        border-top: 1px solid var(--border-color);
-      }
-      .article-content h2 { font-size: 1.5rem; margin-bottom: 16px; }
-      .article-content p { margin-bottom: 12px; color: var(--text-secondary); }
-      .article-content ul { margin-bottom: 16px; padding-left: 20px; color: var(--text-secondary); }
-      .article-content li { margin-bottom: 8px; }
+      .params-table-container { background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-color); overflow: hidden; }
+      .params-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+      .params-table th { background: var(--bg-elevated); padding: 12px 16px; text-align: left; color: var(--text-secondary); font-weight: 600; border-bottom: 1px solid var(--border-color); }
+      .params-table td { padding: 12px 16px; border-bottom: 1px solid var(--border-color); font-family: var(--font-mono); }
+      .param-key { color: var(--accent); font-weight: 600; }
+      .param-value { color: var(--text-primary); word-break: break-all; }
+
+      .ads-container { margin: 24px 0; min-height: 90px; background: rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem; border: 1px dashed var(--border-color); border-radius: var(--radius-md); }
+
+      .seo-content { margin-top: 32px; padding: 32px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); color: var(--text-secondary); font-size: 0.875rem; }
+      .seo-content h2 { color: var(--text-primary); font-size: 1.125rem; margin-bottom: 16px; font-weight: 600; }
+      .seo-content h3 { color: var(--text-primary); font-size: 1rem; margin-top: 24px; margin-bottom: 12px; font-weight: 600; }
+      .seo-content p { margin-bottom: 12px; }
+      .seo-content ul { margin-bottom: 16px; padding-left: 20px; }
+      .seo-content li { margin-bottom: 8px; }
+
+      .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); padding: 12px 24px; background: var(--bg-elevated); border: 1px solid var(--accent); border-radius: var(--radius-md); color: var(--accent); font-size: 0.9rem; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55); opacity: 0; z-index: 1000; }
+      .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
       @media (max-width: 640px) {
+        .container { padding: 16px; }
+        .header { flex-direction: column; align-items: stretch; }
         .parts-grid { grid-template-columns: 1fr; }
+        .action-row { flex-direction: column; }
+        .btn { width: 100%; justify-content: center; }
       }
     </style>
   </head>
@@ -117,86 +152,71 @@
       <header class="header">
         <div class="header-left">
           <a href="../../index.html" class="back-btn" title="返回首页">
-            <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M10 12L6 8L10 4" />
             </svg>
           </a>
           <div class="title-group">
             <h1>URL 解析与构建器</h1>
-            <p>快速拆解 URL 结构，管理查询参数</p>
+            <p>专业级 URL 结构分析与参数提取工具</p>
           </div>
         </div>
         <div class="header-right">
-          <div class="theme-toggle">
-            <button class="theme-btn active" data-theme="dark">暗色</button>
-            <button class="theme-btn" data-theme="light">亮色</button>
+          <div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+            <span id="theme-icon">🌙</span>
           </div>
         </div>
       </header>
 
+      <!-- Google AdSense Top -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
+      </div>
+
       <main class="main-card">
-        <div class="toolbar">
-          <div class="toolbar-left">
-            <button class="btn btn-primary" id="parseBtn">
-              <span>立即解析</span>
-            </button>
-            <button class="btn" id="clearBtn">
-              <span>清空</span>
-            </button>
-            <button class="btn" id="exampleBtn">
-              <span>示例 URL</span>
-            </button>
+        <section class="input-section">
+          <textarea
+            id="urlInput"
+            placeholder="请在此输入完整的 URL，例如：https://example.com/path?id=123#section"
+            oninput="parseUrl()"
+          ></textarea>
+
+          <div class="action-row">
+            <button class="btn" onclick="parseUrl()">立即解析</button>
+            <button class="btn btn-secondary" onclick="clearAll()">清空内容</button>
+            <button class="btn btn-secondary" onclick="loadExample()">示例 URL</button>
           </div>
-        </div>
+        </section>
 
-        <div class="content">
-          <div class="section">
-            <div class="section-label">输入 URL</div>
-            <textarea id="urlInput" placeholder="请输入完整的 URL，例如：https://example.com/path?id=123#section" spellcheck="false"></textarea>
+        <section class="results-section" id="resultPanel" style="display: none">
+          <div class="top-words-title" style="margin-bottom: 16px;">🔍 结构可视化</div>
+          <div id="structureVisual" class="structure-visual"></div>
+
+          <div class="top-words-title" style="margin-bottom: 16px;">📋 基础组成部分</div>
+          <div class="parts-grid" id="partsGrid"></div>
+
+          <div class="top-words-title" style="margin-bottom: 16px;">🔗 查询参数 (Query Parameters)</div>
+          <div class="params-table-container">
+            <table class="params-table">
+              <thead>
+                <tr>
+                  <th>键 (Key)</th>
+                  <th>值 (Value)</th>
+                  <th width="80">操作</th>
+                </tr>
+              </thead>
+              <tbody id="paramsBody"></tbody>
+            </table>
           </div>
-
-          <!-- AdSense Placeholder -->
-          <div class="ads-placeholder">
-            <span>Google AdSense 广告位</span>
-          </div>
-
-          <div id="resultContainer" style="display: none;">
-            <div class="section">
-              <div class="section-label">结构可视化</div>
-              <div id="structureVisual" class="structure-visual"></div>
-            </div>
-
-            <div class="section">
-              <div class="section-label">基础组成部分</div>
-              <div class="parts-grid" id="partsGrid"></div>
-            </div>
-
-            <div class="section">
-              <div class="section-label">查询参数 (Query Parameters)</div>
-              <div style="overflow-x: auto;">
-                <table class="params-table">
-                  <thead>
-                    <tr>
-                      <th>键 (Key)</th>
-                      <th>值 (Value)</th>
-                      <th>操作</th>
-                    </tr>
-                  </thead>
-                  <tbody id="paramsBody"></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="shortcuts">
-          <div class="shortcut"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> 快速解析</div>
-          <div class="shortcut"><kbd>Esc</kbd> 清空内容</div>
-        </div>
+        </section>
       </main>
 
-      <!-- SEO Article -->
-      <article class="article-content">
+      <!-- Google AdSense Bottom -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
+      </div>
+
+      <article class="seo-content">
         <h2>深入理解 URL 结构及其在 Web 开发中的重要性</h2>
         <p>在现代 Web 开发中，URL（统一资源定位符）不仅是网页的地址，更是数据传递和状态管理的重要载体。无论是前端路由跳转、后端 API 调用，还是 SEO 优化，深刻理解 URL 的每一个组成部分都至关重要。</p>
         
@@ -224,67 +244,59 @@
         <p>本工具采用了响应式设计，适配手机、平板及电脑端。代码结构语义化，并预留了 Google AdSense 广告位置，方便站长进行流量变现。通过长文本的专业描述，提升了页面在搜索引擎中的权重，为用户提供更高价值的内容服务。</p>
       </article>
 
-      <!-- AdSense Placeholder Bottom -->
-      <div class="ads-placeholder">
-        <span>Google AdSense 广告位 - 底部</span>
-      </div>
+      <footer style="margin-top: 32px; text-align: center; color: var(--text-muted); font-size: 0.75rem;">
+        <p>© 2026 WebUtils. All rights reserved.</p>
+      </footer>
     </div>
 
-    <div id="toast" class="toast"></div>
+    <div id="toast" class="toast">已复制到剪贴板</div>
 
     <script>
-      const urlInput = document.getElementById('urlInput');
-      const parseBtn = document.getElementById('parseBtn');
-      const clearBtn = document.getElementById('clearBtn');
-      const exampleBtn = document.getElementById('exampleBtn');
-      const resultContainer = document.getElementById('resultContainer');
-      const structureVisual = document.getElementById('structureVisual');
-      const partsGrid = document.getElementById('partsGrid');
-      const paramsBody = document.getElementById('paramsBody');
-      const toast = document.getElementById('toast');
+      function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg || '已复制到剪贴板';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+      }
 
-      function showToast(message, type = 'success') {
-        toast.textContent = message;
-        toast.className = `toast show ${type}`;
-        setTimeout(() => toast.classList.remove('show'), 3000);
+      function copyText(text) {
+        if (!text || text === '(无)' || text === '(默认)') return;
+        navigator.clipboard.writeText(text).then(() => showToast());
       }
 
       function parseUrl() {
-        const urlStr = urlInput.value.trim();
+        const urlStr = document.getElementById('urlInput').value.trim();
         if (!urlStr) {
-          showToast('请输入 URL', 'warning');
+          document.getElementById('resultPanel').style.display = 'none';
           return;
         }
 
         try {
-          // 处理没有协议的情况
           let finalUrl = urlStr;
           if (!urlStr.includes('://')) {
             finalUrl = 'http://' + urlStr;
           }
-
           const url = new URL(finalUrl);
+          document.getElementById('resultPanel').style.display = 'block';
           displayResult(url);
-          resultContainer.style.display = 'block';
-          showToast('解析成功');
         } catch (e) {
-          showToast('无效的 URL 格式', 'error');
+          // 静默处理或显示错误
         }
       }
 
       function displayResult(url) {
-        // 结构可视化
-        let html = '';
-        if (url.protocol) html += `<span class="v-part v-protocol">${url.protocol}</span><span class="v-sep">//</span>`;
-        if (url.username) html += `<span class="v-part v-host">${url.username}${url.password ? ':' + url.password : ''}@</span>`;
-        if (url.hostname) html += `<span class="v-part v-host">${url.hostname}</span>`;
-        if (url.port) html += `<span class="v-sep">:</span><span class="v-part v-port">${url.port}</span>`;
-        if (url.pathname && url.pathname !== '/') html += `<span class="v-part v-path">${url.pathname}</span>`;
-        if (url.search) html += `<span class="v-part v-query">${url.search}</span>`;
-        if (url.hash) html += `<span class="v-part v-hash">${url.hash}</span>`;
-        structureVisual.innerHTML = html;
+        // 可视化结构
+        let vHtml = '';
+        if (url.protocol) vHtml += `<span class="v-part v-protocol">${url.protocol}</span><span class="v-sep">//</span>`;
+        if (url.username) vHtml += `<span class="v-part v-host">${url.username}${url.password ? ':' + url.password : ''}@</span>`;
+        if (url.hostname) vHtml += `<span class="v-part v-host">${url.hostname}</span>`;
+        if (url.port) vHtml += `<span class="v-sep">:</span><span class="v-part v-port">${url.port}</span>`;
+        if (url.pathname && url.pathname !== '/') vHtml += `<span class="v-part v-path">${url.pathname}</span>`;
+        if (url.search) vHtml += `<span class="v-part v-query">${url.search}</span>`;
+        if (url.hash) vHtml += `<span class="v-part v-hash">${url.hash}</span>`;
+        document.getElementById('structureVisual').innerHTML = vHtml;
 
-        // 基础组成部分
+        // 组成部分
         const parts = [
           { label: '完整链接 (href)', value: url.href },
           { label: '协议 (protocol)', value: url.protocol },
@@ -295,15 +307,11 @@
           { label: '哈希 (hash)', value: url.hash || '(无)' }
         ];
 
-        partsGrid.innerHTML = parts.map(p => `
+        document.getElementById('partsGrid').innerHTML = parts.map(p => `
           <div class="part-card">
             <div class="part-label">
               <span>${p.label}</span>
-              <button class="btn btn-icon btn-sm" onclick="copyText('${p.value}')">
-                <svg class="icon icon-sm" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <path d="M10 2H4a1 1 0 00-1 1v9a1 1 0 001 1h6a1 1 0 001-1V3a1 1 0 00-1-1zM13 5h-1M13 8h-1M13 11h-1" />
-                </svg>
-              </button>
+              <svg onclick="copyText('${p.value}')" class="copy-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
             </div>
             <div class="part-value">${p.value}</div>
           </div>
@@ -312,58 +320,49 @@
         // 查询参数
         const params = [...url.searchParams.entries()];
         if (params.length > 0) {
-          paramsBody.innerHTML = params.map(([key, value]) => `
+          document.getElementById('paramsBody').innerHTML = params.map(([key, value]) => `
             <tr>
-              <td class="param-key">${key}</td>
-              <td class="param-value">${value}</td>
-              <td>
-                <button class="btn btn-sm" onclick="copyText('${value}')">复制值</button>
-              </td>
+              <td class="param-key">${escapeHtml(key)}</td>
+              <td class="param-value">${escapeHtml(value)}</td>
+              <td><button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.75rem;" onclick="copyText('${value}')">复制</button></td>
             </tr>
           `).join('');
         } else {
-          paramsBody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--text-muted);">无查询参数</td></tr>';
+          document.getElementById('paramsBody').innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--text-muted); padding: 20px;">无查询参数</td></tr>';
         }
       }
 
-      window.copyText = function(text) {
-        if (text === '(默认)' || text === '(无)') return;
-        navigator.clipboard.writeText(text).then(() => showToast('已复制到剪贴板'));
+      function escapeHtml(str) {
+        return String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
       }
 
-      parseBtn.addEventListener('click', parseUrl);
-      clearBtn.addEventListener('click', () => {
-        urlInput.value = '';
-        resultContainer.style.display = 'none';
+      function clearAll() {
+        document.getElementById('urlInput').value = '';
+        document.getElementById('resultPanel').style.display = 'none';
         showToast('已清空');
-      });
+      }
 
-      exampleBtn.addEventListener('click', () => {
-        urlInput.value = 'https://www.example.com:8080/path/to/resource?id=123&category=web&utm_source=google#details';
+      function loadExample() {
+        document.getElementById('urlInput').value = 'https://www.example.com:8080/path/to/resource?id=123&category=web&utm_source=google#details';
         parseUrl();
-      });
+        showToast('已加载示例');
+      }
 
-      // 主题切换
-      const themeBtns = document.querySelectorAll('.theme-btn');
-      themeBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const theme = btn.dataset.theme;
-          document.documentElement.setAttribute('data-theme', theme);
-          themeBtns.forEach(b => b.classList.toggle('active', b === btn));
-          localStorage.setItem('theme', theme);
-        });
-      });
+      function toggleTheme() {
+        const html = document.documentElement;
+        const currentTheme = html.getAttribute("data-theme");
+        const newTheme = currentTheme === "light" ? "dark" : "light";
+        setTheme(newTheme);
+      }
 
-      // 快捷键
-      urlInput.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && e.key === 'Enter') parseUrl();
-        if (e.key === 'Escape') clearBtn.click();
-      });
+      function setTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        document.getElementById("theme-icon").textContent = theme === "light" ? "☀️" : "🌙";
+        localStorage.setItem("theme", theme);
+      }
 
-      // 初始化主题
-      const savedTheme = localStorage.getItem('theme') || 'dark';
-      document.documentElement.setAttribute('data-theme', savedTheme);
-      document.querySelector(`[data-theme="${savedTheme}"]`).classList.add('active');
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      setTheme(savedTheme);
     </script>
   </body>
 </html>
