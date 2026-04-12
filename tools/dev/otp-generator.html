@@ -1,527 +1,320 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>OTP 验证码生成器 - WebUtils</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>OTP 验证码生成器 - 在线 2FA/TOTP 动态令牌工具 | WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="生成一次性密�?(OTP/TOTP)" />
-    <meta name="keywords" content="otp 验证码生成器" />
+    <meta name="description" content="在线生成基于时间的一次性密码 (TOTP)，兼容 Google Authenticator、Microsoft Authenticator 等主流 2FA 应用。支持自定义密钥、步长、位数及哈希算法，提供实时验证码显示与倒计时提醒。" />
+    <meta name="keywords" content="otp生成器, totp生成器, 2fa验证码, 动态令牌, google authenticator在线, 二步验证, 身份验证器" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/dev/otp-generator.html" />
 
     <!-- Open Graph -->
-    <meta property="og:title" content="OTP 验证码生成器 - WebUtils" />
-    <meta property="og:description" content="生成一次性密�?(OTP/TOTP)" />
+    <meta property="og:title" content="OTP 验证码生成器 - 在线 2FA/TOTP 动态令牌工具 | WebUtils" />
+    <meta property="og:description" content="快速生成 2FA 动态验证码，保障您的账户安全。" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://essays4u.net/tools/dev/otp-generator.html" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="OTP 验证码生成器 - WebUtils" />
-    <meta name="twitter:description" content="生成一次性密�?(OTP/TOTP)" />
-    <!-- OG Image -->
     <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
     <style>
       :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
+        --bg-body: #0a0a0f;
+        --bg-card: #12121a;
         --bg-input: #0e0e14;
+        --bg-elevated: #1a1a24;
         --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --text-secondary: #a0a0b0;
+        --text-muted: #606070;
+        --border-color: #2a2a3a;
+        --border-focus: #3a3a4a;
+        --accent: #00f5d4;
+        --accent-purple: #bf5af2;
+        --success: #30d158;
+        --warning: #ff9f0a;
+        --error: #ff453a;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", "Space Grotesk", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
       }
 
       [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
+        --bg-body: #fafafa;
+        --bg-card: #ffffff;
         --bg-input: #f5f5f5;
+        --bg-elevated: #ffffff;
         --text-primary: #1a1a1a;
         --text-secondary: #666;
         --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        --border-color: #e5e5e5;
+        --border-focus: #d5d5d5;
+        --accent: #00d4b8;
+        --accent-purple: #9b4dca;
       }
 
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-      }
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
-      * {
-        box-sizing: border-box;
-      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      
+      .container { max-width: 800px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--border-color); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .header-right { display: flex; align-items: center; gap: 12px; }
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; width: 40px; height: 40px; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
 
-      body {
-        font-family:
-          system-ui,
-          -apple-system,
-          "Segoe UI",
-          Roboto,
-          sans-serif;
-        background: var(--bg-deep);
-        color: var(--text-primary);
-        margin: 0;
-        padding: 24px;
-        min-height: 100vh;
-      }
-      .container {
-        max-width: 600px;
-        margin: 0 auto;
-      }
+      .otp-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+      
+      .otp-display-area { background: linear-gradient(135deg, #00f5d4 0%, #bf5af2 100%); padding: 60px 20px; text-align: center; color: white; position: relative; }
+      .otp-code { font-family: var(--font-mono); font-size: 4rem; font-weight: 700; letter-spacing: 0.1em; text-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-bottom: 10px; cursor: pointer; }
+      .otp-timer { font-size: 0.875rem; font-weight: 600; background: rgba(0,0,0,0.2); padding: 4px 12px; border-radius: 20px; display: inline-block; }
+      
+      .progress-bar { position: absolute; bottom: 0; left: 0; height: 4px; background: rgba(255,255,255,0.4); width: 100%; transition: width 1s linear; }
 
-      .back-link {
-        display: inline-block;
-        margin-bottom: 16px;
-        color: var(--accent-cyan);
-        text-decoration: none;
-        font-size: 0.9rem;
-      }
-      .back-link:hover {
-        text-decoration: underline;
-      }
-      h1 {
-        font-size: 1.75rem;
-        margin: 0 0 8px;
-      }
-      .desc {
-        color: var(--text-muted);
-        margin: 0 0 24px;
-        font-size: 0.95rem;
-      }
+      .config-area { padding: 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+      
+      .form-group { display: flex; flex-direction: column; gap: 6px; }
+      .form-group.full { grid-column: span 2; }
+      .form-group label { font-size: 0.8125rem; font-weight: 600; color: var(--text-secondary); }
+      .form-group input, .form-group select { width: 100%; padding: 12px 14px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary); font-size: 0.875rem; outline: none; transition: all 0.2s; font-family: var(--font-mono); }
+      .form-group input:focus { border-color: var(--accent); }
 
-      .card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        padding: 20px;
-        box-shadow: var(--shadow);
-        margin-bottom: 20px;
-      }
-      label {
-        display: block;
-        font-weight: 600;
-        margin-bottom: 8px;
-        font-size: 0.95rem;
-      }
+      .btn-group { grid-column: span 2; display: flex; gap: 12px; margin-top: 8px; }
+      .btn { flex: 1; padding: 12px; border: none; border-radius: var(--radius-md); font-weight: 700; font-size: 0.875rem; cursor: pointer; transition: all 0.2s; }
+      .btn-primary { background: var(--accent); color: var(--bg-body); }
+      .btn-secondary { background: var(--bg-elevated); color: var(--text-primary); border: 1px solid var(--border-color); }
+      .btn:hover { opacity: 0.9; transform: translateY(-1px); }
 
-      input[type="text"],
-      select {
-        width: 100%;
-        padding: 12px;
-        font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
-        font-size: 0.9rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        margin-bottom: 16px;
-      }
+      .ads-container { margin: 24px 0; min-height: 90px; background: rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem; border: 1px dashed var(--border-color); border-radius: 12px; }
 
-      input:focus,
-      select:focus {
-        outline: none;
-        border-color: var(--accent-cyan);
-        box-shadow: 0 0 0 3px rgb(13, 110, 253, 0.15);
-      }
-      .btn-row {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        margin-bottom: 16px;
-      }
+      .seo-content { margin-top: 32px; padding: 32px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); color: var(--text-secondary); font-size: 0.875rem; }
+      .seo-content h2 { color: var(--text-primary); font-size: 1.125rem; margin-bottom: 16px; font-weight: 600; border-left: 4px solid var(--accent); padding-left: 12px; }
+      .seo-content h3 { color: var(--text-primary); font-size: 1rem; margin-top: 24px; margin-bottom: 12px; font-weight: 600; }
+      .seo-content p { margin-bottom: 12px; }
+      .seo-content ul { margin-bottom: 16px; padding-left: 20px; }
+      .seo-content li { margin-bottom: 8px; }
 
-      button {
-        padding: 10px 16px;
-        font-size: 0.95rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        background: var(--bg-card);
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-      button:hover {
-        border-color: var(--accent-cyan);
-        color: var(--accent-cyan);
-      }
-      button.primary {
-        background: var(--accent-cyan);
-        border-color: var(--accent-cyan);
-        color: #fff;
-      }
-      button.primary:hover {
-        background: var(--accent-cyan);
-        border-color: var(--accent-cyan);
-        color: #fff;
-      }
+      .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); background: var(--accent); color: var(--bg-body); padding: 8px 16px; border-radius: var(--radius-md); font-weight: 600; font-size: 0.875rem; z-index: 1000; opacity: 0; pointer-events: none; transition: all 0.3s; }
+      .toast.show { opacity: 1; transform: translateX(-50%) translateY(-10px); }
 
-      .otp-display {
-        text-align: center;
-        padding: 40px 20px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: var(--radius-md);
-        margin-bottom: 20px;
-      }
-
-      .otp-display .code {
-        font-size: 3.5rem;
-        font-weight: bold;
-        color: #fff;
-        font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
-        letter-spacing: 0.3em;
-        text-shadow: 0 2px 10px rgb(0, 0, 0, 0.2);
-      }
-
-      .otp-display .timer {
-        margin-top: 16px;
-        color: rgb(255, 255, 255, 0.9);
-        font-size: 0.95rem;
-      }
-
-      .progress-bar {
-        width: 200px;
-        height: 4px;
-        background: rgb(255, 255, 255, 0.3);
-        border-radius: 2px;
-        margin: 12px auto 0;
-        overflow: hidden;
-      }
-
-      .progress-bar .fill {
-        height: 100%;
-        background: #fff;
-        transition: width 1s linear;
-      }
-      .options {
-        display: flex;
-        gap: 16px;
-        flex-wrap: wrap;
-        align-items: center;
-        margin-bottom: 16px;
-      }
-      .options label {
-        display: inline;
-        font-weight: normal;
-        margin: 0;
-      }
-      .status {
-        font-size: 0.85rem;
-        margin-top: 12px;
-        min-height: 20px;
-      }
-      .status.success {
-        color: var(--accent-green);
-      }
-      .status.error {
-        color: var(--accent-red);
-      }
-
-      footer {
-        text-align: center;
-        margin-top: 32px;
-        padding-top: 16px;
-        border-top: 1px solid var(--border-subtle);
-        color: var(--text-muted);
-        font-size: 0.85rem;
-      }
-      footer a {
-        color: var(--accent-cyan);
-        text-decoration: none;
-      }
-      footer a:hover {
-        text-decoration: underline;
-      }
-
-      .breadcrumb {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        padding: 8px 14px;
-        background: var(--color-bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        margin-bottom: 20px;
-      }
-      .breadcrumb a {
-        color: var(--color-text-secondary);
-        text-decoration: none;
-        transition: color 0.2s ease;
-      }
-
-      .breadcrumb a:hover {
-        color: var(--color-accent-cyan);
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
+      @media (max-width: 640px) {
+        .container { padding: 16px; }
+        .config-area { grid-template-columns: 1fr; }
+        .form-group.full { grid-column: span 1; }
+        .btn-group { grid-column: span 1; flex-direction: column; }
+        .otp-code { font-size: 2.5rem; }
       }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
   </head>
   <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      OTP 验证码生成器
-    </nav>
     <div class="container">
-      <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">☀�?/button>
-      <h1>OTP 验证码生成器</h1>
-      <p class="desc">生成基于时间的一次性密�?(TOTP)，兼�?Google Authenticator</p>
-
-      <div class="card">
-        <div class="otp-display">
-          <div class="code" id="otpCode">------</div>
-          <div class="timer" id="timer">剩余 30 �?/div>
-          <div class="progress-bar">
-            <div class="fill" id="progress"></div>
+      <header class="header">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn" title="返回首页">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 12L6 8L10 4" />
+            </svg>
+          </a>
+          <div class="title-group">
+            <h1>OTP 验证码生成器</h1>
+            <p>安全生成 2FA 动态令牌，兼容全球主流身份验证应用</p>
           </div>
         </div>
-
-        <div class="btn-row">
-          <button id="btnCopy" class="primary">复制验证�?/button>
-          <button id="btnGenSecret">生成新密�?/button>
+        <div class="header-right">
+          <div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+            <span id="theme-icon">🌙</span>
+          </div>
         </div>
+      </header>
 
-        <label for="secretInput">密钥 (Base32 编码)</label>
-        <input type="text" id="secretInput" placeholder="例如: JBSWY3DPEHPK3PXP" />
-
-        <div class="options">
-          <label>
-            位数:
-            <select id="digits">
-              <option value="6" selected>6 �?/option>
-              <option value="8">8 �?/option>
-            </select>
-          </label>
-          <label>
-            周期:
-            <select id="period">
-              <option value="30" selected>30 �?/option>
-              <option value="60">60 �?/option>
-            </select>
-          </label>
-        </div>
-
-        <div id="status" class="status"></div>
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
       </div>
 
-      <footer>
-        <a href="https://github.com/chicogong/html-tools" target="_blank" rel="noreferrer">
-          View source
-        </a>
-        · 纯前端工�?· 无服务器 ·
-        <a href="../../index.html">WebUtils</a>
+      <main class="otp-card">
+        <div class="otp-display-area">
+          <div class="otp-code" id="otpCode" onclick="copyOTP()">------</div>
+          <div class="otp-timer">剩余 <span id="timeLeft">--</span> 秒</div>
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <div class="config-area">
+          <div class="form-group full">
+            <label>密钥 (Secret / Base32)</label>
+            <input type="text" id="secret" placeholder="例如: JBSWY3DPEHPK3PXP" oninput="updateOTP()" />
+          </div>
+          <div class="form-group">
+            <label>位数 (Digits)</label>
+            <select id="digits" onchange="updateOTP()">
+              <option value="6">6 位</option>
+              <option value="8">8 位</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>更新周期 (Period / Seconds)</label>
+            <input type="number" id="period" value="30" min="10" max="300" oninput="updateOTP()" />
+          </div>
+          <div class="form-group">
+            <label>哈希算法 (Algorithm)</label>
+            <select id="algorithm" onchange="updateOTP()">
+              <option value="SHA1">SHA-1 (通用)</option>
+              <option value="SHA256">SHA-256</option>
+              <option value="SHA512">SHA-512</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>发行者 (Issuer)</label>
+            <input type="text" id="issuer" value="WebUtils" oninput="updateOTP()" />
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="generateRandomSecret()">生成随机密钥</button>
+            <button class="btn btn-secondary" onclick="resetForm()">重置表单</button>
+          </div>
+        </div>
+      </main>
+
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
+      </div>
+
+      <article class="seo-content">
+        <h2>OTP 验证码生成器：深入了解双重身份验证 (2FA)</h2>
+        <p>在密码泄露频发的今天，仅仅依靠传统的用户名和密码已不足以保护您的在线账户安全。<strong>双重身份验证 (2FA)</strong> 成了安全防护的必选项。其中，<strong>基于时间的一次性密码 (TOTP)</strong> 是目前应用最广泛、最便捷的方案之一。本工具可以帮助您在浏览器中实时生成兼容 Google Authenticator 等应用的验证码，方便开发者调试或备用登录。</p>
+
+        <h3>1. 什么是 TOTP 算法？</h3>
+        <p>TOTP (Time-based One-time Password) 是一种基于 <strong>HMAC</strong> 算法的改进版。它的核心原理是将一个共享的“密钥”与当前系统的“时间戳”进行哈希运算。因为时间每 30 秒更新一次，所以生成的验证码也会随之改变，且每个验证码只能使用一次。</p>
+
+        <h3>2. 密钥 (Secret) 是什么？</h3>
+        <p>当您在开启 2FA 时，网站会向您展示一个二维码或一串字符，那就是<strong>密钥</strong>。它通常使用 Base32 编码。只要您保存好这个密钥，您就可以在任何兼容的设备（如手机 App 或本在线工具）上生成相同的验证码。<strong>请务必妥善保管密钥，不要泄露给他人。</strong></p>
+
+        <h3>3. 本工具的安全性保障</h3>
+        <p>许多用户担心在线生成验证码的安全性。本工具采用 <strong>纯前端 JavaScript 实现</strong>，所有的哈希计算、Base32 解码都在您的浏览器本地完成。我们<strong>不会</strong>将您的密钥上传到任何服务器。为了极致的安全，您甚至可以断开网络后继续使用本工具。</p>
+
+        <h3>4. 常见配置项说明</h3>
+        <ul>
+          <li><strong>位数 (Digits)：</strong> 绝大多数服务（如 GitHub、Google）使用 6 位验证码，部分金融服务可能要求 8 位。</li>
+          <li><strong>步长 (Period)：</strong> 标准步长为 30 秒。</li>
+          <li><strong>哈希算法：</strong> 虽然 SHA-256 和 SHA-512 更安全，但为了兼容性，目前 99% 的 2FA 服务仍在使用 SHA-1。</li>
+        </ul>
+
+        <h3>常见问题解答 (FAQ)</h3>
+        <p><strong>Q: 为什么生成的验证码无法登录？</strong><br>
+        A: 请首先检查您计算机的系统时间是否准确。TOTP 算法对时间极其敏感，即便误差只有几秒也可能导致验证失败。其次，请确认密钥输入是否完整。</p>
+        <p><strong>Q: 手机上的身份验证器丢失了怎么办？</strong><br>
+        A: 如果您之前保存了密钥字符串，可以使用本工具重新找回验证码。否则，您需要使用网站提供的“备份恢复码”或联系客服进行身份申诉。</p>
+      </article>
+
+      <footer style="margin-top: 32px; text-align: center; color: var(--text-muted); font-size: 0.75rem;">
+        <p>© 2026 WebUtils. All rights reserved.</p>
       </footer>
     </div>
 
+    <div class="toast" id="toast">已复制到剪贴板</div>
+
+    <!-- OTP Lib -->
+    <script src="https://unpkg.com/otplib@12.0.1/otplib-browser.js"></script>
+
     <script>
-      var secretInput = document.getElementById("secretInput");
-      var otpCodeEl = document.getElementById("otpCode");
-      var timerEl = document.getElementById("timer");
-      var progressEl = document.getElementById("progress");
-      var digitsEl = document.getElementById("digits");
-      var periodEl = document.getElementById("period");
-      var statusEl = document.getElementById("status");
+      const { totp } = window.otplib;
 
-      var BASE32_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+      function updateOTP() {
+        const secret = document.getElementById('secret').value.trim();
+        const digits = parseInt(document.getElementById('digits').value);
+        const period = parseInt(document.getElementById('period').value);
+        const algorithm = document.getElementById('algorithm').value.toLowerCase();
 
-      function showStatus(msg, type) {
-        statusEl.textContent = msg;
-        statusEl.className = "status " + (type || "");
-      }
-
-      function base32Decode(str) {
-        str = str.toUpperCase().replace(/[^A-Z2-7]/g, "");
-        var bits = "";
-        for (var i = 0; i < str.length; i++) {
-          var val = BASE32_CHARS.indexOf(str[i]);
-          if (val === -1) continue;
-          bits += val.toString(2).padStart(5, "0");
-        }
-        var bytes = new Uint8Array(Math.floor(bits.length / 8));
-        for (var j = 0; j < bytes.length; j++) {
-          bytes[j] = parseInt(bits.slice(j * 8, j * 8 + 8), 2);
-        }
-        return bytes;
-      }
-
-      function base32Encode(bytes) {
-        var bits = "";
-        for (var i = 0; i < bytes.length; i++) {
-          bits += bytes[i].toString(2).padStart(8, "0");
-        }
-        var result = "";
-        for (var j = 0; j < bits.length; j += 5) {
-          var chunk = bits.slice(j, j + 5);
-          if (chunk.length < 5) chunk = chunk + "0".repeat(5 - chunk.length);
-          result += BASE32_CHARS[parseInt(chunk, 2)];
-        }
-        return result;
-      }
-
-      window.generateSecret = function () {
-        var bytes = new Uint8Array(20);
-        crypto.getRandomValues(bytes);
-        return base32Encode(bytes);
-      };
-
-      async function hmacSha1(key, data) {
-        var cryptoKey = await crypto.subtle.importKey(
-          "raw",
-          key,
-          { name: "HMAC", hash: "SHA-1" },
-          false,
-          ["sign"]
-        );
-        var sig = await crypto.subtle.sign("HMAC", cryptoKey, data);
-        return new Uint8Array(sig);
-      }
-
-      async function generateTOTP(secret, digits, period) {
-        var key = base32Decode(secret);
-        var time = Math.floor(Date.now() / 1000 / period);
-
-        var timeBytes = new Uint8Array(8);
-        for (var i = 7; i >= 0; i--) {
-          timeBytes[i] = time & 0xff;
-          time = Math.floor(time / 256);
-        }
-
-        var hash = await hmacSha1(key, timeBytes);
-        var offset = hash[hash.length - 1] & 0x0f;
-        var code =
-          ((hash[offset] & 0x7f) << 24) |
-          ((hash[offset + 1] & 0xff) << 16) |
-          ((hash[offset + 2] & 0xff) << 8) |
-          (hash[offset + 3] & 0xff);
-
-        code = code % Math.pow(10, digits);
-        return code.toString().padStart(digits, "0");
-      }
-
-      async function updateOTP() {
-        var secret = secretInput.value.trim();
         if (!secret) {
-          otpCodeEl.textContent = "-".repeat(parseInt(digitsEl.value, 10));
+          document.getElementById('otpCode').textContent = "------";
           return;
         }
 
         try {
-          var digits = parseInt(digitsEl.value, 10);
-          var period = parseInt(periodEl.value, 10);
-          var otp = await generateTOTP(secret, digits, period);
-          otpCodeEl.textContent = otp;
-        } catch (e) {
-          otpCodeEl.textContent = "ERROR";
-          showStatus("密钥格式错误", "error");
+          totp.options = { digits, step: period, algorithm };
+          const token = totp.generate(secret);
+          document.getElementById('otpCode').textContent = token;
+        } catch (err) {
+          document.getElementById('otpCode').textContent = "ERROR";
+          console.error(err);
         }
       }
 
       function updateTimer() {
-        var period = parseInt(periodEl.value, 10);
-        var now = Math.floor(Date.now() / 1000);
-        var remaining = period - (now % period);
-        timerEl.textContent = "剩余 " + remaining + " �?;
-        progressEl.style.width = (remaining / period) * 100 + "%";
+        const period = parseInt(document.getElementById('period').value) || 30;
+        const epoch = Math.floor(Date.now() / 1000);
+        const timeLeft = period - (epoch % period);
+        const progress = (timeLeft / period) * 100;
 
-        if (remaining === period) {
+        document.getElementById('timeLeft').textContent = timeLeft;
+        document.getElementById('progressBar').style.width = progress + '%';
+
+        if (timeLeft === period) {
           updateOTP();
         }
       }
 
-      document.getElementById("btnCopy").onclick = async function () {
-        var code = otpCodeEl.textContent;
-        if (code && !code.includes("-") && code !== "ERROR") {
-          await navigator.clipboard.writeText(code);
-          showStatus("已复�?, "success");
-        }
+      window.generateRandomSecret = () => {
+        const randomSecret = totp.generateSecret();
+        document.getElementById('secret').value = randomSecret;
+        updateOTP();
+        showToast('已生成新密钥');
       };
 
-      document.getElementById("btnGenSecret").onclick = function () {
-        secretInput.value = generateSecret();
+      window.resetForm = () => {
+        document.getElementById('secret').value = "";
+        document.getElementById('digits').value = "6";
+        document.getElementById('period').value = "30";
+        document.getElementById('algorithm').value = "SHA1";
         updateOTP();
-        showStatus("已生成新密钥", "success");
       };
 
-      secretInput.addEventListener("input", updateOTP);
-      digitsEl.addEventListener("change", updateOTP);
-      periodEl.addEventListener("change", function () {
-        updateOTP();
-        updateTimer();
-      });
+      window.copyOTP = () => {
+        const code = document.getElementById('otpCode').textContent;
+        if (code === "------" || code === "ERROR") return;
+        
+        navigator.clipboard.writeText(code).then(() => {
+          showToast('验证码已复制: ' + code);
+        });
+      };
 
+      function showToast(msg) {
+        const toast = document.getElementById("toast");
+        toast.textContent = msg;
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 2000);
+      }
+
+      // Theme logic
+      window.toggleTheme = () => {
+        const theme = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+        setTheme(theme);
+      }
+      function setTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        document.getElementById("theme-icon").textContent = theme === "light" ? "☀️" : "🌙";
+        localStorage.setItem("theme", theme);
+      }
+      function initTheme() {
+        const savedTheme = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        setTheme(savedTheme || (prefersDark ? "dark" : "light"));
+      }
+
+      initTheme();
       setInterval(updateTimer, 1000);
       updateTimer();
       updateOTP();
-
-      window.toggleTheme = function () {
-        const html = document.documentElement;
-        const btn = document.querySelector(".theme-toggle");
-        const next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
-        html.setAttribute("data-theme", next);
-        btn.textContent = next === "dark" ? "🌙" : "☀�?;
-        localStorage.setItem("theme", next);
-      };
-      (function () {
-        const saved = localStorage.getItem("theme");
-        if (saved) {
-          document.documentElement.setAttribute("data-theme", saved);
-          const btn = document.querySelector(".theme-toggle");
-          if (btn) btn.textContent = saved === "dark" ? "🌙" : "☀�?;
-        }
-      })();
     </script>
   </body>
 </html>
-
