@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,16 +9,14 @@
     <meta name="description" content="智能国际化键名生成器，支持将中文、英文文本自动转换为标准化的 i18n Key。支持 camelCase, snake_case, kebab-case 等多种格式，内置中文转拼音功能，大幅提升多语言项目开发效率。">
     <meta name="keywords" content="i18n, 国际化, Key生成器, 翻译键名, 拼音转换, 前端开发工具, React i18next, Vue I18n">
     <meta name="author" content="WebUtils">
-    <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://essays4u.net/tools/dev/i18n-key-generator.html">
-
+    
     <!-- Open Graph -->
     <meta property="og:title" content="国际化键名生成器 - 智能 I18n Key 提取工具">
     <meta property="og:description" content="将文本快速转换为标准化的国际化键名，支持拼音与多种格式。">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://essays4u.net/tools/dev/i18n-key-generator.html">
-    <meta property="og:image" content="https://essays4u.net/social-preview.png">
-
+    
     <!-- JSON-LD -->
     <script type="application/ld+json">
     {
@@ -30,220 +28,404 @@
     }
     </script>
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
-    <!-- Design System CSS -->
-    <link rel="stylesheet" href="../../templates/design-system.css">
+    <!-- Google AdSense Placeholder -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-################" crossorigin="anonymous"></script>
 
     <style>
-        .generator-layout {
+        :root {
+            --primary-color: #3b82f6;
+            --primary-hover: #2563eb;
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #0f172a;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --accent-color: #60a5fa;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --warning-color: #f59e0b;
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="light"] {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-input: #f1f5f9;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            transition: var(--transition);
+            padding-top: 60px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 10px 20px;
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-home {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .main-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            margin-bottom: 32px;
+            gap: 25px;
+            margin-bottom: 30px;
         }
-        @media (max-width: 768px) {
-            .generator-layout {
+
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 25px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .option-item label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        select, input[type="text"] {
+            width: 100%;
+            background: var(--bg-input);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 10px 15px;
+            border-radius: 8px;
+            outline: none;
+            font-size: 0.95rem;
+        }
+
+        textarea {
+            width: 100%;
+            height: 400px;
+            background: var(--bg-input);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            resize: none;
+            transition: var(--transition);
+        }
+
+        textarea:focus {
+            border-color: var(--primary-color);
+        }
+
+        .output-container {
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .ad-container {
+            margin: 40px 0;
+            text-align: center;
+            min-height: 90px;
+            background: rgba(255, 255, 255, 0.02);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px dashed var(--border-color);
+        }
+
+        .article-section {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .article-section h2 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .article-section h3 {
+            margin: 25px 0 15px;
+        }
+
+        .article-section p {
+            margin-bottom: 15px;
+            color: var(--text-muted);
+        }
+
+        .problem-solution {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .ps-card {
+            background: rgba(59, 130, 246, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .ps-card.solution {
+            background: rgba(16, 185, 129, 0.05);
+            border-left-color: var(--success-color);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 40px 0;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--success-color);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 3000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            bottom: 50px;
+        }
+
+        @media (max-width: 900px) {
+            .main-grid {
                 grid-template-columns: 1fr;
             }
         }
-        .options-bar {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-            padding: 20px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-        }
-        .result-container {
-            position: relative;
-        }
-        .copy-all-btn {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            z-index: 10;
-        }
-        .article-section {
-            margin-top: 64px;
-            padding-top: 48px;
-            border-top: 1px solid var(--border-color);
-        }
-        .article-content {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .article-content h2 {
-            margin: 32px 0 16px;
-            font-size: 1.75rem;
-        }
-        .article-content p {
-            margin-bottom: 16px;
-            color: var(--text-secondary);
-            line-height: 1.8;
-        }
-        .ads-placeholder {
-            margin: 32px 0;
-            padding: 24px;
-            background: var(--bg-input);
-            border: 1px dashed var(--border-color);
-            border-radius: var(--radius-md);
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-        }
-        .header {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            margin-bottom: 40px;
-            position: relative;
-            padding-top: 10px;
-        }
-        .back-btn {
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-        .header-right {
-            position: absolute;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-        .icon {
-            width: 18px;
-            height: 18px;
-            stroke-width: 2;
-        }
     </style>
 </head>
-<body>
-    <div class="container-md">
-        <header class="header">
-            <div class="header-left">
-                <a href="../../index.html" class="back-btn">
-                    <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path d="M10 12L6 8L10 4" />
-                    </svg>
-                </a>
-                <div class="title-group">
-                    <h1>国际化键名生成器</h1>
-                    <p>自动将文案转换为规范的 I18n Key</p>
-                </div>
-            </div>
-            <div class="header-right">
-                <button class="btn btn-icon" id="theme-toggle">
-                    <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path d="M8 12a4 4 0 100-8 4 4 0 000 8zM8 1v1M8 14v1M1 8h1M14 8h1" />
-                    </svg>
-                </button>
-            </div>
+<body data-theme="dark">
+    <nav>
+        <div class="nav-content">
+            <a href="../../index.html" class="back-home">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                返回首页
+            </a>
+            <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                <svg class="sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>国际化键名生成器</h1>
+            <p class="subtitle">自动将文案转换为规范的 I18n Key，支持拼音提取</p>
         </header>
 
         <main>
-            <div id="ads-top" class="ads-placeholder">
-                Google AdSense 广告位 - 顶部
+            <div class="ad-container">
+                <!-- AdSense Placeholder -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-################"
+                     data-ad-slot="################"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
             </div>
 
-            <section class="options-bar">
-                <div>
-                    <label class="form-label">Key 前缀</label>
-                    <input type="text" id="prefix" class="form-input" placeholder="例如: common.label">
+            <div class="card" style="margin-bottom: 30px;">
+                <div class="options-grid">
+                    <div class="option-item">
+                        <label>Key 前缀</label>
+                        <input type="text" id="prefix" placeholder="例如: common.button">
+                    </div>
+                    <div class="option-item">
+                        <label>命名格式</label>
+                        <select id="format">
+                            <option value="camelCase">camelCase (小驼峰)</option>
+                            <option value="snake_case">snake_case (下划线)</option>
+                            <option value="kebab-case">kebab-case (短横线)</option>
+                            <option value="SCREAMING_SNAKE">SCREAMING_SNAKE</option>
+                        </select>
+                    </div>
+                    <div class="option-item">
+                        <label>层级分隔符</label>
+                        <input type="text" id="separator" value="." maxlength="1">
+                    </div>
                 </div>
-                <div>
-                    <label class="form-label">命名格式</label>
-                    <select id="format" class="form-select">
-                        <option value="camelCase">camelCase (小驼峰)</option>
-                        <option value="snake_case">snake_case (下划线)</option>
-                        <option value="kebab-case">kebab-case (短横线)</option>
-                        <option value="SCREAMING_SNAKE">SCREAMING_SNAKE</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="form-label">层级分隔符</label>
-                    <input type="text" id="separator" class="form-input" value="." maxlength="1">
-                </div>
-            </section>
 
-            <section class="generator-layout">
-                <div>
-                    <label class="form-label">输入原始文本 (每行一个)</label>
-                    <textarea id="input-text" class="form-textarea" placeholder="保存&#10;取消&#10;确认删除&#10;请输入用户名" style="height: 300px;"></textarea>
+                <div class="main-grid">
+                    <div class="input-container">
+                        <div class="stat-label" style="margin-bottom: 10px;">输入原始文本 (每行一个)</div>
+                        <textarea id="input-text" placeholder="保存&#10;取消&#10;确认删除&#10;请输入用户名"></textarea>
+                    </div>
+                    <div class="output-container">
+                        <div class="stat-label" style="margin-bottom: 10px;">生成的 I18n JSON</div>
+                        <button class="copy-btn" id="copy-btn">复制 JSON</button>
+                        <div id="output-json" style="height: 400px; overflow: auto; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 10px; padding: 15px; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; white-space: pre-wrap;"></div>
+                    </div>
                 </div>
-                <div class="result-container">
-                    <label class="form-label">生成的 I18n JSON</label>
-                    <button class="btn btn-sm btn-primary copy-all-btn" id="copy-btn">复制 JSON</button>
-                    <div id="output-json" class="output-box" style="height: 300px; font-family: var(--font-mono);"></div>
-                </div>
-            </section>
-
-            <div id="ads-middle" class="ads-placeholder">
-                Google AdSense 广告位 - 中部
             </div>
 
-            <article class="article-section">
-                <div class="article-content">
-                    <h2>什么是国际化 (I18n)？</h2>
-                    <p>国际化（Internationalization，通常简写为 I18n，因为中间有 18 个字母）是软件开发中的一个重要过程，旨在设计和开发能够适应不同语言和地区的应用程序。在前端开发中，这通常意味着将硬编码的字符串提取到单独的资源文件中（如 JSON），并使用唯一的“键名”（Key）来引用它们。</p>
+            <div class="ad-container">
+                <!-- AdSense Placeholder -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-################"
+                     data-ad-slot="################"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+            </div>
 
-                    <h2>为什么需要国际化键名生成器？</h2>
-                    <p>在大型项目中，手动为成百上千个文案创建键名是一项极其枯燥且容易出错的任务。开发者往往需要考虑：</p>
+            <section class="article-section">
+                <h2>什么是国际化 (I18n)？</h2>
+                
+                <div class="problem-solution">
+                    <div class="ps-card">
+                        <h3>痛点分析</h3>
+                        <p>在大型项目中，手动为成百上千个文案创建键名是一项极其枯燥且容易出错的任务。命名不规范会导致维护困难。</p>
+                    </div>
+                    <div class="ps-card solution">
+                        <h3>解决方案</h3>
+                        <p>通过智能算法自动将文案转换为标准化的 Key。对于中文，自动提取拼音并格式化，极大地节省开发时间并确保规范统一。</p>
+                    </div>
+                </div>
+
+                <h3>国际化键名命名最佳实践</h3>
+                <p>1. <strong>模块化前缀</strong>: 使用层级化命名方式，如 <code>login.button.submit</code>，有助于组织 JSON 文件并避免冲突。</p>
+                <p>2. <strong>选择合适的格式</strong>: 
                     <ul>
-                        <li><strong>一致性：</strong> 确保所有键名遵循相同的命名规范（如驼峰式或下划线式）。</li>
-                        <li><strong>唯一性：</strong> 避免不同模块使用相同的键名导致文案覆盖。</li>
-                        <li><strong>可读性：</strong> 键名应当能直观反映文案的含义。</li>
+                        <li><strong>camelCase</strong>: 现代前端框架（React/Vue）最常用的格式。</li>
+                        <li><strong>snake_case</strong>: 常见于后端或某些传统项目的配置。</li>
+                        <li><strong>kebab-case</strong>: 适合作为 CSS 类名或 HTML 属性。</li>
                     </ul>
-                    <p>本工具通过智能算法，自动将中文或英文文案转换为标准化的键名。对于中文，它会自动提取拼音并进行格式化，极大地节省了开发时间。</p>
+                </p>
+                <p>3. <strong>保持语义化</strong>: 键名应当描述“它是什么”而不是“它显示什么”。例如，使用 <code>auth.error_message</code> 而不是 <code>auth.please_input_password</code>。</p>
 
-                    <h2>国际化键名命名最佳实践</h2>
-                    <p>1. <strong>模块化前缀：</strong> 使用层级化的命名方式，例如 <code>login.button.submit</code>，这有助于组织 JSON 文件并避免冲突。</p>
-                    <p>2. <strong>选择合适的格式：</strong> 
-                        <ul>
-                            <li><strong>camelCase：</strong> 现代前端框架（React/Vue）最常用的格式。</li>
-                            <li><strong>snake_case：</strong> 常见于后端或某些传统项目的配置。</li>
-                            <li><strong>kebab-case：</strong> 适合作为 CSS 类名或 HTML 属性。</li>
-                        </ul>
-                    </p>
-                    <p>3. <strong>保持语义化：</strong> 键名应当描述“它是什么”而不是“它显示什么”。例如，使用 <code>auth.error_message</code> 而不是 <code>auth.please_input_password</code>。</p>
-
-                    <h2>如何在项目中使用生成的 JSON？</h2>
-                    <p>以 <code>react-i18next</code> 为例，你可以将生成的 JSON 直接放入你的语言包文件中：</p>
-                    <pre><code>// en.json
-{
+                <h3>如何在项目中使用生成的 JSON？</h3>
+                <p>以 <code>react-i18next</code> 为例，你可以将生成的 JSON 直接放入你的语言包文件中：</p>
+                <pre style="background: var(--bg-card); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); color: var(--accent-color); margin: 15px 0;"><code>{
   "common": {
     "save": "Save",
     "cancel": "Cancel"
   }
-}
-
-// 在组件中使用
-const { t } = useTranslation();
-return &lt;button&gt;{t('common.save')}&lt;/button&gt;;</code></pre>
-                </div>
-            </article>
-
-            <div id="ads-bottom" class="ads-placeholder">
-                Google AdSense 广告位 - 底部
-            </div>
+}</code></pre>
+            </section>
         </main>
 
-        <footer class="footer">
-            <p>© 2024 WebUtils - 纯前端开发者工具箱 | <a href="https://github.com/chicogong/html-tools" target="_blank">GitHub</a></p>
+        <footer>
+            <p>© 2024 WebUtils - 纯前端开发者工具箱 | <a href="https://github.com/chicogong/html-tools" target="_blank" style="color: var(--primary-color);">GitHub</a></p>
         </footer>
     </div>
 
     <div id="toast" class="toast">已复制到剪贴板</div>
 
     <script>
-        // Simple Pinyin mapping for demo - in a real app, you'd use a full library
         const pinyinMap = {
             '保': 'bao', '存': 'cun', '取': 'qu', '消': 'xiao', '确': 'que', '认': 'ren', '删': 'shan', '除': 'chu',
             '请': 'qing', '输': 'shu', '入': 'ru', '用': 'yong', '户': 'hu', '名': 'ming', '提': 'ti', '交': 'jiao',
@@ -252,12 +434,9 @@ return &lt;button&gt;{t('common.save')}&lt;/button&gt;;</code></pre>
         };
 
         function textToKey(text) {
-            // Remove special characters and split into words
             let words = text.replace(/[^\u4e00-\u9fa5a-zA-Z0-9\s]/g, ' ').trim().split(/\s+/);
-            
             let processedWords = words.map(word => {
                 if (/[\u4e00-\u9fa5]/.test(word)) {
-                    // Convert Chinese to Pinyin (simplified)
                     return word.split('').map(char => pinyinMap[char] || char).join('');
                 }
                 return word.toLowerCase();
@@ -265,8 +444,8 @@ return &lt;button&gt;{t('common.save')}&lt;/button&gt;;</code></pre>
 
             const format = document.getElementById('format').value;
             const prefix = document.getElementById('prefix').value.trim();
-            
             let key = '';
+            
             if (format === 'camelCase') {
                 key = processedWords.map((w, i) => i === 0 ? w : w.charAt(0).toUpperCase() + w.slice(1)).join('');
             } else if (format === 'snake_case') {
@@ -288,24 +467,19 @@ return &lt;button&gt;{t('common.save')}&lt;/button&gt;;</code></pre>
             const input = document.getElementById('input-text').value;
             const lines = input.split('\n').filter(l => l.trim());
             const result = {};
-            
             lines.forEach(line => {
                 const key = textToKey(line);
                 result[key] = line.trim();
             });
-
-            const output = document.getElementById('output-json');
-            output.textContent = JSON.stringify(result, null, 2);
+            document.getElementById('output-json').textContent = JSON.stringify(result, null, 2);
         }
 
-        // Listeners
         document.getElementById('input-text').addEventListener('input', generate);
         document.getElementById('prefix').addEventListener('input', generate);
         document.getElementById('format').addEventListener('change', generate);
         document.getElementById('separator').addEventListener('input', generate);
 
-        const copyBtn = document.getElementById('copy-btn');
-        copyBtn.onclick = () => {
+        document.getElementById('copy-btn').onclick = () => {
             const text = document.getElementById('output-json').textContent;
             if (!text) return;
             navigator.clipboard.writeText(text).then(() => {
@@ -315,20 +489,15 @@ return &lt;button&gt;{t('common.save')}&lt;/button&gt;;</code></pre>
             });
         };
 
-        // Theme Toggle
-        const themeToggle = document.getElementById('theme-toggle');
+        const themeToggle = document.getElementById('themeToggle');
         themeToggle.onclick = () => {
-            const html = document.documentElement;
-            const isDark = html.getAttribute('data-theme') === 'dark';
-            html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            const body = document.body;
+            const isDark = body.getAttribute('data-theme') === 'dark';
+            body.setAttribute('data-theme', isDark ? 'light' : 'dark');
             localStorage.setItem('theme', isDark ? 'light' : 'dark');
         };
 
-        if (localStorage.getItem('theme') === 'light') {
-            document.documentElement.setAttribute('data-theme', 'light');
-        }
-
-        // Initial generation
+        if (localStorage.getItem('theme') === 'light') document.body.setAttribute('data-theme', 'light');
         generate();
     </script>
 </body>
