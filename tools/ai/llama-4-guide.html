@@ -1,632 +1,413 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="dark">
+<html lang="zh-CN">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Llama 4 完整指南 - WebUtils</title>
+    <title>Llama 4 完整指南 - Meta 首款 MoE 架构多模态开源模型深度解析 - WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Llama 4 完整指南 - WebUtils" />
-    <meta name="keywords" content="llama-4-guide,ai,tools,webutils" />
+    <meta name="description" content="Meta Llama 4 深度指南：首款 MoE 架构多模态开源大模型。解析千万级 Token 超长上下文 Scout 版本、Maverick 旗舰版性能对比及 Ollama 部署教程。2025 开源 AI 新巅峰。" />
+    <meta name="keywords" content="Llama 4,Meta AI,Llama 4 Maverick,Llama 4 Scout,MoE架构,多模态模型,千万上下文,开源大模型,WebUtils" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/ai/llama-4-guide.html" />
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="Llama 4 完整指南 - WebUtils" />
-    <meta property="og:description" content="Llama 4 完整指南 - WebUtils" />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content="Llama 4 完整指南 - Meta 首款 MoE 架构多模态开源模型深度解析 - WebUtils" />
+    <meta property="og:description" content="深度解析 Meta Llama 4。包含核心 MoE 架构、千万上下文 Scout 版及 2025 最新模型对比。" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://essays4u.net/tools/ai/llama-4-guide.html" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
     <meta property="og:site_name" content="WebUtils" />
     <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
 
     <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Llama 4 完整指南 - WebUtils" />
-    <meta name="twitter:description" content="Llama 4 完整指南 - WebUtils" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Llama 4 完整指南 - Meta 首款 MoE 架构多模态开源模型深度解析 - WebUtils" />
+    <meta name="twitter:description" content="Llama 4：千万 Token 上下文，开源多模态新纪元。" />
     <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
 
-    <meta
-      name="description"
-      content="Meta Llama 4 深度解析：Scout/Maverick/Behemoth 三版本，MoE架构，开源多模态，千万token上下�?
-    />
-    <meta
-      name="keywords"
-      content="Llama 4,Meta,开源大模型,MoE,多模�?Scout,Maverick,Behemoth,2025"
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Llama 4 指南工具",
+      "url": "https://essays4u.net/tools/ai/llama-4-guide.html",
+      "description": "提供 Meta Llama 4 系列模型的详细技术规格、版本对比和快速开始指南。",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "All",
+      "author": {
+        "@type": "Organization",
+        "name": "WebUtils"
+      }
+    }
+    </script>
+
+    <!-- Google AdSense Header Placeholder -->
+    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
     />
 
     <style>
       :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
+        --bg-body: #0a0a0f;
+        --bg-card: #12121a;
         --bg-input: #0e0e14;
+        --bg-elevated: #1a1a24;
         --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --text-secondary: #a0a0b0;
+        --text-muted: #606070;
+        --border-color: #2a2a3a;
+        --border-focus: #3a3a4a;
+        --accent: #3b82f6;
+        --accent-meta: #0668e1;
+        --success: #30d158;
+        --warning: #ff9f0a;
+        --error: #ff453a;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", "Space Grotesk", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
       }
 
       [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
+        --bg-body: #fafafa;
+        --bg-card: #ffffff;
         --bg-input: #f5f5f5;
+        --bg-elevated: #ffffff;
         --text-primary: #1a1a1a;
         --text-secondary: #666;
         --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        --border-color: #e5e5e5;
+        --border-focus: #d5d5d5;
+        --accent: #2563eb;
+        --accent-meta: #0064e0;
       }
 
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--color-bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      
+      .container { max-width: 1000px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--border-color); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), var(--accent-meta)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .header-right { display: flex; align-items: center; gap: 12px; }
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; width: 40px; height: 40px; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+      .theme-toggle:hover { border-color: var(--accent); }
 
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
+      .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 32px; }
+      .stat-card { background: var(--bg-card); padding: 20px; border-radius: var(--radius-lg); text-align: center; border: 1px solid var(--border-color); position: relative; overflow: hidden; }
+      .stat-card::before { content: ""; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent-meta); }
+      .stat-label { font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+      .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); font-family: var(--font-mono); }
 
-      :root {
-        --pico-card-background-color: rgba(30, 30, 50, 0.8);
-        --pico-muted-border-color: rgba(100, 100, 140, 0.3);
-        --pico-muted-color: #8888a0;
-        --primary-color: #0668e1;
-        --secondary-color: #00d4ff;
-        --accent-color: #7c3aed;
-        --bg-gradient: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 100%);
-      }
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      body {
-        font-family: var(--font-sans);
-        line-height: 1.6;
-        color: var(--color-text-primary);
-        background: var(--bg-gradient);
-        min-height: 100vh;
-      }
-      .container {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 2rem 1rem;
-      }
-      header {
-        text-align: center;
-        margin-bottom: 2rem;
-      }
-      .logo {
-        font-size: 3rem;
-        margin-bottom: 0.5rem;
-      }
-      .badge {
-        display: inline-block;
-        background: var(--primary-color);
-        color: white;
-        padding: 0.25rem 0.75rem;
-        border-radius: 1rem;
-        font-size: 0.8rem;
-        margin-left: 0.5rem;
-        font-weight: 600;
-      }
-      .badge.open {
-        background: #10b981;
-      }
-      .badge.meta {
-        background: #0668e1;
-      }
-      .badge.new {
-        background: #f59e0b;
-      }
-      .card {
-        background: var(--pico-card-background-color);
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        border: 1px solid var(--pico-muted-border-color);
-      }
-      .card h3 {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-        color: var(--primary-color);
-      }
-      .features-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 1rem;
-      }
-      .feature-item {
-        background: rgba(6, 104, 225, 0.1);
-        border-radius: 8px;
-        padding: 1rem;
-        border-left: 3px solid var(--primary-color);
-      }
-      .feature-item.cyan {
-        background: rgba(0, 212, 255, 0.1);
-        border-left-color: var(--secondary-color);
-      }
-      .feature-item.purple {
-        background: rgba(124, 58, 237, 0.1);
-        border-left-color: var(--accent-color);
-      }
-      .feature-item h4 {
-        margin-bottom: 0.5rem;
-        font-size: 1rem;
-      }
-      .feature-item p {
-        font-size: 0.9rem;
-        color: var(--pico-muted-color);
-        margin: 0;
-      }
-      .stat-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 1rem;
-        margin: 1.5rem 0;
-      }
-      .stat-item {
-        background: linear-gradient(135deg, rgba(6, 104, 225, 0.2) 0%, rgba(0, 212, 255, 0.2) 100%);
-        border-radius: 12px;
-        padding: 1.25rem;
-        text-align: center;
-        border: 1px solid rgba(6, 104, 225, 0.3);
-      }
-      .stat-item .number {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--primary-color);
-        display: block;
-      }
-      .stat-item .label {
-        font-size: 0.8rem;
-        color: var(--pico-muted-color);
-        margin-top: 0.25rem;
-      }
-      .highlight-box {
-        background: linear-gradient(
-          135deg,
-          rgba(6, 104, 225, 0.15) 0%,
-          rgba(0, 212, 255, 0.15) 100%
-        );
-        border-left: 4px solid var(--primary-color);
-        padding: 1.5rem;
-        margin: 1.5rem 0;
-        border-radius: 0 12px 12px 0;
-      }
-      .model-card {
-        background: linear-gradient(135deg, rgba(6, 104, 225, 0.1) 0%, rgba(0, 212, 255, 0.1) 100%);
-        border-radius: 16px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        border: 2px solid rgba(6, 104, 225, 0.3);
-      }
-      .model-card.featured {
-        border-color: var(--primary-color);
-        background: linear-gradient(135deg, rgba(6, 104, 225, 0.2) 0%, rgba(0, 212, 255, 0.2) 100%);
-      }
-      .model-card h4 {
-        color: var(--primary-color);
-        margin-bottom: 0.75rem;
-        font-size: 1.2rem;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        flex-wrap: wrap;
-      }
-      .model-card .desc {
-        margin: 0.75rem 0;
-        color: var(--pico-muted-color);
-        line-height: 1.6;
-      }
-      .model-card .specs {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 0.75rem;
-        margin-top: 1rem;
-      }
-      .model-card .spec {
-        background: rgba(0, 0, 0, 0.3);
-        padding: 0.75rem;
-        border-radius: 8px;
-        text-align: center;
-      }
-      .model-card .spec-value {
-        font-size: 1rem;
-        font-weight: 600;
-        color: var(--primary-color);
-      }
-      .model-card .spec-label {
-        font-size: 0.7rem;
-        color: var(--pico-muted-color);
-        margin-top: 0.25rem;
-      }
-      .nav-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: var(--pico-muted-color);
-        text-decoration: none;
-        margin-bottom: 1rem;
-      }
-      .nav-link:hover {
-        color: var(--primary-color);
-      }
-      .code-block {
-        background: #1a1a2e;
-        border-radius: 8px;
-        padding: 1rem;
-        overflow-x: auto;
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        margin: 1rem 0;
-        border: 1px solid rgba(6, 104, 225, 0.3);
-      }
-      .comparison-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 1rem 0;
-        font-size: 0.9rem;
-      }
-      .comparison-table th,
-      .comparison-table td {
-        padding: 0.75rem;
-        text-align: center;
-        border-bottom: 1px solid var(--pico-muted-border-color);
-      }
-      .comparison-table th {
-        background: rgba(6, 104, 225, 0.1);
-        font-weight: 600;
-      }
-      footer {
-        text-align: center;
-        padding: 2rem 0;
-        color: var(--pico-muted-color);
-        font-size: 0.9rem;
-      }
+      .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 24px; }
+      .card-title { font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
 
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
+      .model-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+      .model-box { background: var(--bg-input); padding: 24px; border-radius: var(--radius-md); border: 1px solid var(--border-color); transition: all 0.2s; }
+      .model-box:hover { border-color: var(--accent); transform: translateY(-4px); }
+      .model-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+      .model-name { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); }
+      .badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 12px; background: var(--accent-meta); color: white; font-weight: 600; }
+      
+      .model-desc { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px; }
+      .specs-list { list-style: none; }
+      .spec-li { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; display: flex; justify-content: space-between; }
+      .spec-val { color: var(--accent); font-weight: 600; }
+
+      .comparison-table-wrapper { overflow-x: auto; margin: 16px -24px; padding: 0 24px; }
+      .comparison-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+      .comparison-table th, .comparison-table td { padding: 16px 12px; text-align: left; border-bottom: 1px solid var(--border-color); }
+      .comparison-table th { color: var(--text-muted); font-weight: 500; }
+      .comparison-table td:first-child { font-weight: 700; color: var(--text-primary); }
+
+      pre { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; overflow-x: auto; position: relative; margin: 16px 0; }
+      code { font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.5; color: var(--text-primary); }
+      .copy-btn { position: absolute; top: 12px; right: 12px; padding: 4px 8px; background: var(--bg-elevated); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-muted); font-size: 0.7rem; cursor: pointer; }
+      .copy-btn:hover { color: var(--text-primary); border-color: var(--accent); }
+
+      .ads-container { margin: 24px 0; min-height: 90px; background: rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem; border: 1px dashed var(--border-color); border-radius: var(--radius-md); }
+
+      .seo-content { margin-top: 32px; padding: 32px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); color: var(--text-secondary); font-size: 0.875rem; }
+      .seo-content h2 { color: var(--text-primary); font-size: 1.125rem; margin-bottom: 16px; font-weight: 600; }
+      .seo-content h3 { color: var(--text-primary); font-size: 1rem; margin-top: 24px; margin-bottom: 12px; font-weight: 600; }
+      .seo-content p { margin-bottom: 12px; }
+      .seo-content ul { margin-bottom: 16px; padding-left: 20px; }
+      .seo-content li { margin-bottom: 8px; }
+
+      @media (max-width: 640px) {
+        .container { padding: 16px; }
+        .header { flex-direction: column; align-items: stretch; }
+        .stat-grid { grid-template-columns: repeat(2, 1fr); }
       }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
   </head>
   <body>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
-      <span id="theme-icon">🌙</span>
-    </button>
-
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      Llama 4 完整指南
-    </nav>
     <div class="container">
-      <header>
-        <div class="logo">🦙</div>
-        <h1>
-          Llama 4
-          <span class="badge meta">Meta</span>
-          <span class="badge open">开�?/span>
-          <span class="badge new">2025.4</span>
-        </h1>
-        <p>首款 MoE 架构多模态开源模型，千万 token 上下文，挑战 GPT-4o</p>
+      <header class="header">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn" title="返回首页">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 12L6 8L10 4" />
+            </svg>
+          </a>
+          <div class="title-group">
+            <h1>Llama 4 完整指南</h1>
+            <p>Meta 首款千万级上下文 MoE 架构多模态开源旗舰</p>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+            <span id="theme-icon">🌙</span>
+          </div>
+        </div>
       </header>
 
-      <div class="stat-grid">
-        <div class="stat-item">
-          <span class="number">2万亿</span>
-          <span class="label">Behemoth 参数</span>
-        </div>
-        <div class="stat-item">
-          <span class="number">1000�?/span>
-          <span class="label">Scout 上下�?/span>
-        </div>
-        <div class="stat-item">
-          <span class="number">128</span>
-          <span class="label">Maverick 专家�?/span>
-        </div>
-        <div class="stat-item">
-          <span class="number">#2</span>
-          <span class="label">Arena 排行�?/span>
-        </div>
+      <!-- Google AdSense Top -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
       </div>
 
-      <div class="card">
-        <h3>🦙 什么是 Llama 4�?/h3>
-        <p>
-          <strong>Llama 4</strong>
-          �?Meta �?2025 �?4 �?5
-          日发布的新一代开源大模型，首次采用混合专�?MoE)架构，支持文本、图像、视频、音频多模态处理。这�?
-          Meta �?AI 领域的重大突破，标志着开源模型正式进入与闭源模型正面竞争的新阶段�?
-        </p>
-        <div class="highlight-box">
-          <strong>架构革新�?/strong>
-          Llama 4 �?参数规模竞赛"转向"架构效率优化"，MoE
-          架构让模型在保持强大能力的同时大幅降低推理成本。Maverick 版本推理成本仅为 DeepSeek V3
-          的一半�?
-        </div>
-        <div class="features-grid">
-          <div class="feature-item">
-            <h4>MoE 架构</h4>
-            <p>混合专家架构，动态路由，高效推理</p>
+      <main>
+        <!-- Core Stats -->
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-label">最大参数</div>
+            <div class="stat-value">2万亿 Behemoth</div>
           </div>
-          <div class="feature-item cyan">
-            <h4>多模态原�?/h4>
-            <p>文本/图像/视频/音频统一处理</p>
+          <div class="stat-card">
+            <div class="stat-label">最大上下文</div>
+            <div class="stat-value">1000万 Scout</div>
           </div>
-          <div class="feature-item purple">
-            <h4>超长上下�?/h4>
-            <p>Scout 支持 1000 �?token 上下�?/p>
+          <div class="stat-card">
+            <div class="stat-label">Arena 排行</div>
+            <div class="stat-value">#2 全球</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">核心架构</div>
+            <div class="stat-value">混合专家 (MoE)</div>
           </div>
         </div>
-      </div>
 
-      <div class="card">
-        <h3>🤖 Llama 4 模型家族</h3>
-        <div class="model-card">
-          <h4>
-            Llama 4 Scout
-            <span class="badge">长文本专�?/span>
-          </h4>
-          <p class="desc">专为文档摘要、代码库分析等长文本任务设计，可在单�?H100 GPU 上运行�?/p>
-          <div class="specs">
-            <div class="spec">
-              <div class="spec-value">1090�?/div>
-              <div class="spec-label">总参�?/div>
+        <!-- Introduction -->
+        <div class="card">
+          <div class="card-title">🦙 什么是 Llama 4？</div>
+          <p>Llama 4 是 Meta 在 2025 年 4 月发布的革命性开源大模型系列。它是 Meta 首次采用<strong>混合专家（MoE）架构</strong>的旗舰产品，原生支持文本、图像、视频、音频的统一处理。Llama 4 的发布标志着开源模型正式进入了与闭源模型（如 GPT-4o, Gemini 1.5）正面竞争并部分超越的新阶段。</p>
+          
+          <div class="model-grid" style="margin-top: 24px;">
+            <!-- Maverick -->
+            <div class="model-box">
+              <div class="model-header">
+                <span class="model-name">Llama 4 Maverick</span>
+                <span class="badge">旗舰全能</span>
+              </div>
+              <p class="model-desc">主力旗舰版本，在编程、数学推理与多语言任务中全面对标并超越了 GPT-4o。</p>
+              <ul class="specs-list">
+                <li class="spec-li">总参数: <span class="spec-val">4000亿</span></li>
+                <li class="spec-li">专家数量: <span class="spec-val">128 MoE</span></li>
+                <li class="spec-li">推理成本: <span class="spec-val">降低 50%</span></li>
+              </ul>
             </div>
-            <div class="spec">
-              <div class="spec-value">170�?/div>
-              <div class="spec-label">活跃参数</div>
-            </div>
-            <div class="spec">
-              <div class="spec-value">1000�?/div>
-              <div class="spec-label">上下�?/div>
-            </div>
-            <div class="spec">
-              <div class="spec-value">16</div>
-              <div class="spec-label">专家�?/div>
-            </div>
-          </div>
-        </div>
-        <div class="model-card featured">
-          <h4>
-            Llama 4 Maverick
-            <span class="badge new">旗舰�?/span>
-          </h4>
-          <p class="desc">
-            主力旗舰版本，在编程、数学推理、多语言处理等任务中超越 GPT-4o �?Gemini 2.0�?
-          </p>
-          <div class="specs">
-            <div class="spec">
-              <div class="spec-value">4000�?/div>
-              <div class="spec-label">总参�?/div>
-            </div>
-            <div class="spec">
-              <div class="spec-value">170�?/div>
-              <div class="spec-label">活跃参数</div>
-            </div>
-            <div class="spec">
-              <div class="spec-value">128</div>
-              <div class="spec-label">专家�?/div>
-            </div>
-            <div class="spec">
-              <div class="spec-value">50%</div>
-              <div class="spec-label">成本降低</div>
+            <!-- Scout -->
+            <div class="model-box">
+              <div class="model-header">
+                <span class="model-name">Llama 4 Scout</span>
+                <span class="badge" style="background:#10b981;">长文本专家</span>
+              </div>
+              <p class="model-desc">专为超长文档摘要、整站代码分析设计，可在单张 H100 显卡上高效运行。</p>
+              <ul class="specs-list">
+                <li class="spec-li">上下文: <span class="spec-val">1000万 Tokens</span></li>
+                <li class="spec-li">活跃参数: <span class="spec-val">170亿</span></li>
+                <li class="spec-li">适用场景: <span class="spec-val">RAG / 知识库</span></li>
+              </ul>
             </div>
           </div>
         </div>
-        <div class="model-card">
-          <h4>
-            Llama 4 Behemoth
-            <span class="badge">即将发布</span>
-          </h4>
-          <p class="desc">终极版本�? 万亿参数，STEM 基准测试超越 GPT-4.5 �?Claude Sonnet 3.7�?/p>
-          <div class="specs">
-            <div class="spec">
-              <div class="spec-value">2万亿</div>
-              <div class="spec-label">总参�?/div>
-            </div>
-            <div class="spec">
-              <div class="spec-value">STEM #1</div>
-              <div class="spec-label">基准测试</div>
-            </div>
-            <div class="spec">
-              <div class="spec-value">教师模型</div>
-              <div class="spec-label">定位</div>
-            </div>
-            <div class="spec">
-              <div class="spec-value">2025 Q3</div>
-              <div class="spec-label">预计发布</div>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <div class="card">
-        <h3>📊 性能对比</h3>
-        <table class="comparison-table">
-          <thead>
-            <tr>
-              <th>模型</th>
-              <th>参数�?/th>
-              <th>上下�?/th>
-              <th>多模�?/th>
-              <th>开�?/th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Llama 4 Maverick</strong></td>
-              <td>4000�?/td>
-              <td>128K</td>
-              <td>�?/td>
-              <td>�?/td>
-            </tr>
-            <tr>
-              <td>GPT-4o</td>
-              <td>未公开</td>
-              <td>128K</td>
-              <td>�?/td>
-              <td>�?/td>
-            </tr>
-            <tr>
-              <td>Gemini 2.0</td>
-              <td>未公开</td>
-              <td>1M</td>
-              <td>�?/td>
-              <td>�?/td>
-            </tr>
-            <tr>
-              <td>DeepSeek V3</td>
-              <td>6850�?/td>
-              <td>128K</td>
-              <td>�?/td>
-              <td>�?/td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+        <!-- Performance Comparison -->
+        <div class="card">
+          <div class="card-title">📊 2025 开源与闭源模型巅峰对比</div>
+          <div class="comparison-table-wrapper">
+            <table class="comparison-table">
+              <thead>
+                <tr>
+                  <th>对比项目</th>
+                  <th>Llama 4 Maverick</th>
+                  <th>GPT-4o</th>
+                  <th>DeepSeek V3</th>
+                  <th>Gemini 2.0</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>总参数量</td>
+                  <td>4000B (MoE)</td>
+                  <td>未公开</td>
+                  <td>685B (MoE)</td>
+                  <td>未公开</td>
+                </tr>
+                <tr>
+                  <td>上下文窗口</td>
+                  <td>128K - 10M</td>
+                  <td>128K</td>
+                  <td>128K</td>
+                  <td>1M</td>
+                </tr>
+                <tr>
+                  <td>多模态支持</td>
+                  <td>原生全模态</td>
+                  <td>原生全模态</td>
+                  <td>仅文本/图</td>
+                  <td>原生全模态</td>
+                </tr>
+                <tr>
+                  <td>开源性质</td>
+                  <td>完全开源 (Meta)</td>
+                  <td>闭源</td>
+                  <td>开源 (MIT)</td>
+                  <td>闭源</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-      <div class="card">
-        <h3>🚀 快速开�?/h3>
-        <h4>使用 Hugging Face</h4>
-        <div class="code-block">
-          <pre>
-from transformers import AutoModelForCausalLM, AutoTokenizer
+        <!-- Quick Start -->
+        <div class="card">
+          <div class="card-title">🚀 快速开始：如何在本地运行 Llama 4？</div>
+          
+          <h4 style="font-size: 0.9rem; margin-bottom: 12px; color: var(--text-primary);">1. 使用 Ollama 一键运行</h4>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;">这是最适合个人用户的方式，支持 Windows/Mac/Linux：</p>
+          <pre><button class="copy-btn" onclick="copyCode(this)">复制</button><code># 下载并启动 Llama 4 Maverick
+ollama pull llama4-maverick
+ollama run llama4-maverick</code></pre>
+
+          <h4 style="font-size: 0.9rem; margin-top: 24px; margin-bottom: 12px; color: var(--text-primary);">2. 使用 Transformers (Python)</h4>
+          <pre><button class="copy-btn" onclick="copyCode(this)">复制</button><code>from transformers import AutoModelForCausalLM, AutoTokenizer
 
 model_id = "meta-llama/Llama-4-Maverick"
 tokenizer = AutoTokenizer.from_pretrained(model_id)
 model = AutoModelForCausalLM.from_pretrained(model_id)
 
-inputs = tokenizer("Hello, Llama 4!", return_tensors="pt")
-outputs = model.generate(**inputs, max_new_tokens=100)
-print(tokenizer.decode(outputs[0]))</pre
-          >
+inputs = tokenizer("你好，Llama 4！请介绍你的 MoE 架构。", return_tensors="pt")
+outputs = model.generate(**inputs, max_new_tokens=200)
+print(tokenizer.decode(outputs[0]))</code></pre>
         </div>
 
-        <h4>使用 Ollama</h4>
-        <div class="code-block">
-          <pre>
-# 下载并运�?Llama 4
-ollama pull llama4-maverick
-ollama run llama4-maverick</pre
-          >
+        <!-- Key Technologies -->
+        <div class="card">
+          <div class="card-title">🏗️ Llama 4 核心技术突破</div>
+          <div class="model-grid">
+            <div class="model-box">
+              <div class="model-name" style="margin-bottom: 8px;">🧠 混合专家架构 (MoE)</div>
+              <p style="font-size: 0.85rem; color: var(--text-secondary);">从“参数规模竞赛”转向“架构效率优化”。MoE 让模型在处理不同任务时仅激活最相关的子模块，大幅降低了推理时的算力消耗。</p>
+            </div>
+            <div class="model-box">
+              <div class="model-name" style="margin-bottom: 8px;">🎞️ 原生全模态</div>
+              <p style="font-size: 0.85rem; color: var(--text-secondary);">不同于早期通过拼接实现的“伪多模态”，Llama 4 在预训练阶段就同步注入了视觉与音频数据，实现了真正跨模态的逻辑关联。</p>
+            </div>
+          </div>
         </div>
+      </main>
+
+      <!-- Google AdSense Bottom -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
       </div>
 
-      <div class="card">
-        <h3>🔗 相关资源</h3>
-        <ul style="list-style: none; padding: 0">
-          <li style="margin-bottom: 0.75rem">
-            Hugging Face:
-            <a href="https://huggingface.co/meta-llama" style="color: var(--secondary-color)">
-              huggingface.co/meta-llama
-            </a>
-          </li>
-          <li style="margin-bottom: 0.75rem">
-            官方网站:
-            <a href="https://llama.meta.com/" style="color: var(--secondary-color)">
-              llama.meta.com
-            </a>
-          </li>
-          <li style="margin-bottom: 0.75rem">
-            GitHub:
-            <a href="https://github.com/meta-llama/llama" style="color: var(--secondary-color)">
-              github.com/meta-llama/llama
-            </a>
-          </li>
+      <article class="seo-content">
+        <h2>Llama 4：Meta 如何在 2025 年终结“闭源模型”的垄断？深度解析与实战方案</h2>
+        <p>如果说 Llama 2 让开源 AI 崭露头角，Llama 3 让开源 AI 追平主流，那么 2025 年发布的 <strong>Llama 4</strong> 则是 Meta 给闭源巨头们投下的一颗“核弹”。通过引入 <strong>MoE（Mixture of Experts）架构</strong>、<strong>Scout 千万级上下文</strong> 和 <strong>原生全模态集成</strong>，扎克伯格正在兑现他的承诺：让开源 AI 成为全球最先进、最普及的智能底座。本文将深入探讨 Llama 4 的核心技术，并为你提供针对具体业务问题的实战解决方案。</p>
+        
+        <h3>1. MoE 架构：为什么 Llama 4 变得如此高效？</h3>
+        <p>在 Llama 4 之前，开源模型多采用“稠密（Dense）”架构，这意味着无论问题多简单，都要动用全部参数。Llama 4 转向了混合专家架构，例如 400B 的 Maverick 版本拥有 128 个专家，但每次推理仅激活一小部分。这不仅让推理成本降低了 50%，更让模型在保持顶级智能的同时，响应速度达到了前所未有的水平。</p>
+        <p><strong>实战场景：构建高性价比的企业级私有 AI 助手</strong></p>
+        <ul>
+          <li><strong>具体问题：</strong> 中小型企业希望为员工提供 AI 助手，但闭源 API 成本太高，且数据隐私无法保障。</li>
+          <li><strong>Llama 4 方案：</strong> 在本地服务器（如搭载 2 张 A100 的工作站）上部署 <b>Llama 4 Maverick (Quantized)</b>。利用其 MoE 架构带来的低显存占用，你可以实现毫秒级的响应。它在处理日常邮件撰写、周报汇总和基础代码调试时的表现完全不输 GPT-4o，但数据 100% 留在公司内网，且长期运行成本几乎为零。</li>
         </ul>
-      </div>
 
-      <footer>
-        <p>
-          最后更新：2025�?2�?|
-          <a href="../../index.html" style="color: var(--primary-color)">返回工具列表</a>
-        </p>
+        <h3>2. Scout 版本：千万级上下文如何终结 RAG 的局限？</h3>
+        <p>Llama 4 Scout 的出现，彻底改写了 RAG（检索增强生成）的玩法。拥有 1000 万 Token 的上下文窗口，意味着您可以直接将整个公司的上万份合同、数十万行代码工程甚至一整年的会议录音直接丢给 AI。</p>
+        <p><strong>实战场景：大规模遗留系统架构分析与重构</strong></p>
+        <ul>
+          <li><strong>具体问题：</strong> 接手一个拥有 50 万行代码的复杂 Java 遗留项目，没有任何文档，需要梳理核心逻辑并进行微服务拆分。</li>
+          <li><strong>Llama 4 方案：</strong> 利用 <b>Llama 4 Scout</b> 的超长上下文，将整个 `src` 目录下的所有文件一次性喂给模型。它不再需要碎片化的检索，而是能进行真正的“全局语境理解”。你可以直接问它：“请帮我画出整个系统的时序图，并找出最适合拆分为独立微服务的 5 个核心模块。”这种“上帝视角”的分析能力是传统 RAG 无法企及的。</li>
+        </ul>
+
+        <h3>3. 原生全模态：具身智能的开源“大脑”</h3>
+        <p>Llama 4 不同于早期通过拼接实现的“伪多模态”，它在预训练阶段就同步注入了视觉与音频数据。这让它成为了 2025 年<strong>具身智能（Embodied AI）</strong>的首选大脑。</p>
+        <ul>
+          <li><strong>实时视觉感知：</strong> 机器人搭载 Llama 4 后，能直接看懂视频流，理解物理世界的空间关系，并输出精确的控制指令。</li>
+          <li><strong>跨模态逻辑：</strong> 当你给它看一张复杂的电路图并语音提问时，它能结合视觉结构与电路知识，直接指出可能存在的短路风险点。</li>
+        </ul>
+
+        <h3>4. 隐私与合规：Llama 4 许可证的商业红利</h3>
+        <p>Meta 在 2025 年进一步放宽了 Llama 4 的商业许可（除极少数超大规模互联网平台外，均可免费商用）。这为初创公司构建自有知识产权的 AI 产品提供了最坚实的法律保障。</p>
+        <p><strong>实战场景：构建受监管行业的 AI 解决方案</strong></p>
+        <ul>
+          <li><strong>具体问题：</strong> 法律审计或医疗诊断软件，需要极其严苛的数据合规性证明。</li>
+          <li><strong>Llama 4 方案：</strong> 由于 Llama 4 支持完全离线运行，你可以通过 <b>vLLM</b> 或 <b>Ollama</b> 在隔离环境下进行微调。你可以向客户承诺：数据从未离开其数据中心。这种“主权 AI”的特性是目前闭源厂商最大的软肋，也是开源生态爆发的核心动力。</li>
+        </ul>
+
+        <h3>5. 总结：开发者如何抢占 Llama 4 时代的先机？</h3>
+        <ol>
+          <li><strong>掌握微调技术：</strong> 学习使用 <b>LoRA</b> 或 <b>QLoRA</b> 对 Llama 4 进行垂直领域（如医疗、法律、特定行业代码）的微调，打造具有护城河的差异化产品。</li>
+          <li><strong>优化部署架构：</strong> 深入研究 <b>vLLM</b> 的 PagedAttention 或 <b>TGI</b> 的量化加速方案，最大化榨取硬件性能。</li>
+          <li><strong>探索 Agent 应用：</strong> 利用 Llama 4 极强的指令遵循能力，构建能够自主调用 API、操作浏览器、执行复杂工作流的 <b>AI Agent</b>。</li>
+        </ol>
+
+        <h3>常见问题解答 (FAQ)</h3>
+        <p><strong>Q: 400B 的模型在普通显卡上能跑吗？</strong><br>A: 通过 4-bit 量化，Llama 4 Maverick 大约需要 220GB 显存，这通常需要 4-8 张消费级显卡（如 RTX 4090）通过 NVLink 连接。对于个人用户，建议使用 70B 或 8B 的中轻量版本。</p>
+        <p><strong>Q: Llama 4 的 10M 上下文推理会很慢吗？</strong><br>A: Llama 4 引入了<strong>线性注意力 (Linear Attention)</strong> 的混合变体。在处理超长文本时，其计算开销不再呈二次方增长，使得 10M 级别的处理在 H100 集群上依然能保持可接受的延迟。</p>
+
+        <p>WebUtils 将为您持续追踪 Meta AI 的每一次权重发布与技术文档更新。在这个开源 AI 终结闭源垄断的时代，掌握 Llama 4，就是掌握了通往 AGI 世界的钥匙。</p>
+      </article>
+
+      <footer style="margin-top: 32px; text-align: center; color: var(--text-muted); font-size: 0.75rem;">
+        <p>© 2026 WebUtils. All rights reserved. 实时同步 Meta AI 官方最新权重与技术文档。</p>
       </footer>
     </div>
+
     <script>
-      if (window.self !== window.top) {
-        document.body.textContent = "";
+      function copyCode(btn) {
+        const code = btn.nextElementSibling.innerText;
+        navigator.clipboard.writeText(code).then(() => {
+          const originalText = btn.innerText;
+          btn.innerText = '已复制';
+          setTimeout(() => btn.innerText = originalText, 2000);
+        });
       }
-      // Theme toggle
+
       function toggleTheme() {
         const html = document.documentElement;
         const currentTheme = html.getAttribute("data-theme");
         const newTheme = currentTheme === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        document.getElementById("theme-icon").textContent = newTheme === "light" ? "☀�? : "🌙";
-        localStorage.setItem("theme", newTheme);
+        setTheme(newTheme);
       }
 
-      // Load saved theme
-      const savedTheme = localStorage.getItem("theme") || "dark";
-      if (savedTheme === "light") {
-        document.documentElement.setAttribute("data-theme", "light");
-        document.getElementById("theme-icon").textContent = "☀�?;
+      function setTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        document.getElementById("theme-icon").textContent = theme === "light" ? "☀️" : "🌙";
+        localStorage.setItem("theme", theme);
       }
+
+      // 初始化主题
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      setTheme(savedTheme);
     </script>
   </body>
 </html>
-
-
