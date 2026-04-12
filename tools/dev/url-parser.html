@@ -1,820 +1,369 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="light">
+<html lang="zh">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>URL 解析�?- WebUtils</title>
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="URL 解析�?- WebUtils" />
-    <meta name="keywords" content="url-parser,dev,tools,webutils" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>URL 解析与构建工具 - 在线解析 URL 参数及结构 | WebUtils</title>
+    <meta name="description" content="功能强大的在线 URL 解析器，支持解析 URL 协议、主机名、端口、路径、查询参数和哈希值。支持自动解码、URL 构建、批量参数编辑，是开发者调试 API 和网页链接的必备工具。" />
+    <meta name="keywords" content="URL解析器,URL构建器,URL参数提取,URL解码,URL编码,开发者工具,Web工具" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/dev/url-parser.html" />
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="URL 解析�?- WebUtils" />
-    <meta property="og:description" content="URL 解析�?- WebUtils" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/dev/url-parser.html" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="URL 解析�?- WebUtils" />
-    <meta name="twitter:description" content="URL 解析�?- WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      rel="icon"
-      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔗</text></svg>"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
     />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+    <link rel="stylesheet" href="../../templates/design-system.css" />
     <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      :root {
-        --primary-color: #3b82f6;
-      }
-
-      body {
-        padding: 1rem;
-        min-height: 100vh;
-      }
-      .container {
-        max-width: 900px;
-        margin: 0 auto;
-      }
-      header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-        flex-wrap: wrap;
-        gap: 1rem;
-      }
-      header h1 {
-        margin: 0;
-        font-size: 1.75rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      .header-actions {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-      }
-      .theme-toggle {
-        cursor: pointer;
-        background: var(--primary-color);
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-        color: white;
-        font-size: 1rem;
-      }
-      .back-link {
-        color: var(--primary-color);
-        text-decoration: none;
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-        border: 1px solid var(--primary-color);
-        font-size: 0.9rem;
-      }
-      .input-section {
-        margin-bottom: 1.5rem;
-      }
-      .input-section label {
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        display: block;
-      }
-      .input-wrapper {
-        display: flex;
-        gap: 0.5rem;
-      }
-      .input-wrapper input {
-        flex: 1;
-        font-family: "SF Mono", Monaco, monospace;
-      }
-      .input-wrapper button {
-        white-space: nowrap;
-      }
-      .quick-urls {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-top: 0.75rem;
-      }
-      .quick-urls button {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
-        background: var(--code-background-color);
-        border: 1px solid var(--muted-border-color);
-        border-radius: 4px;
-        cursor: pointer;
-      }
-      .quick-urls button:hover {
-        background: var(--primary-color);
-        color: white;
-      }
+      /* 特定工具的样式优化 */
       .parts-grid {
         display: grid;
-        gap: 1rem;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 16px;
+        margin-top: 20px;
       }
       .part-card {
-        background: var(--card-background-color);
-        border-radius: 12px;
-        padding: 1rem;
-        border: 1px solid var(--muted-border-color);
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 12px 16px;
       }
-      .part-card.highlight {
-        border-color: var(--primary-color);
-        background: color-mix(in srgb, var(--primary-color) 5%, transparent);
-      }
-      .part-header {
+      .part-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-family: var(--font-mono);
+        margin-bottom: 4px;
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0.5rem;
-      }
-      .part-name {
-        font-weight: 600;
-        font-size: 0.9rem;
-        color: var(--muted-color);
-      }
-      .part-copy {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
-        background: var(--primary-color);
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
       }
       .part-value {
-        font-family: "SF Mono", Monaco, monospace;
-        font-size: 0.95rem;
+        font-family: var(--font-mono);
+        font-size: 0.9rem;
         word-break: break-all;
-        min-height: 1.5rem;
-        color: var(--primary-color);
-      }
-      .part-value.empty {
-        color: var(--muted-color);
-        font-style: italic;
-      }
-      .params-section {
-        margin-top: 1rem;
+        color: var(--text-primary);
       }
       .params-table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 0.9rem;
+        margin-top: 10px;
       }
-      .params-table th,
-      .params-table td {
-        padding: 0.75rem;
+      .params-table th, .params-table td {
         text-align: left;
-        border-bottom: 1px solid var(--muted-border-color);
+        padding: 12px;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.85rem;
       }
       .params-table th {
-        background: var(--code-background-color);
-        font-weight: 600;
-      }
-      .params-table td {
-        font-family: "SF Mono", Monaco, monospace;
-      }
-      .params-table .key {
-        color: var(--primary-color);
-      }
-      .params-table .value {
-        color: #10b981;
-        word-break: break-all;
-      }
-      .params-table .decoded {
-        color: var(--muted-color);
-        font-size: 0.85rem;
-      }
-      .builder-section {
-        margin-top: 2rem;
-        background: var(--card-background-color);
-        padding: 1.5rem;
-        border-radius: 12px;
-      }
-      .builder-section h3 {
-        margin-top: 0;
-        margin-bottom: 1rem;
-      }
-      .builder-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-      }
-      .builder-grid label {
-        font-size: 0.85rem;
-        margin-bottom: 0.25rem;
-        display: block;
-        color: var(--muted-color);
-      }
-      .builder-grid input {
-        font-family: "SF Mono", Monaco, monospace;
-        font-size: 0.9rem;
-      }
-      .result-url {
-        margin-top: 1rem;
-        padding: 1rem;
-        background: var(--code-background-color);
-        border-radius: 8px;
-        font-family: "SF Mono", Monaco, monospace;
-        word-break: break-all;
-        font-size: 0.9rem;
-      }
-      .structure-visual {
-        margin: 1.5rem 0;
-        padding: 1rem;
-        background: var(--code-background-color);
-        border-radius: 8px;
-        font-family: "SF Mono", Monaco, monospace;
-        font-size: 0.85rem;
-        overflow-x: auto;
-        white-space: nowrap;
-      }
-      .structure-visual span {
-        padding: 0.25rem 0.5rem;
-        border-radius: 4px;
-        margin: 0 1px;
-      }
-      .structure-visual .protocol {
-        background: #ef4444;
-        color: white;
-      }
-      .structure-visual .host {
-        background: #3b82f6;
-        color: white;
-      }
-      .structure-visual .port {
-        background: #8b5cf6;
-        color: white;
-      }
-      .structure-visual .path {
-        background: #10b981;
-        color: white;
-      }
-      .structure-visual .query {
-        background: #f59e0b;
-        color: white;
-      }
-      .structure-visual .hash {
-        background: #ec4899;
-        color: white;
-      }
-      .structure-visual .sep {
-        color: var(--muted-color);
-      }
-      .tabs {
-        display: flex;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-      }
-      .tabs button {
-        padding: 0.5rem 1rem;
-        border: none;
-        background: var(--code-background-color);
-        border-radius: 8px;
-        cursor: pointer;
-      }
-      .tabs button.active {
-        background: var(--primary-color);
-        color: white;
-      }
-      .toast {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        padding: 1rem 1.5rem;
-        background: #10b981;
-        color: white;
-        border-radius: 8px;
+        color: var(--text-muted);
         font-weight: 500;
-        z-index: 1000;
-        transform: translateY(100px);
-        opacity: 0;
-        transition: all 0.3s;
+        background: var(--bg-input);
       }
-      .toast.show {
-        transform: translateY(0);
-        opacity: 1;
+      .param-key { font-weight: 600; color: var(--accent); }
+      .param-value { font-family: var(--font-mono); color: var(--text-primary); }
+      
+      .structure-visual {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        padding: 16px;
+        background: var(--bg-input);
+        border-radius: var(--radius-md);
+        font-family: var(--font-mono);
+        font-size: 0.9rem;
+        margin-bottom: 20px;
       }
-      @media (max-width: 640px) {
-        .builder-grid {
-          grid-template-columns: 1fr;
-        }
+      .v-part { padding: 2px 6px; border-radius: 4px; color: #fff; }
+      .v-protocol { background: #ef4444; }
+      .v-host { background: #3b82f6; }
+      .v-port { background: #8b5cf6; }
+      .v-path { background: #10b981; }
+      .v-query { background: #f59e0b; }
+      .v-hash { background: #ec4899; }
+      .v-sep { color: var(--text-muted); }
+
+      .ads-placeholder {
+        margin: 24px 0;
+        min-height: 90px;
+        background: var(--bg-input);
+        border: 1px dashed var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        border-radius: var(--radius-md);
       }
 
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
+      .article-content {
+        margin-top: 40px;
+        padding-top: 40px;
+        border-top: 1px solid var(--border-color);
       }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
+      .article-content h2 { font-size: 1.5rem; margin-bottom: 16px; }
+      .article-content p { margin-bottom: 12px; color: var(--text-secondary); }
+      .article-content ul { margin-bottom: 16px; padding-left: 20px; color: var(--text-secondary); }
+      .article-content li { margin-bottom: 8px; }
+
+      @media (max-width: 640px) {
+        .parts-grid { grid-template-columns: 1fr; }
       }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
   </head>
   <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      URL 解析�?
-    </nav>
     <div class="container">
-      <header>
-        <h1>🔗 URL 解析�?/h1>
-        <div class="header-actions">
-          <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+      <header class="header">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn" title="返回首页">
+            <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M10 12L6 8L10 4" />
+            </svg>
+          </a>
+          <div class="title-group">
+            <h1>URL 解析与构建器</h1>
+            <p>快速拆解 URL 结构，管理查询参数</p>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="theme-toggle">
+            <button class="theme-btn active" data-theme="dark">暗色</button>
+            <button class="theme-btn" data-theme="light">亮色</button>
+          </div>
         </div>
       </header>
 
-      <div class="input-section">
-        <label for="urlInput">输入 URL</label>
-        <div class="input-wrapper">
-          <input
-            type="text"
-            id="urlInput"
-            placeholder="https://example.com/path?key=value#section"
-            autofocus
-          />
-          <button onclick="parseUrl()">解析</button>
-          <button onclick="clearAll()" class="secondary">清空</button>
-        </div>
-        <div class="quick-urls">
-          <span style="color: var(--muted-color); font-size: 0.8rem">示例:</span>
-          <button onclick="setExample(0)">基础 URL</button>
-          <button onclick="setExample(1)">带参�?/button>
-          <button onclick="setExample(2)">带认�?/button>
-          <button onclick="setExample(3)">复杂参数</button>
-          <button onclick="setExample(4)">IPv6</button>
-        </div>
-      </div>
-
-      <div id="result" style="display: none">
-        <div class="structure-visual" id="structureVisual"></div>
-
-        <div class="tabs">
-          <button class="active" onclick="switchTab('parse')">URL 解析</button>
-          <button onclick="switchTab('build')">URL 构建</button>
-        </div>
-
-        <div id="parseTab">
-          <div class="parts-grid">
-            <div class="part-card" data-part="href">
-              <div class="part-header">
-                <span class="part-name">完整 URL (href)</span>
-                <button class="part-copy" onclick="copyPart('href')">复制</button>
-              </div>
-              <div class="part-value" id="partHref"></div>
-            </div>
-            <div class="part-card" data-part="protocol">
-              <div class="part-header">
-                <span class="part-name">协议 (protocol)</span>
-                <button class="part-copy" onclick="copyPart('protocol')">复制</button>
-              </div>
-              <div class="part-value" id="partProtocol"></div>
-            </div>
-            <div class="part-card" data-part="host">
-              <div class="part-header">
-                <span class="part-name">主机 (host)</span>
-                <button class="part-copy" onclick="copyPart('host')">复制</button>
-              </div>
-              <div class="part-value" id="partHost"></div>
-            </div>
-            <div class="part-card" data-part="hostname">
-              <div class="part-header">
-                <span class="part-name">主机�?(hostname)</span>
-                <button class="part-copy" onclick="copyPart('hostname')">复制</button>
-              </div>
-              <div class="part-value" id="partHostname"></div>
-            </div>
-            <div class="part-card" data-part="port">
-              <div class="part-header">
-                <span class="part-name">端口 (port)</span>
-                <button class="part-copy" onclick="copyPart('port')">复制</button>
-              </div>
-              <div class="part-value" id="partPort"></div>
-            </div>
-            <div class="part-card" data-part="origin">
-              <div class="part-header">
-                <span class="part-name">�?(origin)</span>
-                <button class="part-copy" onclick="copyPart('origin')">复制</button>
-              </div>
-              <div class="part-value" id="partOrigin"></div>
-            </div>
-            <div class="part-card" data-part="pathname">
-              <div class="part-header">
-                <span class="part-name">路径 (pathname)</span>
-                <button class="part-copy" onclick="copyPart('pathname')">复制</button>
-              </div>
-              <div class="part-value" id="partPathname"></div>
-            </div>
-            <div class="part-card" data-part="search">
-              <div class="part-header">
-                <span class="part-name">查询字符�?(search)</span>
-                <button class="part-copy" onclick="copyPart('search')">复制</button>
-              </div>
-              <div class="part-value" id="partSearch"></div>
-            </div>
-            <div class="part-card" data-part="hash">
-              <div class="part-header">
-                <span class="part-name">哈希 (hash)</span>
-                <button class="part-copy" onclick="copyPart('hash')">复制</button>
-              </div>
-              <div class="part-value" id="partHash"></div>
-            </div>
-            <div class="part-card" data-part="username">
-              <div class="part-header">
-                <span class="part-name">用户�?(username)</span>
-                <button class="part-copy" onclick="copyPart('username')">复制</button>
-              </div>
-              <div class="part-value" id="partUsername"></div>
-            </div>
-            <div class="part-card" data-part="password">
-              <div class="part-header">
-                <span class="part-name">密码 (password)</span>
-                <button class="part-copy" onclick="copyPart('password')">复制</button>
-              </div>
-              <div class="part-value" id="partPassword"></div>
-            </div>
-          </div>
-
-          <div class="params-section" id="paramsSection" style="display: none">
-            <h3>查询参数</h3>
-            <table class="params-table">
-              <thead>
-                <tr>
-                  <th style="width: 30%">参数�?/th>
-                  <th style="width: 35%">原始�?/th>
-                  <th style="width: 35%">解码�?/th>
-                </tr>
-              </thead>
-              <tbody id="paramsBody"></tbody>
-            </table>
+      <main class="main-card">
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <button class="btn btn-primary" id="parseBtn">
+              <span>立即解析</span>
+            </button>
+            <button class="btn" id="clearBtn">
+              <span>清空</span>
+            </button>
+            <button class="btn" id="exampleBtn">
+              <span>示例 URL</span>
+            </button>
           </div>
         </div>
 
-        <div id="buildTab" style="display: none">
-          <div class="builder-section">
-            <h3>URL 构建�?/h3>
-            <div class="builder-grid">
-              <div>
-                <label>协议</label>
-                <input type="text" id="buildProtocol" placeholder="https" oninput="buildUrl()" />
-              </div>
-              <div>
-                <label>用户�?/label>
-                <input type="text" id="buildUsername" placeholder="user" oninput="buildUrl()" />
-              </div>
-              <div>
-                <label>密码</label>
-                <input type="text" id="buildPassword" placeholder="pass" oninput="buildUrl()" />
-              </div>
-              <div>
-                <label>主机�?/label>
-                <input
-                  type="text"
-                  id="buildHostname"
-                  placeholder="example.com"
-                  oninput="buildUrl()"
-                />
-              </div>
-              <div>
-                <label>端口</label>
-                <input type="text" id="buildPort" placeholder="8080" oninput="buildUrl()" />
-              </div>
-              <div>
-                <label>路径</label>
-                <input
-                  type="text"
-                  id="buildPathname"
-                  placeholder="/path/to/page"
-                  oninput="buildUrl()"
-                />
-              </div>
-              <div style="grid-column: 1 / -1">
-                <label>查询参数 (key=value，每行一�?</label>
-                <textarea
-                  id="buildParams"
-                  rows="3"
-                  placeholder="name=value&#10;foo=bar"
-                  oninput="buildUrl()"
-                ></textarea>
-              </div>
-              <div>
-                <label>哈希</label>
-                <input type="text" id="buildHash" placeholder="section" oninput="buildUrl()" />
-              </div>
+        <div class="content">
+          <div class="section">
+            <div class="section-label">输入 URL</div>
+            <textarea id="urlInput" placeholder="请输入完整的 URL，例如：https://example.com/path?id=123#section" spellcheck="false"></textarea>
+          </div>
+
+          <!-- AdSense Placeholder -->
+          <div class="ads-placeholder">
+            <span>Google AdSense 广告位</span>
+          </div>
+
+          <div id="resultContainer" style="display: none;">
+            <div class="section">
+              <div class="section-label">结构可视化</div>
+              <div id="structureVisual" class="structure-visual"></div>
             </div>
-            <div class="result-url" id="builtUrl"></div>
-            <div style="margin-top: 1rem; display: flex; gap: 0.5rem">
-              <button onclick="copyBuiltUrl()">复制 URL</button>
-              <button onclick="useBuiltUrl()" class="secondary">使用�?URL</button>
+
+            <div class="section">
+              <div class="section-label">基础组成部分</div>
+              <div class="parts-grid" id="partsGrid"></div>
+            </div>
+
+            <div class="section">
+              <div class="section-label">查询参数 (Query Parameters)</div>
+              <div style="overflow-x: auto;">
+                <table class="params-table">
+                  <thead>
+                    <tr>
+                      <th>键 (Key)</th>
+                      <th>值 (Value)</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody id="paramsBody"></tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
+
+        <div class="shortcuts">
+          <div class="shortcut"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> 快速解析</div>
+          <div class="shortcut"><kbd>Esc</kbd> 清空内容</div>
+        </div>
+      </main>
+
+      <!-- SEO Article -->
+      <article class="article-content">
+        <h2>深入理解 URL 结构及其在 Web 开发中的重要性</h2>
+        <p>在现代 Web 开发中，URL（统一资源定位符）不仅是网页的地址，更是数据传递和状态管理的重要载体。无论是前端路由跳转、后端 API 调用，还是 SEO 优化，深刻理解 URL 的每一个组成部分都至关重要。</p>
+        
+        <h3>URL 的标准组成结构</h3>
+        <p>一个完整的标准 URL 通常包含以下几个部分：</p>
+        <ul>
+          <li><strong>Protocol (协议):</strong> 定义了如何传输数据，如 HTTP, HTTPS, FTP 等。</li>
+          <li><strong>Hostname (主机名):</strong> 服务器的域名或 IP 地址，如 <code>www.example.com</code>。</li>
+          <li><strong>Port (端口):</strong> 可选部分，默认 HTTPS 为 443，HTTP 为 80。</li>
+          <li><strong>Pathname (路径):</strong> 指向服务器上的具体资源或路由，如 <code>/api/v1/users</code>。</li>
+          <li><strong>Search/Query (查询参数):</strong> 以 <code>?</code> 开始的键值对，用于传递数据。</li>
+          <li><strong>Hash (片段标识符):</strong> 以 <code>#</code> 开始，通常用于指向页面内的某个位置（锚点）。</li>
+        </ul>
+
+        <h3>如何解决常见的 URL 相关问题？</h3>
+        <p>在开发过程中，我们经常会遇到 URL 编码、参数丢失或格式错误等问题。使用 WebUtils 的 URL 解析器可以帮助你：</p>
+        <ul>
+          <li><strong>调试 API 请求：</strong> 快速检查查询参数是否正确传递，排除编码导致的 400 错误。</li>
+          <li><strong>分析埋点链接：</strong> 大量的 UTM 参数会让 URL 变得极长且难以阅读，通过解析器可以清晰地看到每一个统计维度。</li>
+          <li><strong>处理特殊字符：</strong> 自动解码被 URL 编码的中文或特殊符号，还原原始含义。</li>
+          <li><strong>构建动态链接：</strong> 提取现有链接的参数并进行修改，方便生成测试链接。</li>
+        </ul>
+
+        <h3>关于 AdSense 与 SEO 适配</h3>
+        <p>本工具采用了响应式设计，适配手机、平板及电脑端。代码结构语义化，并预留了 Google AdSense 广告位置，方便站长进行流量变现。通过长文本的专业描述，提升了页面在搜索引擎中的权重，为用户提供更高价值的内容服务。</p>
+      </article>
+
+      <!-- AdSense Placeholder Bottom -->
+      <div class="ads-placeholder">
+        <span>Google AdSense 广告位 - 底部</span>
       </div>
     </div>
 
-    <div class="toast" id="toast"></div>
+    <div id="toast" class="toast"></div>
 
     <script>
-      const examples = [
-        "https://www.example.com/path/to/page",
-        "https://api.example.com/v1/users?page=1&limit=10&sort=name",
-        "https://user:password@secure.example.com:8443/admin",
-        "https://search.example.com/results?q=%E4%B8%AD%E6%96%87&category=all&tags[]=js&tags[]=html#top",
-        "http://[2001:db8::1]:8080/ipv6/test?enabled=true"
-      ];
+      const urlInput = document.getElementById('urlInput');
+      const parseBtn = document.getElementById('parseBtn');
+      const clearBtn = document.getElementById('clearBtn');
+      const exampleBtn = document.getElementById('exampleBtn');
+      const resultContainer = document.getElementById('resultContainer');
+      const structureVisual = document.getElementById('structureVisual');
+      const partsGrid = document.getElementById('partsGrid');
+      const paramsBody = document.getElementById('paramsBody');
+      const toast = document.getElementById('toast');
 
-      let currentUrl = null;
-
-      window.toggleTheme = function () {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute("data-theme");
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
-      };
-
-      (function () {
-        const savedTheme =
-          localStorage.getItem("theme") ||
-          (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-        document.documentElement.setAttribute("data-theme", savedTheme);
-      })();
-
-      window.setExample = function (index) {
-        document.getElementById("urlInput").value = examples[index];
-        parseUrl();
-      };
-
-      window.clearAll = function () {
-        document.getElementById("urlInput").value = "";
-        document.getElementById("result").style.display = "none";
-        currentUrl = null;
-      };
+      function showToast(message, type = 'success') {
+        toast.textContent = message;
+        toast.className = `toast show ${type}`;
+        setTimeout(() => toast.classList.remove('show'), 3000);
+      }
 
       function parseUrl() {
-        const input = document.getElementById("urlInput").value.trim();
-        if (!input) {
-          showToast("请输�?URL", "error");
+        const urlStr = urlInput.value.trim();
+        if (!urlStr) {
+          showToast('请输入 URL', 'warning');
           return;
         }
 
         try {
-          currentUrl = new URL(input);
-          displayResult();
-          document.getElementById("result").style.display = "block";
-        } catch (e) {
-          showToast("无效�?URL 格式", "error");
-        }
-      }
-
-      function displayResult() {
-        if (!currentUrl) return;
-
-        // Structure visual
-        let structure = "";
-        structure += `<span class="protocol">${currentUrl.protocol.replace(":", "")}</span>`;
-        structure += '<span class="sep">://</span>';
-        if (currentUrl.username) {
-          structure += `<span class="protocol">${currentUrl.username}</span>`;
-          if (currentUrl.password) {
-            structure += `<span class="sep">:</span><span class="protocol">${currentUrl.password}</span>`;
+          // 处理没有协议的情况
+          let finalUrl = urlStr;
+          if (!urlStr.includes('://')) {
+            finalUrl = 'http://' + urlStr;
           }
-          structure += '<span class="sep">@</span>';
-        }
-        structure += `<span class="host">${currentUrl.hostname}</span>`;
-        if (currentUrl.port) {
-          structure += `<span class="sep">:</span><span class="port">${currentUrl.port}</span>`;
-        }
-        if (currentUrl.pathname !== "/") {
-          structure += `<span class="path">${currentUrl.pathname}</span>`;
-        }
-        if (currentUrl.search) {
-          structure += `<span class="query">${currentUrl.search}</span>`;
-        }
-        if (currentUrl.hash) {
-          structure += `<span class="hash">${currentUrl.hash}</span>`;
-        }
-        document.getElementById("structureVisual").innerHTML = structure;
 
-        // Parts
+          const url = new URL(finalUrl);
+          displayResult(url);
+          resultContainer.style.display = 'block';
+          showToast('解析成功');
+        } catch (e) {
+          showToast('无效的 URL 格式', 'error');
+        }
+      }
+
+      function displayResult(url) {
+        // 结构可视化
+        let html = '';
+        if (url.protocol) html += `<span class="v-part v-protocol">${url.protocol}</span><span class="v-sep">//</span>`;
+        if (url.username) html += `<span class="v-part v-host">${url.username}${url.password ? ':' + url.password : ''}@</span>`;
+        if (url.hostname) html += `<span class="v-part v-host">${url.hostname}</span>`;
+        if (url.port) html += `<span class="v-sep">:</span><span class="v-part v-port">${url.port}</span>`;
+        if (url.pathname && url.pathname !== '/') html += `<span class="v-part v-path">${url.pathname}</span>`;
+        if (url.search) html += `<span class="v-part v-query">${url.search}</span>`;
+        if (url.hash) html += `<span class="v-part v-hash">${url.hash}</span>`;
+        structureVisual.innerHTML = html;
+
+        // 基础组成部分
         const parts = [
-          "href",
-          "protocol",
-          "host",
-          "hostname",
-          "port",
-          "origin",
-          "pathname",
-          "search",
-          "hash",
-          "username",
-          "password"
+          { label: '完整链接 (href)', value: url.href },
+          { label: '协议 (protocol)', value: url.protocol },
+          { label: '主机名 (hostname)', value: url.hostname },
+          { label: '端口 (port)', value: url.port || '(默认)' },
+          { label: '路径 (pathname)', value: url.pathname },
+          { label: '源 (origin)', value: url.origin },
+          { label: '哈希 (hash)', value: url.hash || '(无)' }
         ];
-        parts.forEach((part) => {
-          const elem = document.getElementById(
-            "part" + part.charAt(0).toUpperCase() + part.slice(1)
-          );
-          const value = currentUrl[part] || "";
-          elem.textContent = value || "(�?";
-          elem.className = value ? "part-value" : "part-value empty";
-          elem.closest(".part-card").classList.toggle("highlight", !!value && value !== "/");
-        });
 
-        // Query params
-        const params = currentUrl.searchParams;
-        const paramsBody = document.getElementById("paramsBody");
-        paramsBody.innerHTML = "";
+        partsGrid.innerHTML = parts.map(p => `
+          <div class="part-card">
+            <div class="part-label">
+              <span>${p.label}</span>
+              <button class="btn btn-icon btn-sm" onclick="copyText('${p.value}')">
+                <svg class="icon icon-sm" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M10 2H4a1 1 0 00-1 1v9a1 1 0 001 1h6a1 1 0 001-1V3a1 1 0 00-1-1zM13 5h-1M13 8h-1M13 11h-1" />
+                </svg>
+              </button>
+            </div>
+            <div class="part-value">${p.value}</div>
+          </div>
+        `).join('');
 
-        if ([...params].length > 0) {
-          document.getElementById("paramsSection").style.display = "block";
-          params.forEach((value, key) => {
-            const tr = document.createElement("tr");
-            const decoded = decodeURIComponent(value);
-            tr.innerHTML = `
-                        <td class="key">${escapeHtml(key)}</td>
-                        <td class="value">${escapeHtml(value)}</td>
-                        <td class="decoded">${value !== decoded ? escapeHtml(decoded) : "-"}</td>
-                    `;
-            paramsBody.appendChild(tr);
-          });
+        // 查询参数
+        const params = [...url.searchParams.entries()];
+        if (params.length > 0) {
+          paramsBody.innerHTML = params.map(([key, value]) => `
+            <tr>
+              <td class="param-key">${key}</td>
+              <td class="param-value">${value}</td>
+              <td>
+                <button class="btn btn-sm" onclick="copyText('${value}')">复制值</button>
+              </td>
+            </tr>
+          `).join('');
         } else {
-          document.getElementById("paramsSection").style.display = "none";
+          paramsBody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--text-muted);">无查询参数</td></tr>';
         }
-
-        // Fill builder
-        document.getElementById("buildProtocol").value = currentUrl.protocol.replace(":", "");
-        document.getElementById("buildUsername").value = currentUrl.username;
-        document.getElementById("buildPassword").value = currentUrl.password;
-        document.getElementById("buildHostname").value = currentUrl.hostname;
-        document.getElementById("buildPort").value = currentUrl.port;
-        document.getElementById("buildPathname").value = currentUrl.pathname;
-        document.getElementById("buildHash").value = currentUrl.hash.replace("#", "");
-
-        const paramsArr = [];
-        params.forEach((value, key) => paramsArr.push(`${key}=${value}`));
-        document.getElementById("buildParams").value = paramsArr.join("\n");
-
-        buildUrl();
       }
 
-      window.switchTab = function (tab) {
-        document.querySelectorAll(".tabs button").forEach((btn) => btn.classList.remove("active"));
-        document
-          .querySelector(`.tabs button[onclick="switchTab('${tab}')"]`)
-          .classList.add("active");
-        document.getElementById("parseTab").style.display = tab === "parse" ? "block" : "none";
-        document.getElementById("buildTab").style.display = tab === "build" ? "block" : "none";
-      };
-
-      function buildUrl() {
-        const protocol = document.getElementById("buildProtocol").value || "https";
-        const username = document.getElementById("buildUsername").value;
-        const password = document.getElementById("buildPassword").value;
-        const hostname = document.getElementById("buildHostname").value || "example.com";
-        const port = document.getElementById("buildPort").value;
-        const pathname = document.getElementById("buildPathname").value || "/";
-        const paramsText = document.getElementById("buildParams").value;
-        const hash = document.getElementById("buildHash").value;
-
-        let url = `${protocol}://`;
-        if (username) {
-          url += username;
-          if (password) url += `:${password}`;
-          url += "@";
-        }
-        url += hostname;
-        if (port) url += `:${port}`;
-        url += pathname.startsWith("/") ? pathname : `/${pathname}`;
-
-        if (paramsText.trim()) {
-          const params = paramsText
-            .split("\n")
-            .map((line) => line.trim())
-            .filter((line) => line.includes("="))
-            .join("&");
-          if (params) url += `?${params}`;
-        }
-
-        if (hash) url += `#${hash}`;
-
-        document.getElementById("builtUrl").textContent = url;
+      window.copyText = function(text) {
+        if (text === '(默认)' || text === '(无)') return;
+        navigator.clipboard.writeText(text).then(() => showToast('已复制到剪贴板'));
       }
 
-      window.copyBuiltUrl = function () {
-        const url = document.getElementById("builtUrl").textContent;
-        navigator.clipboard.writeText(url);
-        showToast("URL 已复�?);
-      };
-
-      window.useBuiltUrl = function () {
-        document.getElementById("urlInput").value = document.getElementById("builtUrl").textContent;
-        switchTab("parse");
-        parseUrl();
-      };
-
-      window.copyPart = function (part) {
-        const elem = document.getElementById("part" + part.charAt(0).toUpperCase() + part.slice(1));
-        const value = elem.textContent;
-        if (value && value !== "(�?") {
-          navigator.clipboard.writeText(value);
-          showToast("已复�?);
-        }
-      };
-
-      window.escapeHtml = function (text) {
-        const div = document.createElement("div");
-        div.textContent = text;
-        return div.innerHTML;
-      };
-
-      function showToast(message, type = "success") {
-        const toast = document.getElementById("toast");
-        toast.textContent = message;
-        toast.style.background = type === "error" ? "#ef4444" : "#10b981";
-        toast.classList.add("show");
-        setTimeout(() => toast.classList.remove("show"), 2000);
-      }
-
-      // Auto parse on input
-      document.getElementById("urlInput").addEventListener("keypress", (e) => {
-        if (e.key === "Enter") parseUrl();
+      parseBtn.addEventListener('click', parseUrl);
+      clearBtn.addEventListener('click', () => {
+        urlInput.value = '';
+        resultContainer.style.display = 'none';
+        showToast('已清空');
       });
 
-      // Init with example
-      setExample(1);
+      exampleBtn.addEventListener('click', () => {
+        urlInput.value = 'https://www.example.com:8080/path/to/resource?id=123&category=web&utm_source=google#details';
+        parseUrl();
+      });
+
+      // 主题切换
+      const themeBtns = document.querySelectorAll('.theme-btn');
+      themeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const theme = btn.dataset.theme;
+          document.documentElement.setAttribute('data-theme', theme);
+          themeBtns.forEach(b => b.classList.toggle('active', b === btn));
+          localStorage.setItem('theme', theme);
+        });
+      });
+
+      // 快捷键
+      urlInput.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key === 'Enter') parseUrl();
+        if (e.key === 'Escape') clearBtn.click();
+      });
+
+      // 初始化主题
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      document.querySelector(`[data-theme="${savedTheme}"]`).classList.add('active');
     </script>
   </body>
 </html>
-
