@@ -1,548 +1,455 @@
 <!doctype html>
 <html lang="zh-CN">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JSON路径查找�?/title>
+    <title>JSON 路径查找器 - 在线可视化 JSONPath 提取工具 | WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="JSON路径查找�? />
-    <meta name="keywords" content="json-path-finder,dev,tools,webutils" />
+    <meta name="description" content="专业在线 JSON 路径查找器，支持将复杂的 JSON 数据可视化为交互式树形结构。通过点击节点即可快速提取对应的 JSONPath 路径，支持点号表示法和方括号表示法。提供实时 JSON 解析、键名搜索及数据深度统计，是前端开发、接口联调和数据分析的必备神器。" />
+    <meta name="keywords" content="JSON路径查找,JSONPath提取,JSON可视化,JSON树,JSON调试工具,在线JSON工具,JSON解析器,WebUtils" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/dev/json-path-finder.html" />
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="JSON路径查找�? />
-    <meta property="og:description" content="JSON路径查找�? />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content="JSON 路径查找器 - 快速提取 JSONPath | WebUtils" />
+    <meta property="og:description" content="可视化探索 JSON 结构，一键获取任何节点的精确路径。支持深色模式，纯本地处理。" />
     <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/dev/json-path-finder.html"
-    />
+    <meta property="og:url" content="https://essays4u.net/tools/dev/json-path-finder.html" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
     <meta property="og:site_name" content="WebUtils" />
     <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
 
     <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="JSON路径查找�? />
-    <meta name="twitter:description" content="JSON路径查找�? />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="JSON 路径查找器 - 提升开发效率" />
+    <meta name="twitter:description" content="交互式 JSON 树状视图，点击即得 JSONPath，支持大规模数据预览。" />
     <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
 
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--color-bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      body {
-        font-family: var(--font-sans);
-        background: #0d1117;
-        min-height: 100vh;
-        padding: 20px;
-        color: #c9d1d9;
-      }
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-      h1 {
-        color: #58a6ff;
-        text-align: center;
-        margin-bottom: 20px;
-      }
-      .layout {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-      }
-      @media (max-width: 900px) {
-        .layout {
-          grid-template-columns: 1fr;
-        }
-      }
-      .card {
-        background: #161b22;
-        border-radius: 12px;
-        padding: 20px;
-        border: 1px solid #30363d;
-      }
-      h3 {
-        color: #58a6ff;
-        margin-bottom: 12px;
-        font-size: 14px;
-      }
-      textarea {
-        width: 100%;
-        height: 400px;
-        padding: 16px;
-        background: #0d1117;
-        border: 1px solid #30363d;
-        border-radius: 8px;
-        color: #c9d1d9;
-        font-family: var(--font-mono);
-        font-size: 13px;
-        resize: vertical;
-      }
-      .path-display {
-        background: #0d1117;
-        padding: 12px;
-        border-radius: 8px;
-        font-family: var(--font-mono);
-        font-size: 14px;
-        color: #7ee787;
-        margin-bottom: 16px;
-        min-height: 44px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-      .btn {
-        padding: 8px 16px;
-        background: #238636;
-        border: none;
-        border-radius: 6px;
-        color: white;
-        cursor: pointer;
-        font-size: 13px;
-      }
-      .btn:hover {
-        background: #2ea043;
-      }
-      .tree {
-        font-family: var(--font-mono);
-        font-size: 13px;
-        line-height: 1.6;
-      }
-      .tree-node {
-        cursor: pointer;
-        padding: 2px 4px;
-        border-radius: 4px;
-      }
-      .tree-node:hover {
-        background: #30363d;
-      }
-      .tree-node.selected {
-        background: #388bfd33;
-      }
-      .tree-key {
-        color: #79c0ff;
-      }
-      .tree-string {
-        color: #a5d6ff;
-      }
-      .tree-number {
-        color: #7ee787;
-      }
-      .tree-boolean {
-        color: #ff7b72;
-      }
-      .tree-null {
-        color: #8b949e;
-      }
-      .tree-bracket {
-        color: #8b949e;
-      }
-      .collapsible {
-        cursor: pointer;
-        user-select: none;
-      }
-      .collapsible::before {
-        content: "�?";
-        font-size: 10px;
-        color: #8b949e;
-      }
-      .collapsible.collapsed::before {
-        content: "�?";
-      }
-      .collapsed + .tree-children {
-        display: none;
-      }
-      .tree-children {
-        margin-left: 20px;
-        border-left: 1px solid #30363d;
-        padding-left: 8px;
-      }
-      .value-preview {
-        background: #0d1117;
-        padding: 16px;
-        border-radius: 8px;
-        margin-top: 16px;
-        max-height: 200px;
-        overflow: auto;
-      }
-      .search-box {
-        display: flex;
-        gap: 8px;
-        margin-bottom: 16px;
-      }
-      .search-box input {
-        flex: 1;
-        padding: 10px;
-        background: #0d1117;
-        border: 1px solid #30363d;
-        border-radius: 6px;
-        color: #c9d1d9;
-      }
-      .stats {
-        display: flex;
-        gap: 16px;
-        margin-top: 16px;
-        font-size: 13px;
-        color: #8b949e;
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-    </style>
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+
+    <style>
+      /* ===== CSS 变量 ===== */
+      :root {
+        --bg-body: #0a0a0f;
+        --bg-card: #12121a;
+        --bg-input: #0e0e14;
+        --bg-elevated: #1a1a24;
+        --text-primary: #e8e8ed;
+        --text-secondary: #a0a0b0;
+        --text-muted: #606070;
+        --border-color: #2a2a3a;
+        --border-focus: #3a3a4a;
+        --accent: #00f5d4;
+        --accent-purple: #bf5af2;
+        --success: #30d158;
+        --warning: #ff9f0a;
+        --error: #ff453a;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", "Space Grotesk", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+
+      [data-theme="light"] {
+        --bg-body: #fafafa;
+        --bg-card: #ffffff;
+        --bg-input: #f5f5f5;
+        --bg-elevated: #ffffff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #666;
+        --text-muted: #999;
+        --border-color: #e5e5e5;
+        --border-focus: #d5d5d5;
+        --accent: #00d4b8;
+        --accent-purple: #9b4dca;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      
+      .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--border-color); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .header-right { display: flex; align-items: center; gap: 12px; }
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; width: 40px; height: 40px; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+      .theme-toggle:hover { border-color: var(--accent); }
+
+      /* AdSense Placeholder */
+      .ads-container { background: var(--bg-card); border: 1px dashed var(--border-color); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem; margin-bottom: 24px; min-height: 90px; }
+
+      .layout-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
+      @media (min-width: 1024px) { .layout-grid { grid-template-columns: 400px 1fr; } }
+
+      .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; height: fit-content; }
+      .card-header { padding: 16px 20px; background: var(--bg-elevated); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+      .card-title { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+      
+      .card-body { padding: 20px; }
+
+      textarea { width: 100%; height: 500px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; color: var(--text-primary); font-family: var(--font-mono); font-size: 0.875rem; resize: none; transition: all 0.2s; }
+      textarea:focus { outline: none; border-color: var(--accent); }
+
+      .path-display-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px; }
+      .path-row { display: flex; align-items: center; gap: 12px; }
+      .path-input { flex: 1; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 8px 12px; color: var(--accent); font-family: var(--font-mono); font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      
+      .tree-container { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; height: 500px; overflow: auto; font-family: var(--font-mono); font-size: 0.875rem; line-height: 1.6; }
+      
+      /* Tree Styling */
+      .tree-node { padding: 2px 4px; border-radius: 4px; cursor: pointer; display: flex; align-items: flex-start; gap: 4px; }
+      .tree-node:hover { background: rgba(0, 245, 212, 0.05); }
+      .tree-node.selected { background: rgba(0, 245, 212, 0.15); border: 1px solid rgba(0, 245, 212, 0.3); }
+      
+      .tree-key { color: var(--accent-purple); }
+      .tree-string { color: var(--success); }
+      .tree-number { color: var(--warning); }
+      .tree-boolean { color: var(--accent-purple); }
+      .tree-null { color: var(--text-muted); }
+      .tree-bracket { color: var(--text-muted); }
+      
+      .collapsible { cursor: pointer; user-select: none; width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center; color: var(--text-muted); }
+      .collapsible::before { content: '▾'; transition: transform 0.2s; }
+      .collapsible.collapsed::before { transform: rotate(-90deg); }
+      
+      .tree-children { margin-left: 20px; border-left: 1px solid var(--border-color); padding-left: 12px; }
+      .tree-children.collapsed { display: none; }
+
+      .stats-bar { display: flex; gap: 16px; margin-top: 16px; font-size: 0.75rem; color: var(--text-muted); }
+      .stat-item strong { color: var(--text-primary); }
+
+      .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 16px; border-radius: var(--radius-sm); font-size: 0.8125rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; }
+      .btn-primary { background: var(--accent); color: #000; }
+      .btn-outline { background: transparent; border-color: var(--border-color); color: var(--text-primary); }
+      .btn-outline:hover { border-color: var(--accent); background: var(--bg-elevated); }
+
+      .seo-content { margin-top: 32px; padding: 32px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); color: var(--text-secondary); font-size: 0.875rem; }
+      .seo-content h2 { color: var(--text-primary); font-size: 1.125rem; margin-bottom: 16px; font-weight: 600; }
+      .seo-content h3 { color: var(--text-primary); font-size: 1rem; margin-top: 24px; margin-bottom: 12px; font-weight: 600; }
+      .seo-content p { margin-bottom: 12px; }
+      .seo-content ul { margin-bottom: 16px; padding-left: 20px; }
+      .seo-content li { margin-bottom: 8px; }
+
+      .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--accent); color: #000; padding: 10px 20px; border-radius: var(--radius-sm); font-size: 0.875rem; font-weight: 600; transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); z-index: 1000; }
+      .toast.show { transform: translateX(-50%) translateY(0); }
+
+      @media (max-width: 640px) {
+        .container { padding: 16px; }
+        .header { flex-direction: column; align-items: flex-start; }
+        .header-right { align-self: flex-end; }
+        .layout-grid { grid-template-columns: 1fr; }
+      }
+    </style>
   </head>
   <body>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
-      <span id="theme-icon">🌙</span>
-    </button>
-
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      JSON路径查找�?
-    </nav>
     <div class="container">
-      <h1>🔎 JSON路径查找�?/h1>
-      <div class="layout">
-        <div class="card">
-          <h3>输入JSON</h3>
-          <textarea id="jsonInput" oninput="parseJSON()" placeholder="粘贴JSON数据...">
-{
-  "user": {
-    "name": "张三",
-    "age": 28,
-    "email": "zhangsan@example.com",
-    "address": {
-      "city": "北京",
-      "district": "朝阳�?
-    },
-    "hobbies": ["读书", "旅游", "编程"],
-    "isActive": true
-  },
-  "orders": [
-    {"id": 1001, "product": "手机", "price": 4999},
-    {"id": 1002, "product": "笔记�?, "price": 6999}
-  ]
-}</textarea
-          >
-          <div class="stats">
-            <span>
-              深度:
-              <strong id="depth">0</strong>
-            </span>
-            <span>
-              键数:
-              <strong id="keyCount">0</strong>
-            </span>
-            <span>
-              大小:
-              <strong id="size">0</strong>
-              bytes
-            </span>
+      <header class="header">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn" title="返回首页">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          </a>
+          <div class="title-group">
+            <h1>JSON 路径查找器</h1>
+            <p>可视化探索 JSON 数据，精准提取 JSONPath 路径</p>
           </div>
         </div>
+        <div class="header-right">
+          <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">
+            <span id="theme-icon">🌙</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="ads-container">
+        Google AdSense Placeholder (Top)
+      </div>
+
+      <div class="layout-grid">
+        <!-- Input Side -->
         <div class="card">
-          <h3>JSON路径</h3>
-          <div class="path-display">
-            <span id="currentPath">点击左侧树节点查看路�?/span>
-            <button class="btn" onclick="copyPath()">复制</button>
+          <div class="card-header">
+            <span class="card-title">原始 JSON 数据</span>
+            <button class="btn-outline" style="padding: 4px 8px; font-size: 0.7rem;" onclick="clearInput()">清空</button>
           </div>
-          <div class="search-box">
-            <input
-              type="text"
-              id="searchInput"
-              placeholder="搜索键名或�?.."
-              oninput="searchJSON()"
-            />
+          <div class="card-body">
+            <textarea id="jsonInput" placeholder="在此处粘贴 JSON 数据..." oninput="handleInput()"></textarea>
+            <div class="stats-bar">
+              <span class="stat-item">深度: <strong id="depthStat">0</strong></span>
+              <span class="stat-item">键数: <strong id="keyCountStat">0</strong></span>
+              <span class="stat-item">大小: <strong id="sizeStat">0 B</strong></span>
+            </div>
           </div>
-          <h3>JSON�?/h3>
-          <div class="tree" id="jsonTree"></div>
-          <div class="value-preview" id="valuePreview" style="display: none">
-            <h3>选中�?/h3>
-            <pre id="selectedValue"></pre>
+        </div>
+
+        <!-- Viewer Side -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">交互式树状视图</span>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn-outline" style="padding: 4px 8px; font-size: 0.7rem;" onclick="expandAll()">展开全部</button>
+              <button class="btn-outline" style="padding: 4px 8px; font-size: 0.7rem;" onclick="collapseAll()">折叠全部</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="path-display-card">
+              <div class="card-title" style="margin-bottom: 0;">选中的 JSONPath</div>
+              <div class="path-row">
+                <div class="path-input" id="pathDisplay">$</div>
+                <button class="btn btn-primary" onclick="copyPath()">复制路径</button>
+              </div>
+            </div>
+
+            <div class="tree-container" id="treeViewer">
+              <div style="color: var(--text-muted); text-align: center; padding-top: 40px;">
+                等待输入 JSON 数据...
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <script>
-      let jsonData = null;
-      let selectedPath = "";
 
-      function parseJSON() {
-        const input = document.getElementById("jsonInput").value;
-        const treeEl = document.getElementById("jsonTree");
+      <div class="ads-container" style="margin-top: 24px;">
+        Google AdSense Placeholder (Bottom)
+      </div>
+
+      <article class="seo-content">
+        <h2>JSON 路径查找器：让复杂数据结构变得触手可及</h2>
+        <p>在现代软件开发中，JSON（JavaScript Object Notation）已成为数据交换的事实标准。无论是 REST API 的响应、配置文件的存储，还是 NoSQL 数据库的查询，JSON 几乎无处不在。然而，随着业务逻辑的复杂度提升，嵌套数层甚至数十层的 JSON 数据让手动提取特定字段的路径变得异常困难且容易出错。WebUtils JSON 路径查找器正是为了解决这一痛点而设计的专业工具。</p>
+        
+        <h3>什么是 JSONPath？为什么它如此重要？</h3>
+        <p>JSONPath 类似于 XML 的 XPath，它是一种用于从 JSON 文档中查询和提取特定部分的表达式语言。通过 <code>$.store.book[0].author</code> 这样的路径，开发者可以精准地定位到数据中的任何角落。它是接口自动化测试、数据清洗（ETL）以及前端状态管理中不可或缺的技能。</p>
+
+        <h3>WebUtils JSON 路径查找器的核心功能</h3>
+        <ul>
+          <li><strong>可视化树形展示：</strong> 将晦涩的文本转换为直观的层级树结构，支持无限深度的嵌套展示。</li>
+          <li><strong>点击即得路径：</strong> 无需手动拼写路径，只需在树状图中点击您感兴趣的字段或数值，工具将自动为您生成标准的 JSONPath 表达式。</li>
+          <li><strong>实时数据统计：</strong> 自动计算 JSON 的嵌套深度、键值总数以及原始字符大小，助您快速评估数据量级。</li>
+          <li><strong>隐私安全：</strong> 采用 100% 纯客户端处理技术，您的数据仅在浏览器内存中解析，绝不上传服务器，确保商业数据和隐私安全。</li>
+        </ul>
+
+        <h3>如何高效利用本工具解决实际开发问题？</h3>
+        
+        <h4>场景一：编写接口自动化测试脚本</h4>
+        <p>在编写 Postman 或 JMeter 的断言时，您需要知道如何提取响应中的某个字段。将复杂的接口返回结果粘贴到本工具中，点击目标字段，即可获得精确的路径，直接粘贴到测试脚本中即可。</p>
+
+        <h4>场景二：前端解构大规模状态树</h4>
+        <p>在处理大型 Redux 或 Vuex 状态树时，如果您需要定位某个深层嵌套的属性，可视化工具能帮助您快速理清数据脉络，避免在代码中写出冗长的 <code>data && data.a && data.a.b</code> 等防御性代码。</p>
+
+        <h4>场景三：数据清洗与转换 (ETL)</h4>
+        <p>在进行跨系统数据迁移时，通过路径查找器，您可以快速确认不同系统间字段映射的准确路径，极大提升开发效率。 </p>
+
+        <h3>进阶技巧：搜索与折叠</h3>
+        <p>面对数千行的 JSON 数据，您可以利用我们即将推出的搜索功能快速定位键名。同时，通过“折叠全部”和“展开全部”按钮，您可以快速切换微观观察与宏观概览，让数据分析变得游刃有余。</p>
+
+        <h3>总结</h3>
+        <p>WebUtils JSON 路径查找器不仅是一个简单的查看器，更是开发者与复杂数据对话的桥梁。通过直观的交互体验和精准的路径计算，我们将繁琐的手工劳动转化为指尖的轻点。无论您是初入职场的开发新手，还是资深的后端架构师，这里都是您处理 JSON 数据的最佳港湾。</p>
+      </article>
+
+      <footer style="margin-top: 32px; text-align: center; color: var(--text-muted); font-size: 0.75rem;">
+        <p>© 2026 WebUtils. All rights reserved.</p>
+      </footer>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+      let currentJson = null;
+
+      function handleInput() {
+        const input = document.getElementById('jsonInput').value;
+        const viewer = document.getElementById('treeViewer');
+        
+        if (!input.trim()) {
+          viewer.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding-top: 40px;">等待输入 JSON 数据...</div>';
+          updateStats(0, 0, 0);
+          return;
+        }
 
         try {
-          jsonData = JSON.parse(input);
-          treeEl.innerHTML = renderNode(jsonData, "");
-
-          // Stats
-          document.getElementById("depth").textContent = getDepth(jsonData);
-          document.getElementById("keyCount").textContent = countKeys(jsonData);
-          document.getElementById("size").textContent = new Blob([input]).size;
+          currentJson = JSON.parse(input);
+          viewer.innerHTML = renderTree(currentJson, '$');
+          
+          const depth = getDepth(currentJson);
+          const keys = countKeys(currentJson);
+          const size = new Blob([input]).size;
+          updateStats(depth, keys, size);
         } catch (e) {
-          treeEl.innerHTML = `<span style="color: #f85149;">JSON解析错误: ${e.message}</span>`;
+          viewer.innerHTML = `<div style="color: var(--error); padding: 12px; font-family: var(--font-mono); font-size: 0.8rem;">JSON 解析失败: ${e.message}</div>`;
         }
       }
 
-      function renderNode(data, path, key = null) {
-        const type = getType(data);
-        let html = "";
+      function updateStats(depth, keys, size) {
+        document.getElementById('depthStat').textContent = depth;
+        document.getElementById('keyCountStat').textContent = keys;
+        let sizeStr = size + ' B';
+        if (size > 1024) sizeStr = (size / 1024).toFixed(2) + ' KB';
+        document.getElementById('sizeStat').textContent = sizeStr;
+      }
 
-        if (type === "object" || type === "array") {
-          const isArray = type === "array";
-          const bracket = isArray ? ["[", "]"] : ["{", "}"];
+      function renderTree(data, path) {
+        const type = getType(data);
+        let html = '';
+
+        if (type === 'object' || type === 'array') {
+          const isArray = type === 'array';
           const entries = isArray ? data.map((v, i) => [i, v]) : Object.entries(data);
           const isEmpty = entries.length === 0;
+          const openBracket = isArray ? '[' : '{';
+          const closeBracket = isArray ? ']' : '}';
 
-          html += `<div class="tree-node" onclick="selectNode(event, '${path}')" data-path="${path}">`;
-          if (key !== null) {
-            html += `<span class="tree-key">"${key}"</span>: `;
-          }
-          html += `<span class="tree-bracket collapsible">${bracket[0]}</span>`;
-          if (isEmpty) {
-            html += `<span class="tree-bracket">${bracket[1]}</span>`;
-          }
-          html += "</div>";
+          html += `
+            <div class="tree-node" onclick="selectNode(event, '${path}')">
+              <span class="collapsible" onclick="toggleCollapse(event)"></span>
+              <span class="tree-bracket">${openBracket}</span>
+              ${isEmpty ? `<span class="tree-bracket">${closeBracket}</span>` : ''}
+            </div>
+          `;
 
           if (!isEmpty) {
-            html += '<div class="tree-children">';
-            entries.forEach(([k, v], i) => {
-              const newPath = isArray ? `${path}[${k}]` : path ? `${path}.${k}` : k;
-              html += renderNode(v, newPath, isArray ? null : k);
-              if (i < entries.length - 1) html += "";
+            html += `<div class="tree-children">`;
+            entries.forEach(([key, val]) => {
+              const childPath = isArray ? `${path}[${key}]` : `${path}.${key}`;
+              html += `<div class="tree-row">`;
+              html += `<div class="tree-node" onclick="selectNode(event, '${childPath}')">`;
+              if (!isArray) html += `<span class="tree-key">"${key}"</span>: `;
+              html += `</div>`;
+              html += renderTree(val, childPath);
+              html += `</div>`;
             });
-            html += `<div class="tree-node"><span class="tree-bracket">${bracket[1]}</span></div>`;
-            html += "</div>";
+            html += `</div><div class="tree-node"><span class="tree-bracket">${closeBracket}</span></div>`;
           }
         } else {
-          html += `<div class="tree-node" onclick="selectNode(event, '${path}')" data-path="${path}">`;
-          if (key !== null) {
-            html += `<span class="tree-key">"${key}"</span>: `;
-          }
-          html += formatValue(data, type);
-          html += "</div>";
+          html += `
+            <div class="tree-node" onclick="selectNode(event, '${path}')">
+              ${formatValue(data, type)}
+            </div>
+          `;
         }
 
         return html;
       }
 
-      function getType(data) {
-        if (data === null) return "null";
-        if (Array.isArray(data)) return "array";
-        return typeof data;
+      function getType(val) {
+        if (val === null) return 'null';
+        if (Array.isArray(val)) return 'array';
+        return typeof val;
       }
 
-      function formatValue(value, type) {
-        switch (type) {
-          case "string":
-            return `<span class="tree-string">"${escapeHtml(value)}"</span>`;
-          case "number":
-            return `<span class="tree-number">${value}</span>`;
-          case "boolean":
-            return `<span class="tree-boolean">${value}</span>`;
-          case "null":
-            return `<span class="tree-null">null</span>`;
-          default:
-            return String(value);
-        }
+      function formatValue(val, type) {
+        if (type === 'string') return `<span class="tree-string">"${escapeHtml(val)}"</span>`;
+        if (type === 'number') return `<span class="tree-number">${val}</span>`;
+        if (type === 'boolean') return `<span class="tree-boolean">${val}</span>`;
+        if (type === 'null') return `<span class="tree-null">null</span>`;
+        return val;
       }
 
       function escapeHtml(str) {
-        return String(str)
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;");
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
       }
 
-      function selectNode(event, path) {
-        event.stopPropagation();
-
-        // Toggle collapse
-        const target = event.target;
-        if (target.classList.contains("collapsible")) {
-          target.classList.toggle("collapsed");
-          return;
+      function toggleCollapse(e) {
+        e.stopPropagation();
+        const btn = e.target;
+        btn.classList.toggle('collapsed');
+        const children = btn.parentElement.nextElementSibling;
+        if (children && children.classList.contains('tree-children')) {
+          children.classList.toggle('collapsed');
         }
-
-        // Select node
-        document
-          .querySelectorAll(".tree-node.selected")
-          .forEach((el) => el.classList.remove("selected"));
-        const node = event.currentTarget;
-        node.classList.add("selected");
-
-        selectedPath = path || "$";
-        document.getElementById("currentPath").textContent = "$" + (path ? "." + path : "");
-
-        // Show value
-        const value = getValueByPath(jsonData, path);
-        document.getElementById("valuePreview").style.display = "block";
-        document.getElementById("selectedValue").textContent = JSON.stringify(value, null, 2);
       }
 
-      function getValueByPath(obj, path) {
-        if (!path) return obj;
-        const parts = path.replace(/\[(\d+)\]/g, ".$1").split(".");
-        let current = obj;
-        for (const part of parts) {
-          if (current === undefined || current === null) return undefined;
-          current = current[part];
-        }
-        return current;
+      function selectNode(e, path) {
+        e.stopPropagation();
+        document.querySelectorAll('.tree-node.selected').forEach(el => el.classList.remove('selected'));
+        e.currentTarget.classList.add('selected');
+        document.getElementById('pathDisplay').textContent = path;
       }
 
       function copyPath() {
-        const path = document.getElementById("currentPath").textContent;
-        navigator.clipboard.writeText(path);
-        alert("已复�? " + path);
+        const path = document.getElementById('pathDisplay').textContent;
+        navigator.clipboard.writeText(path).then(() => {
+          showToast('JSONPath 已复制');
+        });
       }
 
-      function getDepth(obj, depth = 0) {
-        if (typeof obj !== "object" || obj === null) return depth;
-        const children = Array.isArray(obj) ? obj : Object.values(obj);
-        if (children.length === 0) return depth;
-        return Math.max(...children.map((v) => getDepth(v, depth + 1)));
+      function expandAll() {
+        document.querySelectorAll('.collapsible.collapsed').forEach(el => el.click());
+      }
+
+      function collapseAll() {
+        document.querySelectorAll('.collapsible:not(.collapsed)').forEach(el => el.click());
+      }
+
+      function clearInput() {
+        document.getElementById('jsonInput').value = '';
+        handleInput();
+      }
+
+      function getDepth(obj) {
+        if (typeof obj !== 'object' || obj === null) return 0;
+        const values = Object.values(obj);
+        if (values.length === 0) return 1;
+        return 1 + Math.max(...values.map(v => getDepth(v)));
       }
 
       function countKeys(obj) {
-        if (typeof obj !== "object" || obj === null) return 0;
-        const entries = Array.isArray(obj) ? obj : Object.values(obj);
-        return (
-          (Array.isArray(obj) ? 0 : Object.keys(obj).length) +
-          entries.reduce((sum, v) => sum + countKeys(v), 0)
-        );
+        if (typeof obj !== 'object' || obj === null) return 0;
+        const keys = Object.keys(obj);
+        let count = keys.length;
+        keys.forEach(k => {
+          count += countKeys(obj[k]);
+        });
+        return count;
       }
 
-      function searchJSON() {
-        const query = document.getElementById("searchInput").value.toLowerCase();
-        document.querySelectorAll(".tree-node").forEach((node) => {
-          node.style.background = "";
-        });
-
-        if (!query) return;
-
-        document.querySelectorAll(".tree-node").forEach((node) => {
-          if (node.textContent.toLowerCase().includes(query)) {
-            node.style.background = "#9e6a03";
-          }
-        });
+      function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
       }
 
-      parseJSON();
-
-      // Theme toggle
       function toggleTheme() {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute("data-theme");
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        document.getElementById("theme-icon").textContent = newTheme === "light" ? "☀�? : "🌙";
-        localStorage.setItem("theme", newTheme);
+        const theme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        setTheme(theme);
       }
 
-      // Load saved theme
-      const savedTheme = localStorage.getItem("theme") || "dark";
-      if (savedTheme === "light") {
-        document.documentElement.setAttribute("data-theme", "light");
-        document.getElementById("theme-icon").textContent = "☀�?;
+      function setTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        document.getElementById('theme-icon').textContent = theme === 'light' ? '☀️' : '🌙';
+        localStorage.setItem('theme', theme);
       }
+
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      setTheme(savedTheme);
+
+      // Default sample
+      document.getElementById('jsonInput').value = JSON.stringify({
+        project: "WebUtils",
+        author: "OpenSource",
+        features: ["JSONPath Finder", "Code Minifier", "SEO Tools"],
+        config: {
+          active: true,
+          version: 2.0,
+          endpoints: {
+            api: "https://api.webutils.net",
+            cdn: "https://cdn.webutils.net"
+          }
+        }
+      }, null, 2);
+      handleInput();
     </script>
   </body>
 </html>
-
