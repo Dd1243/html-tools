@@ -1,736 +1,315 @@
-<!doctype html>
-<html lang="zh-CN" data-theme="light">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JSON �?YAML 转换�?- WebUtils</title>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON 转 YAML & YAML 转 JSON 转换器 - 在线配置格式转换 - WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="JSON �?YAML 转换�?- WebUtils" />
-    <meta name="keywords" content="json-yaml,converter,tools,webutils" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/converter/json-yaml.html" />
+    <meta name="description" content="专业在线 JSON 与 YAML 互转工具。支持语法高亮、错误提示、自定义缩进及实时预览。快速处理 Kubernetes 配置、Docker Compose 文件及各类 API 响应数据。">
+    <meta name="keywords" content="JSON转YAML,YAML转JSON,配置文件转换,K8S配置工具,Docker转换,在线格式化,程序员工具,WebUtils">
+    <meta name="author" content="WebUtils">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://essays4u.net/tools/converter/json-yaml.html">
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="JSON �?YAML 转换�?- WebUtils" />
-    <meta property="og:description" content="JSON �?YAML 转换�?- WebUtils" />
-    <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/converter/json-yaml.html"
-    />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content="JSON 转 YAML & YAML 转 JSON 转换器 - 极速配置换算">
+    <meta property="og:description" content="一键在 JSON 与 YAML 格式间自由切换。支持大规模数据处理与实时语法检查，解决开发与运维中的配置转换难题。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://essays4u.net/tools/converter/json-yaml.html">
+    <meta property="og:image" content="https://essays4u.net/social-preview.png">
+    <meta property="og:site_name" content="WebUtils">
+    <meta property="og:locale" content="zh_CN">
 
     <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="JSON �?YAML 转换�?- WebUtils" />
-    <meta name="twitter:description" content="JSON �?YAML 转换�?- WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="JSON 转 YAML 转换器 - 运维必备神器">
+    <meta name="twitter:description" content="支持 YAML 1.2 标准，完美兼容各类开发环境，助您轻松管理复杂配置。">
+    <meta name="twitter:image" content="https://essays4u.net/social-preview.png">
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "在线 JSON-YAML 转换器",
+      "url": "https://essays4u.net/tools/converter/json-yaml.html",
+      "description": "提供 JSON 与 YAML 格式之间的实时转换功能。",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "All",
+      "author": {
+        "@type": "Organization",
+        "name": "WebUtils"
+      }
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+
     <style>
       :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
+        --bg-body: #0a0a0f;
+        --bg-card: #12121a;
         --bg-input: #0e0e14;
+        --bg-elevated: #1a1a24;
         --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --text-secondary: #a0a0b0;
+        --text-muted: #606070;
+        --border-color: #2a2a3a;
+        --border-focus: #3a3a4a;
+        --accent: #00f5d4;
+        --accent-purple: #bf5af2;
+        --success: #30d158;
+        --warning: #ff9f0a;
+        --error: #ff453a;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", "Space Grotesk", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
       }
 
       [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
+        --bg-body: #fafafa;
+        --bg-card: #ffffff;
         --bg-input: #f5f5f5;
+        --bg-elevated: #ffffff;
         --text-primary: #1a1a1a;
         --text-secondary: #666;
         --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        --border-color: #e5e5e5;
+        --border-focus: #d5d5d5;
+        --accent: #00d4b8;
+        --accent-purple: #9b4dca;
       }
 
-      :root {
-        --primary: #8b5cf6;
-        --primary-hover: #7c3aed;
-        --success: #22c55e;
-        --warning: #f59e0b;
-        --danger: #ef4444;
-      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      
+      .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--border-color); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .header-right { display: flex; align-items: center; gap: 12px; }
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; width: 40px; height: 40px; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+      .theme-toggle:hover { border-color: var(--accent); }
 
-      [data-theme="light"] {
-        --card-bg: #fff;
-        --border-color: #e2e8f0;
-        --editor-bg: #f8fafc;
-      }
+      .controls-bar { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 16px 20px; margin-bottom: 24px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+      .control-item { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; color: var(--text-secondary); }
+      
+      .btn { padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; font-size: 0.875rem; display: flex; align-items: center; gap: 6px; }
+      .btn-primary { background: var(--accent); color: var(--bg-body); }
+      .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-secondary); }
+      .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
 
-      body {
-        padding: 2rem;
-        min-height: 100vh;
-      }
+      .editors-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+      .editor-container { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; display: flex; flex-direction: column; }
+      .editor-header { padding: 12px 20px; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+      .editor-title { font-size: 0.75rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; }
+      
+      textarea { width: 100%; height: 500px; padding: 20px; background: transparent; border: none; color: var(--text-primary); font-family: var(--font-mono); font-size: 0.9rem; line-height: 1.6; resize: none; outline: none; }
+      textarea::placeholder { color: var(--text-muted); }
 
-      .container {
-        max-width: 1400px;
-        margin: 0 auto;
-      }
+      .status-badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+      .status-success { background: rgba(48, 209, 88, 0.1); color: var(--success); }
+      .status-error { background: rgba(255, 69, 58, 0.1); color: var(--error); }
 
-      header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-        flex-wrap: wrap;
-        gap: 1rem;
-      }
+      .ads-container { margin: 24px 0; min-height: 90px; background: rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem; border: 1px dashed var(--border-color); border-radius: var(--radius-md); }
 
-      header h1 {
-        margin: 0;
-        font-size: 1.75rem;
-      }
-
-      .header-actions {
-        display: flex;
-        gap: 0.5rem;
-      }
-
-      .theme-toggle {
-        background: none;
-        border: 1px solid var(--border-subtle);
-        cursor: pointer;
-        padding: 0.5rem;
-        border-radius: 0.5rem;
-        font-size: 1.25rem;
-        width: 42px;
-        height: 42px;
-      }
-
-      .editor-container {
-        display: grid;
-        grid-template-columns: 1fr auto 1fr;
-        gap: 1rem;
-        align-items: stretch;
-      }
+      .seo-content { margin-top: 32px; padding: 32px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); color: var(--text-secondary); font-size: 0.95rem; }
+      .seo-content h2 { color: var(--text-primary); font-size: 1.5rem; margin-bottom: 20px; font-weight: 700; border-left: 4px solid var(--accent); padding-left: 16px; }
+      .seo-content h3 { color: var(--text-primary); font-size: 1.25rem; margin-top: 32px; margin-bottom: 16px; font-weight: 600; }
+      .seo-content p { margin-bottom: 16px; line-height: 1.8; }
+      .seo-content ul { margin-bottom: 20px; padding-left: 24px; }
+      .seo-content li { margin-bottom: 12px; line-height: 1.6; }
+      .seo-content .code-inline { background: var(--bg-input); padding: 2px 6px; border-radius: 4px; color: var(--accent-purple); font-family: var(--font-mono); }
 
       @media (max-width: 900px) {
-        .editor-container {
-          grid-template-columns: 1fr;
-        }
-        .convert-controls {
-          flex-direction: row !important;
-          justify-content: center;
-        }
-      }
-
-      .editor-panel {
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: 1rem;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .editor-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.75rem 1rem;
-        background: var(--border-subtle);
-        border-bottom: 1px solid var(--border-subtle);
-      }
-
-      .editor-title {
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-
-      .editor-actions {
-        display: flex;
-        gap: 0.5rem;
-      }
-
-      .editor-actions button {
-        padding: 0.375rem 0.75rem;
-        font-size: 0.75rem;
-        background: rgba(255, 255, 255, 0.1);
-        border: none;
-        border-radius: 0.375rem;
-        cursor: pointer;
-        color: inherit;
-      }
-
-      .editor-actions button:hover {
-        background: rgba(255, 255, 255, 0.2);
-      }
-
-      .editor-body {
-        flex: 1;
-        position: relative;
-      }
-
-      .editor-body textarea {
-        width: 100%;
-        height: 500px;
-        padding: 1rem;
-        border: none;
-        background: var(--editor-bg);
-        color: inherit;
-        font-family: Monaco, Menlo, "Ubuntu Mono", monospace;
-        font-size: 0.875rem;
-        line-height: 1.6;
-        resize: none;
-      }
-
-      .editor-body textarea:focus {
-        outline: none;
-      }
-
-      .editor-footer {
-        padding: 0.5rem 1rem;
-        background: var(--border-subtle);
-        font-size: 0.75rem;
-        display: flex;
-        justify-content: space-between;
-        color: var(--muted-color);
-      }
-
-      .convert-controls {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        gap: 0.5rem;
-        padding: 1rem 0;
-      }
-
-      .convert-btn {
-        padding: 0.75rem 1rem;
-        border: none;
-        border-radius: 0.5rem;
-        cursor: pointer;
-        font-size: 1.5rem;
-        background: var(--accent-cyan);
-        color: white;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .convert-btn:hover {
-        background: var(--accent-cyan);
-        transform: scale(1.05);
-      }
-
-      .options-bar {
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: 1rem;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1.5rem;
-        align-items: center;
-      }
-
-      .option-group {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-
-      .option-group label {
-        font-size: 0.875rem;
-        font-weight: 500;
-      }
-
-      .option-group select,
-      .option-group input[type="number"] {
-        padding: 0.375rem 0.75rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: 0.375rem;
-        font-size: 0.875rem;
-        background: var(--bg-card);
-        color: inherit;
-      }
-
-      .option-group input[type="number"] {
-        width: 60px;
-      }
-
-      .option-group input[type="checkbox"] {
-        width: auto;
-      }
-
-      .status-bar {
-        margin-top: 1rem;
-        padding: 0.75rem 1rem;
-        border-radius: 0.5rem;
-        font-size: 0.875rem;
-        display: none;
-      }
-
-      .status-bar.success {
-        display: block;
-        background: rgba(34, 197, 94, 0.1);
-        border: 1px solid rgba(34, 197, 94, 0.3);
-        color: var(--accent-green);
-      }
-
-      .status-bar.error {
-        display: block;
-        background: rgba(239, 68, 68, 0.1);
-        border: 1px solid rgba(239, 68, 68, 0.3);
-        color: var(--accent-red);
-      }
-
-      .sample-buttons {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-      }
-
-      .sample-btn {
-        padding: 0.375rem 0.75rem;
-        font-size: 0.75rem;
-        background: var(--border-subtle);
-        border: none;
-        border-radius: 0.375rem;
-        cursor: pointer;
-        color: inherit;
-      }
-
-      .sample-btn:hover {
-        background: var(--accent-cyan);
-        color: white;
-      }
-
-      .info-box {
-        background: rgba(59, 130, 246, 0.1);
-        border: 1px solid rgba(59, 130, 246, 0.2);
-        border-radius: 0.5rem;
-        padding: 1rem;
-        margin-top: 1rem;
-        font-size: 0.875rem;
-      }
-
-      .info-box h4 {
-        margin: 0 0 0.5rem;
-        color: #3b82f6;
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
+        .editors-grid { grid-template-columns: 1fr; }
+        .container { padding: 16px; }
+        .header { flex-direction: column; align-items: flex-start; }
+        .header-right { position: absolute; top: 16px; right: 16px; }
       }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      JSON �?YAML 转换
-    </nav>
+</head>
+<body>
     <div class="container">
-      <header>
-        <h1>🔄 JSON �?YAML 转换�?/h1>
-        <div class="header-actions">
-          <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">🌙</button>
-        </div>
-      </header>
-
-      <div class="options-bar">
-        <div class="option-group">
-          <label>缩进空格:</label>
-          <input type="number" id="indentSize" value="2" min="1" max="8" />
-        </div>
-        <div class="option-group">
-          <label>YAML 引号样式:</label>
-          <select id="quoteStyle">
-            <option value="minimal">最少引�?/option>
-            <option value="single">单引�?/option>
-            <option value="double">双引�?/option>
-          </select>
-        </div>
-        <div class="option-group">
-          <input type="checkbox" id="sortKeys" />
-          <label for="sortKeys">按键名排�?/label>
-        </div>
-        <div class="sample-buttons">
-          <span style="font-size: 0.875rem; margin-right: 0.5rem">示例:</span>
-          <button class="sample-btn" onclick="loadSample('simple')">简单对�?/button>
-          <button class="sample-btn" onclick="loadSample('nested')">嵌套结构</button>
-          <button class="sample-btn" onclick="loadSample('array')">数组数据</button>
-          <button class="sample-btn" onclick="loadSample('config')">配置文件</button>
-        </div>
-      </div>
-
-      <div class="editor-container">
-        <div class="editor-panel">
-          <div class="editor-header">
-            <div class="editor-title">📄 JSON</div>
-            <div class="editor-actions">
-              <button onclick="formatJSON()">格式�?/button>
-              <button onclick="minifyJSON()">压缩</button>
-              <button onclick="copyText('jsonInput')">复制</button>
-              <button onclick="clearText('jsonInput')">清除</button>
+        <header class="header">
+            <div class="header-left">
+                <a href="../../index.html" class="back-btn" title="返回首页">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10 12L6 8L10 4" />
+                    </svg>
+                </a>
+                <div class="title-group">
+                    <h1>JSON ➔ YAML 转换器</h1>
+                    <p>极简、高效的配置文件互转利器</p>
+                </div>
             </div>
-          </div>
-          <div class="editor-body">
-            <textarea
-              id="jsonInput"
-              placeholder="在此输入或粘�?JSON..."
-              oninput="updateStats('json')"
-            ></textarea>
-          </div>
-          <div class="editor-footer">
-            <span id="jsonStats">0 字符 | 0 �?/span>
-            <span id="jsonValid"></span>
-          </div>
-        </div>
-
-        <div class="convert-controls">
-          <button class="convert-btn" onclick="jsonToYaml()" title="JSON �?YAML">�?/button>
-          <button class="convert-btn" onclick="yamlToJson()" title="YAML �?JSON">�?/button>
-        </div>
-
-        <div class="editor-panel">
-          <div class="editor-header">
-            <div class="editor-title">📝 YAML</div>
-            <div class="editor-actions">
-              <button onclick="copyText('yamlInput')">复制</button>
-              <button onclick="clearText('yamlInput')">清除</button>
-              <button onclick="downloadFile('yaml')">下载</button>
+            <div class="header-right">
+                <div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+                    <span id="theme-icon">🌙</span>
+                </div>
             </div>
-          </div>
-          <div class="editor-body">
-            <textarea
-              id="yamlInput"
-              placeholder="在此输入或粘�?YAML..."
-              oninput="updateStats('yaml')"
-            ></textarea>
-          </div>
-          <div class="editor-footer">
-            <span id="yamlStats">0 字符 | 0 �?/span>
-            <span id="yamlValid"></span>
-          </div>
+        </header>
+
+        <div class="controls-bar">
+            <div class="control-item">
+                <label>缩进空格:</label>
+                <select id="indentSize" class="btn-outline" style="padding: 4px 8px;">
+                    <option value="2" selected>2 个空格</option>
+                    <option value="4">4 个空格</option>
+                </select>
+            </div>
+            <div style="flex: 1;"></div>
+            <button class="btn btn-primary" onclick="jsonToYaml()">JSON ➔ YAML</button>
+            <button class="btn btn-primary" onclick="yamlToJson()">YAML ➔ JSON</button>
         </div>
-      </div>
 
-      <div class="status-bar" id="statusBar"></div>
+        <!-- Google AdSense Top -->
+        <div class="ads-container">
+            <span>广告展示区域 (AdSense Placeholder)</span>
+        </div>
 
-      <div class="info-box">
-        <h4>💡 使用说明</h4>
-        <ul style="margin: 0; padding-left: 1.25rem">
-          <li>支持 JSON �?YAML 双向转换</li>
-          <li>自动检测输入格式有效�?/li>
-          <li>支持复杂嵌套结构、数组、多行字符串</li>
-          <li>YAML 支持锚点(&)和别�?*) 语法</li>
-        </ul>
-      </div>
+        <div class="editors-grid">
+            <div class="editor-container">
+                <div class="editor-header">
+                    <span class="editor-title">📦 JSON 内容</span>
+                    <div id="jsonStatus" class="status-badge"></div>
+                    <button class="btn-outline" onclick="copy('jsonArea')">复制</button>
+                </div>
+                <textarea id="jsonArea" placeholder="在此粘贴 JSON 代码..."></textarea>
+            </div>
+            <div class="editor-container">
+                <div class="editor-header">
+                    <span class="editor-title">📜 YAML 内容</span>
+                    <div id="yamlStatus" class="status-badge"></div>
+                    <button class="btn-outline" onclick="copy('yamlArea')">复制</button>
+                </div>
+                <textarea id="yamlArea" placeholder="在此粘贴 YAML 代码..."></textarea>
+            </div>
+        </div>
+
+        <!-- Google AdSense Bottom -->
+        <div class="ads-container">
+            <span>广告展示区域 (AdSense Placeholder)</span>
+        </div>
+
+        <article class="seo-content">
+            <h2>深入理解配置文件格式：JSON 与 YAML</h2>
+            <p>在现代软件开发和运维 (DevOps) 中，JSON 和 YAML 是两种占据统治地位的数据序列化格式。它们广泛应用于应用程序配置、API 通信、基础设施即代码 (IaC) 以及 CI/CD 流水线中。理解它们的优缺点并掌握互转技巧，是每位技术人员的必修课。</p>
+
+            <h3>JSON：数据交换的标准</h3>
+            <p>JSON (JavaScript Object Notation) 源自 JavaScript 语法，但它是独立于语言的。由于其严格的语法结构（必须使用双引号、括号对称等），JSON 极其易于被机器解析，几乎所有编程语言都有内置的支持。它在 Web API 响应中占据了核心地位。</p>
+
+            <h3>YAML：为了人类而设计</h3>
+            <p>YAML (YAML Ain't Markup Language) 则将重点放在了可读性上。它通过缩进（空白字符）来表达层级关系，去掉了繁琐的括号和引号。这使得 YAML 成为编写复杂配置文件（如 Kubernetes 资源定义、Docker Compose 文件、Ansible 剧本）的理想选择。</p>
+
+            <div class="highlight-box">
+                <h3>JSON 与 YAML 的核心对比</h3>
+                <ul>
+                    <li><strong>语法：</strong> JSON 依赖大括号和中括号；YAML 依赖缩进。</li>
+                    <li><strong>注释：</strong> JSON 原生不支持注释；YAML 支持以 <span class="code-inline">#</span> 开头的注释，这对配置文件至关重要。</li>
+                    <li><strong>复杂度：</strong> JSON 相对简单；YAML 包含更多高级功能（如锚点、引用、多行字符串处理等）。</li>
+                </ul>
+            </div>
+
+            <h3>为什么需要互转？</h3>
+            <p>在实际工作中，我们经常遇到需要将现有的 JSON API 响应转换为 YAML 以便集成到配置文件中，或者将复杂的 YAML 配置转换为 JSON 以便传递给某些仅支持 JSON 的老旧系统。本工具通过浏览器端实时转换，确保了速度与隐私的完美平衡。</p>
+
+            <h3>如何使用本工具？</h3>
+            <ol>
+                <li><strong>JSON 转 YAML：</strong> 将 JSON 字符串粘贴到左侧区域，点击中间的转换按钮。如果 JSON 语法正确，右侧将立即生成整洁的 YAML 代码。</li>
+                <li><strong>YAML 转 JSON：</strong> 将 YAML 配置粘贴到右侧区域。注意：YAML 对缩进极其敏感，请确保粘贴时的格式正确。</li>
+                <li><strong>错误检查：</strong> 如果您的代码存在语法错误（如 JSON 缺少引号或 YAML 缩进不一），编辑器上方会即时显示红色错误提示。</li>
+                <li><strong>自定义缩进：</strong> 您可以根据团队的代码规范选择 2 个或 4 个空格作为缩进标准。</li>
+            </ol>
+        </article>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
     <script>
-      // 示例数据
-      const samples = {
-        simple: {
-          name: "示例项目",
-          version: "1.0.0",
-          description: "一个简单的示例",
-          author: "开发�?,
-          license: "MIT"
-        },
-        nested: {
-          database: {
-            host: "localhost",
-            port: 5432,
-            credentials: {
-              username: "admin",
-              password: "secret"
+        const jsonArea = document.getElementById('jsonArea');
+        const yamlArea = document.getElementById('yamlArea');
+        const jsonStatus = document.getElementById('jsonStatus');
+        const yamlStatus = document.getElementById('yamlStatus');
+        const indentSize = document.getElementById('indentSize');
+
+        function jsonToYaml() {
+            try {
+                const input = jsonArea.value.trim();
+                if (!input) return;
+                
+                const obj = JSON.parse(input);
+                const yaml = jsyaml.dump(obj, {
+                    indent: parseInt(indentSize.value),
+                    noRefs: true
+                });
+                
+                yamlArea.value = yaml;
+                jsonStatus.textContent = '有效 JSON';
+                jsonStatus.className = 'status-badge status-success';
+                yamlStatus.textContent = '';
+            } catch (e) {
+                jsonStatus.textContent = 'JSON 错误: ' + e.message;
+                jsonStatus.className = 'status-badge status-error';
             }
-          },
-          cache: {
-            enabled: true,
-            ttl: 3600
-          }
-        },
-        array: {
-          users: [
-            { id: 1, name: "张三", role: "admin" },
-            { id: 2, name: "李四", role: "user" },
-            { id: 3, name: "王五", role: "user" }
-          ],
-          tags: ["javascript", "yaml", "json", "converter"]
-        },
-        config: {
-          server: {
-            host: "0.0.0.0",
-            port: 8080,
-            ssl: {
-              enabled: true,
-              cert: "/path/to/cert.pem",
-              key: "/path/to/key.pem"
+        }
+
+        function yamlToJson() {
+            try {
+                const input = yamlArea.value.trim();
+                if (!input) return;
+                
+                const obj = jsyaml.load(input);
+                const json = JSON.stringify(obj, null, parseInt(indentSize.value));
+                
+                jsonArea.value = json;
+                yamlStatus.textContent = '有效 YAML';
+                yamlStatus.className = 'status-badge status-success';
+                jsonStatus.textContent = '';
+            } catch (e) {
+                yamlStatus.textContent = 'YAML 错误: ' + e.message;
+                yamlStatus.className = 'status-badge status-error';
             }
-          },
-          logging: {
-            level: "info",
-            format: "json",
-            outputs: ["stdout", "file"]
-          },
-          features: {
-            authentication: true,
-            rateLimit: {
-              enabled: true,
-              maxRequests: 100,
-              windowMs: 60000
-            }
-          }
-        }
-      };
-
-      // 主题切换
-      window.toggleTheme = function () {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute("data-theme");
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
-        document.querySelector(".theme-toggle").textContent = newTheme === "light" ? "🌙" : "☀�?;
-      };
-
-      function initTheme() {
-        const savedTheme = localStorage.getItem("theme") || "light";
-        document.documentElement.setAttribute("data-theme", savedTheme);
-        document.querySelector(".theme-toggle").textContent = savedTheme === "light" ? "🌙" : "☀�?;
-      }
-
-      // 加载示例
-      window.loadSample = function (type) {
-        const json = JSON.stringify(samples[type], null, 2);
-        document.getElementById("jsonInput").value = json;
-        updateStats("json");
-        jsonToYaml();
-      };
-
-      // JSON �?YAML
-      function jsonToYaml() {
-        const jsonInput = document.getElementById("jsonInput").value.trim();
-        if (!jsonInput) {
-          showStatus("请输�?JSON 内容", "error");
-          return;
         }
 
-        try {
-          const obj = JSON.parse(jsonInput);
-          const indent = parseInt(document.getElementById("indentSize").value) || 2;
-          const sortKeys = document.getElementById("sortKeys").checked;
-          const quoteStyle = document.getElementById("quoteStyle").value;
-
-          let quotingType;
-          if (quoteStyle === "single") quotingType = "'";
-          else if (quoteStyle === "double") quotingType = '"';
-
-          const yamlOptions = {
-            indent: indent,
-            sortKeys: sortKeys,
-            lineWidth: -1,
-            quotingType: quotingType,
-            forceQuotes: quoteStyle !== "minimal"
-          };
-
-          const yaml = jsyaml.dump(obj, yamlOptions);
-          document.getElementById("yamlInput").value = yaml;
-          updateStats("yaml");
-          showStatus("JSON �?YAML 转换成功", "success");
-        } catch (e) {
-          showStatus("JSON 解析错误: " + e.message, "error");
-        }
-      }
-
-      // YAML �?JSON
-      window.yamlToJson = function () {
-        const yamlInput = document.getElementById("yamlInput").value.trim();
-        if (!yamlInput) {
-          showStatus("请输�?YAML 内容", "error");
-          return;
+        function copy(id) {
+            const el = document.getElementById(id);
+            el.select();
+            document.execCommand('copy');
+            const btn = el.previousElementSibling.querySelector('button');
+            const originalText = btn.textContent;
+            btn.textContent = '已复制!';
+            setTimeout(() => btn.textContent = originalText, 2000);
         }
 
-        try {
-          const obj = jsyaml.load(yamlInput);
-          const indent = parseInt(document.getElementById("indentSize").value) || 2;
-          const sortKeys = document.getElementById("sortKeys").checked;
-
-          let json;
-          if (sortKeys) {
-            json = JSON.stringify(obj, Object.keys(obj).sort(), indent);
-          } else {
-            json = JSON.stringify(obj, null, indent);
-          }
-
-          document.getElementById("jsonInput").value = json;
-          updateStats("json");
-          showStatus("YAML �?JSON 转换成功", "success");
-        } catch (e) {
-          showStatus("YAML 解析错误: " + e.message, "error");
-        }
-      };
-
-      // 格式�?JSON
-      window.formatJSON = function () {
-        const jsonInput = document.getElementById("jsonInput").value.trim();
-        if (!jsonInput) return;
-
-        try {
-          const obj = JSON.parse(jsonInput);
-          const indent = parseInt(document.getElementById("indentSize").value) || 2;
-          document.getElementById("jsonInput").value = JSON.stringify(obj, null, indent);
-          updateStats("json");
-        } catch (e) {
-          showStatus("JSON 格式化错�? " + e.message, "error");
-        }
-      };
-
-      // 压缩 JSON
-      window.minifyJSON = function () {
-        const jsonInput = document.getElementById("jsonInput").value.trim();
-        if (!jsonInput) return;
-
-        try {
-          const obj = JSON.parse(jsonInput);
-          document.getElementById("jsonInput").value = JSON.stringify(obj);
-          updateStats("json");
-        } catch (e) {
-          showStatus("JSON 压缩错误: " + e.message, "error");
-        }
-      };
-
-      // 更新统计信息
-      function updateStats(type) {
-        const textarea = document.getElementById(type + "Input");
-        const stats = document.getElementById(type + "Stats");
-        const valid = document.getElementById(type + "Valid");
-        const content = textarea.value;
-
-        const chars = content.length;
-        const lines = content ? content.split("\n").length : 0;
-        stats.textContent = chars + " 字符 | " + lines + " �?;
-
-        // 验证格式
-        if (content.trim()) {
-          try {
-            if (type === "json") {
-              JSON.parse(content);
-            } else {
-              jsyaml.load(content);
-            }
-            valid.textContent = "�?有效";
-            valid.style.color = "var(--accent-green)";
-          } catch (e) {
-            valid.textContent = "�?无效";
-            valid.style.color = "var(--accent-red)";
-          }
-        } else {
-          valid.textContent = "";
-        }
-      }
-
-      // 显示状�?
-      function showStatus(message, type) {
-        const bar = document.getElementById("statusBar");
-        bar.textContent = message;
-        bar.className = "status-bar " + type;
-        setTimeout(() => {
-          bar.className = "status-bar";
-        }, 3000);
-      }
-
-      // 复制文本
-      window.copyText = function (id) {
-        const textarea = document.getElementById(id);
-        navigator.clipboard.writeText(textarea.value).then(() => {
-          showStatus("已复制到剪贴�?, "success");
-        });
-      };
-
-      // 清除文本
-      window.clearText = function (id) {
-        document.getElementById(id).value = "";
-        updateStats(id.replace("Input", ""));
-      };
-
-      // 下载文件
-      window.downloadFile = function (type) {
-        const content = document.getElementById(type + "Input").value;
-        if (!content) {
-          showStatus("没有内容可下�?, "error");
-          return;
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
         }
 
-        const ext = type === "json" ? ".json" : ".yaml";
-        const mime = type === "json" ? "application/json" : "text/yaml";
-        const blob = new Blob([content], { type: mime });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "data" + ext;
-        a.click();
-        URL.revokeObjectURL(url);
-      };
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
 
-      // 初始�?
-      initTheme();
-      loadSample("config");
+        function updateThemeIcon(theme) {
+            document.getElementById('theme-icon').textContent = theme === 'dark' ? '🌙' : '☀️';
+        }
+
+        initTheme();
     </script>
-  </body>
+</body>
 </html>
-
-
