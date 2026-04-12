@@ -2,707 +2,526 @@
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Git 命令生成�?- WebUtils</title>
-    <meta property="og:title" content="Git 命令生成�?- WebUtils" />
-    <meta
-      property="og:description"
-      content="Git 命令生成器：在线实用工具，免费在线使用，无需安装"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Git 命令生成器 - 可视化构建常用 Git 操作指令 | WebUtils</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="专业在线 Git 命令生成器，支持可视化构建克隆、提交、分支管理、合并、重置、暂存及远程仓库操作。提供交互式选项配置，自动生成准确的 Git 命令行脚本。助您轻松掌握 Git 工作流，减少输入错误。纯浏览器本地处理，确保您的仓库地址隐私安全。" />
+    <meta name="keywords" content="Git生成器,Git命令,Git指令,Git可视化,代码托管,版本控制,Git工作流,在线工具,开发者工具,WebUtils" />
+    <meta name="author" content="WebUtils" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://essays4u.net/tools/dev/git-command-builder.html" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content="Git 命令生成器 - 可视化构建常用 Git 操作指令 | WebUtils" />
+    <meta property="og:description" content="快速构建复杂的 Git 命令，支持克隆、提交、分支、合并等所有常用操作。简单、直观、高效。" />
     <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/dev/git-command-builder.html"
-    />
+    <meta property="og:url" content="https://essays4u.net/tools/dev/git-command-builder.html" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
     <meta property="og:site_name" content="WebUtils" />
     <meta property="og:locale" content="zh_CN" />
-    <link
-      rel="canonical"
-      href="https://essays4u.net/tools/dev/git-command-builder.html"
-    />
-    <meta name="description" content="可视化生成常�?Git 命令" />
-    <meta name="keywords" content="git command builder 命令 版本控制 生成�? />
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
 
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Git 命令生成器 - 提升版本控制效率" />
+    <meta name="twitter:description" content="可视化配置 Git 参数，实时生成命令行脚本，一键复制代码。" />
+    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
 
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        font-family: system-ui, sans-serif;
-        background: var(--bg-deep);
-        color: var(--text-primary);
-        margin: 0;
-        padding: 24px;
-        min-height: 100vh;
-      }
-      .container {
-        max-width: 800px;
-        margin: 0 auto;
-      }
-      .back-link {
-        display: inline-block;
-        margin-bottom: 16px;
-        color: var(--accent-cyan);
-        text-decoration: none;
-      }
-      h1 {
-        font-size: 1.75rem;
-        margin: 0 0 8px;
-      }
-      .desc {
-        color: var(--text-muted);
-        margin: 0 0 24px;
-      }
-      .card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        padding: 20px;
-        box-shadow: var(--shadow);
-        margin-bottom: 20px;
-      }
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-      }
-      .tabs {
-        display: flex;
-        gap: 8px;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-      }
-      .tab {
-        padding: 10px 16px;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        background: var(--bg-card);
-        color: var(--text-primary);
-        cursor: pointer;
-        font-size: 0.9rem;
-      }
-      .tab:hover {
-        border-color: var(--accent-cyan);
-      }
-      .tab.active {
-        background: var(--accent-cyan);
-        border-color: var(--accent-cyan);
-        color: #fff;
-      }
-      .panel {
-        display: none;
-      }
-      .panel.active {
-        display: block;
-      }
-      .form-group {
-        margin-bottom: 16px;
-      }
-      .form-group label {
-        display: block;
-        font-weight: 500;
-        margin-bottom: 8px;
-      }
-      .form-group input,
-      .form-group select {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        background: var(--bg-deep);
-        color: var(--text-primary);
-      }
-      .form-group .hint {
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        margin-top: 4px;
-      }
-      .checkbox-group {
-        display: flex;
-        gap: 16px;
-        flex-wrap: wrap;
-      }
-      .checkbox-group label {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        cursor: pointer;
-        font-weight: normal;
-      }
-      .result {
-        padding: 16px;
-        background: var(--bg-deep);
-        border-radius: var(--radius-md);
-        margin-top: 20px;
-      }
-      .result .label {
-        font-size: 0.85rem;
-        color: var(--text-muted);
-        margin-bottom: 8px;
-      }
-      .result .command {
-        font-family: ui-monospace, monospace;
-        font-size: 1rem;
-        color: var(--accent-cyan);
-        word-break: break-all;
-        line-height: 1.6;
-      }
-      .btn-row {
-        display: flex;
-        gap: 12px;
-        margin-top: 16px;
-      }
-      .btn {
-        padding: 10px 20px;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        background: var(--bg-card);
-        color: var(--text-primary);
-        cursor: pointer;
-      }
-      .btn:hover {
-        border-color: var(--accent-cyan);
-        color: var(--accent-cyan);
-      }
-      .btn.primary {
-        background: var(--accent-cyan);
-        border-color: var(--accent-cyan);
-        color: #fff;
-      }
-      footer {
-        text-align: center;
-        margin-top: 32px;
-        padding-top: 16px;
-        border-top: 1px solid var(--border-subtle);
-        color: var(--text-muted);
-        font-size: 0.85rem;
-      }
-      footer a {
-        color: var(--accent-cyan);
-        text-decoration: none;
-      }
-    </style>
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+
+    <style>
+      /* ===== CSS 变量 ===== */
+      :root {
+        --bg-body: #0a0a0f;
+        --bg-card: #12121a;
+        --bg-input: #0e0e14;
+        --bg-elevated: #1a1a24;
+        --text-primary: #e8e8ed;
+        --text-secondary: #a0a0b0;
+        --text-muted: #606070;
+        --border-color: #2a2a3a;
+        --border-focus: #3a3a4a;
+        --accent: #00f5d4;
+        --accent-purple: #bf5af2;
+        --success: #30d158;
+        --warning: #ff9f0a;
+        --error: #ff453a;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", "Space Grotesk", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+
+      [data-theme="light"] {
+        --bg-body: #fafafa;
+        --bg-card: #ffffff;
+        --bg-input: #f5f5f5;
+        --bg-elevated: #ffffff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #666;
+        --text-muted: #999;
+        --border-color: #e5e5e5;
+        --border-focus: #d5d5d5;
+        --accent: #00d4b8;
+        --accent-purple: #9b4dca;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      
+      .container { max-width: 1000px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--border-color); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .header-right { display: flex; align-items: center; gap: 12px; }
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; width: 40px; height: 40px; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+      .theme-toggle:hover { border-color: var(--accent); }
+
+      .main-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; }
+      
+      .tabs-nav { display: flex; background: var(--bg-elevated); border-bottom: 1px solid var(--border-color); flex-wrap: wrap; }
+      .tab-item { padding: 12px 20px; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; border-bottom: 2px solid transparent; }
+      .tab-item.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--bg-card); }
+
+      .section-padding { padding: 24px; }
+      .section-title { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+      .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+      .form-group { display: flex; flex-direction: column; gap: 8px; }
+      .control-label { font-size: 0.8rem; color: var(--text-secondary); font-weight: 500; }
+      .form-input, .form-select { width: 100%; padding: 10px 14px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary); font-size: 0.9rem; outline: none; transition: all 0.2s; }
+      .form-input:focus, .form-select:focus { border-color: var(--accent); }
+
+      .options-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-top: 12px; }
+      .checkbox-label { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-secondary); cursor: pointer; }
+      .checkbox-label input { accent-color: var(--accent); }
+
+      .result-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; }
+      .result-header { padding: 12px 20px; background: var(--bg-elevated); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+      .result-body { padding: 20px; background: var(--bg-input); position: relative; }
+      pre { font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); margin: 0; white-space: pre-wrap; word-break: break-all; }
+      .copy-btn { padding: 6px 12px; background: var(--accent); border: none; border-radius: var(--radius-sm); color: var(--bg-body); font-size: 0.7rem; font-weight: 700; cursor: pointer; }
+
+      .ads-container { margin: 24px 0; min-height: 90px; background: rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem; border: 1px dashed var(--border-color); border-radius: var(--radius-md); }
+
+      .seo-content { margin-top: 32px; padding: 32px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); color: var(--text-secondary); font-size: 0.875rem; }
+      .seo-content h2 { color: var(--text-primary); font-size: 1.125rem; margin-bottom: 16px; font-weight: 600; }
+      .seo-content h3 { color: var(--text-primary); font-size: 1rem; margin-top: 24px; margin-bottom: 12px; font-weight: 600; }
+      .seo-content p { margin-bottom: 12px; }
+      .seo-content ul { margin-bottom: 16px; padding-left: 20px; }
+      .seo-content li { margin-bottom: 8px; }
+
+      .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); padding: 12px 24px; background: var(--bg-elevated); border: 1px solid var(--accent); border-radius: var(--radius-md); color: var(--accent); font-size: 0.9rem; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55); opacity: 0; z-index: 1000; }
+      .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+      @media (max-width: 640px) {
+        .container { padding: 16px; }
+        .form-grid { grid-template-columns: 1fr; }
+      }
+    </style>
   </head>
   <body>
     <div class="container">
-      <a href="../../index.html" class="back-link">�?返回工具列表</a>
-      <button class="theme-toggle" onclick="toggleTheme()">☀�?/button>
-      <h1>Git 命令生成�?/h1>
-      <p class="desc">可视化生成常�?Git 命令</p>
-
-      <div class="card">
-        <div class="tabs">
-          <button class="tab active" onclick="showPanel('clone')">克隆</button>
-          <button class="tab" onclick="showPanel('commit')">提交</button>
-          <button class="tab" onclick="showPanel('branch')">分支</button>
-          <button class="tab" onclick="showPanel('merge')">合并</button>
-          <button class="tab" onclick="showPanel('reset')">重置</button>
-          <button class="tab" onclick="showPanel('stash')">暂存</button>
-          <button class="tab" onclick="showPanel('remote')">远程</button>
-        </div>
-
-        <!-- Clone Panel -->
-        <div class="panel active" id="panel-clone">
-          <div class="form-group">
-            <label>仓库 URL</label>
-            <input
-              type="text"
-              id="clone-url"
-              placeholder="https://github.com/user/repo.git"
-              oninput="buildClone()"
-            />
-          </div>
-          <div class="form-group">
-            <label>目标目录 (可�?</label>
-            <input
-              type="text"
-              id="clone-dir"
-              placeholder="留空使用默认目录�?
-              oninput="buildClone()"
-            />
-          </div>
-          <div class="form-group">
-            <label>选项</label>
-            <div class="checkbox-group">
-              <label>
-                <input type="checkbox" id="clone-depth" onchange="buildClone()" />
-                浅克�?(--depth 1)
-              </label>
-              <label>
-                <input type="checkbox" id="clone-branch" onchange="buildClone()" />
-                指定分支
-              </label>
-            </div>
-          </div>
-          <div class="form-group" id="clone-branch-input" style="display: none">
-            <label>分支�?/label>
-            <input type="text" id="clone-branch-name" placeholder="main" oninput="buildClone()" />
+      <header class="header">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn" title="返回首页">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 12L6 8L10 4" />
+            </svg>
+          </a>
+          <div class="title-group">
+            <h1>Git 命令生成器</h1>
+            <p>可视化构建、生成并优化常用 Git 操作指令</p>
           </div>
         </div>
-
-        <!-- Commit Panel -->
-        <div class="panel" id="panel-commit">
-          <div class="form-group">
-            <label>提交信息</label>
-            <input
-              type="text"
-              id="commit-msg"
-              placeholder="feat: add new feature"
-              oninput="buildCommit()"
-            />
-          </div>
-          <div class="form-group">
-            <label>选项</label>
-            <div class="checkbox-group">
-              <label>
-                <input type="checkbox" id="commit-all" onchange="buildCommit()" />
-                添加所有文�?(-a)
-              </label>
-              <label>
-                <input type="checkbox" id="commit-amend" onchange="buildCommit()" />
-                修改上次提交 (--amend)
-              </label>
-              <label>
-                <input type="checkbox" id="commit-sign" onchange="buildCommit()" />
-                签名 (-S)
-              </label>
-            </div>
+        <div class="header-right">
+          <div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+            <span id="theme-icon">🌙</span>
           </div>
         </div>
+      </header>
 
-        <!-- Branch Panel -->
-        <div class="panel" id="panel-branch">
-          <div class="form-group">
-            <label>操作</label>
-            <select id="branch-action" onchange="buildBranch()">
-              <option value="create">创建分支</option>
-              <option value="delete">删除分支</option>
-              <option value="rename">重命名分�?/option>
-              <option value="list">列出分支</option>
-              <option value="checkout">切换分支</option>
-            </select>
-          </div>
-          <div class="form-group" id="branch-name-group">
-            <label>分支�?/label>
-            <input
-              type="text"
-              id="branch-name"
-              placeholder="feature/new-feature"
-              oninput="buildBranch()"
-            />
-          </div>
-          <div class="form-group" id="branch-new-name-group" style="display: none">
-            <label>新分支名</label>
-            <input
-              type="text"
-              id="branch-new-name"
-              placeholder="feature/renamed"
-              oninput="buildBranch()"
-            />
-          </div>
-          <div class="form-group">
-            <label>选项</label>
-            <div class="checkbox-group">
-              <label>
-                <input type="checkbox" id="branch-force" onchange="buildBranch()" />
-                强制 (-D/-f)
-              </label>
-              <label>
-                <input type="checkbox" id="branch-remote" onchange="buildBranch()" />
-                包含远程 (-a)
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <!-- Merge Panel -->
-        <div class="panel" id="panel-merge">
-          <div class="form-group">
-            <label>要合并的分支</label>
-            <input
-              type="text"
-              id="merge-branch"
-              placeholder="feature/new-feature"
-              oninput="buildMerge()"
-            />
-          </div>
-          <div class="form-group">
-            <label>选项</label>
-            <div class="checkbox-group">
-              <label>
-                <input type="checkbox" id="merge-no-ff" onchange="buildMerge()" />
-                禁用快进 (--no-ff)
-              </label>
-              <label>
-                <input type="checkbox" id="merge-squash" onchange="buildMerge()" />
-                压缩提交 (--squash)
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <!-- Reset Panel -->
-        <div class="panel" id="panel-reset">
-          <div class="form-group">
-            <label>重置模式</label>
-            <select id="reset-mode" onchange="buildReset()">
-              <option value="soft">软重�?(--soft) - 保留工作区和暂存�?/option>
-              <option value="mixed" selected>混合重置 (--mixed) - 保留工作�?/option>
-              <option value="hard">硬重�?(--hard) - 丢弃所有更�?/option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>目标</label>
-            <input
-              type="text"
-              id="reset-target"
-              placeholder="HEAD~1 �?commit-hash"
-              oninput="buildReset()"
-              value="HEAD~1"
-            />
-          </div>
-        </div>
-
-        <!-- Stash Panel -->
-        <div class="panel" id="panel-stash">
-          <div class="form-group">
-            <label>操作</label>
-            <select id="stash-action" onchange="buildStash()">
-              <option value="push">保存 (push)</option>
-              <option value="pop">恢复并删�?(pop)</option>
-              <option value="apply">恢复不删�?(apply)</option>
-              <option value="list">列出 (list)</option>
-              <option value="drop">删除 (drop)</option>
-              <option value="clear">清空 (clear)</option>
-            </select>
-          </div>
-          <div class="form-group" id="stash-msg-group">
-            <label>描述信息 (可�?</label>
-            <input
-              type="text"
-              id="stash-msg"
-              placeholder="WIP: working on feature"
-              oninput="buildStash()"
-            />
-          </div>
-        </div>
-
-        <!-- Remote Panel -->
-        <div class="panel" id="panel-remote">
-          <div class="form-group">
-            <label>操作</label>
-            <select id="remote-action" onchange="buildRemote()">
-              <option value="add">添加远程</option>
-              <option value="remove">删除远程</option>
-              <option value="rename">重命名远�?/option>
-              <option value="list">列出远程</option>
-              <option value="fetch">获取 (fetch)</option>
-              <option value="pull">拉取 (pull)</option>
-              <option value="push">推�?(push)</option>
-            </select>
-          </div>
-          <div class="form-group" id="remote-name-group">
-            <label>远程名称</label>
-            <input
-              type="text"
-              id="remote-name"
-              placeholder="origin"
-              oninput="buildRemote()"
-              value="origin"
-            />
-          </div>
-          <div class="form-group" id="remote-url-group">
-            <label>远程 URL</label>
-            <input
-              type="text"
-              id="remote-url"
-              placeholder="https://github.com/user/repo.git"
-              oninput="buildRemote()"
-            />
-          </div>
-          <div class="form-group" id="remote-branch-group" style="display: none">
-            <label>分支</label>
-            <input
-              type="text"
-              id="remote-branch"
-              placeholder="main"
-              oninput="buildRemote()"
-              value="main"
-            />
-          </div>
-        </div>
-
-        <div class="result">
-          <div class="label">生成的命�?/div>
-          <div class="command" id="command">git clone https://github.com/user/repo.git</div>
-        </div>
-
-        <div class="btn-row">
-          <button class="btn primary" onclick="copyCommand()">复制命令</button>
-        </div>
+      <div class="ads-container">
+        Google AdSense Placeholder (Top)
       </div>
 
-      <footer>
-        纯前端工�?· 无服务器 ·
-        <a href="../../index.html">WebUtils</a>
+      <main>
+        <div class="main-card">
+          <div class="tabs-nav">
+            <div class="tab-item active" onclick="switchTab('clone')">克隆 (Clone)</div>
+            <div class="tab-item" onclick="switchTab('commit')">提交 (Commit)</div>
+            <div class="tab-item" onclick="switchTab('branch')">分支 (Branch)</div>
+            <div class="tab-item" onclick="switchTab('merge')">合并 (Merge)</div>
+            <div class="tab-item" onclick="switchTab('reset')">重置 (Reset)</div>
+            <div class="tab-item" onclick="switchTab('stash')">暂存 (Stash)</div>
+            <div class="tab-item" onclick="switchTab('remote')">远程 (Remote)</div>
+          </div>
+
+          <!-- Clone Panel -->
+          <div id="clonePanel" class="section-padding tab-panel">
+            <div class="section-title">📥 克隆仓库配置</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="control-label">仓库 URL</label>
+                <input type="text" id="cloneUrl" class="form-input" placeholder="https://github.com/user/repo.git" oninput="updateGit()">
+              </div>
+              <div class="form-group">
+                <label class="control-label">目标目录 (可选)</label>
+                <input type="text" id="cloneDir" class="form-input" placeholder="my-project" oninput="updateGit()">
+              </div>
+            </div>
+            <div class="options-grid">
+              <label class="checkbox-label"><input type="checkbox" id="cloneDepth" onchange="updateGit()"> 浅克隆 (--depth 1)</label>
+              <label class="checkbox-label"><input type="checkbox" id="cloneBranchCheck" onchange="toggleBranchInput()"> 指定分支</label>
+            </div>
+            <div id="cloneBranchGroup" class="form-group" style="margin-top: 12px; display: none;">
+              <label class="control-label">分支名称</label>
+              <input type="text" id="cloneBranch" class="form-input" placeholder="main" oninput="updateGit()">
+            </div>
+          </div>
+
+          <!-- Commit Panel -->
+          <div id="commitPanel" class="section-padding tab-panel" style="display: none;">
+            <div class="section-title">✍️ 提交代码配置</div>
+            <div class="form-group">
+              <label class="control-label">提交信息 (Message)</label>
+              <input type="text" id="commitMsg" class="form-input" placeholder="feat: add new feature" oninput="updateGit()">
+            </div>
+            <div class="options-grid">
+              <label class="checkbox-label"><input type="checkbox" id="commitAll" onchange="updateGit()"> 添加所有文件 (-a)</label>
+              <label class="checkbox-label"><input type="checkbox" id="commitAmend" onchange="updateGit()"> 修改上次提交 (--amend)</label>
+              <label class="checkbox-label"><input type="checkbox" id="commitSign" onchange="updateGit()"> GPG 签名 (-S)</label>
+            </div>
+          </div>
+
+          <!-- Branch Panel -->
+          <div id="branchPanel" class="section-padding tab-panel" style="display: none;">
+            <div class="section-title">🌿 分支管理配置</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="control-label">操作类型</label>
+                <select id="branchAction" class="form-select" onchange="updateGit()">
+                  <option value="create">创建并切换 (-b)</option>
+                  <option value="delete">删除分支 (-d)</option>
+                  <option value="rename">重命名分支 (-m)</option>
+                  <option value="list">列出所有分支</option>
+                  <option value="checkout">仅切换</option>
+                </select>
+              </div>
+              <div class="form-group" id="branchNameGroup">
+                <label class="control-label">分支名称</label>
+                <input type="text" id="branchName" class="form-input" placeholder="feature/new-ui" oninput="updateGit()">
+              </div>
+            </div>
+            <div id="branchNewNameGroup" class="form-group" style="display: none; margin-top: 12px;">
+              <label class="control-label">新分支名称</label>
+              <input type="text" id="branchNewName" class="form-input" placeholder="feature/improved-ui" oninput="updateGit()">
+            </div>
+            <div class="options-grid">
+              <label class="checkbox-label"><input type="checkbox" id="branchForce" onchange="updateGit()"> 强制执行 (-D/-f)</label>
+              <label class="checkbox-label"><input type="checkbox" id="branchRemote" onchange="updateGit()"> 包含远程分支 (-a)</label>
+            </div>
+          </div>
+
+          <!-- Merge Panel -->
+          <div id="mergePanel" class="section-padding tab-panel" style="display: none;">
+            <div class="section-title">🔀 分支合并配置</div>
+            <div class="form-group">
+              <label class="control-label">源分支 (要合并的分支)</label>
+              <input type="text" id="mergeBranch" class="form-input" placeholder="dev" oninput="updateGit()">
+            </div>
+            <div class="options-grid">
+              <label class="checkbox-label"><input type="checkbox" id="mergeNoFf" onchange="updateGit()"> 禁用快进 (--no-ff)</label>
+              <label class="checkbox-label"><input type="checkbox" id="mergeSquash" onchange="updateGit()"> 压缩提交 (--squash)</label>
+            </div>
+          </div>
+
+          <!-- Reset Panel -->
+          <div id="resetPanel" class="section-padding tab-panel" style="display: none;">
+            <div class="section-title">🔄 版本重置配置</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="control-label">重置模式</label>
+                <select id="resetMode" class="form-select" onchange="updateGit()">
+                  <option value="soft">软重置 (--soft) - 保留暂存区</option>
+                  <option value="mixed">混合重置 (--mixed) - 保留工作区</option>
+                  <option value="hard">硬重置 (--hard) - 彻底丢弃</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="control-label">目标 (Commit/HEAD)</label>
+                <input type="text" id="resetTarget" class="form-input" value="HEAD~1" oninput="updateGit()">
+              </div>
+            </div>
+          </div>
+
+          <!-- Stash Panel -->
+          <div id="stashPanel" class="section-padding tab-panel" style="display: none;">
+            <div class="section-title">📦 代码暂存配置</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="control-label">操作类型</label>
+                <select id="stashAction" class="form-select" onchange="updateGit()">
+                  <option value="push">保存暂存 (push)</option>
+                  <option value="pop">恢复并删除 (pop)</option>
+                  <option value="apply">恢复不删除 (apply)</option>
+                  <option value="list">列出暂存</option>
+                  <option value="clear">清空暂存</option>
+                </select>
+              </div>
+              <div class="form-group" id="stashMsgGroup">
+                <label class="control-label">备注信息 (可选)</label>
+                <input type="text" id="stashMsg" class="form-input" placeholder="WIP: styling" oninput="updateGit()">
+              </div>
+            </div>
+          </div>
+
+          <!-- Remote Panel -->
+          <div id="remotePanel" class="section-padding tab-panel" style="display: none;">
+            <div class="section-title">🌐 远程仓库配置</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="control-label">操作类型</label>
+                <select id="remoteAction" class="form-select" onchange="updateGit()">
+                  <option value="add">添加远程</option>
+                  <option value="remove">移除远程</option>
+                  <option value="list">列出远程 (-v)</option>
+                  <option value="fetch">获取 (fetch)</option>
+                  <option value="pull">拉取 (pull)</option>
+                  <option value="push">推送 (push)</option>
+                </select>
+              </div>
+              <div class="form-group" id="remoteNameGroup">
+                <label class="control-label">远程名称</label>
+                <input type="text" id="remoteName" class="form-input" value="origin" oninput="updateGit()">
+              </div>
+            </div>
+            <div id="remoteUrlGroup" class="form-group" style="margin-top: 12px;">
+              <label class="control-label">仓库 URL</label>
+              <input type="text" id="remoteUrl" class="form-input" placeholder="https://github.com/user/repo.git" oninput="updateGit()">
+            </div>
+            <div id="remoteBranchGroup" class="form-group" style="margin-top: 12px; display: none;">
+              <label class="control-label">分支名称</label>
+              <input type="text" id="remoteBranch" class="form-input" value="main" oninput="updateGit()">
+            </div>
+          </div>
+        </div>
+
+        <div class="result-card">
+          <div class="result-header">
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">生成的 Git 命令 (Git Command)</span>
+            <button class="copy-btn" onclick="copyGit()">复制命令</button>
+          </div>
+          <div class="result-body">
+            <pre id="gitOutput"></pre>
+          </div>
+        </div>
+      </main>
+
+      <!-- Google AdSense Bottom -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
+      </div>
+
+      <article class="seo-content">
+        <h2>深入掌握 Git：为什么可视化命令生成器是现代开发的必备工具？</h2>
+        <p>在当今的软件开发领域，Git 已经成为版本控制的事实标准。无论是独立开发者还是大型企业团队，Git 都是管理代码变更、协作开发和保障代码安全的核心。然而，Git 强大的功能背后隐藏着复杂的命令行参数和多变的操作逻辑。对于初学者来说，学习曲线极其陡峭；而对于经验丰富的开发者，在面对一些不常用的操作（如复杂的重置、交互式变基或远程分支清理）时，也往往需要反复查阅文档。WebUtils Git 命令生成器正是为了解决这一痛点而生，通过直观的交互界面，助您构建专业、准确且高效的 Git 指令。</p>
+        
+        <h3>Git 命令可视化构建的核心价值</h3>
+        <ul>
+          <li><strong>消除记忆负担：</strong> 即使是资深工程师，也很难记住所有 <code>git reset</code> 的参数区别（如 <code>--soft</code>, <code>--mixed</code>, <code>--hard</code>）。本工具通过清晰的中文释义，让您在选择时心有成竹。</li>
+          <li><strong>规避输入风险：</strong> 命令行中的一个拼写错误或参数顺序错误，可能会导致代码丢失或分支混乱。通过可视化选择，我们为您自动拼接出最规范的命令字符串。</li>
+          <li><strong>加速工作流转化：</strong> 当您有一个明确的操作目标（如“我要删除远程的一个分支”）时，无需在脑中检索命令，直接在对应的 Tab 中勾选即可获得结果。</li>
+          <li><strong>隐私保障：</strong> 作为一个纯前端工具，您的所有仓库 URL、分支名和提交信息都只在浏览器本地处理，绝不上传到任何服务器，确保商业代码隐私万无一失。</li>
+        </ul>
+
+        <h3>核心操作场景与最佳实践深度解析</h3>
+        
+        <h3>1. 仓库克隆 (Clone) 的高级技巧</h3>
+        <p>克隆不仅仅是 <code>git clone url</code>。在处理超大型仓库（如 Linux 内核或大型商业项目）时，全量克隆可能需要数小时。通过启用本工具提供的“浅克隆 (<code>--depth 1</code>)”选项，您可以只克隆最近的一次提交，极大地节省磁盘空间和下载时间。这在 CI/CD 自动化构建流程或仅需快速查看代码的场景下尤为实用。</p>
+
+        <h3>2. 提交 (Commit) 规范与撤销</h3>
+        <p>高质量的提交信息是项目可维护性的基石。本工具不仅支持基础的 <code>-m</code> 消息提交，还集成了“追加提交 (<code>--amend</code>)”功能。如果您刚完成提交却发现漏掉了一个文件或写错了注释，使用 <code>--amend</code> 可以将新更改合并到上一次提交中，保持提交历史的整洁。此外，启用 GPG 签名 (<code>-S</code>) 是开源项目和企业级安全开发的必备要求，本工具也能一键为您添加相关参数。</p>
+
+        <h3>3. 分支 (Branch) 管理：开发节奏的指挥棒</h3>
+        <p>分支是 Git 的灵魂。在本工具的分支管理面板中，您可以轻松完成创建、切换、删除和重命名操作。特别值得注意的是“强制删除 (<code>-D</code>)”与“普通删除 (<code>-d</code>)”的区别：Git 默认会阻止您删除一个尚未合并的分支以保护代码，但在某些实验性分支废弃的情况下，本工具提供的强制删除选项能帮您快速清理环境。</p>
+
+        <h3>4. 合并 (Merge) 与冲突预防</h3>
+        <p>合并代码是协作中最紧张的时刻。我们提供了“禁用快进合并 (<code>--no-ff</code>)”选项。在团队开发中，推荐使用 <code>--no-ff</code> 来保留完整的分支演进历史轨迹，这对于后期追溯 Feature 的合并节点至关重要。同时，“压缩合并 (<code>--squash</code>)”则适合将功能分支上的无数个零碎提交合并为一个整洁的提交后再并入主干，使主分支历史更加清晰。</p>
+
+        <h3>5. 撤销与重置 (Reset)：开发者的“后悔药”</h3>
+        <p>如果说 Git 有什么魔法，那一定是重置功能。但重置也是最危险的操作之一：
+          <ul>
+            <li><strong>Soft Reset：</strong> 仅撤销提交，代码保留在暂存区，适合重新组织提交信息。</li>
+            <li><strong>Mixed Reset：</strong> 默认模式，撤销提交并取消暂存，代码保留在工作区。</li>
+            <li><strong>Hard Reset：</strong> 彻底回到某个状态，当前未提交的更改会丢失。在使用此功能前，请务必确认代码已备份。</li>
+          </ul>
+          本工具通过直观的选项说明，帮您在不同的“后悔”程度之间做出正确选择。
+        </p>
+
+        <h3>6. 暂存 (Stash)：优雅处理突发任务</h3>
+        <p>正在开发新功能时，突然接到一个紧急 Bug 修复任务？不要用 <code>git commit -m "temp"</code> 这种不负责任的方式保存进度。使用 Stash 暂存当前工作区，切换分支修复 Bug，完成后再 <code>pop</code> 回来。这是专业 Git 玩家的标配操作。</p>
+
+        <h3>7. 远程仓库 (Remote) 同步</h3>
+        <p>管理多个远程源（如同时推送到 GitHub 和 Gitee）或处理远程分支追踪，是进阶开发的常态。本工具支持快速构建 <code>fetch</code>, <code>pull</code>, <code>push</code> 指令，并能处理复杂的远程关联逻辑，确保您的本地环境始终与远端保持同步。</p>
+
+        <h3>总结</h3>
+        <p>Git 不仅仅是一个工具，更是一种开发哲学。通过 WebUtils Git 命令生成器，我们希望不仅能帮您写出正确的代码指令，更能引导您理解 Git 的内部工作逻辑，提升整个团队的工程化水平。无论您是正在准备面试的学子，还是在 0 和 1 之间穿梭的资深架构师，这里都是您最可靠的 Git 助手。</p>
+      </article>
+
+      <footer style="margin-top: 32px; text-align: center; color: var(--text-muted); font-size: 0.75rem;">
+        <p>© 2026 WebUtils. All rights reserved.</p>
       </footer>
     </div>
 
+    <div id="toast" class="toast"></div>
+
     <script>
-      let currentPanel = "clone";
+      let currentTab = 'clone';
 
-      function showPanel(name) {
-        currentPanel = name;
-        document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
-        document.querySelectorAll(".panel").forEach((p) => p.classList.remove("active"));
-        event.target.classList.add("active");
-        document.getElementById("panel-" + name).classList.add("active");
-
-        // Build command for new panel
-        const builders = {
-          clone: buildClone,
-          commit: buildCommit,
-          branch: buildBranch,
-          merge: buildMerge,
-          reset: buildReset,
-          stash: buildStash,
-          remote: buildRemote
-        };
-        if (builders[name]) builders[name]();
+      function switchTab(tab) {
+        currentTab = tab;
+        document.querySelectorAll('.tab-item').forEach(el => {
+          el.classList.toggle('active', el.onclick.toString().includes(tab));
+        });
+        document.querySelectorAll('.tab-panel').forEach(el => {
+          el.style.display = el.id === (tab + 'Panel') ? 'block' : 'none';
+        });
+        updateGit();
       }
 
-      function setCommand(cmd) {
-        document.getElementById("command").textContent = cmd;
+      function toggleBranchInput() {
+        const checked = document.getElementById('cloneBranchCheck').checked;
+        document.getElementById('cloneBranchGroup').style.display = checked ? 'block' : 'none';
+        updateGit();
       }
 
-      function buildClone() {
-        const url = document.getElementById("clone-url").value.trim();
-        const dir = document.getElementById("clone-dir").value.trim();
-        const depth = document.getElementById("clone-depth").checked;
-        const branchEnabled = document.getElementById("clone-branch").checked;
-        const branch = document.getElementById("clone-branch-name").value.trim();
+      function updateGit() {
+        let cmd = 'git ';
+        
+        if (currentTab === 'clone') {
+          const url = document.getElementById('cloneUrl').value.trim() || 'https://github.com/user/repo.git';
+          const dir = document.getElementById('cloneDir').value.trim();
+          cmd += 'clone';
+          if (document.getElementById('cloneDepth').checked) cmd += ' --depth 1';
+          if (document.getElementById('cloneBranchCheck').checked) {
+            const branch = document.getElementById('cloneBranch').value.trim() || 'main';
+            cmd += ` -b ${branch}`;
+          }
+          cmd += ` ${url}`;
+          if (dir) cmd += ` ${dir}`;
+        } 
+        else if (currentTab === 'commit') {
+          const msg = document.getElementById('commitMsg').value.trim();
+          const all = document.getElementById('commitAll').checked;
+          const amend = document.getElementById('commitAmend').checked;
+          const sign = document.getElementById('commitSign').checked;
+          cmd += 'commit';
+          if (all) cmd += ' -a';
+          if (sign) cmd += ' -S';
+          if (amend) cmd += ' --amend';
+          if (msg) cmd += ` -m "${msg}"`;
+          else if (!amend) cmd += ' -m "commit message"';
+        }
+        else if (currentTab === 'branch') {
+          const action = document.getElementById('branchAction').value;
+          const name = document.getElementById('branchName').value.trim() || 'branch_name';
+          const newName = document.getElementById('branchNewName').value.trim() || 'new_name';
+          const force = document.getElementById('branchForce').checked;
+          const remote = document.getElementById('branchRemote').checked;
 
-        document.getElementById("clone-branch-input").style.display = branchEnabled
-          ? "block"
-          : "none";
+          document.getElementById('branchNameGroup').style.display = action === 'list' ? 'none' : 'block';
+          document.getElementById('branchNewNameGroup').style.display = action === 'rename' ? 'block' : 'none';
 
-        let cmd = "git clone";
-        if (depth) cmd += " --depth 1";
-        if (branchEnabled && branch) cmd += ` -b ${branch}`;
-        cmd += ` ${url || "<repository-url>"}`;
-        if (dir) cmd += ` ${dir}`;
+          if (action === 'create') cmd += `checkout -b ${name}`;
+          else if (action === 'delete') cmd += `branch ${force ? '-D' : '-d'} ${name}`;
+          else if (action === 'rename') cmd += `branch -m ${name} ${newName}`;
+          else if (action === 'list') cmd += `branch${remote ? ' -a' : ''}`;
+          else if (action === 'checkout') cmd += `checkout ${name}`;
+        }
+        else if (currentTab === 'merge') {
+          const branch = document.getElementById('mergeBranch').value.trim() || 'feature_branch';
+          const noFf = document.getElementById('mergeNoFf').checked;
+          const squash = document.getElementById('mergeSquash').checked;
+          cmd += 'merge';
+          if (noFf) cmd += ' --no-ff';
+          if (squash) cmd += ' --squash';
+          cmd += ` ${branch}`;
+        }
+        else if (currentTab === 'reset') {
+          const mode = document.getElementById('resetMode').value;
+          const target = document.getElementById('resetTarget').value.trim() || 'HEAD~1';
+          cmd += `reset --${mode} ${target}`;
+        }
+        else if (currentTab === 'stash') {
+          const action = document.getElementById('stashAction').value;
+          const msg = document.getElementById('stashMsg').value.trim();
+          document.getElementById('stashMsgGroup').style.display = action === 'push' ? 'block' : 'none';
+          cmd += 'stash';
+          if (action === 'push') {
+            if (msg) cmd += ` push -m "${msg}"`;
+          } else {
+            cmd += ` ${action}`;
+          }
+        }
+        else if (currentTab === 'remote') {
+          const action = document.getElementById('remoteAction').value;
+          const name = document.getElementById('remoteName').value.trim() || 'origin';
+          const url = document.getElementById('remoteUrl').value.trim() || 'https://github.com/user/repo.git';
+          const branch = document.getElementById('remoteBranch').value.trim() || 'main';
 
-        setCommand(cmd);
-      }
+          document.getElementById('remoteNameGroup').style.display = action === 'list' ? 'none' : 'block';
+          document.getElementById('remoteUrlGroup').style.display = action === 'add' ? 'block' : 'none';
+          document.getElementById('remoteBranchGroup').style.display = ['fetch', 'pull', 'push'].includes(action) ? 'block' : 'none';
 
-      function buildCommit() {
-        const msg = document.getElementById("commit-msg").value.trim();
-        const all = document.getElementById("commit-all").checked;
-        const amend = document.getElementById("commit-amend").checked;
-        const sign = document.getElementById("commit-sign").checked;
-
-        let cmd = "git commit";
-        if (all) cmd += " -a";
-        if (sign) cmd += " -S";
-        if (amend) cmd += " --amend";
-        if (msg) cmd += ` -m "${msg}"`;
-        else if (!amend) cmd += ' -m "<message>"';
-
-        setCommand(cmd);
-      }
-
-      function buildBranch() {
-        const action = document.getElementById("branch-action").value;
-        const name = document.getElementById("branch-name").value.trim();
-        const newName = document.getElementById("branch-new-name").value.trim();
-        const force = document.getElementById("branch-force").checked;
-        const remote = document.getElementById("branch-remote").checked;
-
-        document.getElementById("branch-name-group").style.display =
-          action !== "list" ? "block" : "none";
-        document.getElementById("branch-new-name-group").style.display =
-          action === "rename" ? "block" : "none";
-
-        let cmd = "git ";
-        switch (action) {
-          case "create":
-            cmd += `checkout -b ${name || "<branch-name>"}`;
-            break;
-          case "delete":
-            cmd += `branch ${force ? "-D" : "-d"} ${name || "<branch-name>"}`;
-            break;
-          case "rename":
-            cmd += `branch -m ${name || "<old-name>"} ${newName || "<new-name>"}`;
-            break;
-          case "list":
-            cmd += `branch${remote ? " -a" : ""}`;
-            break;
-          case "checkout":
-            cmd += `checkout ${name || "<branch-name>"}`;
-            break;
+          if (action === 'add') cmd += `remote add ${name} ${url}`;
+          else if (action === 'remove') cmd += `remote remove ${name}`;
+          else if (action === 'list') cmd += 'remote -v';
+          else if (action === 'fetch') cmd += `fetch ${name} ${branch}`;
+          else if (action === 'pull') cmd += `pull ${name} ${branch}`;
+          else if (action === 'push') cmd += `push ${name} ${branch}`;
         }
 
-        setCommand(cmd);
+        document.getElementById('gitOutput').textContent = cmd;
       }
 
-      function buildMerge() {
-        const branch = document.getElementById("merge-branch").value.trim();
-        const noFF = document.getElementById("merge-no-ff").checked;
-        const squash = document.getElementById("merge-squash").checked;
-
-        let cmd = "git merge";
-        if (noFF) cmd += " --no-ff";
-        if (squash) cmd += " --squash";
-        cmd += ` ${branch || "<branch-name>"}`;
-
-        setCommand(cmd);
+      function copyGit() {
+        const code = document.getElementById('gitOutput').textContent;
+        navigator.clipboard.writeText(code).then(() => showToast("Git 命令已复制"));
       }
 
-      function buildReset() {
-        const mode = document.getElementById("reset-mode").value;
-        const target = document.getElementById("reset-target").value.trim();
-
-        setCommand(`git reset --${mode} ${target || "HEAD~1"}`);
+      function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
       }
-
-      function buildStash() {
-        const action = document.getElementById("stash-action").value;
-        const msg = document.getElementById("stash-msg").value.trim();
-
-        document.getElementById("stash-msg-group").style.display =
-          action === "push" ? "block" : "none";
-
-        let cmd = "git stash";
-        if (action !== "push" || action === "list" || action === "clear") {
-          cmd += ` ${action}`;
-        } else if (msg) {
-          cmd += ` push -m "${msg}"`;
-        }
-
-        setCommand(cmd);
-      }
-
-      function buildRemote() {
-        const action = document.getElementById("remote-action").value;
-        const name = document.getElementById("remote-name").value.trim() || "origin";
-        const url = document.getElementById("remote-url").value.trim();
-        const branch = document.getElementById("remote-branch").value.trim() || "main";
-
-        const showUrl = ["add"].includes(action);
-        const showBranch = ["fetch", "pull", "push"].includes(action);
-        const showName = action !== "list";
-
-        document.getElementById("remote-name-group").style.display = showName ? "block" : "none";
-        document.getElementById("remote-url-group").style.display = showUrl ? "block" : "none";
-        document.getElementById("remote-branch-group").style.display = showBranch
-          ? "block"
-          : "none";
-
-        let cmd = "git remote";
-        switch (action) {
-          case "add":
-            cmd += ` add ${name} ${url || "<url>"}`;
-            break;
-          case "remove":
-            cmd += ` remove ${name}`;
-            break;
-          case "rename":
-            cmd += ` rename ${name} <new-name>`;
-            break;
-          case "list":
-            cmd += " -v";
-            break;
-          case "fetch":
-            cmd = `git fetch ${name} ${branch}`;
-            break;
-          case "pull":
-            cmd = `git pull ${name} ${branch}`;
-            break;
-          case "push":
-            cmd = `git push ${name} ${branch}`;
-            break;
-        }
-
-        setCommand(cmd);
-      }
-
-      function copyCommand() {
-        const cmd = document.getElementById("command").textContent;
-        navigator.clipboard.writeText(cmd);
-      }
-
-      buildClone();
 
       function toggleTheme() {
-        const html = document.documentElement;
-        const next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
-        html.setAttribute("data-theme", next);
-        document.querySelector(".theme-toggle").textContent = next === "dark" ? "🌙" : "☀�?;
-        localStorage.setItem("theme", next);
+        const theme = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+        setTheme(theme);
       }
-      (function () {
-        const saved = localStorage.getItem("theme");
-        if (saved) {
-          document.documentElement.setAttribute("data-theme", saved);
-          document.querySelector(".theme-toggle").textContent = saved === "dark" ? "🌙" : "☀�?;
-        }
-      })();
+
+      function setTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        document.getElementById("theme-icon").textContent = theme === "light" ? "☀️" : "🌙";
+        localStorage.setItem("theme", theme);
+      }
+
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      setTheme(savedTheme);
+      updateGit();
     </script>
   </body>
 </html>
-
