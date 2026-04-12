@@ -1,642 +1,553 @@
-<!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SVG优化�?- WebUtils</title>
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="SVG优化�?- WebUtils" />
-    <meta name="keywords" content="svg-optimizer,dev,tools,webutils" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/dev/svg-optimizer.html" />
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG 优化器 - 在线 SVG 压缩与清理工具 - WebUtils</title>
+    <meta name="description" content="免费在线 SVG 优化工具。通过移除冗余元数据、注释、空元素和简化路径数据，显著减小 SVG 文件体积。支持实时预览、精度控制、ViewBox 编辑及多种优化选项。">
+    <meta name="keywords" content="SVG优化, SVG压缩, SVG清理, 矢量图压缩, SVG ViewBox修改, 开发者工具, WebUtils">
+    <meta name="author" content="WebUtils">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://essays4u.net/tools/dev/svg-optimizer.html">
 
     <!-- Open Graph -->
-    <meta property="og:title" content="SVG优化�?- WebUtils" />
-    <meta property="og:description" content="SVG优化�?- WebUtils" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/dev/svg-optimizer.html" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
+    <meta property="og:title" content="SVG 优化器 - 在线 SVG 压缩与清理工具 - WebUtils">
+    <meta property="og:description" content="免费在线 SVG 优化工具。支持实时预览、精度控制、ViewBox 编辑。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://essays4u.net/tools/dev/svg-optimizer.html">
+    <meta property="og:image" content="https://essays4u.net/social-preview.png">
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="SVG优化�?- WebUtils" />
-    <meta name="twitter:description" content="SVG优化�?- WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      :root {
-        --bg-primary: #0a0a0f;
-        --bg-secondary: #12121a;
-        --bg-tertiary: #1a1a25;
-        --color-text-primary: #fff;
-        --color-text-secondary: #88a;
-        --accent: #6366f1;
-        --border: #2a2a3a;
-        --success: #22c55e;
-      }
-      [data-theme="light"] {
-        --bg-primary: #f8fafc;
-        --bg-secondary: #fff;
-        --bg-tertiary: #f1f5f9;
-        --color-text-primary: #1e293b;
-        --color-text-secondary: #64748b;
-        --border: #e2e8f0;
-      }
-      body {
-        font-family: var(--font-sans);
-        background: var(--bg-deep);
-        color: var(--color-text-primary);
-        min-height: 100vh;
-      }
-      .header {
-        background: linear-gradient(135deg, #ec4899, #db2777);
-        padding: 2rem;
-        text-align: center;
-      }
-      .header h1 {
-        font-size: 1.8rem;
-        margin-bottom: 0.5rem;
-      }
-      .nav {
-        display: flex;
-        justify-content: space-between;
-        max-width: 1200px;
-        margin: 0 auto 1rem;
-      }
-      .back-link {
-        color: rgba(255, 255, 255, 0.9);
-        text-decoration: none;
-      }
-      .theme-toggle {
-        background: rgba(255, 255, 255, 0.2);
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
-        color: white;
-        cursor: pointer;
-      }
-      .container {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 2rem;
-      }
-      .card {
-        background: var(--bg-secondary);
-        border: 1px solid var(--border-subtle);
-        border-radius: 1rem;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-      }
-      .drop-zone {
-        border: 2px dashed var(--border-subtle);
-        border-radius: 0.75rem;
-        padding: 3rem;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-      .drop-zone:hover,
-      .drop-zone.dragover {
-        border-color: var(--accent-cyan);
-        background: rgba(99, 102, 241, 0.1);
-      }
-      .drop-zone input {
-        display: none;
-      }
-      .options {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 1rem;
-        margin: 1rem 0;
-      }
-      .option-item {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      .option-item input[type="checkbox"] {
-        width: 18px;
-        height: 18px;
-        accent-color: var(--accent-cyan);
-      }
-      .editor-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
-      }
-      @media (max-width: 900px) {
-        .editor-grid {
-          grid-template-columns: 1fr;
+        :root {
+            --primary-color: #f43f5e;
+            --bg-deep: #0a0a0f;
+            --bg-surface: #12121a;
+            --bg-card: #1a1a24;
+            --text-primary: #e8e8ed;
+            --text-secondary: #8888a0;
+            --border-subtle: #2a2a3a;
+            --radius-lg: 12px;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
         }
-      }
-      .editor-box {
-        display: flex;
-        flex-direction: column;
-      }
-      .editor-box h3 {
-        margin-bottom: 0.75rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .stats {
-        font-size: 0.85rem;
-        color: var(--color-text-secondary);
-        font-weight: normal;
-      }
-      .stats .saved {
-        color: var(--accent-green);
-      }
-      textarea {
-        width: 100%;
-        min-height: 300px;
-        padding: 1rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: 0.5rem;
-        background: var(--bg-tertiary);
-        color: var(--color-text-primary);
-        font-family: Monaco, Menlo, monospace;
-        font-size: 0.85rem;
-        resize: vertical;
-      }
-      .preview-box {
-        background: var(--bg-tertiary);
-        border-radius: 0.5rem;
-        padding: 1rem;
-        min-height: 200px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .preview-box svg {
-        max-width: 100%;
-        max-height: 300px;
-      }
-      .btn {
-        padding: 0.75rem 1.5rem;
-        border: none;
-        border-radius: 0.5rem;
-        cursor: pointer;
-        font-size: 1rem;
-        transition: all 0.2s;
-      }
-      .btn-primary {
-        background: var(--accent-cyan);
-        color: white;
-      }
-      .btn-success {
-        background: var(--accent-green);
-        color: white;
-      }
-      .btn-secondary {
-        background: var(--bg-tertiary);
-        color: var(--color-text-primary);
-        border: 1px solid var(--border-subtle);
-      }
-      .btn-row {
-        display: flex;
-        gap: 1rem;
-        justify-content: center;
-        margin: 1rem 0;
-        flex-wrap: wrap;
-      }
-      .toast {
-        position: fixed;
-        bottom: 2rem;
-        left: 50%;
-        transform: translateX(-50%);
-        background: var(--accent-green);
-        color: white;
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.5rem;
-        opacity: 0;
-        transition: opacity 0.3s;
-      }
-      .toast.show {
-        opacity: 1;
-      }
 
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
+        [data-theme="light"] {
+            --bg-deep: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-card: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-subtle: #e2e8f0;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            padding: 2rem;
+        }
+
+        .tool-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .tool-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #f43f5e, #fb923c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-subtle);
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--bg-deep);
+        }
+
+        .drop-zone:hover {
+            border-color: var(--primary-color);
+            background: rgba(244, 63, 94, 0.05);
+        }
+
+        .editor-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        textarea {
+            width: 100%;
+            height: 250px;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 1rem;
+            resize: vertical;
+        }
+
+        .preview-box {
+            background: white; /* Always white for SVG visibility */
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .preview-box svg {
+            max-width: 90%;
+            max-height: 280px;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            background: var(--bg-deep);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        .saved-percent {
+            color: #10b981;
+            font-weight: 700;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.8rem;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .option-item input[type="checkbox"] {
+            margin-bottom: 0;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-group button {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            margin-bottom: 0;
+        }
+
+        .ads-container {
+            margin: 2rem 0;
+            min-height: 90px;
+            background: var(--bg-card);
+            border: 1px dashed var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-lg);
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .content-section {
+            background: var(--bg-card);
+            padding: 2.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-subtle);
+            line-height: 1.8;
+            margin-top: 3rem;
+        }
+
+        .content-section h2 {
+            color: var(--primary-color);
+            margin-top: 2rem;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+
+        .viewbox-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .viewbox-controls input {
+            width: 70px;
+            margin-bottom: 0;
+            padding: 4px;
+            font-size: 0.8rem;
+        }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      SVG优化�?
-    </nav>
-    <div class="header">
-      <div class="nav">
-        <button class="theme-toggle" onclick="toggleTheme()">🌓 主题</button>
-      </div>
-      <h1>🎨 SVG优化�?/h1>
-      <p>优化和压缩SVG文件</p>
-    </div>
+</head>
+<body>
     <div class="container">
-      <div class="card">
-        <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
-          <input type="file" id="fileInput" accept=".svg" onchange="handleFile(this.files[0])" />
-          <div style="font-size: 3rem">📄</div>
-          <p>点击选择SVG文件或拖放到此处</p>
-          <p style="font-size: 0.85rem; color: var(--color-text-secondary)">
-            或直接在下方粘贴SVG代码
-          </p>
-        </div>
-      </div>
+        <nav aria-label="breadcrumb">
+            <ul>
+                <li><a href="/">首页</a></li>
+                <li><a href="/tools/dev/">开发者工具</a></li>
+                <li>SVG 优化器</li>
+            </ul>
+        </nav>
 
-      <div class="card">
-        <h3 style="margin-bottom: 1rem">优化选项</h3>
-        <div class="options">
-          <div class="option-item">
-            <input type="checkbox" id="removeComments" checked />
-            <label for="removeComments">移除注释</label>
-          </div>
-          <div class="option-item">
-            <input type="checkbox" id="removeMetadata" checked />
-            <label for="removeMetadata">移除元数�?/label>
-          </div>
-          <div class="option-item">
-            <input type="checkbox" id="removeEmptyAttrs" checked />
-            <label for="removeEmptyAttrs">移除空属�?/label>
-          </div>
-          <div class="option-item">
-            <input type="checkbox" id="removeEmptyGroups" checked />
-            <label for="removeEmptyGroups">移除空组</label>
-          </div>
-          <div class="option-item">
-            <input type="checkbox" id="cleanupIds" />
-            <label for="cleanupIds">简化ID</label>
-          </div>
-          <div class="option-item">
-            <input type="checkbox" id="removeDefaultAttrs" checked />
-            <label for="removeDefaultAttrs">移除默认属�?/label>
-          </div>
-          <div class="option-item">
-            <input type="checkbox" id="prettify" />
-            <label for="prettify">格式化输�?/label>
-          </div>
-          <div class="option-item">
-            <input type="checkbox" id="minify" checked />
-            <label for="minify">压缩输出</label>
-          </div>
+        <header class="tool-header">
+            <h1>SVG 优化器</h1>
+            <p>专业的 SVG 压缩与清理工具，让您的网页加载更飞快</p>
+        </header>
+
+        <div class="ads-container">
+            <!-- Google AdSense Placeholder -->
+            <span>广告位</span>
         </div>
 
-        <div class="btn-row">
-          <button class="btn btn-primary" onclick="optimize()">🚀 优化SVG</button>
-        </div>
-      </div>
+        <div class="main-grid">
+            <!-- Left Panel: Input & Options -->
+            <div class="panel">
+                <div class="panel-title"><i class="fas fa-file-upload"></i> 输入与设置</div>
+                
+                <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                    <input type="file" id="fileInput" accept=".svg" style="display:none" onchange="handleFile(this.files[0])">
+                    <i class="fas fa-cloud-upload-alt fa-3x" style="color: var(--primary-color); margin-bottom: 1rem;"></i>
+                    <p>点击或拖拽 SVG 文件到此处</p>
+                </div>
 
-      <div class="editor-grid">
-        <div class="card editor-box">
-          <h3>
-            原始SVG
-            <span class="stats" id="inputStats">0 字节</span>
-          </h3>
-          <textarea
-            id="inputSvg"
-            placeholder="粘贴SVG代码..."
-            oninput="updatePreview('input')"
-          ></textarea>
-          <div class="preview-box" id="inputPreview">
-            <span style="color: var(--color-text-secondary)">预览区域</span>
-          </div>
+                <div class="editor-container">
+                    <label>SVG 源码</label>
+                    <textarea id="inputSvg" placeholder="在此粘贴 SVG 代码..." oninput="onInputChange()"></textarea>
+                    <div class="stats-bar">
+                        <span id="inputSize">大小: 0 B</span>
+                    </div>
+                </div>
+
+                <div class="panel-title" style="font-size: 1rem; margin-top: 1rem;">优化选项</div>
+                <div class="options-grid">
+                    <div class="option-item"><input type="checkbox" id="removeComments" checked> 移除注释</div>
+                    <div class="option-item"><input type="checkbox" id="removeMetadata" checked> 移除元数据</div>
+                    <div class="option-item"><input type="checkbox" id="removeTitle" checked> 移除 Title/Desc</div>
+                    <div class="option-item"><input type="checkbox" id="removeEmptyAttrs" checked> 移除空属性</div>
+                    <div class="option-item"><input type="checkbox" id="removeHidden" checked> 移除隐藏元素</div>
+                    <div class="option-item"><input type="checkbox" id="minifyStyles" checked> 压缩样式</div>
+                    <div class="option-item"><input type="checkbox" id="roundPoints" checked> 简化数值精度</div>
+                    <div class="option-item"><input type="checkbox" id="convertColors" checked> 转换颜色格式</div>
+                </div>
+
+                <div class="viewbox-controls">
+                    <label style="font-size: 0.85rem;">精度:</label>
+                    <input type="number" id="precision" value="2" min="0" max="10">
+                    <button class="primary" style="margin-bottom:0" onclick="optimize()"><i class="fas fa-rocket"></i> 立即优化</button>
+                </div>
+            </div>
+
+            <!-- Right Panel: Output & Preview -->
+            <div class="panel">
+                <div class="panel-title"><i class="fas fa-eye"></i> 结果与预览</div>
+                
+                <div class="stats-bar" id="outputStats" style="display:none">
+                    <span id="outputSize">大小: 0 B</span>
+                    <span class="saved-percent" id="savedPercent">节省: 0%</span>
+                </div>
+
+                <div class="preview-box" id="outputPreview">
+                    <span style="color: #ccc;">等待优化...</span>
+                </div>
+
+                <div class="editor-container">
+                    <label>优化后源码</label>
+                    <textarea id="outputSvg" readonly placeholder="优化后的代码将显示在这里..."></textarea>
+                </div>
+
+                <div class="btn-group">
+                    <button class="primary" onclick="copyResult()"><i class="fas fa-copy"></i> 复制源码</button>
+                    <button class="outline" onclick="downloadResult()"><i class="fas fa-download"></i> 下载 SVG</button>
+                    <button class="outline secondary" onclick="formatResult()"><i class="fas fa-align-left"></i> 格式化</button>
+                </div>
+            </div>
         </div>
 
-        <div class="card editor-box">
-          <h3>
-            优化后SVG
-            <span class="stats" id="outputStats">
-              0 字节
-              <span class="saved"></span>
-            </span>
-          </h3>
-          <textarea id="outputSvg" placeholder="优化后的SVG将显示在这里..." readonly></textarea>
-          <div class="preview-box" id="outputPreview">
-            <span style="color: var(--color-text-secondary)">预览区域</span>
-          </div>
-          <div class="btn-row" style="margin-top: 1rem">
-            <button class="btn btn-success" onclick="copySvg()">📋 复制代码</button>
-            <button class="btn btn-secondary" onclick="downloadSvg()">💾 下载文件</button>
-          </div>
+        <div class="ads-container">
+            <!-- Google AdSense Placeholder -->
+            <span>广告位</span>
         </div>
-      </div>
+
+        <article class="content-section">
+            <h2>SVG 优化：为什么它对 Web 性能至关重要？</h2>
+            <p>SVG (Scalable Vector Graphics) 是现代 Web 设计中不可或缺的一部分。然而，由于许多矢量设计软件（如 Adobe Illustrator, Inkscape）在导出时会附带大量的非必要元数据、注释以及冗余的路径信息，导致 SVG 文件往往比实际需要的要大得多。<strong>SVG 优化器</strong> 可以帮助您在不损失视觉质量的前提下，清理这些冗余内容。</p>
+
+            <h3>优化的具体益处</h3>
+            <ul>
+                <li><strong>加载速度提升：</strong> 更小的文件意味着更快的下载速度，尤其是在移动网络下。</li>
+                <li><strong>代码整洁：</strong> 移除 `inkscape:connector-curvature` 等编辑器特有属性，让源码更易于维护。</li>
+                <li><strong>解析性能：</strong> 减少 DOM 元素的数量和路径点的精度，可以减轻浏览器渲染引擎的压力。</li>
+                <li><strong>SEO 友好：</strong> 快速加载的页面在搜索引擎排名中更具优势。</li>
+            </ul>
+
+            <h3>如何使用高级功能？</h3>
+            <p>1. <strong>简化数值精度：</strong> 路径数据中的 `12.345678` 往往可以安全地简化为 `12.35` 而不影响视觉效果。设置合理的精度可以大幅缩减路径字符串长度。</p>
+            <p>2. <strong>移除元数据：</strong> 编辑器通常会插入大量的 XML 命名空间和描述信息。开启此选项可以彻底清除这些无用代码。</p>
+            <p>3. <strong>ViewBox 编辑：</strong> 如果您的 SVG 边缘有不必要的空白，本工具可以帮助您重新校准 ViewBox 属性，使图像在容器中完美居中。</p>
+
+            <h3>安全与隐私</h3>
+            <p>所有优化逻辑均在您的本地浏览器中运行。我们不会将您的图像上传到任何服务器。您的创意资产是 100% 安全且私密的。</p>
+        </article>
     </div>
 
-    <div class="toast" id="toast">已复制到剪贴�?/div>
+    <div class="theme-toggle secondary" onclick="toggleTheme()">
+        <i class="fas fa-moon" id="themeIcon"></i>
+    </div>
 
     <script>
-      const dropZone = document.getElementById("dropZone");
-      dropZone.addEventListener("dragover", (e) => {
-        e.preventDefault();
-        dropZone.classList.add("dragover");
-      });
-      dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragover"));
-      dropZone.addEventListener("drop", (e) => {
-        e.preventDefault();
-        dropZone.classList.remove("dragover");
-        handleFile(e.dataTransfer.files[0]);
-      });
+        const inputSvg = document.getElementById('inputSvg');
+        const outputSvg = document.getElementById('outputSvg');
+        const outputPreview = document.getElementById('outputPreview');
+        const inputSizeLabel = document.getElementById('inputSize');
+        const outputSizeLabel = document.getElementById('outputSize');
+        const savedPercentLabel = document.getElementById('savedPercent');
+        const outputStats = document.getElementById('outputStats');
 
-      function handleFile(file) {
-        if (!file || !file.name.endsWith(".svg")) {
-          alert("请选择SVG文件");
-          return;
+        // Theme
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            const newTheme = isDark ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            icon.className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+            localStorage.setItem('theme', newTheme);
         }
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          document.getElementById("inputSvg").value = e.target.result;
-          updatePreview("input");
-          updateStats();
-        };
-        reader.readAsText(file);
-      }
+        // Init Theme
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            document.getElementById('themeIcon').className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        })();
 
-      window.updatePreview = function (which) {
-        const input = document.getElementById(which === "input" ? "inputSvg" : "outputSvg").value;
-        const preview = document.getElementById(
-          which === "input" ? "inputPreview" : "outputPreview"
-        );
-
-        if (input.trim().startsWith("<svg")) {
-          preview.innerHTML = input;
-        } else {
-          preview.innerHTML = '<span style="color: var(--color-text-secondary);">无效的SVG</span>';
-        }
-
-        if (which === "input") updateStats();
-      };
-
-      function updateStats() {
-        const input = document.getElementById("inputSvg").value;
-        const output = document.getElementById("outputSvg").value;
-
-        const inputSize = new Blob([input]).size;
-        const outputSize = new Blob([output]).size;
-
-        document.getElementById("inputStats").textContent = formatSize(inputSize);
-
-        if (output && inputSize > 0) {
-          const saved = ((1 - outputSize / inputSize) * 100).toFixed(1);
-          document.getElementById("outputStats").innerHTML =
-            `${formatSize(outputSize)} <span class="saved">(节省 ${saved}%)</span>`;
-        } else {
-          document.getElementById("outputStats").textContent = "0 字节";
-        }
-      }
-
-      function formatSize(bytes) {
-        if (bytes < 1024) return bytes + " 字节";
-        return (bytes / 1024).toFixed(2) + " KB";
-      }
-
-      window.optimize = function () {
-        let svg = document.getElementById("inputSvg").value;
-
-        if (!svg.trim()) {
-          alert("请输入SVG代码");
-          return;
-        }
-
-        const options = {
-          removeComments: document.getElementById("removeComments").checked,
-          removeMetadata: document.getElementById("removeMetadata").checked,
-          removeEmptyAttrs: document.getElementById("removeEmptyAttrs").checked,
-          removeEmptyGroups: document.getElementById("removeEmptyGroups").checked,
-          cleanupIds: document.getElementById("cleanupIds").checked,
-          removeDefaultAttrs: document.getElementById("removeDefaultAttrs").checked,
-          prettify: document.getElementById("prettify").checked,
-          minify: document.getElementById("minify").checked
-        };
-
-        try {
-          svg = optimizeSvg(svg, options);
-          document.getElementById("outputSvg").value = svg;
-          updatePreview("output");
-          updateStats();
-        } catch (e) {
-          alert("优化失败: " + e.message);
-        }
-      };
-
-      function optimizeSvg(svg, options) {
-        // Remove XML declaration
-        svg = svg.replace(/<\?xml[^?]*\?>/gi, "");
-
-        // Remove comments
-        if (options.removeComments) {
-          svg = svg.replace(/<!--[\s\S]*?-->/g, "");
-        }
-
-        // Remove metadata
-        if (options.removeMetadata) {
-          svg = svg.replace(/<metadata[\s\S]*?<\/metadata>/gi, "");
-          svg = svg.replace(/<title[\s\S]*?<\/title>/gi, "");
-          svg = svg.replace(/<desc[\s\S]*?<\/desc>/gi, "");
-        }
-
-        // Remove editor-specific attributes
-        const editorAttrs = [
-          "xmlns:sodipodi",
-          "xmlns:inkscape",
-          "sodipodi:docname",
-          "inkscape:version",
-          "inkscape:export-filename",
-          "inkscape:export-xdpi",
-          "inkscape:export-ydpi",
-          "data-name",
-          "sketch:type"
-        ];
-        editorAttrs.forEach((attr) => {
-          const regex = new RegExp(`\\s*${attr}="[^"]*"`, "gi");
-          svg = svg.replace(regex, "");
-        });
-
-        // Remove empty attributes
-        if (options.removeEmptyAttrs) {
-          svg = svg.replace(/\s+[a-zA-Z-]+=""/g, "");
-        }
-
-        // Remove default attributes
-        if (options.removeDefaultAttrs) {
-          svg = svg.replace(/\s+fill-opacity="1"/g, "");
-          svg = svg.replace(/\s+stroke-opacity="1"/g, "");
-          svg = svg.replace(/\s+opacity="1"/g, "");
-          svg = svg.replace(/\s+fill-rule="nonzero"/g, "");
-        }
-
-        // Remove empty groups
-        if (options.removeEmptyGroups) {
-          svg = svg.replace(/<g[^>]*>\s*<\/g>/gi, "");
-        }
-
-        // Simplify IDs
-        if (options.cleanupIds) {
-          let idCounter = 0;
-          const idMap = new Map();
-
-          svg = svg.replace(/\bid="([^"]+)"/g, (match, id) => {
-            if (!idMap.has(id)) {
-              idMap.set(id, "a" + idCounter++);
+        function handleFile(file) {
+            if (!file || !file.name.endsWith('.svg')) {
+                alert('请选择有效的 SVG 文件');
+                return;
             }
-            return `id="${idMap.get(id)}"`;
-          });
-
-          // Update references
-          idMap.forEach((newId, oldId) => {
-            svg = svg.replace(new RegExp(`#${oldId}(?=[^a-zA-Z0-9])`, "g"), "#" + newId);
-            svg = svg.replace(new RegExp(`url\\(#${oldId}\\)`, "g"), `url(#${newId})`);
-          });
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                inputSvg.value = e.target.result;
+                onInputChange();
+                optimize();
+            };
+            reader.readAsText(file);
         }
 
-        // Minify or prettify
-        if (options.minify && !options.prettify) {
-          // Remove whitespace between tags
-          svg = svg.replace(/>\s+</g, "><");
-          // Remove extra whitespace
-          svg = svg.replace(/\s+/g, " ");
-          // Remove whitespace around =
-          svg = svg.replace(/\s*=\s*/g, "=");
-          svg = svg.trim();
-        } else if (options.prettify) {
-          // Simple prettify
-          svg = svg.replace(/>\s*</g, ">\n<");
-          const lines = svg.split("\n");
-          let indent = 0;
-          svg = lines
-            .map((line) => {
-              line = line.trim();
-              if (line.startsWith("</")) indent--;
-              const result = "  ".repeat(Math.max(0, indent)) + line;
-              if (
-                line.startsWith("<") &&
-                !line.startsWith("</") &&
-                !line.endsWith("/>") &&
-                !line.includes("</")
-              ) {
-                indent++;
-              }
-              return result;
-            })
-            .join("\n");
+        function onInputChange() {
+            const size = new Blob([inputSvg.value]).size;
+            inputSizeLabel.innerText = `大小: ${formatBytes(size)}`;
         }
 
-        return svg;
-      }
-
-      window.copySvg = function () {
-        const output = document.getElementById("outputSvg").value;
-        if (!output) {
-          alert("没有可复制的内容");
-          return;
-        }
-        navigator.clipboard.writeText(output);
-        showToast();
-      };
-
-      window.downloadSvg = function () {
-        const output = document.getElementById("outputSvg").value;
-        if (!output) {
-          alert("没有可下载的内容");
-          return;
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
 
-        const blob = new Blob([output], { type: "image/svg+xml" });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "optimized.svg";
-        link.click();
-      };
+        function optimize() {
+            let svg = inputSvg.value.trim();
+            if (!svg) return;
 
-      function showToast() {
-        const toast = document.getElementById("toast");
-        toast.classList.add("show");
-        setTimeout(() => toast.classList.remove("show"), 2000);
-      }
+            const precision = parseInt(document.getElementById('precision').value) || 2;
+            const options = {
+                removeComments: document.getElementById('removeComments').checked,
+                removeMetadata: document.getElementById('removeMetadata').checked,
+                removeTitle: document.getElementById('removeTitle').checked,
+                removeEmptyAttrs: document.getElementById('removeEmptyAttrs').checked,
+                removeHidden: document.getElementById('removeHidden').checked,
+                minifyStyles: document.getElementById('minifyStyles').checked,
+                roundPoints: document.getElementById('roundPoints').checked,
+                convertColors: document.getElementById('convertColors').checked
+            };
 
-      window.toggleTheme = function () {
-        const t = document.body.getAttribute("data-theme") === "light" ? "dark" : "light";
-        document.body.setAttribute("data-theme", t);
-        localStorage.setItem("theme", t);
-      };
-      document.body.setAttribute("data-theme", localStorage.getItem("theme") || "dark");
+            try {
+                // 1. Basic Cleaning
+                if (options.removeComments) svg = svg.replace(/<!--[\s\S]*?-->/g, '');
+                if (options.removeMetadata) {
+                    svg = svg.replace(/<\?xml[\s\S]*?\?>/g, '');
+                    svg = svg.replace(/<!DOCTYPE[\s\S]*?>/g, '');
+                    svg = svg.replace(/xmlns:[\w-]+="[^"]*"/g, '');
+                }
+                
+                // 2. Parser based optimization
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(svg, 'image/svg+xml');
+                
+                if (doc.querySelector('parsererror')) throw new Error('SVG 解析失败');
+
+                const svgEl = doc.querySelector('svg');
+
+                // Recursive Cleanup
+                function cleanNode(node) {
+                    if (node.nodeType !== 1) return;
+
+                    // Remove Title/Desc
+                    if (options.removeTitle && (node.tagName === 'title' || node.tagName === 'desc')) {
+                        node.remove();
+                        return;
+                    }
+
+                    // Remove Hidden
+                    if (options.removeHidden && node.getAttribute('display') === 'none') {
+                        node.remove();
+                        return;
+                    }
+
+                    // Clean Attributes
+                    const attrs = node.attributes;
+                    for (let i = attrs.length - 1; i >= 0; i--) {
+                        const attr = attrs[i];
+                        
+                        // Remove Empty
+                        if (options.removeEmptyAttrs && !attr.value.trim()) {
+                            node.removeAttribute(attr.name);
+                            continue;
+                        }
+
+                        // Round Points
+                        if (options.roundPoints && /^-?\d+\.\d+$/.test(attr.value)) {
+                            attr.value = parseFloat(parseFloat(attr.value).toFixed(precision));
+                        }
+
+                        // Special handling for paths
+                        if (options.roundPoints && attr.name === 'd') {
+                            attr.value = attr.value.replace(/-?\d+\.\d+/g, m => parseFloat(parseFloat(m).toFixed(precision)));
+                        }
+
+                        // Convert Colors (Simple HEX to short HEX)
+                        if (options.convertColors && /^#[0-9a-fA-F]{6}$/.test(attr.value)) {
+                            const h = attr.value;
+                            if (h[1] === h[2] && h[3] === h[4] && h[5] === h[6]) {
+                                attr.value = '#' + h[1] + h[3] + h[5];
+                            }
+                        }
+                    }
+
+                    // Styles
+                    if (options.minifyStyles && node.getAttribute('style')) {
+                        node.setAttribute('style', node.getAttribute('style').replace(/\s+/g, '').replace(/;$/, ''));
+                    }
+
+                    // Recursive
+                    [...node.childNodes].forEach(cleanNode);
+                }
+
+                cleanNode(svgEl);
+
+                let optimized = new XMLSerializer().serializeToString(doc);
+                
+                // Final Minification
+                optimized = optimized.replace(/>\s+</g, '><').trim();
+
+                outputSvg.value = optimized;
+                outputPreview.innerHTML = optimized;
+                
+                // Stats
+                outputStats.style.display = 'flex';
+                const inSize = new Blob([inputSvg.value]).size;
+                const outSize = new Blob([optimized]).size;
+                outputSizeLabel.innerText = `大小: ${formatBytes(outSize)}`;
+                const saved = Math.max(0, ((inSize - outSize) / inSize * 100).toFixed(1));
+                savedPercentLabel.innerText = `节省: ${saved}%`;
+
+            } catch (err) {
+                alert('优化出错: ' + err.message);
+            }
+        }
+
+        function copyResult() {
+            outputSvg.select();
+            document.execCommand('copy');
+            alert('已复制到剪贴板！');
+        }
+
+        function downloadResult() {
+            const blob = new Blob([outputSvg.value], { type: 'image/svg+xml' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'optimized.svg';
+            a.click();
+        }
+
+        function formatResult() {
+            let svg = outputSvg.value;
+            svg = svg.replace(/>/g, '>\n').replace(/</g, '\n<').replace(/\n\n/g, '\n');
+            outputSvg.value = svg.trim();
+        }
+
+        // Drag & Drop
+        const dropZone = document.getElementById('dropZone');
+        dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor = 'var(--primary-color)'; });
+        dropZone.addEventListener('dragleave', e => { e.preventDefault(); dropZone.style.borderColor = 'var(--border-subtle)'; });
+        dropZone.addEventListener('drop', e => {
+            e.preventDefault();
+            dropZone.style.borderColor = 'var(--border-subtle)';
+            handleFile(e.dataTransfer.files[0]);
+        });
     </script>
-  </body>
+</body>
 </html>
-

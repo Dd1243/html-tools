@@ -1,462 +1,598 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN" data-theme="light">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>字符串拼接器 - WebUtils</title>
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="字符串拼接器 - WebUtils" />
-    <meta name="keywords" content="string-builder,dev,tools,webutils" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/dev/string-builder.html" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>字符串拼接器 - 在线字符串列表处理工具 - WebUtils</title>
+    <meta name="description" content="专业的在线字符串拼接与列表处理工具。支持批量导入、去重、去空、自定义分隔符、引号包裹、前缀后缀添加及多种命名格式转换。适用于SQL IN查询生成、JSON数组转换、代码生成等多种场景。">
+    <meta name="keywords" content="字符串拼接, 列表处理, SQL IN语句生成, 批量加引号, 字符串去重, 开发者工具, WebUtils">
+    <meta name="author" content="WebUtils">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://essays4u.net/tools/dev/string-builder.html">
 
     <!-- Open Graph -->
-    <meta property="og:title" content="字符串拼接器 - WebUtils" />
-    <meta property="og:description" content="字符串拼接器 - WebUtils" />
-    <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/dev/string-builder.html"
-    />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
+    <meta property="og:title" content="字符串拼接器 - 在线字符串列表处理工具 - WebUtils">
+    <meta property="og:description" content="专业的在线字符串拼接与列表处理工具。支持批量导入、去重、格式化转换。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://essays4u.net/tools/dev/string-builder.html">
+    <meta property="og:image" content="https://essays4u.net/social-preview.png">
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="字符串拼接器 - WebUtils" />
-    <meta name="twitter:description" content="字符串拼接器 - WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
+        :root {
+            --primary-color: #8b5cf6;
+            --bg-deep: #0a0a0f;
+            --bg-surface: #12121a;
+            --bg-card: #1a1a24;
+            --text-primary: #e8e8ed;
+            --text-secondary: #8888a0;
+            --border-subtle: #2a2a3a;
+            --radius-lg: 12px;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+        }
 
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
+        [data-theme="light"] {
+            --bg-deep: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-card: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-subtle: #e2e8f0;
+        }
 
-      :root {
-        --primary: #8b5cf6;
-      }
-      body {
-        padding: 1rem;
-        min-height: 100vh;
-      }
-      .container {
-        max-width: 1000px;
-        margin: 0 auto;
-      }
-      header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-      }
-      header h1 {
-        margin: 0;
-        font-size: 1.5rem;
-      }
-      .main-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-      }
-      @media (max-width: 768px) {
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            padding: 2rem;
+        }
+
+        .tool-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .tool-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
         .main-grid {
-          grid-template-columns: 1fr;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
         }
-      }
-      .panel {
-        background: var(--pico-card-background-color);
-        border-radius: 10px;
-        padding: 1rem;
-      }
-      .panel h3 {
-        margin: 0 0 1rem;
-        font-size: 1rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .panel h3 .count {
-        font-weight: normal;
-        font-size: 0.8rem;
-        color: var(--pico-muted-color);
-      }
-      .parts-list {
-        max-height: 400px;
-        overflow-y: auto;
-      }
-      .part-item {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-        padding: 0.5rem;
-        background: var(--pico-muted-border-color);
-        border-radius: 6px;
-        margin-bottom: 0.5rem;
-      }
-      .part-item .drag-handle {
-        cursor: grab;
-        opacity: 0.5;
-      }
-      .part-item input {
-        flex: 1;
-        margin: 0;
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-      }
-      .part-item .type-select {
-        width: 80px;
-        margin: 0;
-        font-size: 0.8rem;
-        padding: 0.3rem;
-      }
-      .part-item .remove-btn {
-        background: none;
-        border: none;
-        color: #ef4444;
-        cursor: pointer;
-        padding: 0.25rem;
-        font-size: 1rem;
-      }
-      .add-part {
-        display: flex;
-        gap: 0.5rem;
-        margin-top: 1rem;
-      }
-      .add-part input {
-        flex: 1;
-        margin: 0;
-      }
-      .add-part button {
-        margin: 0;
-      }
-      .settings {
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-        margin-bottom: 1rem;
-        align-items: center;
-      }
-      .settings label {
-        font-size: 0.85rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      .settings input,
-      .settings select {
-        margin: 0;
-        width: auto;
-      }
-      .output-area {
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        min-height: 150px;
-        white-space: pre-wrap;
-        word-break: break-all;
-        background: var(--pico-code-background-color);
-        padding: 1rem;
-        border-radius: 6px;
-        margin-bottom: 1rem;
-      }
-      .actions {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-      }
-      .actions button {
-        margin: 0;
-      }
-      .presets {
-        margin-bottom: 1rem;
-      }
-      .presets button {
-        margin: 0 0.25rem 0.25rem 0;
-        padding: 0.3rem 0.6rem;
-        font-size: 0.75rem;
-      }
-      .template-vars {
-        font-size: 0.8rem;
-        color: var(--pico-muted-color);
-        margin-bottom: 0.5rem;
-      }
 
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-    </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      字符串拼接器
-    </nav>
-    <div class="container">
-      <header>
-        <h1>🔗 字符串拼接器</h1>
-        <button id="themeToggle" class="outline">🌙</button>
-      </header>
-      <div class="main-grid">
-        <div class="panel">
-          <h3>
-            字符串片�?
-            <span class="count" id="partCount">0 �?/span>
-          </h3>
-          <div class="presets">
-            <button onclick="addPreset('prefix')">前缀</button>
-            <button onclick="addPreset('suffix')">后缀</button>
-            <button onclick="addPreset('quote')">引号包裹</button>
-            <button onclick="addPreset('bracket')">括号包裹</button>
-            <button onclick="addPreset('newline')">换行�?/button>
-            <button onclick="addPreset('tab')">制表�?/button>
-          </div>
-          <div class="parts-list" id="partsList"></div>
-          <div class="add-part">
-            <input type="text" id="newPartInput" placeholder="输入新片�?.." />
-            <button onclick="addPart()" class="primary">添加</button>
-          </div>
-        </div>
-        <div class="panel">
-          <h3>输出结果</h3>
-          <div class="settings">
-            <label>
-              分隔符：
-              <input type="text" id="delimiter" value="" style="width: 60px" placeholder="�? />
-            </label>
-            <label>
-              每行个数�?
-              <input type="number" id="perLine" value="0" min="0" style="width: 60px" />
-            </label>
-            <label>
-              <input type="checkbox" id="addQuotes" />
-              引号包裹
-            </label>
-          </div>
-          <div class="output-area" id="outputArea"></div>
-          <div class="actions">
-            <button onclick="copyOutput()" class="primary">复制结果</button>
-            <button onclick="clearAll()" class="secondary">清空全部</button>
-            <button onclick="downloadOutput()" class="outline">下载</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <script>
-      let parts = [];
-      const $ = (id) => document.getElementById(id);
-      function render() {
-        $("partCount").textContent = parts.length + " �?;
-        $("partsList").innerHTML = parts
-          .map(
-            (p, i) =>
-              '<div class="part-item" draggable="true" data-index="' +
-              i +
-              '">' +
-              '<span class="drag-handle">�?/span>' +
-              '<input type="text" value="' +
-              escapeHtml(p) +
-              '" onchange="updatePart(' +
-              i +
-              ', this.value)">' +
-              '<button class="remove-btn" onclick="removePart(' +
-              i +
-              ')">×</button>' +
-              "</div>"
-          )
-          .join("");
-        updateOutput();
-        setupDragDrop();
-      }
-      function updateOutput() {
-        const delimiter = $("delimiter").value;
-        const perLine = parseInt($("perLine").value) || 0;
-        const addQuotes = $("addQuotes").checked;
-        let result = parts.map((p) => (addQuotes ? '"' + p + '"' : p));
-        if (perLine > 0) {
-          const lines = [];
-          for (let i = 0; i < result.length; i += perLine) {
-            lines.push(result.slice(i, i + perLine).join(delimiter));
-          }
-          $("outputArea").textContent = lines.join("\n");
-        } else {
-          $("outputArea").textContent = result.join(delimiter);
-        }
-      }
-      function addPart(value) {
-        const v = value || $("newPartInput").value.trim();
-        if (v) {
-          parts.push(v);
-          $("newPartInput").value = "";
-          render();
-        }
-      }
-      window.updatePart = function (i, v) {
-        parts[i] = v;
-        updateOutput();
-      };
-      window.removePart = function (i) {
-        parts.splice(i, 1);
-        render();
-      };
-      window.addPreset = function (type) {
-        switch (type) {
-          case "prefix":
-            parts.unshift("PREFIX_");
-            break;
-          case "suffix":
-            parts.push("_SUFFIX");
-            break;
-          case "quote":
-            parts.unshift('"');
-            parts.push('"');
-            break;
-          case "bracket":
-            parts.unshift("(");
-            parts.push(")");
-            break;
-          case "newline":
-            parts.push("\\n");
-            break;
-          case "tab":
-            parts.push("\\t");
-            break;
-        }
-        render();
-      };
-      window.copyOutput = function () {
-        navigator.clipboard.writeText($("outputArea").textContent);
-        alert("已复�?);
-      };
-      window.clearAll = function () {
-        if (confirm("确定清空?")) {
-          parts = [];
-          render();
-        }
-      };
-      window.downloadOutput = function () {
-        const blob = new Blob([$("outputArea").textContent], { type: "text/plain" });
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = "string-output.txt";
-        a.click();
-      };
-      function setupDragDrop() {
-        const items = document.querySelectorAll(".part-item");
-        items.forEach((item) => {
-          item.ondragstart = (e) => {
-            e.dataTransfer.setData("text/plain", item.dataset.index);
-            item.style.opacity = "0.5";
-          };
-          item.ondragend = () => {
-            item.style.opacity = "1";
-          };
-          item.ondragover = (e) => e.preventDefault();
-          item.ondrop = (e) => {
-            e.preventDefault();
-            const from = parseInt(e.dataTransfer.getData("text/plain"));
-            const to = parseInt(item.dataset.index);
-            if (from !== to) {
-              const [moved] = parts.splice(from, 1);
-              parts.splice(to, 0, moved);
-              render();
+        @media (max-width: 992px) {
+            .main-grid {
+                grid-template-columns: 1fr;
             }
-          };
-        });
-      }
-      window.escapeHtml = function (t) {
-        return t
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;");
-      };
-      $("delimiter").oninput = updateOutput;
-      $("perLine").oninput = updateOutput;
-      $("addQuotes").onchange = updateOutput;
-      $("newPartInput").onkeypress = (e) => {
-        if (e.key === "Enter") addPart();
-      };
-      function loadTheme() {
-        const t = localStorage.getItem("theme") || "light";
-        document.documentElement.setAttribute("data-theme", t);
-        $("themeToggle").textContent = t === "dark" ? "☀�? : "🌙";
-      }
-      window.toggleTheme = function () {
-        const c = document.documentElement.getAttribute("data-theme");
-        const n = c === "dark" ? "light" : "dark";
-        document.documentElement.setAttribute("data-theme", n);
-        localStorage.setItem("theme", n);
-        $("themeToggle").textContent = n === "dark" ? "☀�? : "🌙";
-      };
-      $("themeToggle").onclick = toggleTheme;
-      loadTheme();
-      render();
-    </script>
-  </body>
-</html>
+        }
 
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .panel-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .badge {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .parts-container {
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 0.5rem;
+            background: var(--bg-deep);
+        }
+
+        .part-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            cursor: move;
+        }
+
+        .part-item input {
+            flex: 1;
+            margin-bottom: 0;
+            padding: 4px 8px;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+        }
+
+        .part-item .btn-remove {
+            color: #ef4444;
+            background: transparent;
+            border: none;
+            padding: 4px;
+        }
+
+        .add-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .add-controls input {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .output-textarea {
+            width: 100%;
+            height: 300px;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 1rem;
+            resize: vertical;
+        }
+
+        .config-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .config-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .config-item label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .config-item input, .config-item select {
+            margin-bottom: 0;
+            padding: 4px 8px;
+            font-size: 0.9rem;
+        }
+
+        .ads-container {
+            margin: 2rem 0;
+            min-height: 90px;
+            background: var(--bg-card);
+            border: 1px dashed var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-lg);
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .content-section {
+            background: var(--bg-card);
+            padding: 2.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-subtle);
+            line-height: 1.8;
+            margin-top: 3rem;
+        }
+
+        .content-section h2 {
+            color: var(--primary-color);
+            margin-top: 2rem;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-group button {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+            margin-bottom: 0;
+        }
+
+        .dragging {
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ul>
+                <li><a href="/">首页</a></li>
+                <li><a href="/tools/dev/">开发者工具</a></li>
+                <li>字符串拼接器</li>
+            </ul>
+        </nav>
+
+        <header class="tool-header">
+            <h1>字符串拼接器</h1>
+            <p>专业的字符串列表处理工具，支持批量导入与多场景格式化</p>
+        </header>
+
+        <div class="ads-container">
+            <!-- Google AdSense Placeholder -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-xxxxxxxxxxxxxxxx"
+                 data-ad-slot="xxxxxxxxxx"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <span>广告位</span>
+        </div>
+
+        <div class="main-grid">
+            <!-- Left Panel: Input -->
+            <div class="panel">
+                <div class="panel-title">
+                    <span><i class="fas fa-list"></i> 输入片段</span>
+                    <span class="badge" id="itemCount">0</span>
+                </div>
+                
+                <div class="btn-group">
+                    <button class="outline secondary" onclick="batchImport()"><i class="fas fa-file-import"></i> 批量导入</button>
+                    <button class="outline secondary" onclick="deduplicate()"><i class="fas fa-clone"></i> 去重</button>
+                    <button class="outline secondary" onclick="removeEmpty()"><i class="fas fa-eraser"></i> 去空</button>
+                    <button class="outline secondary" onclick="clearAll()"><i class="fas fa-trash"></i> 清空</button>
+                </div>
+
+                <div class="parts-container" id="partsContainer">
+                    <!-- Items injected here -->
+                </div>
+
+                <div class="add-controls">
+                    <input type="text" id="newItemInput" placeholder="输入新片段并回车..." onkeypress="if(event.key==='Enter') addItem()">
+                    <button onclick="addItem()"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+
+            <!-- Right Panel: Output & Config -->
+            <div class="panel">
+                <div class="panel-title">
+                    <span><i class="fas fa-code"></i> 输出与配置</span>
+                </div>
+
+                <div class="config-group">
+                    <div class="config-item">
+                        <label>分隔符</label>
+                        <input type="text" id="delimiter" value="," placeholder=",">
+                    </div>
+                    <div class="config-item">
+                        <label>引号包裹</label>
+                        <select id="quoteType">
+                            <option value="none">无</option>
+                            <option value="single">单引号 (' ')</option>
+                            <option value="double">双引号 (" ")</option>
+                            <option value="backtick">反引号 (` `)</option>
+                        </select>
+                    </div>
+                    <div class="config-item">
+                        <label>前缀</label>
+                        <input type="text" id="prefix" placeholder="前缀...">
+                    </div>
+                    <div class="config-item">
+                        <label>后缀</label>
+                        <input type="text" id="suffix" placeholder="后缀...">
+                    </div>
+                    <div class="config-item">
+                        <label>每行个数 (0为不换行)</label>
+                        <input type="number" id="perLine" value="0" min="0">
+                    </div>
+                    <div class="config-item">
+                        <label>转换格式</label>
+                        <select id="caseType">
+                            <option value="none">保持原样</option>
+                            <option value="upper">大写</option>
+                            <option value="lower">小写</option>
+                            <option value="trim">仅去除空格</option>
+                        </select>
+                    </div>
+                </div>
+
+                <textarea class="output-textarea" id="outputArea" readonly placeholder="结果将显示在这里..."></textarea>
+
+                <div class="btn-group">
+                    <button class="primary" onclick="copyResult()"><i class="fas fa-copy"></i> 复制结果</button>
+                    <button class="outline" onclick="downloadResult()"><i class="fas fa-download"></i> 下载文本</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="ads-container">
+            <!-- Google AdSense Placeholder -->
+            <span>广告位</span>
+        </div>
+
+        <article class="content-section">
+            <h2>字符串拼接器：解决开发中的繁琐数据处理</h2>
+            <p>在日常开发工作中，我们经常需要处理成百上千个字符串片段。无论是从 Excel 中提取的一列数据，还是日志文件中的 ID 列表，手动去重、加引号、拼接分隔符都是极其耗时且容易出错的任务。<strong>在线字符串拼接器</strong> 旨在通过直观的界面和丰富的功能，让这些任务在秒级完成。</p>
+
+            <h3>核心解决场景</h3>
+            <ul>
+                <li><strong>SQL 查询生成：</strong> 将一列 Excel ID 快速转换为 <code>IN ('id1', 'id2', 'id3')</code> 格式。</li>
+                <li><strong>JSON 数组构建：</strong> 批量给字符串加上双引号并用逗号分隔，直接复制到代码中。</li>
+                <li><strong>批量前缀处理：</strong> 为一组文件名或路径统一添加路径前缀或后缀。</li>
+                <li><strong>代码重构辅助：</strong> 处理大量常量定义，统一转换为大写或小写。</li>
+            </ul>
+
+            <h3>如何高效使用本工具？</h3>
+            <p>1. <strong>批量导入：</strong> 不要一个一个添加，直接点击“批量导入”，粘贴整段文字，工具会自动按行或逗号识别为多个独立片段。</p>
+            <p>2. <strong>智能清洗：</strong> 使用“去重”和“去空”功能，确保输出数据的纯净，避免在 SQL 查询或代码运行中出现逻辑错误。</p>
+            <p>3. <strong>拖拽排序：</strong> 如果拼接顺序很重要（例如构建 URL 路径），可以直接拖动列表项调整顺序。</p>
+            <p>4. <strong>响应式配置：</strong> 分隔符不仅限于逗号，你可以输入 <code>\n</code>（换行）或任何自定义字符，甚至配置每隔 N 个元素换一次行，以保持代码的可读性。</p>
+
+            <h3>隐私与安全</h3>
+            <p>本工具所有操作均在浏览器本地完成，数据不会上传到任何服务器。你可以放心处理内部系统的敏感 ID 或私有代码片段。</p>
+        </article>
+    </div>
+
+    <!-- Modals -->
+    <dialog id="importModal">
+        <article>
+            <h3>批量导入</h3>
+            <p>粘贴内容，支持按行、逗号、空格分割：</p>
+            <textarea id="importText" style="height: 200px;"></textarea>
+            <footer>
+                <button class="secondary" onclick="document.getElementById('importModal').close()">取消</button>
+                <button onclick="doBatchImport()">确认导入</button>
+            </footer>
+        </article>
+    </dialog>
+
+    <div class="theme-toggle secondary" onclick="toggleTheme()">
+        <i class="fas fa-moon" id="themeIcon"></i>
+    </div>
+
+    <script>
+        let items = [];
+        const container = document.getElementById('partsContainer');
+        const outputArea = document.getElementById('outputArea');
+        const itemCount = document.getElementById('itemCount');
+
+        // Theme
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            const newTheme = isDark ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            icon.className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Init Theme
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            document.getElementById('themeIcon').className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        })();
+
+        function addItem() {
+            const input = document.getElementById('newItemInput');
+            const val = input.value.trim();
+            if (val) {
+                items.push(val);
+                input.value = '';
+                renderItems();
+            }
+        }
+
+        function batchImport() {
+            document.getElementById('importModal').showModal();
+        }
+
+        function doBatchImport() {
+            const text = document.getElementById('importText').value;
+            if (text) {
+                // Split by newline, comma, or space (and clean up)
+                const newItems = text.split(/[\n,;]+/).map(i => i.trim()).filter(i => i !== "");
+                items = [...items, ...newItems];
+                document.getElementById('importText').value = '';
+                document.getElementById('importModal').close();
+                renderItems();
+            }
+        }
+
+        function renderItems() {
+            container.innerHTML = '';
+            items.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'part-item';
+                div.draggable = true;
+                div.innerHTML = `
+                    <i class="fas fa-grip-lines" style="color: var(--text-secondary);"></i>
+                    <input type="text" value="${item}" onchange="updateItem(${index}, this.value)">
+                    <button class="btn-remove" onclick="removeItem(${index})"><i class="fas fa-times"></i></button>
+                `;
+                
+                // Drag and Drop
+                div.addEventListener('dragstart', () => div.classList.add('dragging'));
+                div.addEventListener('dragend', () => div.classList.remove('dragging'));
+                
+                container.appendChild(div);
+            });
+            
+            setupDragAndDrop();
+            updateCount();
+            generateOutput();
+        }
+
+        function setupDragAndDrop() {
+            container.addEventListener('dragover', e => {
+                e.preventDefault();
+                const afterElement = getDragAfterElement(container, e.clientY);
+                const dragging = document.querySelector('.dragging');
+                if (afterElement == null) {
+                    container.appendChild(dragging);
+                } else {
+                    container.insertBefore(dragging, afterElement);
+                }
+            });
+
+            container.addEventListener('drop', () => {
+                const newItems = [];
+                container.querySelectorAll('.part-item input').forEach(input => {
+                    newItems.push(input.value);
+                });
+                items = newItems;
+                updateCount();
+                generateOutput();
+            });
+        }
+
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('.part-item:not(.dragging)')];
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        function updateItem(index, value) {
+            items[index] = value;
+            generateOutput();
+        }
+
+        function removeItem(index) {
+            items.splice(index, 1);
+            renderItems();
+        }
+
+        function deduplicate() {
+            items = [...new Set(items)];
+            renderItems();
+        }
+
+        function removeEmpty() {
+            items = items.filter(i => i.trim() !== "");
+            renderItems();
+        }
+
+        function clearAll() {
+            if (confirm('确定要清空所有片段吗？')) {
+                items = [];
+                renderItems();
+            }
+        }
+
+        function generateOutput() {
+            const delimiter = document.getElementById('delimiter').value;
+            const quoteType = document.getElementById('quoteType').value;
+            const prefix = document.getElementById('prefix').value;
+            const suffix = document.getElementById('suffix').value;
+            const perLine = parseInt(document.getElementById('perLine').value) || 0;
+            const caseType = document.getElementById('caseType').value;
+
+            let processed = items.map(item => {
+                let s = item;
+                if (caseType === 'upper') s = s.toUpperCase();
+                else if (caseType === 'lower') s = s.toLowerCase();
+                else if (caseType === 'trim') s = s.trim();
+
+                s = prefix + s + suffix;
+
+                if (quoteType === 'single') s = `'${s}'`;
+                else if (quoteType === 'double') s = `"${s}"`;
+                else if (quoteType === 'backtick') s = `\`${s}\``;
+
+                return s;
+            });
+
+            let finalStr = "";
+            if (perLine > 0) {
+                for (let i = 0; i < processed.length; i += perLine) {
+                    finalStr += processed.slice(i, i + perLine).join(delimiter) + (i + perLine < processed.length ? delimiter + "\n" : "");
+                }
+            } else {
+                finalStr = processed.join(delimiter);
+            }
+
+            outputArea.value = finalStr;
+        }
+
+        function updateCount() {
+            itemCount.innerText = items.length;
+        }
+
+        function copyResult() {
+            outputArea.select();
+            document.execCommand('copy');
+            alert('已复制到剪贴板！');
+        }
+
+        function downloadResult() {
+            const blob = new Blob([outputArea.value], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'string-builder-result.txt';
+            a.click();
+        }
+
+        // Event listeners for config changes
+        ['delimiter', 'quoteType', 'prefix', 'suffix', 'perLine', 'caseType'].forEach(id => {
+            document.getElementById(id).addEventListener('input', generateOutput);
+        });
+
+        // Initial render
+        items = ["apple", "banana", "cherry"];
+        renderItems();
+    </script>
+</body>
+</html>
