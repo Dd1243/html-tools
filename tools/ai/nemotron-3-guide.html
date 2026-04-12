@@ -1,586 +1,399 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="dark">
+<html lang="zh-CN">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nvidia Nemotron 3 指南 - WebUtils</title>
+    <title>Nvidia Nemotron 3 指南 - Mamba-Transformer-MoE 混合架构大模型 - WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Nvidia Nemotron 3 指南 - WebUtils" />
-    <meta name="keywords" content="nemotron-3-guide,ai,tools,webutils" />
+    <meta name="description" content="深入了解 Nvidia Nemotron 3，这是 2025 年发布的创新型开源大模型。采用 Mamba-Transformer-MoE 混合架构，提供 253B、70B 和 8B 多种规格，专为高效推理和长文本理解而设计。Apache 2.0 协议支持商业化部署。" />
+    <meta name="keywords" content="Nemotron 3,Nvidia Nemotron,Mamba 架构,Transformer,MoE,混合架构,大模型推理,TensorRT-LLM,Apache 2.0,WebUtils" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/ai/nemotron-3-guide.html" />
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="Nvidia Nemotron 3 指南 - WebUtils" />
-    <meta property="og:description" content="Nvidia Nemotron 3 指南 - WebUtils" />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content="Nvidia Nemotron 3 指南 - Mamba-Transformer-MoE 混合架构大模型 - WebUtils" />
+    <meta property="og:description" content="深度解析 Nvidia Nemotron 3 的创新架构与应用场景。253B 参数旗舰模型，Apache 2.0 开源。" />
     <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/ai/nemotron-3-guide.html"
-    />
+    <meta property="og:url" content="https://essays4u.net/tools/ai/nemotron-3-guide.html" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
     <meta property="og:site_name" content="WebUtils" />
     <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
 
     <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Nvidia Nemotron 3 指南 - WebUtils" />
-    <meta name="twitter:description" content="Nvidia Nemotron 3 指南 - WebUtils" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Nvidia Nemotron 3 指南 - Mamba-Transformer-MoE 混合架构大模型 - WebUtils" />
+    <meta name="twitter:description" content="探索 Nvidia Nemotron 3 的无限可能，从边缘部署到企业级推理的全面指南。" />
     <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
 
-    <meta
-      name="description"
-      content="Nvidia Nemotron 3 开源模型：Mamba-Transformer-MoE架构，Apache 2.0协议，专为推理优�?
-    />
-    <meta name="keywords" content="Nemotron,Nvidia,开�?Mamba,MoE,Transformer,大模�?Apache" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "Nvidia Nemotron 3 完整指南",
+      "description": "详细解析 Nvidia Nemotron 3 的混合架构、模型规格与应用场景。",
+      "author": {
+        "@type": "Organization",
+        "name": "WebUtils"
+      },
+      "image": "https://essays4u.net/social-preview.png"
+    }
+    </script>
 
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
+    <!-- Google AdSense Header Placeholder -->
+    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
 
-      :root {
-        --primary-color: #76b900;
-        --secondary-color: #00d4aa;
-        --accent-color: #f59e0b;
-        --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1a2e1a 100%);
-      }
-      body {
-        background: var(--bg-gradient);
-        min-height: 100vh;
-      }
-      .container {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 2rem 1rem;
-      }
-      header {
-        text-align: center;
-        margin-bottom: 2rem;
-      }
-      .logo {
-        font-size: 3rem;
-        margin-bottom: 0.5rem;
-      }
-      .badge {
-        display: inline-block;
-        background: var(--primary-color);
-        color: white;
-        padding: 0.25rem 0.75rem;
-        border-radius: 1rem;
-        font-size: 0.8rem;
-        margin-left: 0.5rem;
-        font-weight: 600;
-      }
-      .badge.nvidia {
-        background: #76b900;
-      }
-      .badge.open {
-        background: #10b981;
-      }
-      .card {
-        background: var(--pico-card-background-color);
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        border: 1px solid var(--pico-muted-border-color);
-      }
-      .card h3 {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-        color: var(--primary-color);
-      }
-      .features-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 1rem;
-      }
-      .feature-item {
-        background: rgba(118, 185, 0, 0.1);
-        border-radius: 8px;
-        padding: 1rem;
-        border-left: 3px solid var(--primary-color);
-      }
-      .feature-item.cyan {
-        background: rgba(0, 212, 170, 0.1);
-        border-left-color: var(--secondary-color);
-      }
-      .feature-item.orange {
-        background: rgba(245, 158, 11, 0.1);
-        border-left-color: var(--accent-color);
-      }
-      .feature-item h4 {
-        margin-bottom: 0.5rem;
-        font-size: 1rem;
-      }
-      .feature-item p {
-        font-size: 0.9rem;
-        color: var(--pico-muted-color);
-        margin: 0;
-      }
-      .stat-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 1rem;
-        margin: 1.5rem 0;
-      }
-      .stat-item {
-        background: linear-gradient(135deg, rgba(118, 185, 0, 0.2) 0%, rgba(0, 212, 170, 0.2) 100%);
-        border-radius: 12px;
-        padding: 1.25rem;
-        text-align: center;
-        border: 1px solid rgba(118, 185, 0, 0.3);
-      }
-      .stat-item .number {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--primary-color);
-        display: block;
-      }
-      .stat-item .label {
-        font-size: 0.8rem;
-        color: var(--pico-muted-color);
-        margin-top: 0.25rem;
-      }
-      .highlight-box {
-        background: linear-gradient(
-          135deg,
-          rgba(118, 185, 0, 0.15) 0%,
-          rgba(0, 212, 170, 0.15) 100%
-        );
-        border-left: 4px solid var(--primary-color);
-        padding: 1.5rem;
-        margin: 1.5rem 0;
-        border-radius: 0 12px 12px 0;
-      }
-      .model-card {
-        background: linear-gradient(135deg, rgba(118, 185, 0, 0.1) 0%, rgba(0, 212, 170, 0.1) 100%);
-        border-radius: 16px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        border: 2px solid rgba(118, 185, 0, 0.3);
-      }
-      .model-card h4 {
-        color: var(--primary-color);
-        margin-bottom: 0.75rem;
-        font-size: 1.2rem;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        flex-wrap: wrap;
-      }
-      .model-card .desc {
-        margin: 0.75rem 0;
-        color: var(--pico-muted-color);
-        line-height: 1.6;
-      }
-      .model-card .specs {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 0.75rem;
-        margin-top: 1rem;
-      }
-      .model-card .spec {
-        background: rgba(0, 0, 0, 0.3);
-        padding: 0.75rem;
-        border-radius: 8px;
-        text-align: center;
-      }
-      .model-card .spec-value {
-        font-size: 1rem;
-        font-weight: 600;
-        color: var(--primary-color);
-      }
-      .model-card .spec-label {
-        font-size: 0.7rem;
-        color: var(--pico-muted-color);
-        margin-top: 0.25rem;
-      }
-      .nav-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: var(--pico-muted-color);
-        text-decoration: none;
-        margin-bottom: 1rem;
-      }
-      .nav-link:hover {
-        color: var(--primary-color);
-      }
-      .code-block {
-        background: #1a1a2e;
-        border-radius: 8px;
-        padding: 1rem;
-        overflow-x: auto;
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        margin: 1rem 0;
-        border: 1px solid rgba(118, 185, 0, 0.3);
-      }
-      .architecture-box {
-        background: rgba(0, 0, 0, 0.3);
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin: 1rem 0;
-        text-align: center;
-      }
-      .architecture-box .arch-flow {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        font-size: 1.1rem;
-      }
-      .architecture-box .arch-item {
-        background: var(--primary-color);
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-        font-weight: 600;
-      }
-      .architecture-box .arch-plus {
-        color: var(--pico-muted-color);
-      }
-      footer {
-        text-align: center;
-        padding: 2rem 0;
-        color: var(--pico-muted-color);
-        font-size: 0.9rem;
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-    </style>
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+
+    <style>
+      /* ===== CSS 变量 (基于模板) ===== */
+      :root {
+        --bg-body: #0a0a0f;
+        --bg-card: #12121a;
+        --bg-input: #0e0e14;
+        --bg-elevated: #1a1a24;
+        --text-primary: #e8e8ed;
+        --text-secondary: #a0a0b0;
+        --text-muted: #606070;
+        --border-color: #2a2a3a;
+        --border-focus: #3a3a4a;
+        --accent: #76b900; /* NVIDIA Green */
+        --accent-alt: #00f5d4;
+        --success: #30d158;
+        --warning: #ff9f0a;
+        --error: #ff453a;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", "Space Grotesk", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+
+      [data-theme="light"] {
+        --bg-body: #fafafa;
+        --bg-card: #ffffff;
+        --bg-input: #f5f5f5;
+        --bg-elevated: #ffffff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #666;
+        --text-muted: #999;
+        --border-color: #e5e5e5;
+        --border-focus: #d5d5d5;
+        --accent: #5a8a00;
+        --accent-alt: #00d4b8;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      
+      .container { max-width: 1000px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--border-color); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), var(--accent-alt)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .header-right { display: flex; align-items: center; gap: 12px; }
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; width: 40px; height: 40px; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+      .theme-toggle:hover { border-color: var(--accent); }
+
+      .ads-container { margin: 24px 0; min-height: 90px; background: rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem; border: 1px dashed var(--border-color); border-radius: var(--radius-md); }
+
+      /* Hero Grid */
+      .hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px; }
+      .hero-stat { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px; text-align: center; }
+      .hero-stat .val { display: block; font-size: 1.5rem; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+      .hero-stat .lab { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+      /* Main Content Card */
+      .main-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; }
+      
+      .card-section { padding: 32px; border-bottom: 1px solid var(--border-color); }
+      .card-section:last-child { border-bottom: none; }
+      .section-title { font-size: 1.125rem; font-weight: 700; color: var(--text-primary); margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+      .section-title::after { content: ""; flex: 1; height: 1px; background: var(--border-color); }
+
+      /* Architecture Viz */
+      .arch-viz { display: flex; align-items: center; justify-content: center; gap: 16px; padding: 24px; background: var(--bg-input); border-radius: var(--radius-md); margin: 24px 0; flex-wrap: wrap; }
+      .arch-node { padding: 12px 20px; background: var(--bg-card); border: 2px solid var(--accent); border-radius: var(--radius-sm); font-weight: 600; font-size: 0.9rem; color: var(--text-primary); }
+      .arch-plus { color: var(--text-muted); font-size: 1.2rem; }
+
+      /* Feature Grid */
+      .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+      .feature-card { padding: 20px; background: var(--bg-elevated); border: 1px solid var(--border-color); border-radius: var(--radius-md); border-left: 4px solid var(--accent); }
+      .feature-card h4 { font-size: 1rem; color: var(--accent); margin-bottom: 8px; }
+      .feature-card p { font-size: 0.875rem; color: var(--text-secondary); }
+
+      /* Model Variants */
+      .variant-grid { display: grid; gap: 20px; }
+      .variant-card { background: var(--bg-elevated); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 24px; }
+      .variant-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+      .variant-title { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); }
+      .variant-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+      .badge-flagship { background: rgba(118, 185, 0, 0.15); color: var(--accent); border: 1px solid var(--accent); }
+      .badge-balanced { background: rgba(0, 245, 212, 0.15); color: var(--accent-alt); border: 1px solid var(--accent-alt); }
+      .badge-edge { background: rgba(191, 90, 242, 0.15); color: var(--accent-purple); border: 1px solid var(--accent-purple); }
+      
+      .spec-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
+      .spec-item { text-align: center; padding: 12px; background: var(--bg-input); border-radius: var(--radius-sm); }
+      .spec-val { display: block; font-size: 1rem; font-weight: 700; color: var(--text-primary); }
+      .spec-lab { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; }
+
+      /* Code Block */
+      .code-container { margin: 24px 0; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border-color); }
+      .code-header { background: var(--bg-input); padding: 8px 16px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+      .code-lang { font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); }
+      .copy-btn { background: transparent; border: none; color: var(--accent); font-size: 0.75rem; font-weight: 600; cursor: pointer; }
+      .code-body { padding: 16px; background: #0d0d11; color: #e0e0e0; font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.5; overflow-x: auto; }
+
+      /* SEO Content */
+      .seo-content { margin-top: 32px; padding: 32px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); color: var(--text-secondary); font-size: 0.875rem; }
+      .seo-content h2 { color: var(--text-primary); font-size: 1.125rem; margin-bottom: 16px; font-weight: 600; }
+      .seo-content h3 { color: var(--text-primary); font-size: 1rem; margin-top: 24px; margin-bottom: 12px; font-weight: 600; }
+      .seo-content p { margin-bottom: 12px; }
+      .seo-content ul { margin-bottom: 16px; padding-left: 20px; }
+      .seo-content li { margin-bottom: 8px; }
+      .seo-content strong { color: var(--text-primary); }
+
+      @media (max-width: 640px) {
+        .container { padding: 16px; }
+        .header { flex-direction: column; align-items: stretch; }
+        .spec-row { grid-template-columns: 1fr; }
+      }
+    </style>
   </head>
   <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      Nemotron 3 指南
-    </nav>
     <div class="container">
-      <header>
-        <div class="logo">🟢</div>
-        <h1>
-          Nvidia Nemotron 3
-          <span class="badge nvidia">NVIDIA</span>
-          <span class="badge open">开�?/span>
-        </h1>
-        <p>Mamba-Transformer-MoE 混合架构，Apache 2.0 协议开�?/p>
+      <nav style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 16px; display: flex; gap: 8px;">
+        <a href="../../index.html" style="color: var(--text-secondary); text-decoration: none;">首页</a>
+        <span>/</span>
+        <span>AI 指南</span>
+        <span>/</span>
+        <span>Nemotron 3</span>
+      </nav>
+
+      <header class="header">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn" title="返回首页">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 12L6 8L10 4" />
+            </svg>
+          </a>
+          <div class="title-group">
+            <h1>Nvidia Nemotron 3 指南</h1>
+            <p>混合架构大模型：Mamba + Transformer + MoE</p>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+            <span id="theme-icon">🌙</span>
+          </div>
+        </div>
       </header>
 
-      <!-- 核心数据 -->
-      <div class="stat-grid">
-        <div class="stat-item">
-          <span class="number">253B</span>
-          <span class="label">总参�?/span>
+      <div class="hero-grid">
+        <div class="hero-stat">
+          <span class="val">253B</span>
+          <span class="lab">总参数量</span>
         </div>
-        <div class="stat-item">
-          <span class="number">Apache 2.0</span>
-          <span class="label">开源协�?/span>
+        <div class="hero-stat">
+          <span class="val">Apache 2.0</span>
+          <span class="lab">开源协议</span>
         </div>
-        <div class="stat-item">
-          <span class="number">混合架构</span>
-          <span class="label">Mamba+Trans</span>
+        <div class="hero-stat">
+          <span class="val">128K</span>
+          <span class="lab">上下文窗口</span>
         </div>
-        <div class="stat-item">
-          <span class="number">推理优化</span>
-          <span class="label">专为推理设计</span>
-        </div>
-      </div>
-
-      <!-- 什么是 Nemotron -->
-      <div class="card">
-        <h3>🟢 什么是 Nemotron 3�?/h3>
-
-        <p>
-          <strong>Nemotron 3</strong>
-          �?Nvidia �?2025 �?12 月发布的新一代开源大模型。它采用创新�?
-          <strong>Mamba-Transformer-MoE</strong>
-          混合架构，结合了 Mamba 的高效序列建模、Transformer 的强大表达能力和
-          MoE（混合专家）的稀疏计算优势�?
-        </p>
-
-        <div class="highlight-box">
-          <strong>🏗�?创新架构�?/strong>
-          Nemotron 3 首次�?Mamba、Transformer �?MoE
-          三种架构融合，在保持强大性能的同时大幅提升推理效率。这种混合架构是大模型发展的新方向�?
-        </div>
-
-        <div class="architecture-box">
-          <p style="margin-bottom: 1rem; color: var(--pico-muted-color)">混合架构示意</p>
-          <div class="arch-flow">
-            <span class="arch-item">Mamba</span>
-            <span class="arch-plus">+</span>
-            <span class="arch-item">Transformer</span>
-            <span class="arch-plus">+</span>
-            <span class="arch-item">MoE</span>
-          </div>
+        <div class="hero-stat">
+          <span class="val">NVIDIA</span>
+          <span class="lab">模型发布方</span>
         </div>
       </div>
 
-      <!-- 架构特点 -->
-      <div class="card">
-        <h3>🏗�?架构特点</h3>
-
-        <div class="features-grid">
-          <div class="feature-item">
-            <h4>🐍 Mamba �?/h4>
-            <p>状态空间模型，线性复杂度处理超长序列，高效推�?/p>
-          </div>
-          <div class="feature-item cyan">
-            <h4>🔄 Transformer �?/h4>
-            <p>注意力机制处理复杂依赖关系，强大的上下文理解</p>
-          </div>
-          <div class="feature-item orange">
-            <h4>🎯 MoE 稀疏激�?/h4>
-            <p>253B 参数中仅激活部分专家，大幅降低计算成本</p>
-          </div>
-          <div class="feature-item">
-            <h4>�?推理优化</h4>
-            <p>专为 Nvidia GPU 优化，TensorRT-LLM 原生支持</p>
-          </div>
-        </div>
+      <!-- AdSense Top -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
       </div>
 
-      <!-- 模型系列 -->
-      <div class="card">
-        <h3>📊 模型规格</h3>
+      <main class="main-card">
+        <section class="card-section">
+          <div class="section-title">🟢 什么是 Nemotron 3？</div>
+          <p>Nemotron 3 是由 Nvidia 在 2025 年 12 月发布的新一代开源大模型。它采用创新的 <strong>Mamba-Transformer-MoE</strong> 混合架构，结合了 Mamba 的高效序列建模、Transformer 的强大表达能力和 MoE（混合专家）的稀疏计算优势。该模型旨在解决传统 Transformer 模型在长序列处理时的计算开销问题，同时保持顶尖的逻辑推理和语言理解能力。</p>
+          
+          <div class="arch-viz">
+            <div class="arch-node">Mamba (高效推理)</div>
+            <div class="arch-plus">+</div>
+            <div class="arch-node">Transformer (深度理解)</div>
+            <div class="arch-plus">+</div>
+            <div class="arch-node">MoE (稀疏激活)</div>
+          </div>
+          <p style="text-align: center; font-size: 0.8rem; color: var(--text-muted);">创新混合架构示意图：三者融合实现性能与效率的平衡</p>
+        </section>
 
-        <div class="model-card">
-          <h4>
-            Nemotron-3-253B-Instruct
-            <span class="badge">旗舰�?/span>
-          </h4>
-          <p class="desc">最强版本，适合复杂推理、代码生成、长文本理解等高要求任务�?/p>
-          <div class="specs">
-            <div class="spec">
-              <div class="spec-value">253B</div>
-              <div class="spec-label">总参�?/div>
+        <section class="card-section">
+          <div class="section-title">🏗️ 核心架构特点</div>
+          <div class="feature-grid">
+            <div class="feature-card">
+              <h4>🐍 Mamba 状态空间</h4>
+              <p>利用状态空间模型 (SSM) 实现线性复杂度处理，在处理超长序列时相比 Transformer 具有极高的推理速度优势。</p>
             </div>
-            <div class="spec">
-              <div class="spec-value">128K</div>
-              <div class="spec-label">上下�?/div>
+            <div class="feature-card" style="border-left-color: var(--accent-alt);">
+              <h4>🔄 Transformer 核心</h4>
+              <p>保留了注意力机制以处理复杂的长距离依赖关系，确保在逻辑推理和语义理解上达到 SOTA 水平。</p>
             </div>
-            <div class="spec">
-              <div class="spec-value">Apache 2.0</div>
-              <div class="spec-label">开源协�?/div>
+            <div class="feature-card" style="border-left-color: var(--warning);">
+              <h4>🎯 MoE 稀疏专家</h4>
+              <p>通过混合专家架构，仅在推理时激活部分参数，大幅降低计算成本，实现“大模型性能，小模型开销”。</p>
+            </div>
+            <div class="feature-card" style="border-left-color: var(--success);">
+              <h4>🚀 TensorRT-LLM 优化</h4>
+              <p>专为 Nvidia GPU 优化，原生支持 TensorRT-LLM，在 A100/H100 上实现毫秒级响应。</p>
             </div>
           </div>
-        </div>
+        </section>
 
-        <div class="model-card">
-          <h4>
-            Nemotron-3-70B
-            <span class="badge cyan">平衡�?/span>
-          </h4>
-          <p class="desc">性能与效率平衡，适合大多数企业级应用场景�?/p>
-          <div class="specs">
-            <div class="spec">
-              <div class="spec-value">70B</div>
-              <div class="spec-label">总参�?/div>
+        <section class="card-section">
+          <div class="section-title">📊 模型规格对比</div>
+          <div class="variant-grid">
+            <div class="variant-card">
+              <div class="variant-header">
+                <span class="variant-title">Nemotron-3-253B-Instruct</span>
+                <span class="variant-badge badge-flagship">旗舰推理型</span>
+              </div>
+              <p style="font-size: 0.875rem; color: var(--text-secondary);">最强版本，适合复杂科研、高质量代码生成、长文本分析等高要求任务。</p>
+              <div class="spec-row">
+                <div class="spec-item"><span class="spec-val">253B</span><span class="spec-lab">总参数</span></div>
+                <div class="spec-item"><span class="spec-val">128K</span><span class="spec-lab">上下文</span></div>
+                <div class="spec-item"><span class="spec-val">全能</span><span class="spec-lab">能力等级</span></div>
+              </div>
             </div>
-            <div class="spec">
-              <div class="spec-value">32K</div>
-              <div class="spec-label">上下�?/div>
+
+            <div class="variant-card">
+              <div class="variant-header">
+                <span class="variant-title">Nemotron-3-70B</span>
+                <span class="variant-badge badge-balanced">平衡通用型</span>
+              </div>
+              <p style="font-size: 0.875rem; color: var(--text-secondary);">性能与效率的完美平衡，适合大多数企业级应用场景，支持单卡部署。</p>
+              <div class="spec-row">
+                <div class="spec-item"><span class="spec-val">70B</span><span class="spec-lab">总参数</span></div>
+                <div class="spec-item"><span class="spec-val">32K</span><span class="spec-lab">上下文</span></div>
+                <div class="spec-item"><span class="spec-val">单卡</span><span class="spec-lab">部署建议</span></div>
+              </div>
             </div>
-            <div class="spec">
-              <div class="spec-value">高效推理</div>
-              <div class="spec-label">单卡可跑</div>
+
+            <div class="variant-card">
+              <div class="variant-header">
+                <span class="variant-title">Nemotron-3-8B</span>
+                <span class="variant-badge badge-edge">轻量边缘型</span>
+              </div>
+              <p style="font-size: 0.875rem; color: var(--text-secondary);">适合边缘侧、手机终端或资源受限场景，在保持基础能力的同时实现极速推理。</p>
+              <div class="spec-row">
+                <div class="spec-item"><span class="spec-val">8B</span><span class="spec-lab">总参数</span></div>
+                <div class="spec-item"><span class="spec-val">8K</span><span class="spec-lab">上下文</span></div>
+                <div class="spec-item"><span class="spec-val">边缘</span><span class="spec-lab">部署建议</span></div>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        <div class="model-card">
-          <h4>
-            Nemotron-3-8B
-            <span class="badge orange">轻量�?/span>
-          </h4>
-          <p class="desc">适合边缘部署和资源受限场景，保持基础能力�?/p>
-          <div class="specs">
-            <div class="spec">
-              <div class="spec-value">8B</div>
-              <div class="spec-label">总参�?/div>
+        <section class="card-section">
+          <div class="section-title">💻 快速上门示例</div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">使用 Hugging Face Transformers 库加载 Nemotron-3-70B 模型：</p>
+          <div class="code-container">
+            <div class="code-header">
+              <span class="code-lang">python</span>
+              <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
             </div>
-            <div class="spec">
-              <div class="spec-value">8K</div>
-              <div class="spec-label">上下�?/div>
-            </div>
-            <div class="spec">
-              <div class="spec-value">边缘部署</div>
-              <div class="spec-label">消费级GPU</div>
-            </div>
-          </div>
-        </div>
-      </div>
+            <div class="code-body">
+<pre>from transformers import AutoModelForCausalLM, AutoTokenizer
 
-      <!-- 使用方式 -->
-      <div class="card">
-        <h3>💻 快速上�?/h3>
-
-        <p>使用 Hugging Face Transformers 加载 Nemotron 3�?/p>
-
-        <div class="code-block">
-          <pre>
-from transformers import AutoModelForCausalLM, AutoTokenizer
-
-model_name = "nvidia/Nemotron-3-70B-Instruct"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
+model_id = "nvidia/Nemotron-3-70B-Instruct"
+tokenizer = AutoTokenizer.from_pretrained(model_id)
 model = AutoModelForCausalLM.from_pretrained(
-    model_name,
+    model_id,
     torch_dtype="auto",
     device_map="auto"
 )
 
-messages = [
-    {"role": "user", "content": "解释一�?Mamba 架构的优�?}
-]
+# 编写提示词
+messages = [{"role": "user", "content": "请解释混合架构 Mamba-Transformer-MoE 的优势"}]
+inputs = tokenizer.apply_chat_template(messages, return_tensors="pt").to(model.device)
 
-input_ids = tokenizer.apply_chat_template(
-    messages, 
-    return_tensors="pt"
-).to(model.device)
+# 执行生成
+outputs = model.generate(inputs, max_new_tokens=512)
+print(tokenizer.decode(outputs[0], skip_special_tokens=True))</pre>
+            </div>
+          </div>
+        </section>
+      </main>
 
-output = model.generate(input_ids, max_new_tokens=512)
-print(tokenizer.decode(output[0], skip_special_tokens=True))</pre
-          >
-        </div>
-
-        <div class="highlight-box">
-          <strong>🚀 TensorRT-LLM 优化�?/strong>
-          Nvidia 提供官方 TensorRT-LLM 优化版本，在 A100/H100 GPU 上可获得显著的推理加速�?
-        </div>
+      <!-- AdSense Bottom -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
       </div>
 
-      <!-- 应用场景 -->
-      <div class="card">
-        <h3>🎯 典型应用场景</h3>
+      <article class="seo-content">
+        <h2>深度解析：2025 年 Nvidia Nemotron 3 如何重塑开源模型生态？</h2>
+        <p>在 AI 2.0 时代，大模型（LLM）的算力开销一直是企业和开发者面临的核心挑战。Nvidia 推出的 <strong>Nemotron 3</strong> 不仅仅是一个参数量巨大的模型，它代表了底层架构的一次重大跃迁。通过融合三种不同的神经网络范式，Nemotron 3 成功解决了“性能”与“效率”之间长期存在的矛盾。</p>
+        
+        <h3>1. Mamba 架构的引入：打破 Transformer 的算力枷锁</h3>
+        <p>传统的 Transformer 架构依赖注意力机制，其计算复杂度随文本长度成平方级增长。这导致在处理数十万字的长文档时，显存消耗和推理延迟呈爆炸式上升。Nemotron 3 引入的 <strong>Mamba 状态空间模型</strong>，实现了线性计算复杂度。这意味着无论输入 100 字还是 10 万字，模型处理每个 Token 的时间基本保持恒定，极大地降低了长文本分析的成本。</p>
 
-        <div class="features-grid">
-          <div class="feature-item">
-            <h4>🔬 科学研究</h4>
-            <p>长文本理解、论文分析、数据处�?/p>
-          </div>
-          <div class="feature-item cyan">
-            <h4>💻 代码生成</h4>
-            <p>高质量代码补全、重构、文档生�?/p>
-          </div>
-          <div class="feature-item orange">
-            <h4>🤖 Agent 构建</h4>
-            <p>构建具有推理能力的智�?Agent</p>
-          </div>
-          <div class="feature-item">
-            <h4>🏢 企业部署</h4>
-            <p>Apache 2.0 协议，可自由商用</p>
-          </div>
-        </div>
-      </div>
+        <h3>2. MoE 混合专家：让 253B 模型拥有 70B 的推理速度</h3>
+        <p><strong>MoE (Mixture of Experts)</strong> 架构是 Nemotron 3 实现高效计算的另一个支柱。虽然模型拥有 253B 的总参数量，但在实际处理每一条指令时，路由器只会激活其中的一小部分“专家”神经元。这使得它在保持“天才级”逻辑能力的同时，实际推理所需的算力仅相当于一个中型模型。对于需要大规模部署 AI 应用的企业来说，这意味着相同的硬件可以支持更多的并发请求。</p>
 
-      <footer>
-        <p>
-          最后更新：2025�?2�?|
-          <a
-            href="https://huggingface.co/nvidia"
-            target="_blank"
-            style="color: var(--primary-color)"
-          >
-            Hugging Face
-          </a>
-          |
-          <a
-            href="https://developer.nvidia.com"
-            target="_blank"
-            style="color: var(--secondary-color)"
-          >
-            Nvidia Developer
-          </a>
-        </p>
-        <p></p>
+        <h3>3. 解决具体问题：Nemotron 3 的典型实战场景</h3>
+        <ul>
+          <li><strong>复杂科研分析：</strong> 能够一次性读入数百篇学术论文（利用 128K 上下文），并利用 Transformer 的逻辑能力提取跨论文的关联结论。</li>
+          <li><strong>高质量代码重构：</strong> 在处理整个工程级别的代码库时，Mamba 架构确保了扫描速度，而旗舰级的参数量确保了重构逻辑的安全性。</li>
+          <li><strong>边缘侧自主 Agent：</strong> 8B 版本专为消费级 GPU 优化，允许开发者在无需联网的情况下，在本地电脑甚至高端手机上运行具有初步推理能力的智能体。</li>
+        </ul>
+
+        <h3>4. Apache 2.0 协议：自由商用的金标准</h3>
+        <p>Nvidia 此次慷慨地采用了 <strong>Apache 2.0 协议</strong>。这与某些“限制性开源”模型不同，开发者可以自由地修改、分发甚至将其用于任何商业产品，而无需担心法律授权问题。这无疑将加速企业级 AI 应用的落地进程。</p>
+
+        <p>WebUtils 将持续为您追踪 Nvidia 模型的最新动态。在这个混合架构崛起的时代，掌握 Nemotron 3，就是掌握了未来高效推理的核心技术。</p>
+      </article>
+
+      <footer style="margin-top: 32px; text-align: center; color: var(--text-muted); font-size: 0.75rem;">
+        <p>© 2026 WebUtils. All rights reserved.</p>
       </footer>
     </div>
 
     <script>
-      window.toggleTheme = function () {
+      function toggleTheme() {
         const html = document.documentElement;
         const currentTheme = html.getAttribute("data-theme");
         const newTheme = currentTheme === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
-      };
+        setTheme(newTheme);
+      }
 
-      (function () {
-        const savedTheme = localStorage.getItem("theme") || "dark";
-        document.documentElement.setAttribute("data-theme", savedTheme);
-      })();
+      function setTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        document.getElementById("theme-icon").textContent = theme === "light" ? "☀️" : "🌙";
+        localStorage.setItem("theme", theme);
+      }
+
+      function copyCode(btn) {
+        const code = btn.closest('.code-container').querySelector('pre').innerText;
+        navigator.clipboard.writeText(code).then(() => {
+          btn.innerText = '已复制!';
+          setTimeout(() => btn.innerText = '复制代码', 2000);
+        });
+      }
+
+      // 初始化主题
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      setTheme(savedTheme);
     </script>
   </body>
 </html>
-
-
