@@ -1,1047 +1,353 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>URL 编解�?- WebUtils</title>
-
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="URL 编码与解码，支持完整 URL 或组件编码，纯本地处�? />
-    <meta name="keywords" content="url 编码 解码 encode decode uri" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/dev/url-codec.html" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL 编解码工具 - 在线 URL Encode/Decode - WebUtils</title>
+    <meta name="description" content="专业的在线 URL 编解码工具。支持 encodeURIComponent 与 encodeURI 两种模式，提供 URL 结构化解析功能。纯本地处理，保护您的隐私。适用于 Web 开发、API 调试及链接转换。">
+    <meta name="keywords" content="URL编码,URL解码,URLEncode,URLDecode,URL解析,Web开发工具,WebUtils">
+    <meta name="author" content="WebUtils">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://essays4u.net/tools/dev/url-codec.html">
 
     <!-- Open Graph -->
-    <meta property="og:title" content="URL 编解�?- WebUtils" />
-    <meta property="og:description" content="URL 编码与解码，支持完整 URL 或组件编码，纯本地处�? />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/dev/url-codec.html" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
+    <meta property="og:title" content="URL 编解码工具 - WebUtils">
+    <meta property="og:description" content="一键完成 URL 编码与解码，支持组件编码与完整 URI 编码，内置 URL 结构化解析功能。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://essays4u.net/tools/dev/url-codec.html">
+    <meta property="og:image" content="https://essays4u.net/social-preview.png">
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="URL 编解�?- WebUtils" />
-    <meta
-      name="twitter:description"
-      content="URL 编码与解码，支持完整 URL 或组件编码，纯本地处�?
-    />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-
-    <!-- JSON-LD BreadcrumbList Schema -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "首页",
-            "item": "https://essays4u.net/"
-          },
-          {
-            "@type": "ListItem",
-            "position": 2,
-            "name": "开发工�?,
-            "item": "https://essays4u.net/#dev"
-          },
-          {
-            "@type": "ListItem",
-            "position": 3,
-            "name": "URL 编解�?,
-            "item": "https://essays4u.net/tools/dev/url-codec.html"
-          }
-        ]
-      }
-    </script>
-
-    <!-- Preload fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-      /* ============================================
-         Design System - CSS Variables
-         ============================================ */
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      /* Light Theme */
-
-      /* ============================================
-         Base Styles
-         ============================================ */
-      *,
-      *::before,
-      *::after {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      html {
-        font-size: 16px;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-      }
-
-      body {
-        font-family: var(--font-sans);
-        background: var(--color-bg-deep);
-        color: var(--color-text-primary);
-        min-height: 100vh;
-        min-height: 100dvh;
-        line-height: 1.5;
-        transition:
-          background-color var(--transition-normal),
-          color var(--transition-normal);
-      }
-
-      /* Subtle background gradient */
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        z-index: 0;
-        background:
-          radial-gradient(circle at 20% 20%, rgba(0, 212, 170, 0.03) 0%, transparent 50%),
-          radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.03) 0%, transparent 50%);
-      }
-
-      [data-theme="light"] body::before {
-        background:
-          radial-gradient(circle at 20% 20%, rgba(0, 184, 148, 0.05) 0%, transparent 50%),
-          radial-gradient(circle at 80% 80%, rgba(124, 58, 237, 0.05) 0%, transparent 50%);
-      }
-
-      /* ============================================
-         Navigation Bar
-         ============================================ */
-      .nav-bar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 1000;
-        height: calc(var(--nav-height) + var(--safe-area-top));
-        padding-top: var(--safe-area-top);
-        background: var(--glass-bg);
-        backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-        -webkit-backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-        border-bottom: 1px solid var(--glass-border);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: background var(--transition-normal);
-      }
-
-      .nav-content {
-        width: 100%;
-        max-width: var(--container-max);
-        height: var(--nav-height);
-        padding: 0 var(--space-6);
-        display: grid;
-        grid-template-columns: 1fr auto 1fr;
-        align-items: center;
-        gap: var(--space-4);
-      }
-
-      /* Back Button */
-      .nav-back {
-        display: flex;
-        align-items: center;
-        gap: var(--space-1);
-        color: var(--color-accent-primary);
-        text-decoration: none;
-        font-size: 0.9375rem;
-        font-weight: 500;
-        padding: var(--space-2) var(--space-1);
-        margin-left: calc(var(--space-2) * -1);
-        border-radius: var(--radius-sm);
-        transition: all var(--transition-fast);
-        justify-self: start;
-      }
-
-      .nav-back:hover {
-        background: var(--color-border-subtle);
-      }
-
-      .nav-back-icon {
-        width: 20px;
-        height: 20px;
-        stroke-width: 2.5;
-      }
-
-      .nav-back-text {
-        display: inline;
-      }
-
-      /* Nav Title */
-      .nav-title {
-        font-size: 1rem;
-        font-weight: 600;
-        color: var(--color-text-primary);
-        text-align: center;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      /* Nav Actions */
-      .nav-actions {
-        display: flex;
-        align-items: center;
-        gap: var(--space-2);
-        justify-self: end;
-      }
-
-      /* Theme Toggle */
-      .theme-toggle {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 36px;
-        height: 36px;
-        border: none;
-        border-radius: var(--radius-full);
-        background: var(--color-bg-subtle);
-        color: var(--color-text-secondary);
-        cursor: pointer;
-        transition: all var(--transition-fast);
-      }
-
-      .theme-toggle:hover {
-        background: var(--color-border-strong);
-        color: var(--color-text-primary);
-        transform: scale(1.05);
-      }
-
-      .theme-toggle svg {
-        width: 18px;
-        height: 18px;
-      }
-
-      .theme-icon-dark,
-      .theme-icon-light {
-        display: none;
-      }
-
-      [data-theme="dark"] .theme-icon-light,
-      :root:not([data-theme]) .theme-icon-light {
-        display: block;
-      }
-
-      [data-theme="light"] .theme-icon-dark {
-        display: block;
-      }
-
-      /* ============================================
-         Main Content
-         ============================================ */
-      .main-content {
-        position: relative;
-        z-index: 1;
-        min-height: 100vh;
-        min-height: 100dvh;
-        padding-top: calc(var(--nav-height) + var(--safe-area-top) + var(--space-6));
-        padding-bottom: calc(var(--space-8) + var(--safe-area-bottom));
-        padding-left: var(--space-6);
-        padding-right: var(--space-6);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .container {
-        width: 100%;
-        max-width: var(--container-max);
-      }
-
-      /* ============================================
-         Card Styles
-         ============================================ */
-      .card {
-        background: var(--glass-bg);
-        backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-        -webkit-backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-        border: 1px solid var(--color-border-default);
-        border-radius: var(--radius-lg);
-        padding: var(--space-6);
-        margin-bottom: var(--space-5);
-        box-shadow: var(--shadow-md);
-      }
-
-      .card-title {
-        font-size: 1.125rem;
-        font-weight: 600;
-        margin-bottom: var(--space-5);
-        color: var(--color-text-primary);
-      }
-
-      /* ============================================
-         Form Elements
-         ============================================ */
-      .input-group {
-        margin-bottom: var(--space-4);
-      }
-
-      .input-group label {
-        display: block;
-        font-weight: 500;
-        margin-bottom: var(--space-2);
-        font-size: 0.9375rem;
-        color: var(--color-text-secondary);
-      }
-
-      .input-row {
-        display: flex;
-        gap: var(--space-3);
-        flex-wrap: wrap;
-      }
-
-      input[type="text"],
-      input[type="number"],
-      select,
-      textarea {
-        padding: var(--space-3) var(--space-4);
-        font-size: 0.9375rem;
-        border: 1px solid var(--color-border-default);
-        border-radius: var(--radius-md);
-        background: var(--color-bg-input);
-        color: var(--color-text-primary);
-        font-family: var(--font-mono);
-        transition: all var(--transition-fast);
-      }
-
-      input:focus,
-      select:focus,
-      textarea:focus {
-        outline: none;
-        border-color: var(--color-accent-primary);
-        box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.1);
-      }
-
-      textarea {
-        width: 100%;
-        min-height: 250px;
-        resize: vertical;
-        line-height: 1.5;
-        font-family: var(--font-mono);
-      }
-
-      .text-input {
-        flex: 1;
-        min-width: 200px;
-      }
-
-      .unit-select {
-        width: 120px;
-      }
-
-      /* Buttons */
-      button {
-        padding: var(--space-3) var(--space-4);
-        font-size: 0.9375rem;
-        font-weight: 500;
-        border: 1px solid var(--color-border-default);
-        border-radius: var(--radius-md);
-        background: var(--color-bg-subtle);
-        color: var(--color-text-primary);
-        cursor: pointer;
-        transition: all var(--transition-fast);
-        font-family: var(--font-sans);
-      }
-
-      button:hover {
-        border-color: var(--color-accent-primary);
-        background: var(--color-bg-surface);
-        transform: translateY(-1px);
-      }
-
-      button:active {
-        transform: translateY(0);
-      }
-
-      button.primary {
-        background: var(--color-accent-primary);
-        border-color: var(--color-accent-primary);
-        color: #fff;
-        font-weight: 600;
-      }
-
-      button.primary:hover {
-        background: #00c299;
-        border-color: #00c299;
-        box-shadow: var(--shadow-glow);
-      }
-
-      /* ============================================
-         Options
-         ============================================ */
-      .options {
-        display: flex;
-        gap: var(--space-4);
-        flex-wrap: wrap;
-        margin-bottom: var(--space-5);
-        padding: var(--space-4);
-        background: var(--color-bg-subtle);
-        border-radius: var(--radius-md);
-        border: 1px solid var(--color-border-subtle);
-      }
-
-      .options label {
-        display: flex;
-        align-items: center;
-        gap: var(--space-2);
-        cursor: pointer;
-        font-size: 0.9375rem;
-        color: var(--color-text-secondary);
-      }
-
-      .options input[type="radio"] {
-        cursor: pointer;
-        width: 16px;
-        height: 16px;
-        accent-color: var(--color-accent-primary);
-      }
-
-      /* ============================================
-         Panels
-         ============================================ */
-      .panels {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: var(--space-5);
-        margin-bottom: var(--space-5);
-      }
-
-      @media (max-width: 768px) {
-        .panels {
-          grid-template-columns: 1fr;
-        }
-      }
-
-      .panel label {
-        display: block;
-        font-weight: 500;
-        margin-bottom: var(--space-3);
-        font-size: 0.9375rem;
-        color: var(--color-text-secondary);
-      }
-
-      /* ============================================
-         Status Messages
-         ============================================ */
-      .status {
-        font-size: 0.875rem;
-        margin-top: var(--space-2);
-        min-height: 20px;
-        font-weight: 500;
-      }
-
-      .status.success {
-        color: var(--color-success);
-      }
-
-      .status.error {
-        color: var(--color-error);
-      }
-
-      /* ============================================
-         URL Parser Section
-         ============================================ */
-      .url-parser {
-        margin-top: var(--space-5);
-        padding-top: var(--space-5);
-        border-top: 1px solid var(--color-border-subtle);
-      }
-
-      .url-parser h3 {
-        font-size: 1rem;
-        font-weight: 600;
-        margin: 0 0 var(--space-4);
-        color: var(--color-text-primary);
-      }
-
-      /* ============================================
-         Result Table
-         ============================================ */
-      .parsed-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 0.9375rem;
-        margin-top: var(--space-4);
-      }
-
-      .parsed-table th,
-      .parsed-table td {
-        padding: var(--space-3) var(--space-4);
-        text-align: left;
-        border-bottom: 1px solid var(--color-border-subtle);
-      }
-
-      .parsed-table th {
-        background: var(--color-bg-subtle);
-        font-weight: 600;
-        width: 150px;
-        color: var(--color-text-secondary);
-        font-size: 0.875rem;
-      }
-
-      .parsed-table td {
-        font-family: var(--font-mono);
-        color: var(--color-text-primary);
-        word-break: break-all;
-      }
-
-      .parsed-table tr:last-child th,
-      .parsed-table tr:last-child td {
-        border-bottom: none;
-      }
-
-      /* ============================================
-         Info Box
-         ============================================ */
-      .info {
-        background: var(--color-bg-subtle);
-        border: 1px solid var(--color-border-subtle);
-        border-radius: var(--radius-md);
-        padding: var(--space-4);
-        margin-top: var(--space-5);
-        font-size: 0.875rem;
-        color: var(--color-text-secondary);
-        line-height: 1.6;
-      }
-
-      .info strong {
-        color: var(--color-text-primary);
-        font-weight: 600;
-      }
-
-      /* ============================================
-         Footer
-         ============================================ */
-      footer {
-        text-align: center;
-        margin-top: var(--space-8);
-        padding-top: var(--space-5);
-        border-top: 1px solid var(--color-border-subtle);
-        color: var(--text-muted);
-        font-size: 0.875rem;
-      }
-
-      footer a {
-        color: var(--color-accent-primary);
-        text-decoration: none;
-        transition: color var(--transition-fast);
-      }
-
-      footer a:hover {
-        color: #00c299;
-      }
-
-      /* ============================================
-         Mobile Responsive
-         ============================================ */
-      @media (max-width: 480px) {
         :root {
-          --nav-height: 52px;
+            --primary-color: #6366f1;
+            --bg-deep: #0f172a;
+            --bg-surface: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-subtle: #334155;
+            --radius-lg: 12px;
         }
 
-        .nav-content {
-          padding: 0 var(--space-4);
+        [data-theme="light"] {
+            --bg-deep: #f8fafc;
+            --bg-surface: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-subtle: #e2e8f0;
         }
 
-        .nav-back-text {
-          display: none;
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-bottom: 3rem;
         }
 
-        .main-content {
-          padding-top: calc(var(--nav-height) + var(--safe-area-top) + var(--space-4));
-          padding-left: var(--space-4);
-          padding-right: var(--space-4);
+        .container {
+            max-width: 1000px;
+            padding: 2rem;
         }
 
-        .card {
-          padding: var(--space-4);
+        .header-section {
+            text-align: center;
+            margin-bottom: 2.5rem;
         }
 
-        .input-row {
-          flex-direction: column;
+        .header-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .text-input,
-        .unit-select {
-          width: 100%;
+        .tool-card {
+            background: var(--bg-surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-subtle);
+            padding: 2rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
         }
 
-        .options {
-          flex-direction: column;
-          gap: var(--space-2);
+        .ads-placeholder {
+            background: rgba(0,0,0,0.05);
+            border: 1px dashed var(--border-subtle);
+            border-radius: var(--radius-lg);
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 1.5rem 0;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
         }
 
-        .parsed-table th {
-          width: 100px;
-          font-size: 0.8125rem;
+        textarea {
+            width: 100%;
+            height: 150px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
         }
 
-        .parsed-table th,
-        .parsed-table td {
-          padding: var(--space-2) var(--space-3);
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
         }
-      }
 
-      /* Desktop */
-      @media (min-width: 768px) {
-        .nav-back-text {
-          display: inline;
+        .btn-group button {
+            flex: 1;
+            min-width: 120px;
         }
-      }
 
-      @media (min-width: 1024px) {
-        .main-content {
-          padding-top: calc(var(--nav-height) + var(--safe-area-top) + var(--space-8));
+        .parse-results {
+            margin-top: 2rem;
+            border-top: 1px solid var(--border-subtle);
+            padding-top: 1.5rem;
         }
-      }
 
-      /* ============================================
-         Accessibility
-         ============================================ */
-      @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.01ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.01ms !important;
+        .parse-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 0.9rem;
         }
-      }
 
-      :focus-visible {
-        outline: 2px solid var(--color-accent-primary);
-        outline-offset: 2px;
-      }
+        .parse-item span:first-child {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
 
-      button:focus:not(:focus-visible),
-      a:focus:not(:focus-visible),
-      input:focus:not(:focus-visible) {
-        outline: none;
-      }
+        .parse-item span:last-child {
+            word-break: break-all;
+            text-align: right;
+            max-width: 70%;
+        }
+
+        .article-content {
+            line-height: 1.8;
+            background: var(--bg-surface);
+            padding: 2.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .article-content h2 {
+            color: var(--primary-color);
+            margin-top: 2rem;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            z-index: 100;
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 1rem; }
+            .header-section h1 { font-size: 1.8rem; }
+            .tool-card { padding: 1.2rem; }
+        }
     </style>
-  </head>
-  <body>
-    <!-- Navigation Bar -->
-    <nav class="nav-bar">
-      <div class="nav-content">
-        <a href="../../index.html" class="nav-back" aria-label="返回首页">
-          <svg
-            class="nav-back-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polyline points="15 18 9 12 15 6"></polyline>
-          </svg>
-          <span class="nav-back-text">首页</span>
-        </a>
+</head>
+<body>
+    <div class="container">
+        <button class="outline secondary theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
 
-        <h1 class="nav-title">URL 编解�?/h1>
+        <header class="header-section">
+            <nav aria-label="breadcrumb">
+                <ul>
+                    <li><a href="/">首页</a></li>
+                    <li><a href="/tools/dev/">开发工具</a></li>
+                    <li>URL 编解码</li>
+                </ul>
+            </nav>
+            <h1>URL 编解码工具</h1>
+            <p>专业、安全、高效的在线 URL 转换与解析服务</p>
+        </header>
 
-        <div class="nav-actions">
-          <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
-            <svg
-              class="theme-icon-light"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-            </svg>
-            <svg
-              class="theme-icon-dark"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <circle cx="12" cy="12" r="5"></circle>
-              <line x1="12" y1="1" x2="12" y2="3"></line>
-              <line x1="12" y1="21" x2="12" y2="23"></line>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-              <line x1="1" y1="12" x2="3" y2="12"></line>
-              <line x1="21" y1="12" x2="23" y2="12"></line>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-            </svg>
-          </button>
+        <div class="ads-placeholder">
+            <!-- Google AdSense Placeholder -->
+            <span>广告位展示区域</span>
         </div>
-      </div>
-    </nav>
 
-    <!-- Main Content -->
-    <main class="main-content">
-      <div class="container">
-        <!-- URL Codec Card -->
-        <div class="card">
-          <h2 class="card-title">URL 编解�?/h2>
+        <main class="tool-card">
+            <label for="input">输入 URL 或文本</label>
+            <textarea id="input" placeholder="请在此粘贴需要编码或解码的内容..." oninput="autoProcess()"></textarea>
 
-          <div class="input-row" style="margin-bottom: var(--space-4)">
-            <button id="btnPaste">粘贴</button>
-            <button id="btnEncode" class="primary">编码</button>
-            <button id="btnDecode" class="primary">解码</button>
-            <button id="btnCopy">复制输出</button>
-            <button id="btnShare">分享链接</button>
-            <button id="btnClear">清空</button>
-          </div>
-
-          <div class="options">
-            <label>
-              <input type="radio" name="mode" value="component" checked />
-              组件编码 (encodeURIComponent)
-            </label>
-            <label>
-              <input type="radio" name="mode" value="uri" />
-              完整 URI (encodeURI)
-            </label>
-          </div>
-
-          <div class="panels">
-            <div class="panel">
-              <label for="input">输入</label>
-              <textarea id="input" placeholder="输入 URL 或文�?.."></textarea>
+            <div class="btn-group">
+                <button onclick="handleEncode(true)">组件编码 (Component)</button>
+                <button onclick="handleEncode(false)">完整编码 (URI)</button>
+                <button class="contrast" onclick="handleDecode()">一键解码 (Decode)</button>
+                <button class="secondary" onclick="clearAll()">清空内容</button>
             </div>
-            <div class="panel">
-              <label for="output">输出</label>
-              <textarea id="output" readonly placeholder="结果将显示在这里..."></textarea>
+
+            <label for="output">输出结果</label>
+            <textarea id="output" readonly placeholder="处理结果将在此显示..."></textarea>
+            <button class="outline" onclick="copyResult()">复制结果</button>
+
+            <div id="urlDetails" class="parse-results" style="display: none;">
+                <h3><i class="fas fa-search"></i> URL 结构解析</h3>
+                <div id="parseContainer"></div>
             </div>
-          </div>
+        </main>
 
-          <div id="status" class="status"></div>
+        <div class="ads-placeholder">
+            <!-- Google AdSense Placeholder -->
+            <span>广告位展示区域</span>
+        </div>
 
-          <div class="url-parser">
-            <h3>URL 解析</h3>
-            <button id="btnParse">解析 URL</button>
-            <table
-              id="parsedTable"
-              class="parsed-table"
-              style="display: none; margin-top: var(--space-4)"
-            >
-              <tbody>
-                <tr>
-                  <th>协议</th>
-                  <td id="urlProtocol"></td>
-                </tr>
-                <tr>
-                  <th>主机</th>
-                  <td id="urlHost"></td>
-                </tr>
-                <tr>
-                  <th>端口</th>
-                  <td id="urlPort"></td>
-                </tr>
-                <tr>
-                  <th>路径</th>
-                  <td id="urlPath"></td>
-                </tr>
-                <tr>
-                  <th>查询参数</th>
-                  <td id="urlSearch"></td>
-                </tr>
-                <tr>
-                  <th>Hash</th>
-                  <td id="urlHash"></td>
-                </tr>
-              </tbody>
+        <article class="article-content">
+            <h2>什么是 URL 编解码？为什么它至关重要？</h2>
+            <p>在互联网通信中，URL（统一资源定位符）只能包含有限的字符集。根据 RFC 标准，只有字母、数字和少量的特殊符号（如 <code>- _ . ~</code>）可以直接使用。其他字符（如中文字符、空格、甚至是 <code>& ? =</code> 等特殊功能符号）如果直接出现在参数中，可能会导致服务器解析错误或浏览器访问失败。</p>
+            <p><strong>URL 编码</strong>（也称为百分号编码）通过将非 ASCII 字符转换为 <code>%</code> 后跟两个十六进制数字的形式，确保链接在传输过程中的安全性。<strong>URL 解码</strong>则是将这些编码后的字符还原为原始的可读形式。</p>
+
+            <h2>本工具的独特优势</h2>
+            <ul>
+                <li><strong>隐私保护：</strong> 所有的编解码操作均在您的浏览器本地完成，数据不会上传到服务器，确保敏感 API 密钥和个人隐私的安全。</li>
+                <li><strong>双模式支持：</strong> 提供 <code>encodeURIComponent</code>（适合参数编码）和 <code>encodeURI</code>（适合完整链接编码）两种模式，解决不同开发场景下的需求。</li>
+                <li><strong>结构化解析：</strong> 自动识别并拆分 URL 的协议、域名、路径及查询参数，让复杂的链接一眼看穿。</li>
+                <li><strong>移动端适配：</strong> 响应式设计确保您在手机上也能流畅地调试接口。</li>
+            </ul>
+
+            <h2>常见应用场景</h2>
+            <h3>1. 处理中文链接</h3>
+            <p>当您在微信或 QQ 中分享包含中文的链接时，经常会看到链接变成了一串 <code>%E4%BD%A0%E5%A5%BD</code>。使用本工具的“一键解码”功能，可以瞬间还原这些链接的本来面目。</p>
+
+            <h3>2. 修复 API 请求错误</h3>
+            <p>在进行后端开发或 API 调试时，如果参数中包含 <code>&</code> 或 <code>#</code> 等特殊字符，不经过编码直接拼接在 URL 后方会导致参数被截断。使用“组件编码”可以完美解决这一问题。</p>
+
+            <h3>3. 清理冗余追踪参数</h3>
+            <p>通过本工具的“结构化解析”功能，您可以清晰地看到 URL 中包含的 UTM 追踪参数，并手动剔除不必要的部分，让链接更简洁。</p>
+
+            <h2>开发者指南：encodeURI vs encodeURIComponent</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>函数</th>
+                        <th>保留字符 (不编码)</th>
+                        <th>最佳用途</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>encodeURI</code></td>
+                        <td><code>; , / ? : @ & = + $ #</code></td>
+                        <td>对完整的 URL 进行编码，保留协议和域名结构。</td>
+                    </tr>
+                    <tr>
+                        <td><code>encodeURIComponent</code></td>
+                        <td>无 (仅保留字母数字和 <code>- _ . ! ~ * ' ( )</code>)</td>
+                        <td>对 URL 中的单个参数值进行编码，防止参数内的特殊字符破坏链接结构。</td>
+                    </tr>
+                </tbody>
             </table>
-          </div>
-
-          <div class="info">
-            <strong>组件编码 vs 完整 URI�?/strong>
-            <br />
-            · encodeURIComponent: 编码所有特殊字符，适合编码查询参数�?
-            <br />
-            · encodeURI: 保留 URL 结构字符 (: / ? # �?，适合编码完整 URL
-          </div>
-        </div>
-
-        <footer>
-          <a
-            href="https://github.com/chicogong/html-tools/blob/main/tools/dev/url-codec.html"
-            target="_blank"
-            rel="noreferrer"
-          >
-            View source
-          </a>
-          · 纯前端工�?· 无服务器 ·
-          <a href="../../index.html">WebUtils</a>
-        </footer>
-      </div>
-    </main>
+        </article>
+    </div>
 
     <script>
-      // ============================================
-      // Elements
-      // ============================================
-      var inputEl = document.getElementById("input");
-      var outputEl = document.getElementById("output");
-      var statusEl = document.getElementById("status");
-      var parsedTable = document.getElementById("parsedTable");
+        const inputEl = document.getElementById('input');
+        const outputEl = document.getElementById('output');
+        const parseContainer = document.getElementById('parseContainer');
+        const urlDetails = document.getElementById('urlDetails');
 
-      var LS_KEY = "url_codec_input_v1";
-
-      // ============================================
-      // Utility Functions
-      // ============================================
-      function getMode() {
-        return document.querySelector('input[name="mode"]:checked').value;
-      }
-
-      function showStatus(msg, type) {
-        statusEl.textContent = msg;
-        statusEl.className = "status " + (type || "");
-      }
-
-      // ============================================
-      // URL State Management
-      // ============================================
-      window.loadFromUrl = function () {
-        var hash = location.hash.slice(1);
-        if (!hash) return false;
-        try {
-          inputEl.value = decodeURIComponent(atob(hash));
-          return true;
-        } catch (e) {
-          return false;
-        }
-      };
-
-      function saveToUrl() {
-        try {
-          var encoded = btoa(encodeURIComponent(inputEl.value));
-          history.replaceState(null, "", "#" + encoded);
-        } catch (e) {
-          // Silent fail
-        }
-      }
-
-      // ============================================
-      // localStorage
-      // ============================================
-      function loadFromStorage() {
-        var saved = localStorage.getItem(LS_KEY);
-        if (saved) {
-          inputEl.value = saved;
-        }
-      }
-
-      function saveToStorage() {
-        localStorage.setItem(LS_KEY, inputEl.value);
-      }
-
-      // ============================================
-      // Encoding/Decoding Functions
-      // ============================================
-      function encode() {
-        var text = inputEl.value;
-        if (!text) {
-          showStatus("请输入内�?, "error");
-          return;
+        function handleEncode(isComponent) {
+            const val = inputEl.value;
+            if (!val) return;
+            try {
+                outputEl.value = isComponent ? encodeURIComponent(val) : encodeURI(val);
+                tryParse(val);
+            } catch (e) {
+                alert('编码失败: ' + e.message);
+            }
         }
 
-        try {
-          var mode = getMode();
-          var encoded = mode === "component" ? encodeURIComponent(text) : encodeURI(text);
-          outputEl.value = encoded;
-          showStatus("编码成功", "success");
-        } catch (e) {
-          showStatus("编码失败: " + e.message, "error");
-        }
-      }
-
-      window.decode = function () {
-        var text = inputEl.value;
-        if (!text) {
-          showStatus("请输入内�?, "error");
-          return;
+        function handleDecode() {
+            const val = inputEl.value;
+            if (!val) return;
+            try {
+                const decoded = decodeURIComponent(val);
+                outputEl.value = decoded;
+                tryParse(decoded);
+            } catch (e) {
+                alert('解码失败，请检查输入格式是否正确。');
+            }
         }
 
-        try {
-          var mode = getMode();
-          var decoded = mode === "component" ? decodeURIComponent(text) : decodeURI(text);
-          outputEl.value = decoded;
-          showStatus("解码成功", "success");
-        } catch (e) {
-          showStatus("解码失败: 无效的编码字符串", "error");
-        }
-      };
-
-      // ============================================
-      // URL Parsing
-      // ============================================
-      function parseUrl() {
-        var text = inputEl.value.trim();
-        if (!text) {
-          showStatus("请输�?URL", "error");
-          return;
+        function clearAll() {
+            inputEl.value = '';
+            outputEl.value = '';
+            urlDetails.style.display = 'none';
         }
 
-        try {
-          var url = new URL(text);
-          document.getElementById("urlProtocol").textContent = url.protocol;
-          document.getElementById("urlHost").textContent = url.hostname;
-          document.getElementById("urlPort").textContent = url.port || "(default)";
-          document.getElementById("urlPath").textContent = url.pathname;
-          document.getElementById("urlSearch").textContent = url.search || "(none)";
-          document.getElementById("urlHash").textContent = url.hash || "(none)";
-          parsedTable.style.display = "table";
-          showStatus("URL 解析成功", "success");
-        } catch (e) {
-          parsedTable.style.display = "none";
-          showStatus("无效�?URL 格式", "error");
+        function copyResult() {
+            outputEl.select();
+            document.execCommand('copy');
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerText = '已复制！';
+            setTimeout(() => btn.innerText = originalText, 2000);
         }
-      }
 
-      // ============================================
-      // Event Handlers
-      // ============================================
-      document.getElementById("btnPaste").onclick = async function () {
-        try {
-          var text = await navigator.clipboard.readText();
-          inputEl.value = text;
-          saveToStorage();
-          saveToUrl();
-          showStatus("已粘�?, "success");
-        } catch (e) {
-          showStatus("无法访问剪贴�?, "error");
+        function tryParse(val) {
+            try {
+                const url = new URL(val.startsWith('http') ? val : 'http://' + val);
+                urlDetails.style.display = 'block';
+                let html = `
+                    <div class="parse-item"><span>协议 (Protocol)</span><span>${url.protocol}</span></div>
+                    <div class="parse-item"><span>主机名 (Hostname)</span><span>${url.hostname}</span></div>
+                    <div class="parse-item"><span>端口 (Port)</span><span>${url.port || '默认'}</span></div>
+                    <div class="parse-item"><span>路径 (Path)</span><span>${url.pathname}</span></div>
+                    <div class="parse-item"><span>哈希 (Hash)</span><span>${url.hash || '无'}</span></div>
+                `;
+                
+                const params = new URLSearchParams(url.search);
+                if (params.toString()) {
+                    html += `<div style="margin-top:1rem; font-weight:bold;">查询参数 (Query Params):</div>`;
+                    params.forEach((value, key) => {
+                        html += `<div class="parse-item"><span>${key}</span><span>${value}</span></div>`;
+                    });
+                }
+                parseContainer.innerHTML = html;
+            } catch (e) {
+                urlDetails.style.display = 'none';
+            }
         }
-      };
 
-      document.getElementById("btnEncode").onclick = encode;
-      document.getElementById("btnDecode").onclick = decode;
-      document.getElementById("btnParse").onclick = parseUrl;
-
-      document.getElementById("btnCopy").onclick = async function () {
-        if (!outputEl.value) {
-          showStatus("没有可复制的内容", "error");
-          return;
+        function autoProcess() {
+            const val = inputEl.value;
+            if (val.includes('%')) {
+                // 如果包含百分号，尝试自动解码预览
+                try {
+                    const decoded = decodeURIComponent(val);
+                    if (decoded !== val) tryParse(decoded);
+                } catch(e) {}
+            } else {
+                tryParse(val);
+            }
         }
-        try {
-          await navigator.clipboard.writeText(outputEl.value);
-          showStatus("已复制到剪贴�?, "success");
-        } catch (e) {
-          showStatus("复制失败", "error");
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const btn = document.getElementById('themeBtn');
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            btn.innerText = isDark ? '🌙' : '☀️';
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
         }
-      };
 
-      document.getElementById("btnShare").onclick = async function () {
-        saveToUrl();
-        try {
-          await navigator.clipboard.writeText(location.href);
-          showStatus("分享链接已复�?, "success");
-        } catch (e) {
-          showStatus("复制失败", "error");
-        }
-      };
-
-      document.getElementById("btnClear").onclick = function () {
-        inputEl.value = "";
-        outputEl.value = "";
-        parsedTable.style.display = "none";
-        localStorage.removeItem(LS_KEY);
-        history.replaceState(null, "", location.pathname);
-        showStatus("已清�?, "success");
-      };
-
-      inputEl.addEventListener("input", function () {
-        saveToStorage();
-        saveToUrl();
-      });
-
-      // ============================================
-      // Theme Management
-      // ============================================
-      function toggleTheme() {
-        var html = document.documentElement;
-        var currentTheme = html.getAttribute("data-theme") || "dark";
-        var newTheme = currentTheme === "light" ? "dark" : "light";
-
-        html.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
-      }
-
-      function initTheme() {
-        var savedTheme = localStorage.getItem("theme");
-        var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        var theme = savedTheme || (prefersDark ? "dark" : "light");
-
-        document.documentElement.setAttribute("data-theme", theme);
-      }
-
-      // ============================================
-      // Initialize
-      // ============================================
-      initTheme();
-      if (!loadFromUrl()) {
-        loadFromStorage();
-      }
+        // Init theme
+        const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.getElementById('themeBtn').innerText = savedTheme === 'dark' ? '☀️' : '🌙';
     </script>
-  </body>
+</body>
 </html>
-

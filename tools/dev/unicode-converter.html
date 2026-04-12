@@ -1,422 +1,304 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Unicode 转换�?- WebUtils</title>
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Unicode 编解码，支持 \uXXXX、HTML 实体等格�? />
-    <meta name="keywords" content="unicode 编码 解码 utf8 码点 字符" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/dev/unicode-converter.html" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unicode 转换器 - 在线文本与 Unicode 互转 - WebUtils</title>
+    <meta name="description" content="专业的在线 Unicode 转换工具。支持文本与 Unicode 码点（\uXXXX）、HTML 实体、CSS 编码之间的批量互转。提供多种格式选项，完美解决开发中的编码转换问题，支持大文本处理。">
+    <meta name="keywords" content="Unicode转换,文本转Unicode,Unicode转文本,HTML实体转换,CSS编码转换,WebUtils">
+    <meta name="author" content="WebUtils">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://essays4u.net/tools/dev/unicode-converter.html">
 
     <!-- Open Graph -->
-    <meta property="og:title" content="Unicode 转换�?- WebUtils" />
-    <meta property="og:description" content="Unicode 编解码，支持 \uXXXX、HTML 实体等格�? />
-    <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/dev/unicode-converter.html"
-    />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:title" content="Unicode 转换器 - WebUtils">
+    <meta property="og:description" content="一键完成文本与各种 Unicode 格式的互转，支持 JS、HTML、CSS 等多种场景。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://essays4u.net/tools/dev/unicode-converter.html">
+    <meta property="og:image" content="https://essays4u.net/social-preview.png">
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Unicode 转换�?- WebUtils" />
-    <meta name="twitter:description" content="Unicode 编解码，支持 \uXXXX、HTML 实体等格�? />
-    <!-- OG Image -->
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
     <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--color-bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-      }
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      body {
-        font-family: var(--font-sans);
-        background: var(--color-bg-deep);
-        color: var(--color-text-primary);
-        min-height: 100vh;
-        line-height: 1.6;
-      }
-      .bg-grid {
-        position: fixed;
-        inset: 0;
-        background-image:
-          linear-gradient(rgba(0, 245, 212, 0.03) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(0, 245, 212, 0.03) 1px, transparent 1px);
-        background-size: 50px 50px;
-        pointer-events: none;
-        z-index: 0;
-      }
-      .container {
-        position: relative;
-        z-index: 1;
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 2rem 1.5rem;
-      }
-      .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: var(--color-text-secondary);
-        text-decoration: none;
-        font-size: 0.9rem;
-        margin-bottom: 2rem;
-        padding: 0.5rem 0.75rem;
-        border-radius: var(--radius-sm);
-        transition: all 0.2s;
-      }
-      .back-link:hover {
-        color: var(--color-accent-cyan);
-        background: var(--color-bg-card);
-      }
-      h1 {
-        font-size: 2rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        background: linear-gradient(135deg, var(--color-text-primary), var(--color-accent-cyan));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-      .subtitle {
-        color: var(--color-text-secondary);
-        margin-bottom: 2rem;
-      }
-      .card {
-        background: var(--color-bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-lg);
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-      }
-      .card-title {
-        font-weight: 500;
-        color: var(--color-text-secondary);
-        margin-bottom: 1rem;
-        font-size: 0.9rem;
-      }
-      textarea {
-        width: 100%;
-        height: 100px;
-        padding: 1rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        background: var(--color-bg-surface);
-        color: var(--color-text-primary);
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-        resize: vertical;
-        margin-bottom: 1rem;
-      }
-      textarea:focus {
-        outline: none;
-        border-color: var(--color-accent-cyan);
-      }
-      .btn {
-        padding: 0.5rem 1rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        background: var(--bg-hover);
-        color: var(--color-text-primary);
-        cursor: pointer;
-        font-size: 0.85rem;
-        transition: all 0.2s;
-        margin-right: 0.5rem;
-        margin-bottom: 0.5rem;
-      }
-      .btn:hover {
-        border-color: var(--color-accent-cyan);
-        color: var(--color-accent-cyan);
-      }
-      .output {
-        background: var(--color-bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        padding: 1rem;
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        word-break: break-all;
-        min-height: 60px;
-      }
-      .char-table {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 0.75rem;
-        margin-top: 1rem;
-      }
-      .char-item {
-        background: var(--color-bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        padding: 0.75rem;
-        text-align: center;
-      }
-      .char-display {
-        font-size: 1.5rem;
-        margin-bottom: 0.5rem;
-      }
-      .char-info {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-        font-family: var(--font-mono);
-      }
-      footer {
-        margin-top: 3rem;
-        padding-top: 1.5rem;
-        border-top: 1px solid var(--border-subtle);
-        text-align: center;
-        color: var(--text-muted);
-        font-size: 0.85rem;
-      }
-      footer a {
-        color: var(--color-accent-cyan);
-        text-decoration: none;
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-    </style>
-  </head>
-  <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      Unicode 转换�?
-    </nav>
-    <div class="bg-grid"></div>
-    <div class="container">
-      <a href="../../index.html" class="back-link">�?返回</a>
-      <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">🌙</button>
-      <h1>Unicode 转换�?/h1>
-      <p class="subtitle">字符�?Unicode 编码互转</p>
-
-      <div class="card">
-        <div class="card-title">文本 �?Unicode</div>
-        <textarea id="textInput" placeholder="输入文本...">你好世界 Hello</textarea>
-        <button class="btn" onclick="toUnicodeEscape()">�?\uXXXX</button>
-        <button class="btn" onclick="toHtmlEntity()">�?HTML 实体</button>
-        <button class="btn" onclick="toCodePoints()">转码�?/button>
-        <button class="btn" onclick="toUtf8Hex()">�?UTF-8 Hex</button>
-        <div class="output" id="encodeOutput"></div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Unicode �?文本</div>
-        <textarea
-          id="unicodeInput"
-          placeholder="输入 Unicode (�?\u4f60\u597d �?&#x4f60; �?U+4F60)"
-        ></textarea>
-        <button class="btn" onclick="fromUnicode()">解码</button>
-        <div class="output" id="decodeOutput"></div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">字符详情</div>
-        <div class="char-table" id="charTable"></div>
-      </div>
-
-      <footer>
-        <a href="https://github.com/chicogong/html-tools" target="_blank">GitHub</a>
-      </footer>
-    </div>
-    <script>
-      const textInput = document.getElementById("textInput");
-      const encodeOutput = document.getElementById("encodeOutput");
-      const unicodeInput = document.getElementById("unicodeInput");
-      const decodeOutput = document.getElementById("decodeOutput");
-      const charTable = document.getElementById("charTable");
-
-      textInput.addEventListener("input", updateCharTable);
-
-      function toUnicodeEscape() {
-        const text = textInput.value;
-        const result = Array.from(text)
-          .map((c) => {
-            const code = c.codePointAt(0);
-            if (code > 0xffff) {
-              return "\\u{" + code.toString(16).toUpperCase() + "}";
-            }
-            return "\\u" + code.toString(16).toUpperCase().padStart(4, "0");
-          })
-          .join("");
-        encodeOutput.textContent = result;
-      }
-
-      window.toHtmlEntity = function () {
-        const text = textInput.value;
-        const result = Array.from(text)
-          .map((c) => {
-            return "&#x" + c.codePointAt(0).toString(16).toUpperCase() + ";";
-          })
-          .join("");
-        encodeOutput.textContent = result;
-      };
-
-      window.toCodePoints = function () {
-        const text = textInput.value;
-        const result = Array.from(text)
-          .map((c) => {
-            return "U+" + c.codePointAt(0).toString(16).toUpperCase().padStart(4, "0");
-          })
-          .join(" ");
-        encodeOutput.textContent = result;
-      };
-
-      window.toUtf8Hex = function () {
-        const text = textInput.value;
-        const encoder = new TextEncoder();
-        const bytes = encoder.encode(text);
-        const result = Array.from(bytes)
-          .map((b) => b.toString(16).toUpperCase().padStart(2, "0"))
-          .join(" ");
-        encodeOutput.textContent = result;
-      };
-
-      window.fromUnicode = function () {
-        let text = unicodeInput.value;
-        // Handle \uXXXX and \u{XXXXX}
-        text = text.replace(/\\u\{([0-9a-fA-F]+)\}/g, (_, hex) =>
-          String.fromCodePoint(parseInt(hex, 16))
-        );
-        text = text.replace(/\\u([0-9a-fA-F]{4})/g, (_, hex) =>
-          String.fromCharCode(parseInt(hex, 16))
-        );
-        // Handle &#xXXXX; and &#NNNN;
-        text = text.replace(/&#x([0-9a-fA-F]+);/gi, (_, hex) =>
-          String.fromCodePoint(parseInt(hex, 16))
-        );
-        text = text.replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(parseInt(dec, 10)));
-        // Handle U+XXXX
-        text = text.replace(/U\+([0-9a-fA-F]+)/gi, (_, hex) =>
-          String.fromCodePoint(parseInt(hex, 16))
-        );
-        decodeOutput.textContent = text;
-      };
-
-      function updateCharTable() {
-        const text = textInput.value;
-        const chars = Array.from(text).slice(0, 20); // Limit to 20 chars
-        charTable.innerHTML = chars
-          .map((c) => {
-            const code = c.codePointAt(0);
-            return `<div class="char-item">
-          <div class="char-display">${c}</div>
-          <div class="char-info">U+${code.toString(16).toUpperCase().padStart(4, "0")}<br>${code}</div>
-        </div>`;
-          })
-          .join("");
-      }
-
-      updateCharTable();
-      toUnicodeEscape();
-
-      window.toggleTheme = function () {
-        const html = document.documentElement;
-        const btn = document.querySelector(".theme-toggle");
-        const next = html.getAttribute("data-theme") === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", next);
-        btn.textContent = next === "light" ? "☀�? : "🌙";
-        localStorage.setItem("theme", next);
-      };
-      (function () {
-        const saved = localStorage.getItem("theme");
-        if (saved) {
-          document.documentElement.setAttribute("data-theme", saved);
-          const btn = document.querySelector(".theme-toggle");
-          if (btn) btn.textContent = saved === "light" ? "☀�? : "🌙";
+        :root {
+            --primary-color: #f59e0b;
+            --bg-deep: #0f172a;
+            --bg-surface: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-subtle: #334155;
+            --radius-lg: 12px;
         }
-      })();
-    </script>
-  </body>
-</html>
 
+        [data-theme="light"] {
+            --bg-deep: #f8fafc;
+            --bg-surface: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-subtle: #e2e8f0;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-bottom: 3rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            padding: 2rem;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .header-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tool-card {
+            background: var(--bg-surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-subtle);
+            padding: 2rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .ads-placeholder {
+            background: rgba(0,0,0,0.05);
+            border: 1px dashed var(--border-subtle);
+            border-radius: var(--radius-lg);
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 1.5rem 0;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .options-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn-group button {
+            flex: 1;
+        }
+
+        .article-content {
+            line-height: 1.8;
+            background: var(--bg-surface);
+            padding: 2.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .article-content h2 {
+            color: var(--primary-color);
+            margin-top: 2rem;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            z-index: 100;
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 1rem; }
+            .header-section h1 { font-size: 1.8rem; }
+            .tool-card { padding: 1.2rem; }
+            .controls { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="outline secondary theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
+
+        <header class="header-section">
+            <nav aria-label="breadcrumb">
+                <ul>
+                    <li><a href="/">首页</a></li>
+                    <li><a href="/tools/dev/">开发工具</a></li>
+                    <li>Unicode 转换器</li>
+                </ul>
+            </nav>
+            <h1>Unicode 转换器</h1>
+            <p>文本与多种 Unicode 编码格式的一键批量转换工具</p>
+        </header>
+
+        <div class="ads-placeholder">
+            <!-- Google AdSense Placeholder -->
+            <span>广告位展示区域</span>
+        </div>
+
+        <main class="tool-card">
+            <div class="controls">
+                <div class="options-group">
+                    <label>源内容 (左)</label>
+                    <textarea id="leftText" placeholder="在此输入普通文本或编码后的内容..."></textarea>
+                </div>
+                <div class="options-group">
+                    <label>转换结果 (右)</label>
+                    <textarea id="rightText" placeholder="转换后的内容将在此显示..."></textarea>
+                </div>
+            </div>
+
+            <div class="options-group">
+                <label for="format">目标格式</label>
+                <select id="format" onchange="convert()">
+                    <option value="js">JavaScript (\\uXXXX)</option>
+                    <option value="html-hex">HTML 实体 (十六进制 &#xXXXX;)</option>
+                    <option value="html-dec">HTML 实体 (十进制 &#XXXX;)</option>
+                    <option value="css">CSS 编码 (\\XXXX)</option>
+                </select>
+            </div>
+
+            <div class="btn-group">
+                <button onclick="toUnicode()">文本 ➔ Unicode <i class="fas fa-arrow-right"></i></button>
+                <button class="contrast" onclick="fromUnicode()"><i class="fas fa-arrow-left"></i> Unicode ➔ 文本</button>
+                <button class="secondary" onclick="clearAll()">清空</button>
+            </div>
+            <button class="outline" style="margin-top: 1rem; width: 100%;" onclick="copyResult()">复制右侧结果</button>
+        </main>
+
+        <div class="ads-placeholder">
+            <!-- Google AdSense Placeholder -->
+            <span>广告位展示区域</span>
+        </div>
+
+        <article class="article-content">
+            <h2>什么是 Unicode 转换？为什么它在开发中不可或缺？</h2>
+            <p>在跨平台开发、多语言支持以及解决 Web 兼容性问题时，我们经常需要将普通文本转换为各种特定格式的 Unicode 编码。<strong>Unicode 转换器</strong>可以将人类可读的字符（如中文、表情符号）转换为机器更容易识别或在特定上下文中合法的转义序列。</p>
+
+            <h2>本工具支持的格式详解</h2>
+            <ul>
+                <li><strong>JavaScript (<code>\uXXXX</code>)：</strong> 这是最常用的 Unicode 转义格式。在 JS 字符串中，如果您想确保中文字符不因为文件编码问题而乱码，可以将其转换为这种格式。</li>
+                <li><strong>HTML 实体 (<code>&#xXXXX;</code>)：</strong> 用于 HTML 文档中，确保浏览器能够正确解析特殊字符，特别是在处理非法字符或需要展示源码时。</li>
+                <li><strong>CSS 编码 (<code>\XXXX</code>)：</strong> 常用于 CSS 的 <code>content</code> 属性中，例如在伪元素（<code>::before</code>）中插入图标或特殊符号。</li>
+            </ul>
+
+            <h2>本工具解决的具体痛点</h2>
+            <h3>1. 彻底解决网页乱码</h3>
+            <p>如果您的项目由于历史原因必须使用 GBK 编码，但需要显示一些特殊的 UTF-8 字符，将其转换为 Unicode 实体是目前最稳妥的解决方案。转换后的内容可以在任何编码环境下被浏览器正确还原。</p>
+
+            <h3>2. 编写健壮的正则表达式</h3>
+            <p>在编写处理特定语言（如汉字范围 <code>\u4e00-\u9fa5</code>）的正则表达式时，直接使用 Unicode 码点比直接写汉字更规范且易于维护。本工具可以帮助您快速获取这些码点。</p>
+
+            <h3>3. 在 CSS 中插入自定义图标</h3>
+            <p>使用图标字体（如 FontAwesome）时，您需要通过 CSS 的 <code>content</code> 属性指定特定字符。本工具可以快速将图标的码点转换为 CSS 兼容的转义格式。</p>
+
+            <h2>操作指南</h2>
+            <p>1. <strong>文本转 Unicode：</strong> 在左侧框输入文字，选择目标格式，点击“文本 ➔ Unicode”。</p>
+            <p>2. <strong>Unicode 转文本：</strong> 在左侧框粘贴编码后的内容（支持自动识别混合文本），点击“Unicode ➔ 文本”。</p>
+            <p>3. <strong>隐私提示：</strong> 本工具完全在您的浏览器端运行，不会发送任何数据到云端，请放心转换敏感信息。</p>
+        </article>
+    </div>
+
+    <script>
+        const leftText = document.getElementById('leftText');
+        const rightText = document.getElementById('rightText');
+        const formatSelect = document.getElementById('format');
+
+        function toUnicode() {
+            const input = leftText.value;
+            const format = formatSelect.value;
+            let result = '';
+
+            for (let i = 0; i < input.length; i++) {
+                const charCode = input.charCodeAt(i);
+                // 仅转换非 ASCII 字符或根据格式需要全转
+                if (charCode > 127 || format !== 'js') {
+                    const hex = charCode.toString(16).toUpperCase().padStart(4, '0');
+                    switch (format) {
+                        case 'js': result += '\\u' + hex; break;
+                        case 'html-hex': result += '&#x' + hex + ';'; break;
+                        case 'html-dec': result += '&#' + charCode + ';'; break;
+                        case 'css': result += '\\' + hex; break;
+                    }
+                } else {
+                    result += input[i];
+                }
+            }
+            rightText.value = result;
+        }
+
+        function fromUnicode() {
+            let input = leftText.value;
+            // 尝试匹配各种格式
+            // \uXXXX
+            input = input.replace(/\\u([0-9a-fA-F]{4})/g, (match, grp) => String.fromCharCode(parseInt(grp, 16)));
+            // &#xXXXX;
+            input = input.replace(/&#x([0-9a-fA-F]{1,4});/g, (match, grp) => String.fromCharCode(parseInt(grp, 16)));
+            // &#XXXX;
+            input = input.replace(/&#(\d{1,5});/g, (match, grp) => String.fromCharCode(parseInt(grp, 10)));
+            // \XXXX
+            input = input.replace(/\\([0-9a-fA-F]{4})/g, (match, grp) => String.fromCharCode(parseInt(grp, 16)));
+
+            rightText.value = input;
+        }
+
+        function clearAll() {
+            leftText.value = '';
+            rightText.value = '';
+        }
+
+        function copyResult() {
+            rightText.select();
+            document.execCommand('copy');
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerText = '已复制！';
+            setTimeout(() => btn.innerText = originalText, 2000);
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const btn = document.getElementById('themeBtn');
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            btn.innerText = isDark ? '🌙' : '☀️';
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        }
+
+        // Init theme
+        const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.getElementById('themeBtn').innerText = savedTheme === 'dark' ? '☀️' : '🌙';
+    </script>
+</body>
+</html>
