@@ -1,352 +1,235 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="dark">
+<html lang="zh-CN">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MCP 协议完整指南 - WebUtils</title>
+    <title>MCP 协议完整指南 - AI 时代的万能接口协议 - WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="MCP 协议完整指南 - WebUtils" />
-    <meta name="keywords" content="mcp-protocol-guide,ai,tools,webutils" />
+    <meta name="description" content="深入解析 Model Context Protocol (MCP) 协议架构、核心概念（Resources, Tools, Prompts）及开发部署流程。AI 领域的 USB-C 标准协议详解，助你掌握 AI 代理开发的核心技术。" />
+    <meta name="keywords" content="MCP 协议,Model Context Protocol,JSON-RPC 2.0,AI 接口协议,Resources,Tools,Prompts,Anthropic,AI 代理开发,WebUtils" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/ai/mcp-protocol-guide.html" />
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="MCP 协议完整指南 - WebUtils" />
-    <meta property="og:description" content="MCP 协议完整指南 - WebUtils" />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content="MCP 协议完整指南 - AI 时代的万能接口协议 - WebUtils" />
+    <meta property="og:description" content="深度解析 MCP 协议底层逻辑，探索 AI 时代的“万能接口”。含交互式架构演示。" />
     <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/ai/mcp-protocol-guide.html"
-    />
+    <meta property="og:url" content="https://essays4u.net/tools/ai/mcp-protocol-guide.html" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
     <meta property="og:site_name" content="WebUtils" />
     <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
 
     <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="MCP 协议完整指南 - WebUtils" />
-    <meta name="twitter:description" content="MCP 协议完整指南 - WebUtils" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="MCP 协议完整指南 - AI 时代的万能接口协议 - WebUtils" />
+    <meta name="twitter:description" content="深入解析 MCP 协议架构与核心概念，掌握 AI 2.0 时代的标准化接入范式。" />
     <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
 
-    <meta
-      name="description"
-      content="Model Context Protocol：AI领域的USB-C，连接大模型与外部世界的标准协议"
-    />
-    <meta
-      name="keywords"
-      content="MCP,Model Context Protocol,Anthropic,Claude,工具调用,Agent,协议"
-    />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "MCP (Model Context Protocol) 协议完整指南",
+      "description": "详细解析 Model Context Protocol 的技术架构与核心概念。",
+      "author": {
+        "@type": "Organization",
+        "name": "WebUtils"
+      },
+      "image": "https://essays4u.net/social-preview.png"
+    }
+    </script>
 
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
+    <!-- Google AdSense Header Placeholder -->
+    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
 
-      :root {
-        --primary-color: #8b5cf6;
-        --secondary-color: #06b6d4;
-        --accent-color: #f59e0b;
-        --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-      }
-      body {
-        background: var(--bg-gradient);
-        min-height: 100vh;
-      }
-      .container {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 2rem 1rem;
-      }
-      header {
-        text-align: center;
-        margin-bottom: 2rem;
-      }
-      .logo {
-        font-size: 3rem;
-        margin-bottom: 0.5rem;
-      }
-      .badge {
-        display: inline-block;
-        background: var(--primary-color);
-        color: white;
-        padding: 0.25rem 0.75rem;
-        border-radius: 1rem;
-        font-size: 0.8rem;
-        margin-left: 0.5rem;
-        font-weight: 600;
-      }
-      .badge.anthropic {
-        background: #d97706;
-      }
-      .badge.open {
-        background: #10b981;
-      }
-      .card {
-        background: var(--pico-card-background-color);
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        border: 1px solid var(--pico-muted-border-color);
-      }
-      .card h3 {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-        color: var(--primary-color);
-      }
-      .features-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 1rem;
-      }
-      .feature-item {
-        background: rgba(139, 92, 246, 0.1);
-        border-radius: 8px;
-        padding: 1rem;
-        border-left: 3px solid var(--primary-color);
-      }
-      .feature-item.cyan {
-        background: rgba(6, 182, 212, 0.1);
-        border-left-color: var(--secondary-color);
-      }
-      .feature-item.orange {
-        background: rgba(245, 158, 11, 0.1);
-        border-left-color: var(--accent-color);
-      }
-      .feature-item h4 {
-        margin-bottom: 0.5rem;
-        font-size: 1rem;
-      }
-      .feature-item p {
-        font-size: 0.9rem;
-        color: var(--pico-muted-color);
-        margin: 0;
-      }
-      .stat-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 1rem;
-        margin: 1.5rem 0;
-      }
-      .stat-item {
-        background: linear-gradient(
-          135deg,
-          rgba(139, 92, 246, 0.2) 0%,
-          rgba(6, 182, 212, 0.2) 100%
-        );
-        border-radius: 12px;
-        padding: 1.25rem;
-        text-align: center;
-        border: 1px solid rgba(139, 92, 246, 0.3);
-      }
-      .stat-item .number {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--primary-color);
-        display: block;
-      }
-      .stat-item .label {
-        font-size: 0.8rem;
-        color: var(--pico-muted-color);
-        margin-top: 0.25rem;
-      }
-      .highlight-box {
-        background: linear-gradient(
-          135deg,
-          rgba(139, 92, 246, 0.15) 0%,
-          rgba(6, 182, 212, 0.15) 100%
-        );
-        border-left: 4px solid var(--primary-color);
-        padding: 1.5rem;
-        margin: 1.5rem 0;
-        border-radius: 0 12px 12px 0;
-      }
-      .nav-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: var(--pico-muted-color);
-        text-decoration: none;
-        margin-bottom: 1rem;
-      }
-      .nav-link:hover {
-        color: var(--primary-color);
-      }
-      .code-block {
-        background: #1a1a2e;
-        border-radius: 8px;
-        padding: 1rem;
-        overflow-x: auto;
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        margin: 1rem 0;
-        border: 1px solid rgba(139, 92, 246, 0.3);
-      }
-      .architecture-box {
-        background: rgba(0, 0, 0, 0.3);
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin: 1rem 0;
-      }
-      .architecture-flow {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 1rem;
-        flex-wrap: wrap;
-        margin: 1rem 0;
-      }
-      .arch-box {
-        background: var(--primary-color);
-        color: white;
-        padding: 0.75rem 1.25rem;
-        border-radius: 8px;
-        font-weight: 600;
-        text-align: center;
-        min-width: 100px;
-      }
-      .arch-box.client {
-        background: #3b82f6;
-      }
-      .arch-box.server {
-        background: #10b981;
-      }
-      .arch-arrow {
-        color: var(--pico-muted-color);
-        font-size: 1.5rem;
-      }
-      .server-card {
-        background: linear-gradient(
-          135deg,
-          rgba(16, 185, 129, 0.1) 0%,
-          rgba(6, 182, 212, 0.1) 100%
-        );
-        border-radius: 12px;
-        padding: 1.25rem;
-        margin-bottom: 1rem;
-        border: 1px solid rgba(16, 185, 129, 0.3);
-      }
-      .server-card h4 {
-        color: var(--secondary-color);
-        margin-bottom: 0.5rem;
-        font-size: 1rem;
-      }
-      .server-card p {
-        font-size: 0.85rem;
-        color: var(--pico-muted-color);
-        margin: 0;
-      }
-      footer {
-        text-align: center;
-        padding: 2rem 0;
-        color: var(--pico-muted-color);
-        font-size: 0.9rem;
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-    </style>
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+
+    <style>
+      /* ===== CSS 变量 (基于模板) ===== */
+      :root {
+        --bg-body: #0a0a0f;
+        --bg-card: #12121a;
+        --bg-input: #0e0e14;
+        --bg-elevated: #1a1a24;
+        --text-primary: #e8e8ed;
+        --text-secondary: #a0a0b0;
+        --text-muted: #606070;
+        --border-color: #2a2a3a;
+        --border-focus: #3a3a4a;
+        --accent: #00f5d4;
+        --accent-purple: #bf5af2;
+        --success: #30d158;
+        --warning: #ff9f0a;
+        --error: #ff453a;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", "Space Grotesk", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+
+      [data-theme="light"] {
+        --bg-body: #fafafa;
+        --bg-card: #ffffff;
+        --bg-input: #f5f5f5;
+        --bg-elevated: #ffffff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #666;
+        --text-muted: #999;
+        --border-color: #e5e5e5;
+        --border-focus: #d5d5d5;
+        --accent: #00d4b8;
+        --accent-purple: #9b4dca;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      
+      .container { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--border-color); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .header-right { display: flex; align-items: center; gap: 12px; }
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; width: 40px; height: 40px; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+      .theme-toggle:hover { border-color: var(--accent); }
+
+      .ads-container { margin: 24px 0; min-height: 90px; background: rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem; border: 1px dashed var(--border-color); border-radius: var(--radius-md); }
+
+      /* Main Card with Diagram */
+      .main-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; }
+      
+      .diagram-section { padding: 32px; background: var(--bg-input); }
+      .diagram-container { display: flex; align-items: center; justify-content: center; gap: 40px; flex-wrap: wrap; margin-top: 24px; }
+      .arch-node { padding: 16px 24px; border-radius: var(--radius-md); border: 2px solid var(--border-color); text-align: center; min-width: 140px; transition: all 0.3s; position: relative; }
+      .arch-node h4 { font-size: 0.9rem; margin-bottom: 4px; color: var(--text-primary); }
+      .arch-node p { font-size: 0.75rem; color: var(--text-muted); }
+      .arch-node.active { border-color: var(--accent); background: rgba(0, 245, 212, 0.05); transform: scale(1.05); }
+      .arch-arrow { color: var(--text-muted); font-size: 1.5rem; }
+
+      .interactive-pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 32px; }
+      .pillar-card { padding: 20px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; transition: all 0.2s; text-align: center; }
+      .pillar-card:hover { border-color: var(--accent); }
+      .pillar-card.active { border-color: var(--accent); background: rgba(0, 245, 212, 0.05); }
+      .pillar-icon { font-size: 1.5rem; margin-bottom: 12px; display: block; }
+      .pillar-name { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); }
+
+      .pillar-detail { margin-top: 24px; padding: 20px; background: var(--bg-elevated); border-radius: var(--radius-md); border-left: 4px solid var(--accent); display: none; }
+      .pillar-detail.active { display: block; animation: fadeIn 0.3s ease; }
+
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+      /* SEO Content */
+      .seo-content { margin-top: 32px; padding: 32px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); color: var(--text-secondary); font-size: 0.875rem; }
+      .seo-content h2 { color: var(--text-primary); font-size: 1.125rem; margin-bottom: 16px; font-weight: 600; }
+      .seo-content h3 { color: var(--text-primary); font-size: 1rem; margin-top: 24px; margin-bottom: 12px; font-weight: 600; }
+      .seo-content p { margin-bottom: 12px; }
+      .seo-content ul, .seo-content ol { margin-bottom: 16px; padding-left: 20px; }
+      .seo-content li { margin-bottom: 8px; }
+      .seo-content code { font-family: var(--font-mono); background: var(--bg-input); padding: 2px 6px; border-radius: 4px; color: var(--accent-purple); font-size: 0.85rem; }
+      .seo-content pre { background: var(--bg-input); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin: 12px 0; overflow-x: auto; }
+      .seo-content pre code { background: transparent; padding: 0; color: var(--text-primary); }
+
+      @media (max-width: 640px) {
+        .container { padding: 16px; }
+        .header { flex-direction: column; align-items: stretch; }
+        .interactive-pillars { grid-template-columns: 1fr; }
+        .diagram-container { flex-direction: column; gap: 20px; }
+        .arch-arrow { transform: rotate(90deg); }
+      }
+    </style>
   </head>
   <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      MCP 协议指南
-    </nav>
     <div class="container">
-      <header>
-        <div class="logo">🔌</div>
-        <h1>
-          MCP 协议
-          <span class="badge anthropic">Anthropic</span>
-          <span class="badge open">开�?/span>
-        </h1>
-        <p>Model Context Protocol �?AI 领域�?"USB-C"</p>
+      <header class="header">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn" title="返回首页">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 12L6 8L10 4" />
+            </svg>
+          </a>
+          <div class="title-group">
+            <h1>MCP 协议完整指南</h1>
+            <p>Model Context Protocol：AI 领域的“USB-C”</p>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+            <span id="theme-icon">🌙</span>
+          </div>
+        </div>
       </header>
 
-      <!-- 核心数据 -->
-      <div class="stat-grid">
-        <div class="stat-item">
-          <span class="number">USB-C</span>
-          <span class="label">AI 的标准接�?/span>
-        </div>
-        <div class="stat-item">
-          <span class="number">100+</span>
-          <span class="label">MCP Servers</span>
-        </div>
-        <div class="stat-item">
-          <span class="number">开�?/span>
-          <span class="label">MIT 协议</span>
-        </div>
-        <div class="stat-item">
-          <span class="number">2024.11</span>
-          <span class="label">发布时间</span>
-        </div>
+      <!-- Google AdSense Top -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
+      </div>
+
+      <main class="main-card">
+        <section class="diagram-section">
+          <p style="text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 24px;">MCP 通信架构示意图 (交互式)</p>
+          <div class="diagram-container">
+            <div class="arch-node" id="node-client" onmouseover="highlightNode('client')">
+              <h4>MCP Client</h4>
+              <p>Claude / Cursor</p>
+            </div>
+            <div class="arch-arrow">⟷</div>
+            <div class="arch-node" id="node-protocol" onmouseover="highlightNode('protocol')">
+              <h4>JSON-RPC</h4>
+              <p>Stdio / SSE</p>
+            </div>
+            <div class="arch-arrow">⟷</div>
+            <div class="arch-node" id="node-server" onmouseover="highlightNode('server')">
+              <h4>MCP Server</h4>
+              <p>Files / DB / API</p>
+            </div>
+          </div>
+
+          <div class="interactive-pillars">
+            <div class="pillar-card active" onclick="showPillar('resources', this)">
+              <span class="pillar-icon">📄</span>
+              <span class="pillar-name">Resources</span>
+            </div>
+            <div class="pillar-card" onclick="showPillar('tools', this)">
+              <span class="pillar-icon">🔧</span>
+              <span class="pillar-name">Tools</span>
+            </div>
+            <div class="pillar-card" onclick="showPillar('prompts', this)">
+              <span class="pillar-icon">💬</span>
+              <span class="pillar-name">Prompts</span>
+            </div>
+          </div>
+
+          <div id="pillar-resources" class="pillar-detail active">
+            <h4 style="color: var(--accent); margin-bottom: 8px;">📄 Resources (资源)</h4>
+            <p style="font-size: 0.85rem;">这是 AI 可以读取的静态或动态数据。例如一个日志文件的内容，或者一个数据库表的快照。资源是只读的，类似于 AI 的“感官”，让它能够观察外部世界。</p>
+          </div>
+          <div id="pillar-tools" class="pillar-detail">
+            <h4 style="color: var(--accent); margin-bottom: 8px;">🔧 Tools (工具)</h4>
+            <p style="font-size: 0.85rem;">这是 AI 可以执行的动作。工具允许 AI 对外部世界产生影响，如“创建文件”、“发送邮件”或“执行 SQL 更新”。每个工具都有严格的 JSON Schema 定义其输入参数。</p>
+          </div>
+          <div id="pillar-prompts" class="pillar-detail">
+            <h4 style="color: var(--accent); margin-bottom: 8px;">💬 Prompts (提示词模板)</h4>
+            <p style="font-size: 0.85rem;">允许服务器向客户端提供预定义的指令。这在构建特定领域的助手时非常有用，比如“代码审计专家”提示词模板可以自动引导 AI 如何使用相关的审计工具。</p>
+          </div>
+        </section>
+      </main>
+
+      <!-- Google AdSense Bottom -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
       </div>
 
       <article class="seo-content">
@@ -357,347 +240,72 @@
         <p>在 MCP 出现之前，如果你想让 AI 访问你的数据库，你必须为每个 AI 客户端（如不同的 IDE 或 Web 应用）编写专门的“胶水代码”和 API 适配器。这种“一对一”的对接模式极度低效。<strong>MCP 的核心贡献在于它定义了一个“多对多”的标准：</strong> 任何 MCP 服务器都可以连接到任何支持 MCP 的客户端。就像 USB-C 统一了电子设备的物理接口，MCP 统一了 AI 的上下文接入协议。</p>
 
         <h3>2. 技术底层：JSON-RPC 2.0 与传输机制</h3>
-        <p>MCP 并不是凭空创造的协议，它基于成熟的 <strong>JSON-RPC 2.0</strong> 规范。这种基于请求-响应和通知的轻量级协议，非常适合 AI 这种高度依赖异步交互的场景。</p>
+        <p>MCP 协议基于成熟的 <strong>JSON-RPC 2.0</strong> 规范。这种基于请求-响应和通知的轻量级协议，非常适合 AI 这种高度依赖异步交互的场景。</p>
         <ul>
-          <li><strong>传输层灵活：</strong> MCP 支持多种传输方式。最常见的是 `stdio`（通过标准输入输出进行进程间通信），适合本地运行；同时它也支持 `SSE`（Server-Sent Events），允许 AI 客户端通过 HTTP 连接到远程服务器。</li>
-          <li><strong>初始化握手：</strong> 在连接建立之初，客户端和服务器会进行 `initialize` 交换。服务器会告知客户端自己具备哪些“能力（Capabilities）”，例如是否支持资源读取、工具调用或提示词模板。这种动态协商机制确保了协议的前向兼容性。</li>
+          <li><strong>传输层灵活：</strong> 支持 <code>stdio</code>（本地运行）和 <code>SSE</code>（Server-Sent Events，远程连接）。</li>
+          <li><strong>初始化握手：</strong> 客户端和服务器在连接建立时进行 <code>initialize</code> 交换，动态协商彼此的“能力（Capabilities）”。</li>
         </ul>
 
         <h3>3. 三大支柱：Resources, Tools 与 Prompts</h3>
         <p>理解 MCP 的关键在于理解它定义的三个核心概念：</p>
         <ol>
-          <li><strong>Resources (资源)：</strong> 这是 AI 可以读取的静态或动态数据。例如一个日志文件的内容，或者一个数据库表的快照。资源是只读的，类似于 AI 的“感官”。</li>
-          <li><strong>Tools (工具)：</strong> 这是 AI 可以执行的动作。工具允许 AI 对外部世界产生影响，如“创建文件”、“发送邮件”或“执行 SQL 更新”。每个工具都有严格的 JSON Schema 定义其输入参数。</li>
-          <li><strong>Prompts (提示词模板)：</strong> 允许服务器向客户端提供预定义的指令。这在构建特定领域的助手时非常有用，比如“代码审计专家”提示词模板可以自动引导 AI 如何使用相关的审计工具。</li>
+          <li><strong>Resources (资源)：</strong> AI 的“感官”，只读数据流。</li>
+          <li><strong>Tools (工具)：</strong> AI 的“双手”，可执行的动作。</li>
+          <li><strong>Prompts (提示词模板)：</strong> AI 的“指令集”，预定义的交互模板。</li>
         </ol>
 
         <h3>4. 实战场景：如何设计一个高质量的 MCP Tool？</h3>
         <p><strong>实战建议：解决“AI 盲目尝试”的问题</strong></p>
         <ul>
           <li><strong>具体问题：</strong> AI 在调用工具时，经常因为参数不规范或理解错误导致失败。</li>
-          <li><strong>优化方案：</strong> 在设计 MCP Tool 时，务必提供详尽的描述信息（Description）。不要只写 `read_file`，而要写“用于读取指定路径的 UTF-8 编码文本文件，支持跨平台路径”。同时，利用 JSON Schema 的 `required` 和 `enum` 约束，在协议层就拦截无效请求，显著提升 AI 调用的成功率。</li>
+          <li><strong>优化方案：</strong> 在设计 MCP Tool 时，务必提供详尽的描述信息（Description）。利用 JSON Schema 的 <code>required</code> 和 <code>enum</code> 约束，在协议层就拦截无效请求，显著提升 AI 调用的成功率。</li>
         </ul>
 
         <h3>5. 开发与部署：TypeScript 与 Python SDK</h3>
-        <p>Anthropic 官方提供了完善的 SDK，极大降低了开发门槛。无论你是前端开发者还是数据科学家，都能快速上手：</p>
-        <ul>
-          <li><strong>TypeScript SDK：</strong> 适合构建高性能、异步并发能力强的服务器。</li>
-          <li><strong>Python SDK：</strong> 适合集成数据科学工具、机器学习模型以及已有的 Python 后端服务。</li>
-        </ul>
+        <p>Anthropic 官方提供了完善的 SDK，极大降低了开发门槛：</p>
+        <pre><code>// TypeScript SDK 示例
+import { Server } from "@modelcontextprotocol/sdk/server";
+const server = new Server({ name: "my-server", version: "1.0.0" }, { capabilities: { tools: {} } });</code></pre>
 
         <h3>6. 总结：MCP 协议的未来展望</h3>
-        <p>MCP 的出现，标志着 AI 生态正从“孤岛化”走向“标准化”。未来，我们有望看到更多云服务商（如 AWS, Google Cloud）原生支持 MCP 接口，届时，你只需在 Claude 或任何 AI 助手中填入一个 URL，就能立刻获得对整个云端架构的操作能力。掌握 MCP 协议，就是掌握了未来十年 AI 应用开发的核心范式。</p>
-
-        <p>WebUtils 将持续为您解读 MCP 协议的演进与最佳实践。在这个“互联智能”的时代，让我们一起见证 AI 如何通过标准协议真正重塑生产力。</p>
+        <p>MCP 的出现，标志着 AI 生态正从“孤岛化”走向“标准化”。掌握 MCP 协议，就是掌握了未来十年 AI 应用开发的核心范式。WebUtils 将持续为您解读 MCP 协议的演进与最佳实践。</p>
       </article>
 
-      <!-- 架构�?-->
-      <div class="card">
-        <h3>🏗�?MCP 架构</h3>
-
-        <div class="architecture-box">
-          <p style="text-align: center; margin-bottom: 1rem; color: var(--pico-muted-color)">
-            MCP 通信架构
-          </p>
-          <div class="architecture-flow">
-            <div class="arch-box client">
-              MCP Client
-              <br />
-              <small>(Claude/Cursor)</small>
-            </div>
-            <span class="arch-arrow">�?/span>
-            <div class="arch-box">
-              MCP Protocol
-              <br />
-              <small>(JSON-RPC)</small>
-            </div>
-            <span class="arch-arrow">�?/span>
-            <div class="arch-box server">
-              MCP Server
-              <br />
-              <small>(文件/DB/API)</small>
-            </div>
-          </div>
-        </div>
-
-        <div class="features-grid">
-          <div class="feature-item">
-            <h4>📱 MCP Client</h4>
-            <p>发起请求的一方，�?Claude Desktop、Cursor、Claude Code �?/p>
-          </div>
-          <div class="feature-item cyan">
-            <h4>🖥�?MCP Server</h4>
-            <p>提供服务的一方，连接具体资源如文件系统、数据库�?/p>
-          </div>
-        </div>
-      </div>
-
-      <!-- 核心概念 -->
-      <div class="card">
-        <h3>📚 核心概念</h3>
-
-        <div class="features-grid">
-          <div class="feature-item">
-            <h4>🔧 Tools（工具）</h4>
-            <p>AI 可以调用的函数，�?读取文件"�?执行搜索"</p>
-          </div>
-          <div class="feature-item cyan">
-            <h4>📄 Resources（资源）</h4>
-            <p>AI 可以访问的数据，如文件内容、数据库记录</p>
-          </div>
-          <div class="feature-item orange">
-            <h4>💬 Prompts（提示词�?/h4>
-            <p>预定义的提示词模板，简化常见任�?/p>
-          </div>
-          <div class="feature-item">
-            <h4>🔔 Notifications（通知�?/h4>
-            <p>Server �?Client 推送的实时更新</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- 热门 MCP Servers -->
-      <div class="card">
-        <h3>🌟 热门 MCP Servers</h3>
-
-        <div class="server-card">
-          <h4>📁 filesystem</h4>
-          <p>读写本地文件系统，支持文件搜索、创建、编辑、删除等操作�?/p>
-        </div>
-
-        <div class="server-card">
-          <h4>🐙 github</h4>
-          <p>�?GitHub 交互，管理仓库、Issue、PR，进行代码搜索等�?/p>
-        </div>
-
-        <div class="server-card">
-          <h4>🌐 puppeteer</h4>
-          <p>控制浏览器，执行网页自动化、截图、爬取等任务�?/p>
-        </div>
-
-        <div class="server-card">
-          <h4>🗃�?sqlite</h4>
-          <p>查询和操�?SQLite 数据库，执行 SQL 语句�?/p>
-        </div>
-
-        <div class="server-card">
-          <h4>🔍 brave-search</h4>
-          <p>使用 Brave 搜索引擎进行网络搜索�?/p>
-        </div>
-
-        <div class="server-card">
-          <h4>📧 gmail</h4>
-          <p>读取和发�?Gmail 邮件，管理邮箱�?/p>
-        </div>
-      </div>
-
-      <!-- 配置示例 -->
-      <div class="card">
-        <h3>⚙️ 配置示例</h3>
-
-        <p>
-          Claude Desktop �?MCP 配置文件（macOS: ~/Library/Application
-          Support/Claude/claude_desktop_config.json）：
-        </p>
-
-        <div class="code-block">
-          <pre>
-{
-  "mcpServers": {
-    "filesystem": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-filesystem",
-        "/Users/yourname/Documents"
-      ]
-    },
-    "github": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "your_token_here"
-      }
-    },
-    "sqlite": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-sqlite",
-        "--db-path",
-        "/path/to/your/database.db"
-      ]
-    }
-  }
-}</pre
-          >
-        </div>
-
-        <div class="highlight-box">
-          <strong>💡 提示�?/strong>
-          配置完成后重�?Claude Desktop，在对话框中点击 🔌 图标即可看到已连接的 MCP Server
-          和可用工具�?
-        </div>
-      </div>
-
-      <!-- 支持的客户端 -->
-      <div class="card">
-        <h3>📱 支持 MCP 的客户端</h3>
-
-        <div class="features-grid">
-          <div class="feature-item">
-            <h4>🧠 Claude Desktop</h4>
-            <p>Anthropic 官方桌面应用，原生支�?MCP</p>
-          </div>
-          <div class="feature-item cyan">
-            <h4>🖱�?Cursor</h4>
-            <p>AI 代码编辑器，支持 MCP 连接外部工具</p>
-          </div>
-          <div class="feature-item orange">
-            <h4>💻 Claude Code</h4>
-            <p>命令�?AI 助手，深度集�?MCP</p>
-          </div>
-          <div class="feature-item">
-            <h4>🔧 更多...</h4>
-            <p>VS Code 插件、Zed 等持续增加中</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- 开发自己的 MCP Server -->
-      <div class="card">
-        <h3>🛠�?开�?MCP Server</h3>
-
-        <p>使用 TypeScript 开发简单的 MCP Server�?/p>
-
-        <div class="code-block">
-          <pre>
-import { Server } from "@modelcontextprotocol/sdk/server";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio";
-
-const server = new Server({
-  name: "my-mcp-server",
-  version: "1.0.0"
-}, {
-  capabilities: {
-    tools: {}
-  }
-});
-
-// 注册工具
-server.setRequestHandler("tools/list", async () =&gt; ({
-  tools: [{
-    name: "hello",
-    description: "Say hello to someone",
-    inputSchema: {
-      type: "object",
-      properties: {
-        name: { type: "string", description: "Name to greet" }
-      },
-      required: ["name"]
-    }
-  }]
-}));
-
-// 处理工具调用
-server.setRequestHandler("tools/call", async (request) =&gt; {
-  if (request.params.name === "hello") {
-    const name = request.params.arguments.name;
-    return { content: [{ type: "text", text: `Hello, ${name}!` }] };
-  }
-});
-
-// 启动服务�?
-const transport = new StdioServerTransport();
-server.connect(transport);</pre
-          >
-        </div>
-      </div>
-
-      <!-- 资源链接 -->
-      <div class="card">
-        <h3>🔗 相关资源</h3>
-
-        <div class="highlight-box">
-          <ul style="margin: 0; padding-left: 1.5rem">
-            <li>
-              <a
-                href="https://modelcontextprotocol.io"
-                target="_blank"
-                style="color: var(--primary-color)"
-              >
-                MCP 官方文档
-              </a>
-              - 完整的协议规范和教程
-            </li>
-            <li>
-              <a
-                href="https://github.com/modelcontextprotocol"
-                target="_blank"
-                style="color: var(--primary-color)"
-              >
-                GitHub 组织
-              </a>
-              - 开源代码和 SDK
-            </li>
-            <li>
-              <a
-                href="https://github.com/modelcontextprotocol/servers"
-                target="_blank"
-                style="color: var(--primary-color)"
-              >
-                官方 Servers
-              </a>
-              - 官方维护�?MCP Server 集合
-            </li>
-            <li>
-              <a
-                href="https://glama.ai/mcp/servers"
-                target="_blank"
-                style="color: var(--primary-color)"
-              >
-                MCP Server 目录
-              </a>
-              - 社区 MCP Server 大全
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <footer>
-        <p>
-          最后更新：2025�?2�?|
-          <a
-            href="https://modelcontextprotocol.io"
-            target="_blank"
-            style="color: var(--primary-color)"
-          >
-            MCP 官网
-          </a>
-          |
-          <a href="https://anthropic.com" target="_blank" style="color: var(--secondary-color)">
-            Anthropic
-          </a>
-        </p>
-        <p></p>
+      <footer style="margin-top: 32px; text-align: center; color: var(--text-muted); font-size: 0.75rem;">
+        <p>© 2026 WebUtils. All rights reserved.</p>
       </footer>
     </div>
 
     <script>
-      window.toggleTheme = function () {
+      function highlightNode(nodeId) {
+        document.querySelectorAll('.arch-node').forEach(node => node.classList.remove('active'));
+        document.getElementById('node-' + nodeId).classList.add('active');
+      }
+
+      function showPillar(pillarId, el) {
+        document.querySelectorAll('.pillar-card').forEach(card => card.classList.remove('active'));
+        document.querySelectorAll('.pillar-detail').forEach(detail => detail.classList.remove('active'));
+        
+        el.classList.add('active');
+        document.getElementById('pillar-' + pillarId).classList.add('active');
+      }
+
+      function toggleTheme() {
         const html = document.documentElement;
         const currentTheme = html.getAttribute("data-theme");
         const newTheme = currentTheme === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
-      };
+        setTheme(newTheme);
+      }
 
-      (function () {
-        const savedTheme = localStorage.getItem("theme") || "dark";
-        document.documentElement.setAttribute("data-theme", savedTheme);
-      })();
+      function setTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        document.getElementById("theme-icon").textContent = theme === "light" ? "☀️" : "🌙";
+        localStorage.setItem("theme", theme);
+      }
+
+      // 初始化
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      setTheme(savedTheme);
     </script>
   </body>
 </html>
-
-
