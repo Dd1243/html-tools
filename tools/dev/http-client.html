@@ -1,755 +1,386 @@
 <!doctype html>
 <html lang="zh-CN">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HTTP 请求测试 - WebUtils</title>
+    <title>HTTP 请求测试工具 - 在线 API 调试与 Webhook 测试 | WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="HTTP 请求测试 - WebUtils" />
-    <meta name="keywords" content="http-client,dev,tools,webutils" />
+    <meta name="description" content="功能强大的在线 HTTP 请求测试工具，支持 GET, POST, PUT, DELETE, PATCH 等多种请求方法。可自定义请求头 (Headers)、请求参数 (Query Params) 及请求体 (Body)。实时查看响应状态码、响应时长、响应大小及格式化后的响应内容。是开发者调试 API、测试 Webhook 及排查网络问题的理想选择。" />
+    <meta name="keywords" content="HTTP请求测试, API调试, 在线Postman, Webhook测试, 接口测试, REST Client, 开发者工具, 网络调试" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/dev/http-client.html" />
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="HTTP 请求测试 - WebUtils" />
-    <meta property="og:description" content="HTTP 请求测试 - WebUtils" />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content="HTTP 请求测试工具 - 在线 API 调试与 Webhook 测试 | WebUtils" />
+    <meta property="og:description" content="在线发送 HTTP 请求，实时查看响应。支持多种方法、自定义 Header 和 Body。纯前端处理，快速高效。" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://essays4u.net/tools/dev/http-client.html" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
     <meta property="og:site_name" content="WebUtils" />
     <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
 
     <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="HTTP 请求测试 - WebUtils" />
-    <meta name="twitter:description" content="HTTP 请求测试 - WebUtils" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="HTTP 请求测试工具 - 在线 API 调试工具" />
+    <meta name="twitter:description" content="功能强大的在线 HTTP 请求测试工具，支持多种请求方法和实时响应预览。" />
     <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
 
-    <meta
-      name="description"
-      content="在线发�?HTTP 请求，测�?REST API，支�?GET/POST/PUT/DELETE，查看响应头和响应体"
-    />
-    <meta name="keywords" content="http,api,rest,postman,请求测试,调试,fetch" />
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      :root {
-        --bg-primary: #1a1a2e;
-        --bg-secondary: #16213e;
-        --bg-tertiary: #0f0f23;
-        --color-text-primary: #eee;
-        --color-text-secondary: #aaa;
-        --border-color: #333;
-        --accent-color: #22c55e;
-        --accent-hover: #16a34a;
-        --method-get: #22c55e;
-        --method-post: #3b82f6;
-        --method-put: #f59e0b;
-        --method-delete: #ef4444;
-      }
-      [data-theme="light"] {
-        --bg-primary: #fff;
-        --bg-secondary: #f8fafc;
-        --bg-tertiary: #f1f5f9;
-        --color-text-primary: #1e293b;
-        --color-text-secondary: #64748b;
-        --border-color: #e2e8f0;
-      }
-      body {
-        font-family: var(--font-sans);
-        background: var(--bg-deep);
-        color: var(--color-text-primary);
-        min-height: 100vh;
-        padding: 20px;
-      }
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-      header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 25px;
-        flex-wrap: wrap;
-        gap: 15px;
-      }
-      h1 {
-        font-size: 1.8rem;
-      }
-      .header-actions {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-      }
-      .theme-toggle,
-      .btn {
-        background: var(--bg-secondary);
-        border: 1px solid var(--border-subtle);
-        color: var(--color-text-primary);
-        padding: 8px 16px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 14px;
-        transition: all 0.2s;
-      }
-      .theme-toggle:hover,
-      .btn:hover {
-        border-color: var(--accent-color);
-      }
-      .btn-primary {
-        background: var(--accent-color);
-        color: #fff;
-        border-color: var(--accent-color);
-      }
-      .btn-primary:hover {
-        background: var(--accent-hover);
-      }
-      .back-link {
-        color: var(--accent-color);
-        text-decoration: none;
-        font-size: 14px;
-      }
-      .back-link:hover {
-        text-decoration: underline;
-      }
-
-      .request-bar {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 20px;
-      }
-      .method-select {
-        padding: 12px 15px;
-        background: var(--bg-secondary);
-        border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        color: var(--color-text-primary);
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        min-width: 100px;
-      }
-      .method-select option {
-        font-weight: 600;
-      }
-      .method-select.get {
-        color: var(--method-get);
-      }
-      .method-select.post {
-        color: var(--method-post);
-      }
-      .method-select.put {
-        color: var(--method-put);
-      }
-      .method-select.delete {
-        color: var(--method-delete);
-      }
-
-      .url-input {
-        flex: 1;
-        padding: 12px 15px;
-        background: var(--bg-secondary);
-        border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        color: var(--color-text-primary);
-        font-size: 14px;
-        font-family: Monaco, Menlo, monospace;
-      }
-      .url-input:focus {
-        outline: none;
-        border-color: var(--accent-color);
-      }
-
-      .send-btn {
-        padding: 12px 30px;
-        background: var(--accent-color);
-        border: none;
-        border-radius: 8px;
-        color: #fff;
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-      .send-btn:hover {
-        background: var(--accent-hover);
-      }
-      .send-btn:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-      }
-
-      .tabs {
-        display: flex;
-        gap: 5px;
-        margin-bottom: 15px;
-      }
-      .tab {
-        padding: 10px 20px;
-        background: var(--bg-tertiary);
-        border: 1px solid var(--border-subtle);
-        border-radius: 8px 8px 0 0;
-        cursor: pointer;
-        font-size: 13px;
-        color: var(--color-text-secondary);
-        transition: all 0.2s;
-      }
-      .tab:hover {
-        color: var(--color-text-primary);
-      }
-      .tab.active {
-        background: var(--bg-secondary);
-        color: var(--color-text-primary);
-        border-bottom-color: var(--bg-secondary);
-      }
-
-      .tab-content {
-        display: none;
-        background: var(--bg-secondary);
-        border: 1px solid var(--border-subtle);
-        border-radius: 0 8px 8px;
-        padding: 15px;
-      }
-      .tab-content.active {
-        display: block;
-      }
-
-      .params-table {
-        width: 100%;
-      }
-      .param-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr auto;
-        gap: 10px;
-        margin-bottom: 10px;
-      }
-      .param-row input {
-        padding: 10px;
-        background: var(--bg-tertiary);
-        border: 1px solid var(--border-subtle);
-        border-radius: 6px;
-        color: var(--color-text-primary);
-        font-size: 13px;
-      }
-      .param-row input:focus {
-        outline: none;
-        border-color: var(--accent-color);
-      }
-      .param-row button {
-        padding: 10px;
-        background: var(--bg-tertiary);
-        border: 1px solid var(--border-subtle);
-        border-radius: 6px;
-        color: var(--color-text-secondary);
-        cursor: pointer;
-      }
-      .param-row button:hover {
-        color: #ef4444;
-        border-color: #ef4444;
-      }
-
-      .add-param-btn {
-        padding: 8px 15px;
-        background: var(--bg-tertiary);
-        border: 1px dashed var(--border-subtle);
-        border-radius: 6px;
-        color: var(--color-text-secondary);
-        cursor: pointer;
-        font-size: 13px;
-        width: 100%;
-        margin-top: 10px;
-      }
-      .add-param-btn:hover {
-        border-color: var(--accent-color);
-        color: var(--accent-color);
-      }
-
-      .body-textarea {
-        width: 100%;
-        min-height: 150px;
-        background: var(--bg-tertiary);
-        border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        padding: 15px;
-        color: var(--color-text-primary);
-        font-family: Monaco, Menlo, monospace;
-        font-size: 13px;
-        resize: vertical;
-      }
-      .body-textarea:focus {
-        outline: none;
-        border-color: var(--accent-color);
-      }
-
-      .response-section {
-        margin-top: 25px;
-      }
-      .response-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 15px;
-        flex-wrap: wrap;
-        gap: 10px;
-      }
-      .response-header h2 {
-        font-size: 1.2rem;
-      }
-      .response-stats {
-        display: flex;
-        gap: 15px;
-        font-size: 13px;
-      }
-      .response-stats .stat {
-        padding: 5px 12px;
-        background: var(--bg-secondary);
-        border-radius: 4px;
-      }
-      .response-stats .status {
-        font-weight: 600;
-      }
-      .response-stats .status.success {
-        color: var(--method-get);
-      }
-      .response-stats .status.error {
-        color: var(--method-delete);
-      }
-
-      .response-body {
-        background: var(--bg-secondary);
-        border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        overflow: hidden;
-      }
-      .response-body pre {
-        padding: 15px;
-        overflow-x: auto;
-        font-family: Monaco, Menlo, monospace;
-        font-size: 13px;
-        line-height: 1.5;
-        max-height: 400px;
-        overflow-y: auto;
-      }
-
-      .loading {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 40px;
-        color: var(--color-text-secondary);
-      }
-      .loading::before {
-        content: "";
-        width: 20px;
-        height: 20px;
-        border: 2px solid var(--border-subtle);
-        border-top-color: var(--accent-color);
-        border-radius: 50%;
-        margin-right: 10px;
-        animation: spin 1s linear infinite;
-      }
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-
-      .empty-state {
-        text-align: center;
-        padding: 60px;
-        color: var(--color-text-secondary);
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-    </style>
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+
+    <style>
+      /* ===== CSS 变量 (基于模板) ===== */
+      :root {
+        --bg-body: #0a0a0f;
+        --bg-card: #12121a;
+        --bg-input: #0e0e14;
+        --bg-elevated: #1a1a24;
+        --text-primary: #e8e8ed;
+        --text-secondary: #a0a0b0;
+        --text-muted: #606070;
+        --border-color: #2a2a3a;
+        --border-focus: #3a3a4a;
+        --accent: #00f5d4;
+        --accent-purple: #bf5af2;
+        --success: #30d158;
+        --warning: #ff9f0a;
+        --error: #ff453a;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", "Space Grotesk", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+
+      [data-theme="light"] {
+        --bg-body: #fafafa;
+        --bg-card: #ffffff;
+        --bg-input: #f5f5f5;
+        --bg-elevated: #ffffff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #666;
+        --text-muted: #999;
+        --border-color: #e5e5e5;
+        --border-focus: #d5d5d5;
+        --accent: #00d4b8;
+        --accent-purple: #9b4dca;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      
+      .container { max-width: 1000px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--border-color); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .header-right { display: flex; align-items: center; gap: 12px; }
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; width: 40px; height: 40px; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+      .theme-toggle:hover { border-color: var(--accent); }
+
+      .main-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; }
+      
+      .request-section { padding: 24px; border-bottom: 1px solid var(--border-color); }
+      .url-bar { display: grid; grid-template-columns: 120px 1fr 100px; gap: 12px; margin-bottom: 20px; }
+      .method-select { padding: 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary); font-family: var(--font-mono); outline: none; cursor: pointer; }
+      .url-input { padding: 12px 16px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary); font-family: var(--font-mono); outline: none; }
+      .url-input:focus, .method-select:focus { border-color: var(--accent); }
+
+      .tabs-nav { display: flex; gap: 24px; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; }
+      .tab-item { padding: 8px 0; font-size: 0.85rem; color: var(--text-secondary); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+      .tab-item.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+      .headers-list { display: flex; flex-direction: column; gap: 8px; }
+      .kv-row { display: grid; grid-template-columns: 1fr 1fr 40px; gap: 8px; }
+      .kv-input { padding: 10px 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.85rem; font-family: var(--font-mono); }
+      .btn-remove { background: transparent; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+      .btn-remove:hover { color: var(--error); }
+
+      textarea { width: 100%; min-height: 200px; padding: 16px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary); font-family: var(--font-mono); font-size: 0.9rem; resize: vertical; outline: none; transition: all 0.2s; }
+      textarea:focus { border-color: var(--accent); }
+
+      .action-row { display: flex; gap: 12px; margin-top: 24px; }
+      .btn { padding: 12px 24px; background: var(--accent); border: none; border-radius: var(--radius-md); color: var(--bg-body); font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+      .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+      .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+      .btn-secondary { background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border-color); }
+
+      .response-section { padding: 24px; background: var(--bg-input); }
+      .response-meta { display: flex; gap: 16px; margin-bottom: 16px; font-family: var(--font-mono); font-size: 0.85rem; }
+      .status-badge { padding: 2px 8px; border-radius: 4px; font-weight: 700; }
+      .status-success { background: rgba(48, 209, 88, 0.15); color: var(--success); }
+      .status-error { background: rgba(255, 69, 58, 0.15); color: var(--error); }
+      .response-body { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-primary); white-space: pre-wrap; word-break: break-all; max-height: 600px; overflow-y: auto; }
+
+      .ads-container { margin: 24px 0; min-height: 90px; background: rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem; border: 1px dashed var(--border-color); border-radius: var(--radius-md); }
+
+      .seo-content { margin-top: 32px; padding: 32px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); color: var(--text-secondary); font-size: 0.875rem; }
+      .seo-content h2 { color: var(--text-primary); font-size: 1.125rem; margin-bottom: 16px; font-weight: 600; }
+      .seo-content h3 { color: var(--text-primary); font-size: 1rem; margin-top: 24px; margin-bottom: 12px; font-weight: 600; }
+      .seo-content p { margin-bottom: 12px; }
+      .seo-content ul { margin-bottom: 16px; padding-left: 20px; }
+      .seo-content li { margin-bottom: 8px; }
+
+      .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); padding: 12px 24px; background: var(--bg-elevated); border: 1px solid var(--accent); border-radius: var(--radius-md); color: var(--accent); font-size: 0.9rem; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55); opacity: 0; z-index: 1000; }
+      .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+      @media (max-width: 640px) {
+        .url-bar { grid-template-columns: 1fr; }
+        .kv-row { grid-template-columns: 1fr 1fr; }
+        .kv-row .btn-remove { grid-column: span 2; }
+        .action-row { flex-direction: column; }
+        .btn { width: 100%; justify-content: center; }
+      }
+    </style>
   </head>
   <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      HTTP 请求测试
-    </nav>
     <div class="container">
-      <header>
-        <h1>🌐 HTTP 请求测试</h1>
-        <div class="header-actions">
-          <button class="theme-toggle" onclick="toggleTheme()">🌓 主题</button>
+      <header class="header">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn" title="返回首页">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 12L6 8L10 4" />
+            </svg>
+          </a>
+          <div class="title-group">
+            <h1>HTTP 请求测试工具</h1>
+            <p>在线模拟发送 HTTP 请求，调试 API 与 Webhook</p>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+            <span id="theme-icon">🌙</span>
+          </div>
         </div>
       </header>
 
-      <div class="request-bar">
-        <select class="method-select get" id="method" onchange="updateMethodColor()">
-          <option value="GET">GET</option>
-          <option value="POST">POST</option>
-          <option value="PUT">PUT</option>
-          <option value="PATCH">PATCH</option>
-          <option value="DELETE">DELETE</option>
-        </select>
-        <input
-          type="url"
-          class="url-input"
-          id="url"
-          placeholder="https://api.example.com/endpoint"
-          value="https://jsonplaceholder.typicode.com/posts/1"
-        />
-        <button class="send-btn" id="sendBtn" onclick="sendRequest()">发送请�?/button>
+      <!-- Google AdSense Top -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
       </div>
 
-      <div class="tabs">
-        <div class="tab active" data-tab="params">参数</div>
-        <div class="tab" data-tab="headers">请求�?/div>
-        <div class="tab" data-tab="body">请求�?/div>
-      </div>
-
-      <div class="tab-content active" id="params-tab">
-        <div class="params-table" id="paramsTable">
-          <div class="param-row">
-            <input type="text" placeholder="参数�? />
-            <input type="text" placeholder="参数�? />
-            <button onclick="removeParam(this)">×</button>
+      <main class="main-card">
+        <section class="request-section">
+          <div class="url-bar">
+            <select id="method" class="method-select">
+              <option value="GET">GET</option>
+              <option value="POST">POST</option>
+              <option value="PUT">PUT</option>
+              <option value="PATCH">PATCH</option>
+              <option value="DELETE">DELETE</option>
+            </select>
+            <input type="text" id="url" class="url-input" placeholder="https://api.example.com/endpoint" />
+            <button class="btn" id="sendBtn" onclick="sendRequest()">发送</button>
           </div>
-        </div>
-        <button class="add-param-btn" onclick="addParam('paramsTable')">+ 添加参数</button>
-      </div>
 
-      <div class="tab-content" id="headers-tab">
-        <div class="params-table" id="headersTable">
-          <div class="param-row">
-            <input type="text" placeholder="Header �? value="Content-Type" />
-            <input type="text" placeholder="Header �? value="application/json" />
-            <button onclick="removeParam(this)">×</button>
+          <div class="tabs-nav">
+            <div class="tab-item active" data-tab="body">请求体 (Body)</div>
+            <div class="tab-item" data-tab="headers">请求头 (Headers)</div>
+            <div class="tab-item" data-tab="params">查询参数 (Params)</div>
           </div>
-        </div>
-        <button class="add-param-btn" onclick="addParam('headersTable')">+ 添加请求�?/button>
-      </div>
 
-      <div class="tab-content" id="body-tab">
-        <textarea class="body-textarea" id="requestBody" placeholder='{"key": "value"}'></textarea>
-      </div>
-
-      <div class="response-section" id="responseSection" style="display: none">
-        <div class="response-header">
-          <h2>📥 响应</h2>
-          <div class="response-stats">
-            <span class="stat">
-              状�?
-              <span class="status" id="statusCode">200</span>
-            </span>
-            <span class="stat">
-              耗时:
-              <span id="responseTime">0ms</span>
-            </span>
-            <span class="stat">
-              大小:
-              <span id="responseSize">0 B</span>
-            </span>
+          <div id="bodyTab" class="tab-content">
+            <textarea id="requestBody" placeholder='{"key": "value"}' spellcheck="false"></textarea>
           </div>
-        </div>
 
-        <div class="tabs">
-          <div class="tab active" data-tab="response-body">响应�?/div>
-          <div class="tab" data-tab="response-headers">响应�?/div>
-        </div>
-
-        <div class="tab-content active" id="response-body-tab">
-          <div class="response-body">
-            <pre id="responseBody"></pre>
+          <div id="headersTab" class="tab-content" style="display: none;">
+            <div id="headersList" class="headers-list">
+              <div class="kv-row">
+                <input type="text" class="kv-input header-key" placeholder="Key" value="Content-Type" />
+                <input type="text" class="kv-input header-value" placeholder="Value" value="application/json" />
+                <button class="btn-remove" onclick="removeRow(this)">×</button>
+              </div>
+            </div>
+            <button class="btn btn-secondary" style="margin-top: 12px; padding: 8px 16px; font-size: 0.8rem;" onclick="addRow('headersList')">+ 添加 Header</button>
           </div>
-        </div>
 
-        <div class="tab-content" id="response-headers-tab">
-          <div class="response-body">
-            <pre id="responseHeaders"></pre>
+          <div id="paramsTab" class="tab-content" style="display: none;">
+            <div id="paramsList" class="headers-list">
+              <div class="kv-row">
+                <input type="text" class="kv-input param-key" placeholder="Key" />
+                <input type="text" class="kv-input param-value" placeholder="Value" />
+                <button class="btn-remove" onclick="removeRow(this)">×</button>
+              </div>
+            </div>
+            <button class="btn btn-secondary" style="margin-top: 12px; padding: 8px 16px; font-size: 0.8rem;" onclick="addRow('paramsList')">+ 添加参数</button>
           </div>
-        </div>
+        </section>
+
+        <section class="response-section" id="responseContainer" style="display: none">
+          <div class="response-meta">
+            <span id="resStatus" class="status-badge"></span>
+            <span id="resTime" style="color: var(--text-secondary)"></span>
+            <span id="resSize" style="color: var(--text-secondary)"></span>
+          </div>
+          <div class="response-body" id="responseBody"></div>
+        </section>
+      </main>
+
+      <!-- Google AdSense Bottom -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
       </div>
 
-      <div class="empty-state" id="emptyState">
-        <p>👆 输入 URL 并点击发送请�?/p>
-        <p style="margin-top: 10px; font-size: 12px">支持 GET, POST, PUT, PATCH, DELETE 方法</p>
-      </div>
+      <article class="seo-content">
+        <h2>为什么 HTTP 请求测试工具对开发者至关重要？</h2>
+        <p>在现代 Web 开发中，API（应用程序接口）是连接前端界面与后端逻辑的桥梁。无论是构建单页面应用（SPA）、移动 App 还是集成第三方服务，开发者都需要频繁地与各种 HTTP 接口进行交互。一个高效、易用的在线 HTTP 请求测试工具能显著提升开发效率，缩短调试周期。</p>
+        
+        <h3>本工具的核心功能与优势</h3>
+        <ul>
+          <li><strong>全方法支持：</strong> 完美支持 GET、POST、PUT、DELETE 等标准方法，满足各种 RESTful API 的测试需求。</li>
+          <li><strong>高度可定制：</strong> 自由配置请求头、查询参数和请求体，模拟真实的用户请求环境。</li>
+          <li><strong>实时响应预览：</strong> 瞬间获取服务器响应，自动格式化 JSON 内容，并显示关键性能指标（如响应时长和数据大小）。</li>
+          <li><strong>纯本地执行：</strong> 采用客户端 Fetch API，您的请求直接从浏览器发出，不经过我们的服务器，保护您的数据隐私和 API 密钥安全。</li>
+        </ul>
+
+        <h3>如何解决 API 调试中的常见问题？</h3>
+        <p>1. <strong>CORS 跨域限制：</strong> 如果目标 API 未配置 CORS 允许当前域名访问，浏览器会拦截请求。这是浏览器层面的安全机制，建议在测试受限 API 时配合 CORS 代理或在本地开发环境下使用。</p>
+        <p>2. <strong>复杂的 JSON 结构：</strong> 当请求体包含嵌套对象时，手动构建字符串非常痛苦。本工具提供大文本框，支持直接粘贴和编辑 JSON 源码。</p>
+        <p>3. <strong>Webhook 验证：</strong> 在集成 GitHub、Stripe 或 Slack 的 Webhook 时，可以使用本工具模拟回调请求，验证您的接收逻辑是否正确。</p>
+
+        <h3>关于 AdSense 与 SEO</h3>
+        <p>WebUtils HTTP 请求测试工具采用了响应式设计，适配手机、平板及电脑端。代码结构语义化，并预留了 Google AdSense 广告位置。通过深度优化的长文本描述，我们致力于为开发者提供一个稳定、高效且内容丰富的技术调试环境。</p>
+      </article>
+
+      <footer style="margin-top: 32px; text-align: center; color: var(--text-muted); font-size: 0.75rem;">
+        <p>© 2026 WebUtils. All rights reserved.</p>
+      </footer>
     </div>
 
+    <div id="toast" class="toast"></div>
+
     <script>
-      // Theme handling
-      function initTheme() {
-        const savedTheme = localStorage.getItem("theme") || "dark";
-        document.documentElement.setAttribute("data-theme", savedTheme);
+      function showToast(msg, isError = false) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.borderColor = isError ? 'var(--error)' : 'var(--accent)';
+        toast.style.color = isError ? 'var(--error)' : 'var(--accent)';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
       }
 
-      window.toggleTheme = function () {
-        const current = document.documentElement.getAttribute("data-theme");
-        const newTheme = current === "light" ? "dark" : "light";
-        document.documentElement.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
-      };
-
-      // Tab handling
-      document.querySelectorAll(".tab").forEach((tab) => {
-        tab.addEventListener("click", () => {
-          const tabGroup = tab.closest(".container").querySelectorAll(".tab");
-          const contentGroup = tab.closest(".container").querySelectorAll(".tab-content");
-
-          // Find parent container
-          const parent = tab.parentElement;
-          const tabs = parent.querySelectorAll(".tab");
-          const tabId = tab.dataset.tab;
-
-          tabs.forEach((t) => t.classList.remove("active"));
-          tab.classList.add("active");
-
-          // Find corresponding content
-          const contents = parent.nextElementSibling?.classList.contains("tab-content")
-            ? [parent.nextElementSibling, parent.nextElementSibling.nextElementSibling].filter(
-                Boolean
-              )
-            : document.querySelectorAll(`#${tabId}-tab`);
-
-          document.querySelectorAll(".tab-content").forEach((c) => {
-            if (c.id === tabId + "-tab") {
-              c.classList.add("active");
-            } else if (
-              tabs[0].parentElement.nextElementSibling === c ||
-              tabs[0].parentElement.nextElementSibling?.nextElementSibling === c
-            ) {
-              c.classList.remove("active");
-            }
-          });
-
-          document.getElementById(tabId + "-tab")?.classList.add("active");
-
-          // Handle tab groups
-          if (["params", "headers", "body"].includes(tabId)) {
-            ["params", "headers", "body"].forEach((id) => {
-              document.getElementById(id + "-tab").classList.toggle("active", id === tabId);
-            });
-          }
-          if (["response-body", "response-headers"].includes(tabId)) {
-            ["response-body", "response-headers"].forEach((id) => {
-              document.getElementById(id + "-tab").classList.toggle("active", id === tabId);
-            });
-          }
+      // Tab 切换
+      document.querySelectorAll('.tab-item').forEach(item => {
+        item.addEventListener('click', () => {
+          document.querySelectorAll('.tab-item').forEach(i => i.classList.remove('active'));
+          document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+          item.classList.add('active');
+          document.getElementById(item.dataset.tab + 'Tab').style.display = 'block';
         });
       });
 
-      // Update method color
-      window.updateMethodColor = function () {
-        const select = document.getElementById("method");
-        select.className = "method-select " + select.value.toLowerCase();
-      };
-
-      // Add parameter row
-      window.addParam = function (tableId) {
-        const table = document.getElementById(tableId);
-        const row = document.createElement("div");
-        row.className = "param-row";
+      function addRow(listId) {
+        const list = document.getElementById(listId);
+        const row = document.createElement('div');
+        row.className = 'kv-row';
         row.innerHTML = `
-                <input type="text" placeholder="${tableId === "headersTable" ? "Header �? : "参数�?}">
-                <input type="text" placeholder="${tableId === "headersTable" ? "Header �? : "参数�?}">
-                <button onclick="removeParam(this)">×</button>
-            `;
-        table.appendChild(row);
-      };
+          <input type="text" class="kv-input ${listId.replace('List', '')}-key" placeholder="Key" />
+          <input type="text" class="kv-input ${listId.replace('List', '')}-value" placeholder="Value" />
+          <button class="btn-remove" onclick="removeRow(this)">×</button>
+        `;
+        list.appendChild(row);
+      }
 
-      // Remove parameter row
-      window.removeParam = function (btn) {
+      function removeRow(btn) {
         btn.parentElement.remove();
-      };
-
-      // Get params from table
-      function getParamsFromTable(tableId) {
-        const params = {};
-        const rows = document.getElementById(tableId).querySelectorAll(".param-row");
-        rows.forEach((row) => {
-          const inputs = row.querySelectorAll("input");
-          const key = inputs[0].value.trim();
-          const value = inputs[1].value.trim();
-          if (key) params[key] = value;
-        });
-        return params;
       }
 
-      // Format size
-      function formatSize(bytes) {
-        if (bytes === 0) return "0 B";
-        const k = 1024;
-        const sizes = ["B", "KB", "MB"];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
-      }
-
-      // Send request
-      window.sendRequest = async function () {
-        const method = document.getElementById("method").value;
-        let url = document.getElementById("url").value;
-        const sendBtn = document.getElementById("sendBtn");
+      async function sendRequest() {
+        const method = document.getElementById('method').value;
+        let url = document.getElementById('url').value.trim();
+        const body = document.getElementById('requestBody').value;
+        const sendBtn = document.getElementById('sendBtn');
 
         if (!url) {
-          alert("请输�?URL");
+          showToast('请输入目标 URL', true);
           return;
         }
 
-        // Add query params for GET
-        const queryParams = getParamsFromTable("paramsTable");
-        if (Object.keys(queryParams).length > 0) {
-          const params = new URLSearchParams(queryParams);
-          url += (url.includes("?") ? "&" : "?") + params.toString();
+        // 处理查询参数
+        const params = new URLSearchParams();
+        document.querySelectorAll('.param-key').forEach((el, i) => {
+          const key = el.value.trim();
+          const val = document.querySelectorAll('.param-value')[i].value.trim();
+          if (key) params.append(key, val);
+        });
+        const paramStr = params.toString();
+        if (paramStr) {
+          url += (url.includes('?') ? '&' : '?') + paramStr;
         }
 
-        // Get headers
-        const headers = getParamsFromTable("headersTable");
+        // 处理请求头
+        const headers = {};
+        document.querySelectorAll('.header-key').forEach((el, i) => {
+          const key = el.value.trim();
+          const val = document.querySelectorAll('.header-value')[i].value.trim();
+          if (key) headers[key] = val;
+        });
 
-        // Get body
-        const body = document.getElementById("requestBody").value;
-
-        // Show loading
         sendBtn.disabled = true;
-        sendBtn.textContent = "发送中...";
-        document.getElementById("emptyState").style.display = "none";
-        document.getElementById("responseSection").style.display = "block";
-        document.getElementById("responseBody").innerHTML =
-          '<div class="loading">正在请求...</div>';
+        sendBtn.textContent = '发送中...';
+        document.getElementById('responseContainer').style.display = 'none';
 
         const startTime = Date.now();
 
         try {
-          const options = {
-            method,
-            headers,
-            mode: "cors"
-          };
-
-          if (["POST", "PUT", "PATCH"].includes(method) && body) {
+          const options = { method, headers };
+          if (method !== 'GET' && method !== 'HEAD' && body) {
             options.body = body;
           }
 
           const response = await fetch(url, options);
-          const endTime = Date.now();
+          const duration = Date.now() - startTime;
+          const data = await response.text();
+          
+          document.getElementById('resStatus').textContent = `${response.status} ${response.statusText}`;
+          document.getElementById('resStatus').className = `status-badge ${response.ok ? 'status-success' : 'status-error'}`;
+          document.getElementById('resTime').textContent = `耗时: ${duration}ms`;
+          document.getElementById('resSize').textContent = `大小: ${data.length} 字节`;
 
-          // Get response text
-          const responseText = await response.text();
-
-          // Try to parse as JSON
-          let formattedResponse;
           try {
-            const json = JSON.parse(responseText);
-            formattedResponse = JSON.stringify(json, null, 2);
-          } catch {
-            formattedResponse = responseText;
+            const json = JSON.parse(data);
+            document.getElementById('responseBody').textContent = JSON.stringify(json, null, 2);
+          } catch (e) {
+            document.getElementById('responseBody').textContent = data || '(无响应内容)';
           }
 
-          // Update UI
-          const statusEl = document.getElementById("statusCode");
-          statusEl.textContent = `${response.status} ${response.statusText}`;
-          statusEl.className = "status " + (response.ok ? "success" : "error");
-
-          document.getElementById("responseTime").textContent = endTime - startTime + "ms";
-          document.getElementById("responseSize").textContent = formatSize(
-            new Blob([responseText]).size
-          );
-          document.getElementById("responseBody").textContent = formattedResponse;
-
-          // Response headers
-          let headersText = "";
-          response.headers.forEach((value, key) => {
-            headersText += `${key}: ${value}\n`;
-          });
-          document.getElementById("responseHeaders").textContent =
-            headersText || "无法读取响应�?(CORS 限制)";
+          document.getElementById('responseContainer').style.display = 'block';
+          showToast('请求已发送');
         } catch (error) {
-          document.getElementById("statusCode").textContent = "Error";
-          document.getElementById("statusCode").className = "status error";
-          document.getElementById("responseBody").textContent =
-            `请求失败: ${error.message}\n\n可能原因:\n- URL 不正确\n- CORS 策略限制\n- 网络错误`;
+          showToast('发送失败: ' + error.message, true);
+          document.getElementById('responseBody').textContent = error.stack;
+          document.getElementById('responseContainer').style.display = 'block';
+        } finally {
+          sendBtn.disabled = false;
+          sendBtn.textContent = '发送';
         }
+      }
 
-        sendBtn.disabled = false;
-        sendBtn.textContent = "发送请�?;
-      };
+      function toggleTheme() {
+        const html = document.documentElement;
+        const currentTheme = html.getAttribute("data-theme");
+        const newTheme = currentTheme === "light" ? "dark" : "light";
+        setTheme(newTheme);
+      }
 
-      // Keyboard shortcut
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
-          sendRequest();
-        }
-      });
+      function setTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        document.getElementById("theme-icon").textContent = theme === "light" ? "☀️" : "🌙";
+        localStorage.setItem("theme", theme);
+      }
 
-      // Initialize
-      initTheme();
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      setTheme(savedTheme);
     </script>
   </body>
 </html>
-
