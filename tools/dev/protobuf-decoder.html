@@ -1,453 +1,359 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Protobuf 解码�?- WebUtils</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Protobuf 解码器 - 在线协议缓冲区二进制数据解析工具 | WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="解码 Protobuf 二进制数据，无需 schema 定义" />
-    <meta name="keywords" content="protobuf 解码 proto buffer 二进�? />
+    <meta name="description" content="在线解码 Protobuf (Protocol Buffers) 二进制数据。支持 Hex, Base64 格式输入，即使没有 .proto 定义文件也能通过结构化视图查看消息内容。开发者调试 gRPC 与网络协议的必备利器。" />
+    <meta name="keywords" content="protobuf解码器, 协议缓冲区解析, protobuf在线查看, hex转protobuf, base64转protobuf, gRPC调试工具, 二进制协议分析" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/dev/protobuf-decoder.html" />
 
     <!-- Open Graph -->
-    <meta property="og:title" content="Protobuf 解码�?- WebUtils" />
-    <meta property="og:description" content="解码 Protobuf 二进制数据，无需 schema 定义" />
+    <meta property="og:title" content="Protobuf 解码器 - 在线协议缓冲区二进制数据解析工具 | WebUtils" />
+    <meta property="og:description" content="无需 Schema 即可解析 Protobuf 二进制流，直观查看数据结构。" />
     <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/dev/protobuf-decoder.html"
-    />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Protobuf 解码�?- WebUtils" />
-    <meta name="twitter:description" content="解码 Protobuf 二进制数据，无需 schema 定义" />
-    <!-- OG Image -->
+    <meta property="og:url" content="https://essays4u.net/tools/dev/protobuf-decoder.html" />
     <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
 
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
     <style>
       :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
+        --bg-body: #0a0a0f;
+        --bg-card: #12121a;
         --bg-input: #0e0e14;
+        --bg-elevated: #1a1a24;
         --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --text-secondary: #a0a0b0;
+        --text-muted: #606070;
+        --border-color: #2a2a3a;
+        --border-focus: #3a3a4a;
+        --accent: #00f5d4;
+        --accent-purple: #bf5af2;
+        --success: #30d158;
+        --warning: #ff9f0a;
+        --error: #ff453a;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", "Space Grotesk", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
       }
 
       [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
+        --bg-body: #fafafa;
+        --bg-card: #ffffff;
         --bg-input: #f5f5f5;
+        --bg-elevated: #ffffff;
         --text-primary: #1a1a1a;
         --text-secondary: #666;
         --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        --border-color: #e5e5e5;
+        --border-focus: #d5d5d5;
+        --accent: #00d4b8;
+        --accent-purple: #9b4dca;
       }
 
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--color-bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-      }
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      body {
-        font-family: var(--font-sans);
-        background: var(--color-bg-deep);
-        color: var(--color-text-primary);
-        min-height: 100vh;
-        line-height: 1.6;
-      }
-      .bg-grid {
-        position: fixed;
-        inset: 0;
-        background-image:
-          linear-gradient(rgba(0, 245, 212, 0.03) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(0, 245, 212, 0.03) 1px, transparent 1px);
-        background-size: 50px 50px;
-        pointer-events: none;
-        z-index: 0;
-      }
-      .container {
-        position: relative;
-        z-index: 1;
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 2rem 1.5rem;
-      }
-      .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: var(--color-text-secondary);
-        text-decoration: none;
-        font-size: 0.9rem;
-        margin-bottom: 2rem;
-        padding: 0.5rem 0.75rem;
-        border-radius: var(--radius-sm);
-        transition: all 0.2s;
-      }
-      .back-link:hover {
-        color: var(--color-accent-cyan);
-        background: var(--color-bg-card);
-      }
-      h1 {
-        font-size: 2rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        background: linear-gradient(135deg, var(--color-text-primary), var(--color-accent-cyan));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-      .subtitle {
-        color: var(--color-text-secondary);
-        margin-bottom: 2rem;
-      }
-      .card {
-        background: var(--color-bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-lg);
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-      }
-      textarea {
-        width: 100%;
-        height: 120px;
-        padding: 1rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        background: var(--color-bg-surface);
-        color: var(--color-text-primary);
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-        resize: vertical;
-        margin-bottom: 1rem;
-      }
-      textarea:focus {
-        outline: none;
-        border-color: var(--color-accent-cyan);
-      }
-      .btn {
-        padding: 0.5rem 1rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        background: var(--bg-hover);
-        color: var(--color-text-primary);
-        cursor: pointer;
-        font-size: 0.85rem;
-        transition: all 0.2s;
-        margin-right: 0.5rem;
-      }
-      .btn:hover {
-        border-color: var(--color-accent-cyan);
-        color: var(--color-accent-cyan);
-      }
-      .output {
-        background: var(--color-bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        padding: 1rem;
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        overflow-x: auto;
-        max-height: 400px;
-        overflow-y: auto;
-      }
-      .field {
-        margin: 0.5rem 0;
-        padding: 0.5rem;
-        border-left: 2px solid var(--accent-blue);
-      }
-      .field-header {
-        color: var(--color-accent-cyan);
-        margin-bottom: 0.25rem;
-      }
-      .field-value {
-        color: var(--color-text-primary);
-      }
-      .wire-type {
-        color: var(--accent-yellow);
-        font-size: 0.75rem;
-      }
-      footer {
-        margin-top: 3rem;
-        padding-top: 1.5rem;
-        border-top: 1px solid var(--border-subtle);
-        text-align: center;
-        color: var(--text-muted);
-        font-size: 0.85rem;
-      }
-      footer a {
-        color: var(--color-accent-cyan);
-        text-decoration: none;
-      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      
+      .container { max-width: 1000px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--border-color); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .header-right { display: flex; align-items: center; gap: 12px; }
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; width: 40px; height: 40px; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
 
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
+      .main-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; }
+      
+      .input-section { padding: 24px; border-bottom: 1px solid var(--border-color); }
+      .input-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+      .input-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+      
+      textarea { width: 100%; height: 160px; padding: 16px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary); font-family: var(--font-mono); font-size: 0.8125rem; resize: vertical; outline: none; transition: all 0.2s; }
+      textarea:focus { border-color: var(--accent); }
+
+      .action-bar { display: flex; gap: 12px; margin-top: 16px; }
+      .btn { padding: 10px 24px; background: var(--accent); color: var(--bg-body); border: none; border-radius: var(--radius-md); font-weight: 700; font-size: 0.875rem; cursor: pointer; transition: all 0.2s; }
+      .btn-secondary { background: var(--bg-elevated); color: var(--text-primary); border: 1px solid var(--border-color); }
+      .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+      .output-section { padding: 24px; }
+      .output-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+      .output-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
+      
+      .result-container { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px; font-family: var(--font-mono); font-size: 0.8125rem; color: var(--text-primary); min-height: 200px; overflow-x: auto; white-space: pre-wrap; }
+      .result-empty { display: flex; align-items: center; justify-content: center; height: 200px; color: var(--text-muted); font-style: italic; }
+
+      .ads-container { margin: 24px 0; min-height: 90px; background: rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem; border: 1px dashed var(--border-color); border-radius: 12px; }
+
+      .seo-content { margin-top: 32px; padding: 32px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); color: var(--text-secondary); font-size: 0.875rem; }
+      .seo-content h2 { color: var(--text-primary); font-size: 1.125rem; margin-bottom: 16px; font-weight: 600; border-left: 4px solid var(--accent); padding-left: 12px; }
+      .seo-content h3 { color: var(--text-primary); font-size: 1rem; margin-top: 24px; margin-bottom: 12px; font-weight: 600; }
+      .seo-content p { margin-bottom: 12px; }
+      .seo-content ul { margin-bottom: 16px; padding-left: 20px; }
+      .seo-content li { margin-bottom: 8px; }
+
+      .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); background: var(--accent); color: var(--bg-body); padding: 8px 16px; border-radius: var(--radius-md); font-weight: 600; font-size: 0.875rem; z-index: 1000; opacity: 0; pointer-events: none; transition: all 0.3s; }
+      .toast.show { opacity: 1; transform: translateX(-50%) translateY(-10px); }
+
+      @media (max-width: 640px) {
+        .container { padding: 16px; }
+        .header { flex-direction: column; align-items: stretch; }
+        .header-right { margin-top: -48px; align-self: flex-end; }
+        .action-bar { flex-direction: column; }
       }
     </style>
   </head>
   <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      Protobuf 解码�?
-    </nav>
-    <div class="bg-grid"></div>
     <div class="container">
-      <a href="../../index.html" class="back-link">�?返回</a>
-      <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">🌙</button>
-      <h1>Protobuf 解码�?/h1>
-      <p class="subtitle">解码 Base64 编码�?Protobuf 消息（无 schema�?/p>
-
-      <div class="card">
-        <textarea id="input" placeholder="粘贴 Base64 编码�?Protobuf 数据..."></textarea>
-        <button class="btn" onclick="decode()">解码</button>
-        <button class="btn" onclick="clearAll()">清空</button>
-      </div>
-
-      <div class="card">
-        <div class="output" id="output">
-          <span style="color: var(--text-muted)">解码结果将显示在这里</span>
+      <header class="header">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn" title="返回首页">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 12L6 8L10 4" />
+            </svg>
+          </a>
+          <div class="title-group">
+            <h1>Protobuf 解码器</h1>
+            <p>即使没有 Schema 也能在线解析并还原 Protocol Buffers 二进制数据</p>
+          </div>
         </div>
+        <div class="header-right">
+          <div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+            <span id="theme-icon">🌙</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
       </div>
 
-      <footer>
-        <a href="https://github.com/chicogong/html-tools" target="_blank">GitHub</a>
+      <main class="main-card">
+        <div class="input-section">
+          <div class="input-header">
+            <span class="input-label">二进制数据 (Hex 或 Base64)</span>
+            <select id="inputType" style="padding: 4px 8px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); font-size: 0.75rem; outline: none;">
+              <option value="auto">自动检测格式</option>
+              <option value="hex">十六进制 (Hex)</option>
+              <option value="base64">Base64</option>
+            </select>
+          </div>
+          <textarea id="rawInput" placeholder="在此粘贴 Protobuf 二进制流...\n例如: 08 96 01 12 07 74 65 73 74 69 6e 67"></textarea>
+          <div class="action-bar">
+            <button class="btn" onclick="decode()">立即解码</button>
+            <button class="btn btn-secondary" onclick="loadSample()">加载示例</button>
+            <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+          </div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-header">
+            <span class="output-label">解码后的结构视图</span>
+            <button class="btn-secondary" style="padding: 4px 12px; font-size: 0.75rem;" onclick="copyResult()">复制结果</button>
+          </div>
+          <div id="resultContainer" class="result-container">
+            <div class="result-empty">等待输入数据进行解码...</div>
+          </div>
+        </div>
+      </main>
+
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
+      </div>
+
+      <article class="seo-content">
+        <h2>Protobuf 解码器：深入理解 Protocol Buffers 的二进制结构</h2>
+        <p><strong>Protocol Buffers</strong> (简称 Protobuf) 是 Google 开发的一种轻便高效的结构化数据存储格式。与 JSON 或 XML 不同，Protobuf 是二进制格式，旨在追求极致的体积压缩与解析速度。在没有 <code>.proto</code> 定义文件（Schema）的情况下，直接阅读这些二进制流几乎是不可能的。本工具通过启发式算法，帮助开发者在黑盒环境下还原 Protobuf 的消息层级结构。</p>
+
+        <h3>1. 为什么 Protobuf 即使没有 Schema 也能解码？</h3>
+        <p>Protobuf 消息是由一系列键值对组成的。每个键值对包含一个<strong>字段编号 (Field Number)</strong> 和一个<strong>电线类型 (Wire Type)</strong>。
+        Wire Type 告诉了解码器如何确定值的边界（例如是固定长度、变长整数还是长度受限的字节块）。虽然没有 Schema 我们不知道字段的具体名称（如 <code>user_id</code>），但我们可以识别出 <code>Field 1: 150</code>。这种特性使得 Protobuf 具有极强的容错性与向前/向后兼容性。</p>
+
+        <h3>2. 如何使用本工具进行调试？</h3>
+        <p><strong>输入格式支持：</strong> 您可以粘贴十六进制字符串（如 <code>08 96 01</code>）或 Base64 编码字符串。本工具会自动过滤空格、换行等干扰字符。</p>
+        <p><strong>结构化展示：</strong> 解码器会将复杂的嵌套消息展示为类似 JSON 的层级视图。它能自动识别 <strong>Varint</strong>（变长整数）、<strong>Length-delimited</strong>（字符串或子消息）等核心数据类型。如果某个字段看起来像是一个子消息，本工具会尝试递归解码它。</p>
+
+        <h3>3. 常见数据类型识别</h3>
+        <ul>
+          <li><strong>Varint (0)：</strong> 用于 int32, int64, bool 等，使用 Base128 变长编码。</li>
+          <li><strong>Fixed64 (1)：</strong> 用于 fixed64, double 等 8 字节固定长度数据。</li>
+          <li><strong>Length-delimited (2)：</strong> 用于 string, bytes, embedded messages 以及 packed repeated fields。</li>
+          <li><strong>Fixed32 (5)：</strong> 用于 fixed32, float 等 4 字节固定长度数据。</li>
+        </ul>
+
+        <h3>常见问题解答 (FAQ)</h3>
+        <p><strong>Q: 为什么解码出来的数字看起来很奇怪？</strong><br>
+        A: 变长整数可能代表原始数值，也可能代表经过 ZigZag 编码的负数。此外，由于没有 Schema，我们无法确定一个 4 字节块到底是 <code>int32</code> 还是 <code>float</code>。</p>
+        <p><strong>Q: 为什么有些嵌套的消息没有被自动展开？</strong><br>
+        A: 当二进制数据看起来既像合法的 Protobuf 子消息又像普通的字符串时，为了准确性，解码器可能默认将其展示为 Hex/String。您可以根据业务逻辑手动判断。</p>
+      </article>
+
+      <footer style="margin-top: 32px; text-align: center; color: var(--text-muted); font-size: 0.75rem;">
+        <p>© 2026 WebUtils. All rights reserved.</p>
       </footer>
     </div>
+
+    <div class="toast" id="toast">操作成功</div>
+
     <script>
-      const WIRE_TYPES = {
-        0: "Varint",
-        1: "64-bit",
-        2: "Length-delimited",
-        5: "32-bit"
-      };
-
-      window.decode = function () {
-        const input = document.getElementById("input").value.trim();
-        const output = document.getElementById("output");
-
-        if (!input) {
-          output.innerHTML = '<span style="color:var(--text-muted)">请输入数�?/span>';
-          return;
-        }
-
-        try {
-          // Decode base64
-          const binary = atob(input);
-          const bytes = new Uint8Array(binary.length);
-          for (let i = 0; i < binary.length; i++) {
-            bytes[i] = binary.charCodeAt(i);
-          }
-
-          const fields = parseProtobuf(bytes);
-          output.innerHTML = renderFields(fields, 0);
-        } catch (e) {
-          output.innerHTML = `<span style="color:#ff6b6b">解码错误: ${e.message}</span>`;
-        }
-      };
-
-      function parseProtobuf(bytes, offset = 0, end = bytes.length) {
-        const fields = [];
-        let pos = offset;
-
-        while (pos < end) {
-          const [tag, newPos] = readVarint(bytes, pos);
-          pos = newPos;
-
-          const fieldNum = tag >> 3;
-          const wireType = tag & 0x7;
-
-          let value, rawBytes;
-
-          switch (wireType) {
-            case 0: // Varint
-              const [v, p] = readVarint(bytes, pos);
-              value = v;
-              pos = p;
-              break;
-            case 1: // 64-bit
-              value = bytes.slice(pos, pos + 8);
-              pos += 8;
-              break;
-            case 2: // Length-delimited
-              const [len, lenPos] = readVarint(bytes, pos);
-              pos = lenPos;
-              rawBytes = bytes.slice(pos, pos + len);
-              // Try to decode as string or nested message
-              try {
-                const str = new TextDecoder().decode(rawBytes);
-                if (/^[\x20-\x7E\s]*$/.test(str)) {
-                  value = { type: "string", data: str };
-                } else {
-                  throw new Error("Not a string");
-                }
-              } catch {
-                try {
-                  const nested = parseProtobuf(rawBytes, 0, rawBytes.length);
-                  if (nested.length > 0) {
-                    value = { type: "message", data: nested };
-                  } else {
-                    value = { type: "bytes", data: rawBytes };
-                  }
-                } catch {
-                  value = { type: "bytes", data: rawBytes };
-                }
-              }
-              pos += len;
-              break;
-            case 5: // 32-bit
-              value = bytes.slice(pos, pos + 4);
-              pos += 4;
-              break;
-            default:
-              throw new Error(`Unknown wire type: ${wireType}`);
-          }
-
-          fields.push({ fieldNum, wireType, value });
-        }
-
-        return fields;
-      }
-
-      function readVarint(bytes, pos) {
-        let result = 0n;
+      // Simplified Protobuf Parser Logic
+      function parseVarint(buffer, offset) {
+        let res = 0n;
         let shift = 0n;
-        while (pos < bytes.length) {
-          const byte = bytes[pos++];
-          result |= BigInt(byte & 0x7f) << shift;
-          if ((byte & 0x80) === 0) break;
+        let i = offset;
+        while (i < buffer.length) {
+          const byte = buffer[i++];
+          res |= BigInt(byte & 0x7f) << shift;
+          if (!(byte & 0x80)) return { value: res, size: i - offset };
           shift += 7n;
         }
-        return [Number(result), pos];
+        throw new Error('Truncated varint');
       }
 
-      function renderFields(fields, indent) {
-        const pad = "  ".repeat(indent);
-        return fields
-          .map((f) => {
-            let valueStr;
-            if (typeof f.value === "object" && f.value !== null) {
-              if (f.value.type === "string") {
-                valueStr = `"${f.value.data}"`;
-              } else if (f.value.type === "message") {
-                valueStr = "{\n" + renderFields(f.value.data, indent + 1) + pad + "}";
-              } else if (f.value.type === "bytes") {
-                valueStr =
-                  "[" +
-                  Array.from(f.value.data)
-                    .map((b) => b.toString(16).padStart(2, "0"))
-                    .join(" ") +
-                  "]";
-              } else if (f.value instanceof Uint8Array) {
-                valueStr =
-                  "[" +
-                  Array.from(f.value)
-                    .map((b) => b.toString(16).padStart(2, "0"))
-                    .join(" ") +
-                  "]";
+      function decodeProtobuf(buffer, depth = 0) {
+        if (depth > 10) return "[Max depth reached]";
+        let i = 0;
+        let result = [];
+        
+        while (i < buffer.length) {
+          try {
+            const { value: key, size: keySize } = parseVarint(buffer, i);
+            i += keySize;
+            const fieldNumber = Number(key >> 3n);
+            const wireType = Number(key & 0x07n);
+            
+            let val;
+            if (wireType === 0) { // Varint
+              const { value, size } = parseVarint(buffer, i);
+              i += size;
+              val = value.toString();
+            } else if (wireType === 1) { // 64-bit
+              val = buffer.slice(i, i + 8).reverse().reduce((acc, b) => (acc << 8n) | BigInt(b), 0n).toString(16).padStart(16, '0');
+              i += 8;
+            } else if (wireType === 2) { // Length-delimited
+              const { value: len, size: lenSize } = parseVarint(buffer, i);
+              i += lenSize;
+              const subBuffer = buffer.slice(i, i + Number(len));
+              i += Number(len);
+              
+              // Heuristic: Try to decode as sub-message
+              try {
+                const subParsed = decodeProtobuf(subBuffer, depth + 1);
+                if (subParsed.length > 0 && subParsed.every(it => it.fieldNumber > 0)) {
+                  val = subParsed;
+                } else {
+                  throw new Error('Not a submessage');
+                }
+              } catch {
+                // Treat as string or hex
+                const isPrintable = Array.from(subBuffer).every(b => b >= 32 && b <= 126);
+                val = isPrintable ? `"${new TextDecoder().decode(subBuffer)}"` : `[hex] ${Array.from(subBuffer).map(b => b.toString(16).padStart(2, '0')).join(' ')}`;
               }
+            } else if (wireType === 5) { // 32-bit
+              val = buffer.slice(i, i + 4).reverse().reduce((acc, b) => (acc << 8) | b, 0).toString(16).padStart(8, '0');
+              i += 4;
             } else {
-              valueStr = String(f.value);
+              throw new Error(`Unknown wire type: ${wireType}`);
             }
-            return `${pad}<div class="field"><div class="field-header">Field ${f.fieldNum} <span class="wire-type">(${WIRE_TYPES[f.wireType] || f.wireType})</span></div><div class="field-value">${valueStr}</div></div>`;
-          })
-          .join("\n");
+            
+            result.push({ fieldNumber, wireType, value: val });
+          } catch (e) {
+            break; // Stop parsing this block on error
+          }
+        }
+        return result;
       }
 
-      window.clearAll = function () {
-        document.getElementById("input").value = "";
-        document.getElementById("output").innerHTML =
-          '<span style="color:var(--text-muted)">解码结果将显示在这里</span>';
-      };
-    </script>
-    <script>
-      window.toggleTheme = function () {
-        const html = document.documentElement;
-        const btn = document.querySelector(".theme-toggle");
-        const next = html.getAttribute("data-theme") === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", next);
-        btn.textContent = next === "light" ? "☀�? : "🌙";
-        localStorage.setItem("theme", next);
-      };
-      (function () {
-        const saved = localStorage.getItem("theme");
-        if (saved) {
-          document.documentElement.setAttribute("data-theme", saved);
-          const btn = document.querySelector(".theme-toggle");
-          if (btn) btn.textContent = saved === "light" ? "☀�? : "🌙";
+      function formatResult(parsed, indent = "") {
+        return parsed.map(item => {
+          let valStr = Array.isArray(item.value) 
+            ? `{\n${formatResult(item.value, indent + "  ")}${indent}}`
+            : item.value;
+          return `${indent}Field ${item.fieldNumber} (${getWireName(item.wireType)}): ${valStr}\n`;
+        }).join("");
+      }
+
+      function getWireName(type) {
+        return ["Varint", "Fixed64", "Length-delimited", "Start group", "End group", "Fixed32"][type] || "Unknown";
+      }
+
+      window.decode = () => {
+        let input = document.getElementById('rawInput').value.trim();
+        if (!input) return;
+
+        let buffer;
+        try {
+          // Attempt Hex
+          if (/^[0-9a-fA-F\s]+$/.test(input)) {
+            const hex = input.replace(/\s/g, '');
+            buffer = new Uint8Array(hex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+          } else {
+            // Attempt Base64
+            const binaryString = atob(input.replace(/\s/g, ''));
+            buffer = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) buffer[i] = binaryString.charCodeAt(i);
+          }
+          
+          const parsed = decodeProtobuf(buffer);
+          const formatted = formatResult(parsed);
+          document.getElementById('resultContainer').innerHTML = `<pre>${formatted || "未检测到有效的 Protobuf 字段结构"}</pre>`;
+        } catch (e) {
+          document.getElementById('resultContainer').innerHTML = `<div style="color:var(--error)">解码失败: ${e.message}</div>`;
         }
-      })();
+      };
+
+      window.loadSample = () => {
+        document.getElementById('rawInput').value = "08 96 01 12 07 74 65 73 74 69 6e 67";
+        decode();
+      };
+
+      window.clearAll = () => {
+        document.getElementById('rawInput').value = "";
+        document.getElementById('resultContainer').innerHTML = '<div class="result-empty">等待输入数据进行解码...</div>';
+      };
+
+      window.copyResult = () => {
+        const text = document.getElementById('resultContainer').textContent;
+        navigator.clipboard.writeText(text).then(() => showToast('已复制结果'));
+      };
+
+      function showToast(msg) {
+        const toast = document.getElementById("toast");
+        toast.textContent = msg;
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 2000);
+      }
+
+      // Theme logic
+      window.toggleTheme = () => {
+        const theme = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+        setTheme(theme);
+      }
+      function setTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        document.getElementById("theme-icon").textContent = theme === "light" ? "☀️" : "🌙";
+        localStorage.setItem("theme", theme);
+      }
+      function initTheme() {
+        const savedTheme = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        setTheme(savedTheme || (prefersDark ? "dark" : "light"));
+      }
+
+      initTheme();
     </script>
   </body>
 </html>
-

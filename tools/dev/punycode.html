@@ -1,510 +1,272 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Punycode 转换�?- WebUtils</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Punycode 转换器 - 国际化域名 (IDN) 在线编码与解码工具 | WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Punycode 转换�?- WebUtils" />
-    <meta name="keywords" content="punycode,dev,tools,webutils" />
+    <meta name="description" content="在线进行 Punycode 与 Unicode 之间的相互转换。支持中文域名、特殊字符域名解析为 xn-- 开头的 ASCII 格式。开发者调试国际化域名 (IDN) 与 DNS 配置的必备工具。" />
+    <meta name="keywords" content="punycode转换器, 中文域名解析, IDN编码, unicode转punycode, xn-- 域名转换, DNS域名调试, 开发者工具" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/dev/punycode.html" />
 
     <!-- Open Graph -->
-    <meta property="og:title" content="Punycode 转换�?- WebUtils" />
-    <meta property="og:description" content="Punycode 转换�?- WebUtils" />
+    <meta property="og:title" content="Punycode 转换器 - 国际化域名 (IDN) 在线编码与解码工具 | WebUtils" />
+    <meta property="og:description" content="快速实现 Unicode 与 Punycode 的双向转换，助力国际化域名部署。" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://essays4u.net/tools/dev/punycode.html" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
     <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Punycode 转换�?- WebUtils" />
-    <meta name="twitter:description" content="Punycode 转换�?- WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
     <style>
       :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
+        --bg-body: #0a0a0f;
+        --bg-card: #12121a;
         --bg-input: #0e0e14;
+        --bg-elevated: #1a1a24;
         --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --text-secondary: #a0a0b0;
+        --text-muted: #606070;
+        --border-color: #2a2a3a;
+        --border-focus: #3a3a4a;
+        --accent: #00f5d4;
+        --accent-purple: #bf5af2;
+        --success: #30d158;
+        --warning: #ff9f0a;
+        --error: #ff453a;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", "Space Grotesk", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
       }
 
       [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
+        --bg-body: #fafafa;
+        --bg-card: #ffffff;
         --bg-input: #f5f5f5;
+        --bg-elevated: #ffffff;
         --text-primary: #1a1a1a;
         --text-secondary: #666;
         --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        --border-color: #e5e5e5;
+        --border-focus: #d5d5d5;
+        --accent: #00d4b8;
+        --accent-purple: #9b4dca;
       }
 
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--color-bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      
+      .container { max-width: 900px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--border-color); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .header-right { display: flex; align-items: center; gap: 12px; }
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; width: 40px; height: 40px; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
 
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
+      .main-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; }
+      
+      .converter-grid { display: grid; grid-template-columns: 1fr; gap: 24px; padding: 24px; }
+      .input-group { display: flex; flex-direction: column; gap: 8px; }
+      .input-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
+      
+      textarea { width: 100%; height: 120px; padding: 16px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary); font-family: var(--font-mono); font-size: 0.875rem; resize: vertical; outline: none; transition: all 0.2s; }
+      textarea:focus { border-color: var(--accent); }
 
-      :root {
-        --primary: #06b6d4;
-      }
-      body {
-        padding: 1rem;
-      }
-      .container {
-        max-width: 900px;
-        margin: 0 auto;
-      }
-      header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-      }
-      h1 {
-        margin: 0;
-        font-size: 1.5rem;
-      }
-      .panel {
-        background: var(--pico-card-background-color);
-        border-radius: 8px;
-        padding: 1.5rem;
-        margin-bottom: 1rem;
-      }
-      .grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-      }
-      @media (max-width: 768px) {
-        .grid {
-          grid-template-columns: 1fr;
-        }
-      }
-      .input-group {
-        margin-bottom: 1rem;
-      }
-      .input-group label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 500;
-      }
-      textarea {
-        width: 100%;
-        min-height: 120px;
-        font-family: var(--font-mono);
-        resize: vertical;
-      }
-      .btn-row {
-        display: flex;
-        gap: 0.5rem;
-        margin: 1rem 0;
-        justify-content: center;
-      }
-      .btn-row button {
-        padding: 0.5rem 1.5rem;
-      }
-      .arrow {
-        font-size: 1.5rem;
-        color: var(--pico-muted-color);
-      }
-      .examples {
-        margin-top: 1rem;
-      }
-      .examples h3 {
-        font-size: 1rem;
-        margin-bottom: 0.5rem;
-      }
-      .example-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-      }
-      .example-btn {
-        padding: 0.25rem 0.75rem;
-        font-size: 0.85rem;
-        background: var(--pico-muted-border-color);
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-      }
-      .example-btn:hover {
-        background: var(--accent-cyan);
-        color: white;
-      }
-      .info {
-        padding: 1rem;
-        background: rgba(6, 182, 212, 0.1);
-        border-radius: 6px;
-        font-size: 0.9rem;
-      }
-      .info h4 {
-        margin: 0 0 0.5rem;
-        font-size: 0.95rem;
-      }
-      .info p {
-        margin: 0;
-        color: var(--pico-muted-color);
-      }
-      .result-info {
-        margin-top: 0.5rem;
-        font-size: 0.85rem;
-        color: var(--pico-muted-color);
-      }
+      .action-row { display: flex; align-items: center; justify-content: center; gap: 16px; padding: 0 24px; }
+      .arrow-icon { color: var(--text-muted); }
+      .btn { padding: 10px 24px; background: var(--accent); color: var(--bg-body); border: none; border-radius: var(--radius-md); font-weight: 700; font-size: 0.875rem; cursor: pointer; transition: all 0.2s; flex: 1; }
+      .btn:hover { opacity: 0.9; transform: translateY(-1px); }
 
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
+      .example-section { padding: 16px 24px; background: var(--bg-input); border-top: 1px solid var(--border-color); }
+      .example-title { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px; }
+      .example-list { display: flex; gap: 8px; flex-wrap: wrap; }
+      .example-tag { padding: 4px 10px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.75rem; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; }
+      .example-tag:hover { border-color: var(--accent); color: var(--accent); }
+
+      .ads-container { margin: 24px 0; min-height: 90px; background: rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem; border: 1px dashed var(--border-color); border-radius: 12px; }
+
+      .seo-content { margin-top: 32px; padding: 32px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); color: var(--text-secondary); font-size: 0.875rem; }
+      .seo-content h2 { color: var(--text-primary); font-size: 1.125rem; margin-bottom: 16px; font-weight: 600; border-left: 4px solid var(--accent); padding-left: 12px; }
+      .seo-content h3 { color: var(--text-primary); font-size: 1rem; margin-top: 24px; margin-bottom: 12px; font-weight: 600; }
+      .seo-content p { margin-bottom: 12px; }
+      .seo-content ul { margin-bottom: 16px; padding-left: 20px; }
+      .seo-content li { margin-bottom: 8px; }
+
+      .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); background: var(--accent); color: var(--bg-body); padding: 8px 16px; border-radius: var(--radius-md); font-weight: 600; font-size: 0.875rem; z-index: 1000; opacity: 0; pointer-events: none; transition: all 0.3s; }
+      .toast.show { opacity: 1; transform: translateX(-50%) translateY(-10px); }
+
+      @media (max-width: 640px) {
+        .container { padding: 16px; }
+        .header { flex-direction: column; align-items: stretch; }
+        .header-right { margin-top: -48px; align-self: flex-end; }
+        .action-row { flex-direction: column; }
       }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
   </head>
   <body>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
-      <span id="theme-icon">🌙</span>
-    </button>
-
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      Punycode 转换�?
-    </nav>
     <div class="container">
-      <header>
-        <h1>🌐 Punycode 转换�?/h1>
-        <button id="themeToggle" class="outline">🌙</button>
+      <header class="header">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn" title="返回首页">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 12L6 8L10 4" />
+            </svg>
+          </a>
+          <div class="title-group">
+            <h1>Punycode 转换器</h1>
+            <p>轻松实现国际化域名 (IDN) 与标准 ASCII 编码之间的双向转换</p>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+            <span id="theme-icon">🌙</span>
+          </div>
+        </div>
       </header>
 
-      <div class="panel">
-        <div class="grid">
-          <div class="input-group">
-            <label>Unicode 域名 (中文/国际�?</label>
-            <textarea id="unicodeInput" placeholder="例如: 中文.com �?münchen.de">
-中文域名.中国</textarea
-            >
-            <div class="result-info" id="unicodeInfo"></div>
-          </div>
-          <div class="input-group">
-            <label>Punycode (ASCII)</label>
-            <textarea id="punycodeInput" placeholder="例如: xn--fiq228c.com"></textarea>
-            <div class="result-info" id="punycodeInfo"></div>
-          </div>
-        </div>
-        <div class="btn-row">
-          <button onclick="toPunycode()">转为 Punycode �?/button>
-          <button onclick="toUnicode()">�?转为 Unicode</button>
-          <button onclick="copyResult()" class="outline">📋 复制结果</button>
-        </div>
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
       </div>
 
-      <div class="panel examples">
-        <h3>示例域名</h3>
-        <div class="example-list">
-          <button class="example-btn" data-unicode="中文.com">中文.com</button>
-          <button class="example-btn" data-unicode="北京.中国">北京.中国</button>
-          <button class="example-btn" data-unicode="münchen.de">münchen.de</button>
-          <button class="example-btn" data-unicode="日本�?jp">日本�?jp</button>
-          <button class="example-btn" data-unicode="한국.kr">한국.kr</button>
-          <button class="example-btn" data-unicode="москва.рф">москва.рф</button>
-          <button class="example-btn" data-unicode="αβγ.ελ">αβγ.ελ</button>
-          <button class="example-btn" data-unicode="مثال.مصر">مثال.مصر</button>
+      <main class="main-card">
+        <div class="converter-grid">
+          <div class="input-group">
+            <span class="input-label">Unicode (中文/国际化域名)</span>
+            <textarea id="unicodeInput" placeholder="输入中文域名，例如：测试.cn" oninput="toPunycode()"></textarea>
+          </div>
+          
+          <div class="action-row">
+            <div class="arrow-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 13l5 5 5-5M7 6l5 5 5-5"/></svg>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <span class="input-label">Punycode (xn-- 编码格式)</span>
+            <textarea id="punyInput" placeholder="输入 Punycode，例如：xn--0zwm56d.cn" oninput="toUnicode()"></textarea>
+          </div>
         </div>
+
+        <div class="example-section">
+          <div class="example-title">点击尝试常见示例：</div>
+          <div class="example-list">
+            <span class="example-tag" onclick="loadExample('测试.com')">测试.com</span>
+            <span class="example-tag" onclick="loadExample('中国.cn')">中国.cn</span>
+            <span class="example-tag" onclick="loadExample('😊.app')">😊.app</span>
+            <span class="example-tag" onclick="loadExample('google.コム')">google.コム</span>
+          </div>
+        </div>
+      </main>
+
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
       </div>
 
-      <div class="panel info">
-        <h4>什么是 Punycode�?/h4>
-        <p>
-          Punycode 是一种将 Unicode 字符编码�?ASCII 的方法，主要用于国际化域�?(IDN)。由�?DNS
-          系统只支�?ASCII 字符，因此中文、日文、阿拉伯文等�?ASCII 域名需要转换为 Punycode 格式（以
-          xn-- 开头）才能�?DNS 中使用�?
-        </p>
-      </div>
+      <article class="seo-content">
+        <h2>Punycode 转换指南：什么是国际化域名 (IDN)？</h2>
+        <p>在互联网诞生之初，域名系统 (DNS) 仅支持 ASCII 字符（英文字母、数字和连字符）。然而，随着互联网的全球化，非英语国家的用户希望能够使用本国语言（如中文、日文、阿拉伯文）作为域名。为了在不改变现有 DNS 基础架构的前提下实现这一目标，<strong>Punycode</strong> 编码技术应运而生。</p>
+
+        <h3>1. Punycode 的工作原理</h3>
+        <p>Punycode 是一种特殊的编码算法，它能够将包含非 ASCII 字符的 Unicode 字符串映射为唯一的 ASCII 字符串。在域名的上下文中，这种编码后的字符串通常以 <code>xn--</code> 前缀开头。例如，中文域名“测试.com”经过转换后，在网络协议底层实际上被表示为 <code>xn--0zwm56d.com</code>。</p>
+
+        <h3>2. 为什么需要进行 Punycode 转换？</h3>
+        <ul>
+          <li><strong>DNS 兼容性：</strong> 全球所有的 DNS 服务器都识别 ASCII 字符，通过 Punycode，国际化域名可以在现有的网络设施中顺畅解析。</li>
+          <li><strong>邮件系统：</strong> 虽然现代浏览器能自动处理 IDN，但一些旧的邮件服务器或客户端仍需要 Punycode 格式才能正确发送邮件。</li>
+          <li><strong>开发者调试：</strong> 在配置 Web 服务器（如 Nginx, Apache）或进行 API 开发时，直接使用 Punycode 格式往往能避免字符集编码导致的诡异错误。</li>
+        </ul>
+
+        <h3>3. 安全性提示：同形异义词攻击 (Homograph Attack)</h3>
+        <p>Punycode 虽然解决了语言障碍，但也带来了安全挑战。攻击者可以使用视觉上极其相似的非英文字符来伪造知名域名（例如用西里尔字母的 <code>а</code> 代替英文 <code>a</code>）。这就是为什么现代浏览器在地址栏中，如果检测到域名包含多种混合语系，通常会强制显示其原始的 <code>xn--</code> 格式，以提醒用户注意潜在的欺诈风险。</p>
+
+        <h3>常见问题解答 (FAQ)</h3>
+        <p><strong>Q: 我在浏览器里输入“中文.com”，它会自动转换吗？</strong><br>
+        A: 是的，现代主流浏览器（Chrome, Edge, Safari, Firefox）在发送 DNS 请求前都会自动完成 Unicode 到 Punycode 的转换，这对用户是透明的。</p>
+        <p><strong>Q: 表情符号 (Emoji) 也能转换成 Punycode 吗？</strong><br>
+        A: 完全可以！像 <code>😊.com</code> 这样的域名同样遵循 IDNA 规范，会被转换为对应的 <code>xn--</code> 格式。</p>
+      </article>
+
+      <footer style="margin-top: 32px; text-align: center; color: var(--text-muted); font-size: 0.75rem;">
+        <p>© 2026 WebUtils. All rights reserved.</p>
+      </footer>
     </div>
 
+    <div class="toast" id="toast">已复制</div>
+
+    <!-- Punycode Lib -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/punycode/1.4.1/punycode.min.js"></script>
+
     <script>
-      // Punycode implementation
-      const punycode = {
-        base: 36,
-        tmin: 1,
-        tmax: 26,
-        skew: 38,
-        damp: 700,
-        initialBias: 72,
-        initialN: 128,
-        delimiter: "-",
-
-        decode(input) {
-          const output = [];
-          let i = 0,
-            n = this.initialN,
-            bias = this.initialBias;
-          let basic = input.lastIndexOf(this.delimiter);
-          if (basic < 0) basic = 0;
-          for (let j = 0; j < basic; ++j) {
-            output.push(input.charCodeAt(j));
-          }
-          for (let index = basic > 0 ? basic + 1 : 0; index < input.length; ) {
-            let oldi = i;
-            for (let w = 1, k = this.base; ; k += this.base) {
-              const digit = this.digitToBasic(input.charCodeAt(index++));
-              i += digit * w;
-              const t = k <= bias ? this.tmin : k >= bias + this.tmax ? this.tmax : k - bias;
-              if (digit < t) break;
-              w *= this.base - t;
-            }
-            const out = output.length + 1;
-            bias = this.adapt(i - oldi, out, oldi === 0);
-            n += Math.floor(i / out);
-            i %= out;
-            output.splice(i++, 0, n);
-          }
-          return String.fromCodePoint(...output);
-        },
-
-        encode(input) {
-          const output = [];
-          input = [...input].map((c) => c.codePointAt(0));
-          let n = this.initialN,
-            delta = 0,
-            bias = this.initialBias;
-          for (const c of input) if (c < 128) output.push(String.fromCharCode(c));
-          const basicLength = output.length;
-          let handledCPCount = basicLength;
-          if (basicLength) output.push(this.delimiter);
-          while (handledCPCount < input.length) {
-            let m = Infinity;
-            for (const c of input) if (c >= n && c < m) m = c;
-            delta += (m - n) * (handledCPCount + 1);
-            n = m;
-            for (const c of input) {
-              if (c < n) ++delta;
-              if (c === n) {
-                let q = delta;
-                for (let k = this.base; ; k += this.base) {
-                  const t = k <= bias ? this.tmin : k >= bias + this.tmax ? this.tmax : k - bias;
-                  if (q < t) break;
-                  output.push(
-                    String.fromCharCode(this.basicToDigit(t + ((q - t) % (this.base - t))))
-                  );
-                  q = Math.floor((q - t) / (this.base - t));
-                }
-                output.push(String.fromCharCode(this.basicToDigit(q)));
-                bias = this.adapt(delta, handledCPCount + 1, handledCPCount === basicLength);
-                delta = 0;
-                ++handledCPCount;
-              }
-            }
-            ++delta;
-            ++n;
-          }
-          return output.join("");
-        },
-
-        adapt(delta, numPoints, firstTime) {
-          delta = firstTime ? Math.floor(delta / this.damp) : delta >> 1;
-          delta += Math.floor(delta / numPoints);
-          let k = 0;
-          while (delta > ((this.base - this.tmin) * this.tmax) >> 1) {
-            delta = Math.floor(delta / (this.base - this.tmin));
-            k += this.base;
-          }
-          return Math.floor(k + ((this.base - this.tmin + 1) * delta) / (delta + this.skew));
-        },
-
-        digitToBasic(cp) {
-          return cp - 48 < 10
-            ? cp - 22
-            : cp - 65 < 26
-              ? cp - 65
-              : cp - 97 < 26
-                ? cp - 97
-                : this.base;
-        },
-
-        basicToDigit(digit) {
-          return digit + 22 + 75 * (digit < 26);
-        }
-      };
-
-      function domainToPunycode(domain) {
-        return domain
-          .split(".")
-          .map((label) => {
-            if (/[^\x00-\x7F]/.test(label)) {
-              return "xn--" + punycode.encode(label);
-            }
-            return label;
-          })
-          .join(".");
-      }
-
-      function domainToUnicode(domain) {
-        return domain
-          .split(".")
-          .map((label) => {
-            if (label.toLowerCase().startsWith("xn--")) {
-              try {
-                return punycode.decode(label.slice(4));
-              } catch (e) {
-                return label;
-              }
-            }
-            return label;
-          })
-          .join(".");
-      }
-
       function toPunycode() {
-        const input = document.getElementById("unicodeInput").value.trim();
-        if (!input) return;
-        const result = domainToPunycode(input);
-        document.getElementById("punycodeInput").value = result;
-        updateInfo();
-      }
-
-      window.toUnicode = function () {
-        const input = document.getElementById("punycodeInput").value.trim();
-        if (!input) return;
-        const result = domainToUnicode(input);
-        document.getElementById("unicodeInput").value = result;
-        updateInfo();
-      };
-
-      function updateInfo() {
-        const unicode = document.getElementById("unicodeInput").value;
-        const puny = document.getElementById("punycodeInput").value;
-        document.getElementById("unicodeInfo").textContent = unicode
-          ? `字符�? ${[...unicode].length}`
-          : "";
-        document.getElementById("punycodeInfo").textContent = puny
-          ? `长度: ${puny.length} 字符`
-          : "";
-      }
-
-      window.copyResult = function () {
-        const puny = document.getElementById("punycodeInput").value;
-        if (puny) {
-          navigator.clipboard.writeText(puny);
-          event.target.textContent = "�?已复�?;
-          setTimeout(() => (event.target.textContent = "📋 复制结果"), 2000);
+        const input = document.getElementById('unicodeInput').value;
+        if (!input) {
+          document.getElementById('punyInput').value = "";
+          return;
         }
-      };
-
-      // Example buttons
-      document.querySelectorAll(".example-btn").forEach((btn) => {
-        btn.onclick = () => {
-          document.getElementById("unicodeInput").value = btn.dataset.unicode;
-          toPunycode();
-        };
-      });
-
-      // Auto convert on input
-      document.getElementById("unicodeInput").addEventListener("input", () => {
-        clearTimeout(window.convertTimeout);
-        window.convertTimeout = setTimeout(toPunycode, 300);
-      });
-
-      // Theme toggle
-      const theme = localStorage.getItem("theme") || "light";
-      document.documentElement.setAttribute("data-theme", theme);
-      document.getElementById("themeToggle").textContent = theme === "dark" ? "☀�? : "🌙";
-      document.getElementById("themeToggle").onclick = () => {
-        const next =
-          document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
-        document.documentElement.setAttribute("data-theme", next);
-        localStorage.setItem("theme", next);
-        document.getElementById("themeToggle").textContent = next === "dark" ? "☀�? : "🌙";
-      };
-
-      // Initial conversion
-      toPunycode();
-
-      // Theme toggle
-      function toggleTheme() {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute("data-theme");
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        document.getElementById("theme-icon").textContent = newTheme === "light" ? "☀�? : "🌙";
-        localStorage.setItem("theme", newTheme);
+        
+        try {
+          const parts = input.split('.');
+          const encodedParts = parts.map(part => {
+            return /^[a-zA-Z0-9-]+$/.test(part) ? part : 'xn--' + punycode.encode(part);
+          });
+          document.getElementById('punyInput').value = encodedParts.join('.');
+        } catch (e) {
+          console.error(e);
+        }
       }
 
-      // Load saved theme
-      const savedTheme = localStorage.getItem("theme") || "dark";
-      if (savedTheme === "light") {
-        document.documentElement.setAttribute("data-theme", "light");
-        document.getElementById("theme-icon").textContent = "☀�?;
+      function toUnicode() {
+        const input = document.getElementById('punyInput').value;
+        if (!input) {
+          document.getElementById('unicodeInput').value = "";
+          return;
+        }
+
+        try {
+          const parts = input.split('.');
+          const decodedParts = parts.map(part => {
+            return part.startsWith('xn--') ? punycode.decode(part.substring(4)) : part;
+          });
+          document.getElementById('unicodeInput').value = decodedParts.join('.');
+        } catch (e) {
+          console.error(e);
+        }
       }
+
+      window.loadExample = (text) => {
+        document.getElementById('unicodeInput').value = text;
+        toPunycode();
+      };
+
+      // Theme logic
+      window.toggleTheme = () => {
+        const theme = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+        setTheme(theme);
+      }
+      function setTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        document.getElementById("theme-icon").textContent = theme === "light" ? "☀️" : "🌙";
+        localStorage.setItem("theme", theme);
+      }
+      function initTheme() {
+        const savedTheme = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        setTheme(savedTheme || (prefersDark ? "dark" : "light"));
+      }
+
+      initTheme();
     </script>
   </body>
 </html>
-
