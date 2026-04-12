@@ -1,1112 +1,472 @@
 <!doctype html>
 <html lang="zh-CN">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DeepSeek API 使用指南 - WebUtils</title>
+    <title>DeepSeek API 使用指南 - V3/R1 模型接入、价格计算与代码示例 - WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="DeepSeek API 使用指南 - WebUtils" />
-    <meta name="keywords" content="deepseek-guide,ai,tools,webutils" />
+    <meta name="description" content="DeepSeek API 完整接入指南。包含 2025 最新 V3 和 R1 推理模型价格计算、Python/JS 代码示例、OpenAI 协议兼容性说明及模型对比，助您快速集成高性价比 AI 能力。" />
+    <meta name="keywords" content="DeepSeek API,DeepSeek V3,DeepSeek R1,AI 价格计算器,DeepSeek 教程,推理模型,DeepSeek 代码示例,WebUtils" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/ai/deepseek-guide.html" />
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="DeepSeek API 使用指南 - WebUtils" />
-    <meta property="og:description" content="DeepSeek API 使用指南 - WebUtils" />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content="DeepSeek API 使用指南 - V3/R1 模型接入、价格计算与代码示例 - WebUtils" />
+    <meta property="og:description" content="最全的 DeepSeek API 接入手册。包含实时价格计算器、多语言 SDK 调用示例及 2025 核心优势解析。" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://essays4u.net/tools/ai/deepseek-guide.html" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
     <meta property="og:site_name" content="WebUtils" />
     <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
 
     <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="DeepSeek API 使用指南 - WebUtils" />
-    <meta name="twitter:description" content="DeepSeek API 使用指南 - WebUtils" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="DeepSeek API 使用指南 - V3/R1 模型接入、价格计算与代码示例 - WebUtils" />
+    <meta name="twitter:description" content="DeepSeek API 完整接入指南，包含 V3/R1 最新模型信息。" />
     <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
 
-    <meta
-      name="description"
-      content="DeepSeek V3/R1 API 完整使用指南，包含价格计算、代码示例、模型对�?
-    />
-    <meta name="keywords" content="DeepSeek,API,V3,R1,AI,大模�?教程" />
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      :root {
-        --bg-color: #0a0a0a;
-        --card-bg: #141414;
-        --border-color: #262626;
-        --color-text-primary: #fafafa;
-        --color-text-secondary: #a1a1aa;
-        --accent-color: #3b82f6;
-        --accent-hover: #2563eb;
-        --success-color: #22c55e;
-        --warning-color: #eab308;
-        --error-color: #ef4444;
-        --code-bg: #1e1e1e;
-      }
-
-      [data-theme="light"] {
-        --bg-color: var(--color-bg-deep);
-        --card-bg: #fff;
-        --border-color: #e5e5e5;
-        --color-text-primary: #171717;
-        --color-text-secondary: #525252;
-        --code-bg: #f5f5f5;
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: var(--font-sans);
-        background: var(--bg-color);
-        color: var(--color-text-primary);
-        line-height: 1.6;
-        font-size: 16px;
-        min-height: 100vh;
-      }
-
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem;
-      }
-
-      header {
-        text-align: center;
-        margin-bottom: 3rem;
-      }
-
-      h1 {
-        font-size: 2.5rem;
-        margin-bottom: 0.5rem;
-        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      .subtitle {
-        color: var(--color-text-secondary);
-        font-size: 1.1rem;
-      }
-
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        color: var(--color-text-primary);
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
-        cursor: pointer;
-        font-size: 0.9rem;
-        z-index: 100;
-      }
-
-      .back-link {
-        position: fixed;
-        top: 1rem;
-        left: 1rem;
-        color: var(--color-text-secondary);
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 0.9rem;
-        z-index: 100;
-      }
-
-      .back-link:hover {
-        color: var(--accent-color);
-      }
-
-      .tabs {
-        display: flex;
-        gap: 0.5rem;
-        margin-bottom: 2rem;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-
-      .tab-btn {
-        padding: 0.75rem 1.5rem;
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        color: var(--color-text-secondary);
-        border-radius: 0.5rem;
-        cursor: pointer;
-        font-size: 0.95rem;
-        transition: all 0.2s;
-      }
-
-      .tab-btn:hover {
-        border-color: var(--accent-color);
-        color: var(--color-text-primary);
-      }
-
-      .tab-btn.active {
-        background: var(--accent-color);
-        border-color: var(--accent-color);
-        color: white;
-      }
-
-      .tab-content {
-        display: none;
-      }
-
-      .tab-content.active {
-        display: block;
-      }
-
-      .card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: 1rem;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-      }
-
-      .card h2 {
-        font-size: 1.3rem;
-        margin-bottom: 1rem;
-        color: var(--color-text-primary);
-      }
-
-      .card h3 {
-        font-size: 1.1rem;
-        margin: 1.5rem 0 0.75rem;
-        color: var(--color-text-primary);
-      }
-
-      .info-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 1rem;
-      }
-
-      .info-item {
-        background: var(--bg-color);
-        padding: 1rem;
-        border-radius: 0.5rem;
-        border: 1px solid var(--border-subtle);
-      }
-
-      .info-item label {
-        display: block;
-        font-size: 0.85rem;
-        color: var(--color-text-secondary);
-        margin-bottom: 0.25rem;
-      }
-
-      .info-item .value {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: var(--accent-color);
-      }
-
-      .model-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 1rem 0;
-        font-size: 0.9rem;
-      }
-
-      .model-table th,
-      .model-table td {
-        padding: 0.75rem;
-        text-align: left;
-        border-bottom: 1px solid var(--border-subtle);
-      }
-
-      .model-table th {
-        background: var(--bg-color);
-        font-weight: 600;
-        color: var(--color-text-secondary);
-      }
-
-      .model-table tr:hover {
-        background: var(--bg-color);
-      }
-
-      .badge {
-        display: inline-block;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-        font-size: 0.75rem;
-        font-weight: 600;
-      }
-
-      .badge-new {
-        background: var(--success-color);
-        color: white;
-      }
-
-      .badge-hot {
-        background: var(--error-color);
-        color: white;
-      }
-
-      .badge-reasoning {
-        background: var(--warning-color);
-        color: black;
-      }
-
-      pre {
-        background: var(--code-bg);
-        border: 1px solid var(--border-subtle);
-        border-radius: 0.5rem;
-        padding: 1rem;
-        overflow-x: auto;
-        font-family: Monaco, Menlo, "Ubuntu Mono", monospace;
-        font-size: 0.85rem;
-        line-height: 1.5;
-        position: relative;
-      }
-
-      code {
-        font-family: Monaco, Menlo, "Ubuntu Mono", monospace;
-      }
-
-      .code-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0.5rem;
-      }
-
-      .code-lang {
-        font-size: 0.8rem;
-        color: var(--color-text-secondary);
-      }
-
-      .copy-btn {
-        background: var(--accent-color);
-        color: white;
-        border: none;
-        padding: 0.25rem 0.75rem;
-        border-radius: 0.25rem;
-        cursor: pointer;
-        font-size: 0.8rem;
-      }
-
-      .copy-btn:hover {
-        background: var(--accent-hover);
-      }
-
-      /* 价格计算�?*/
-      .calculator {
-        background: var(--bg-color);
-        padding: 1.5rem;
-        border-radius: 0.5rem;
-        border: 1px solid var(--border-subtle);
-      }
-
-      .calc-row {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-        margin-bottom: 1rem;
-      }
-
-      .calc-field label {
-        display: block;
-        font-size: 0.85rem;
-        color: var(--color-text-secondary);
-        margin-bottom: 0.5rem;
-      }
-
-      .calc-field input,
-      .calc-field select {
-        width: 100%;
-        padding: 0.75rem;
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: 0.5rem;
-        color: var(--color-text-primary);
-        font-size: 1rem;
-      }
-
-      .calc-result {
-        margin-top: 1.5rem;
-        padding: 1rem;
-        background: var(--bg-card);
-        border-radius: 0.5rem;
-        text-align: center;
-      }
-
-      .calc-result .price {
-        font-size: 2rem;
-        font-weight: 700;
-        color: var(--success-color);
-      }
-
-      .calc-result .detail {
-        color: var(--color-text-secondary);
-        font-size: 0.9rem;
-        margin-top: 0.5rem;
-      }
-
-      /* 步骤指南 */
-      .steps {
-        counter-reset: step;
-      }
-
-      .step {
-        position: relative;
-        padding-left: 3rem;
-        margin-bottom: 1.5rem;
-      }
-
-      .step::before {
-        counter-increment: step;
-        content: counter(step);
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 2rem;
-        height: 2rem;
-        background: var(--accent-color);
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 600;
-        font-size: 0.9rem;
-      }
-
-      .step h4 {
-        font-size: 1rem;
-        margin-bottom: 0.5rem;
-      }
-
-      .step p {
-        color: var(--color-text-secondary);
-        font-size: 0.9rem;
-      }
-
-      .tip {
-        background: rgba(59, 130, 246, 0.1);
-        border-left: 3px solid var(--accent-color);
-        padding: 1rem;
-        margin: 1rem 0;
-        border-radius: 0 0.5rem 0.5rem 0;
-      }
-
-      .tip-title {
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-      }
-
-      .warning {
-        background: rgba(234, 179, 8, 0.1);
-        border-left: 3px solid var(--warning-color);
-        padding: 1rem;
-        margin: 1rem 0;
-        border-radius: 0 0.5rem 0.5rem 0;
-      }
-
-      .links {
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-        margin-top: 1rem;
-      }
-
-      .link-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.75rem 1.5rem;
-        background: var(--accent-color);
-        color: white;
-        text-decoration: none;
-        border-radius: 0.5rem;
-        font-size: 0.9rem;
-        transition: background 0.2s;
-      }
-
-      .link-btn:hover {
-        background: var(--accent-hover);
-      }
-
-      .link-btn.secondary {
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        color: var(--color-text-primary);
-      }
-
-      .link-btn.secondary:hover {
-        border-color: var(--accent-color);
-      }
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "DeepSeek API 指南工具",
+      "url": "https://essays4u.net/tools/ai/deepseek-guide.html",
+      "description": "提供 DeepSeek API 的接入指南、价格计算和代码示例。",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "All",
+      "author": {
+        "@type": "Organization",
+        "name": "WebUtils"
+      }
+    }
+    </script>
+
+    <!-- Google AdSense Header Placeholder -->
+    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
 
-      @media (max-width: 768px) {
-        .container {
-          padding: 1rem;
-        }
-
-        h1 {
-          font-size: 1.8rem;
-        }
-
-        .tabs {
-          gap: 0.25rem;
-        }
-
-        .tab-btn {
-          padding: 0.5rem 1rem;
-          font-size: 0.85rem;
-        }
-
-        .model-table {
-          font-size: 0.8rem;
-        }
-
-        .model-table th,
-        .model-table td {
-          padding: 0.5rem;
-        }
-      }
-
-      /* 语法高亮 */
-      .keyword {
-        color: #c586c0;
-      }
-      .string {
-        color: #ce9178;
-      }
-      .comment {
-        color: #6a9955;
-      }
-      .function {
-        color: #dcdcaa;
-      }
-      .variable {
-        color: #9cdcfe;
-      }
-      .number {
-        color: #b5cea8;
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-    </style>
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+
+    <style>
+      :root {
+        --bg-body: #0a0a0f;
+        --bg-card: #12121a;
+        --bg-input: #0e0e14;
+        --bg-elevated: #1a1a24;
+        --text-primary: #e8e8ed;
+        --text-secondary: #a0a0b0;
+        --text-muted: #606070;
+        --border-color: #2a2a3a;
+        --border-focus: #3a3a4a;
+        --accent: #3b82f6;
+        --accent-purple: #8b5cf6;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --error: #ef4444;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", "Space Grotesk", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+
+      [data-theme="light"] {
+        --bg-body: #fafafa;
+        --bg-card: #ffffff;
+        --bg-input: #f5f5f5;
+        --bg-elevated: #ffffff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #666;
+        --text-muted: #999;
+        --border-color: #e5e5e5;
+        --border-focus: #d5d5d5;
+        --accent: #2563eb;
+        --accent-purple: #7c3aed;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      
+      .container { max-width: 1000px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--border-color); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .header-right { display: flex; align-items: center; gap: 12px; }
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; width: 40px; height: 40px; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+      .theme-toggle:hover { border-color: var(--accent); }
+
+      .tabs { display: flex; gap: 8px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 4px; }
+      .tab-btn { padding: 10px 20px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; color: var(--text-secondary); font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+      .tab-btn:hover { border-color: var(--accent); color: var(--text-primary); }
+      .tab-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+      .tab-content { display: none; }
+      .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+      .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 24px; }
+      .card-title { font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+      
+      .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+      .info-item { background: var(--bg-input); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); }
+      .info-label { font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 4px; text-transform: uppercase; }
+      .info-value { font-size: 1.1rem; font-weight: 600; color: var(--accent); font-family: var(--font-mono); }
+
+      .model-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+      .model-table th, .model-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-color); }
+      .model-table th { color: var(--text-secondary); font-weight: 500; }
+      .model-table tr:last-child td { border-bottom: none; }
+      .badge { padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; }
+      .badge-success { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+      .badge-warning { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+
+      .calculator { background: var(--bg-input); border-radius: var(--radius-md); padding: 20px; }
+      .calc-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 16px; }
+      .calc-field label { display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 8px; }
+      .calc-field input, .calc-field select { width: 100%; padding: 10px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.9rem; outline: none; }
+      .calc-result { text-align: center; padding: 20px; background: var(--bg-elevated); border-radius: var(--radius-md); margin-top: 16px; }
+      .calc-price { font-size: 2rem; font-weight: 700; color: var(--success); font-family: var(--font-mono); }
+      .calc-detail { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+
+      pre { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; overflow-x: auto; position: relative; margin-bottom: 16px; }
+      code { font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.5; }
+      .copy-code-btn { position: absolute; top: 12px; right: 12px; padding: 4px 8px; background: var(--bg-elevated); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-muted); font-size: 0.7rem; cursor: pointer; }
+      .copy-code-btn:hover { color: var(--text-primary); border-color: var(--accent); }
+
+      .ads-container { margin: 24px 0; min-height: 90px; background: rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem; border: 1px dashed var(--border-color); border-radius: var(--radius-md); }
+
+      .seo-content { margin-top: 32px; padding: 32px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); color: var(--text-secondary); font-size: 0.875rem; }
+      .seo-content h2 { color: var(--text-primary); font-size: 1.125rem; margin-bottom: 16px; font-weight: 600; }
+      .seo-content h3 { color: var(--text-primary); font-size: 1rem; margin-top: 24px; margin-bottom: 12px; font-weight: 600; }
+      .seo-content p { margin-bottom: 12px; }
+      .seo-content ul { margin-bottom: 16px; padding-left: 20px; }
+      .seo-content li { margin-bottom: 8px; }
+
+      @media (max-width: 640px) {
+        .container { padding: 16px; }
+        .header { flex-direction: column; align-items: stretch; }
+        .info-grid { grid-template-columns: 1fr; }
+      }
+    </style>
   </head>
   <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      DeepSeek API 使用指南 | 在线工具
-    </nav>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="🌓 切换主题">
-      🌓 切换主题
-    </button>
-
     <div class="container">
-      <header>
-        <h1>DeepSeek API 使用指南</h1>
-        <p class="subtitle">最�?V3/R1 模型完整教程 · 价格计算 · 代码示例</p>
+      <header class="header">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn" title="返回首页">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 12L6 8L10 4" />
+            </svg>
+          </a>
+          <div class="title-group">
+            <h1>DeepSeek API 指南</h1>
+            <p>2025 全新 V3/R1 推理模型深度接入手册</p>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+            <span id="theme-icon">🌙</span>
+          </div>
+        </div>
       </header>
 
-      <div class="tabs">
-        <button class="tab-btn active" onclick="showTab('overview')" aria-label="概览">概览</button>
-        <button class="tab-btn" onclick="showTab('quickstart')" aria-label="快速开�?>
-          快速开�?
-        </button>
-        <button class="tab-btn" onclick="showTab('models')" aria-label="模型对比">模型对比</button>
-        <button class="tab-btn" onclick="showTab('pricing')" aria-label="价格计算">价格计算</button>
-        <button class="tab-btn" onclick="showTab('code')" aria-label="代码示例">代码示例</button>
+      <!-- Google AdSense Top -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
       </div>
 
-      <!-- 概览 -->
-      <div id="overview" class="tab-content active">
-        <div class="card">
-          <h2>什么是 DeepSeek�?/h2>
-          <p>
-            DeepSeek（深度求索）是中国领先的 AI 公司，其最新发布的
-            <strong>DeepSeek-V3</strong>
-            �?
-            <strong>DeepSeek-R1</strong>
-            模型在多项基准测试中达到�?GPT-4 级别的性能，同时价格仅为其 1/10�?
-          </p>
+      <main>
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab('overview')">概览</button>
+          <button class="tab-btn" onclick="switchTab('models')">模型对比</button>
+          <button class="tab-btn" onclick="switchTab('pricing')">价格计算</button>
+          <button class="tab-btn" onclick="switchTab('code')">代码示例</button>
+          <button class="tab-btn" onclick="switchTab('quickstart')">快速开始</button>
+        </div>
 
-          <div class="info-grid" style="margin-top: 1.5rem">
-            <div class="info-item">
-              <label>API 基础地址</label>
-              <div class="value">api.deepseek.com</div>
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active">
+          <div class="card">
+            <div class="card-title">🚀 为什么选择 DeepSeek API？</div>
+            <p>DeepSeek 是全球领先的 AI 大模型提供商，其最新发布的 V3 和 R1 模型在推理、编程和数学能力上已全面对标 GPT-4o。最核心的优势在于其极致的性价比，价格仅为国外同类模型的 1/10。</p>
+            <div class="info-grid" style="margin-top: 20px;">
+              <div class="info-item">
+                <div class="info-label">API Endpoint</div>
+                <div class="info-value">api.deepseek.com</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">协议兼容</div>
+                <div class="info-value">OpenAI SDK</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">最大上下文</div>
+                <div class="info-value">128K Tokens</div>
+              </div>
             </div>
-            <div class="info-item">
-              <label>兼容协议</label>
-              <div class="value">OpenAI API 格式</div>
-            </div>
-            <div class="info-item">
-              <label>最大上下文</label>
-              <div class="value">128K tokens</div>
-            </div>
-            <div class="info-item">
-              <label>输入价格 (V3)</label>
-              <div class="value">¥1 / 百万 tokens</div>
+            <div style="display: flex; gap: 12px;">
+              <a href="https://platform.deepseek.com/" target="_blank" class="tab-btn active" style="text-decoration: none;">获取 API Key</a>
+              <a href="https://api-docs.deepseek.com/" target="_blank" class="tab-btn" style="text-decoration: none;">官方文档</a>
             </div>
           </div>
-
-          <div class="links">
-            <a href="https://platform.deepseek.com/" target="_blank" class="link-btn">
-              🔑 获取 API Key
-            </a>
-            <a href="https://api-docs.deepseek.com/" target="_blank" class="link-btn secondary">
-              📖 官方文档
-            </a>
-            <a href="https://chat.deepseek.com/" target="_blank" class="link-btn secondary">
-              💬 在线体验
-            </a>
+          <div class="card">
+            <div class="card-title">💡 核心优势</div>
+            <ul>
+              <li><strong>极致成本：</strong>V3 模型输入价格仅需 1元/百万 Tokens。</li>
+              <li><strong>深度思考：</strong>R1 推理模型具备强大的 Chain-of-Thought 能力。</li>
+              <li><strong>无缝迁移：</strong>完全兼容 OpenAI API 格式，只需修改 <code>base_url</code>。</li>
+              <li><strong>高可用性：</strong>支持流式输出 (Stream)，响应延迟极低。</li>
+            </ul>
           </div>
         </div>
 
-        <div class="card">
-          <h2>核心优势</h2>
-          <div class="info-grid">
-            <div class="info-item">
-              <label>极致性价�?/label>
-              <div class="value" style="font-size: 1rem">价格仅为 GPT-4 �?1/10，Claude �?1/5</div>
-            </div>
-            <div class="info-item">
-              <label>OpenAI 兼容</label>
-              <div class="value" style="font-size: 1rem">只需修改 base_url，现有代码即可迁�?/div>
-            </div>
-            <div class="info-item">
-              <label>中文优化</label>
-              <div class="value" style="font-size: 1rem">原生中文训练，中文场景表现更�?/div>
-            </div>
-            <div class="info-item">
-              <label>推理能力</label>
-              <div class="value" style="font-size: 1rem">R1 模型支持深度思考，数学推理领先</div>
+        <!-- Models Tab -->
+        <div id="models" class="tab-content">
+          <div class="card">
+            <div class="card-title">🤖 2025 主流模型列表</div>
+            <div style="overflow-x: auto;">
+              <table class="model-table">
+                <thead>
+                  <tr>
+                    <th>模型名称</th>
+                    <th>ID</th>
+                    <th>能力重点</th>
+                    <th>上下文</th>
+                    <th>状态</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>DeepSeek-V3</strong></td>
+                    <td><code>deepseek-chat</code></td>
+                    <td>通用对话、编程、长文本</td>
+                    <td>128K</td>
+                    <td><span class="badge badge-success">推荐</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>DeepSeek-R1</strong></td>
+                    <td><code>deepseek-reasoner</code></td>
+                    <td>深度逻辑推理、数学、科学</td>
+                    <td>128K</td>
+                    <td><span class="badge badge-warning">最新</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>DeepSeek-Coder</strong></td>
+                    <td><code>deepseek-coder</code></td>
+                    <td>代码生成与补全优化</td>
+                    <td>128K</td>
+                    <td><span class="badge">稳定</span></td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- 快速开�?-->
-      <div id="quickstart" class="tab-content">
-        <div class="card">
-          <h2>快速开�?/h2>
-
-          <div class="steps">
-            <div class="step">
-              <h4>注册账号并获�?API Key</h4>
-              <p>
-                访问
-                <a href="https://platform.deepseek.com/" target="_blank">platform.deepseek.com</a>
-                ，注册账号后�?API Keys 页面创建密钥。新用户注册即�?500 �?tokens�?
-              </p>
-            </div>
-
-            <div class="step">
-              <h4>安装 OpenAI SDK</h4>
-              <p>DeepSeek API �?OpenAI 格式完全兼容，可以直接使�?OpenAI 官方 SDK�?/p>
-              <div class="code-header">
-                <span class="code-lang">bash</span>
-                <button class="copy-btn" onclick="copyCode(this)" aria-label="复制">复制</button>
+        <!-- Pricing Tab -->
+        <div id="pricing" class="tab-content">
+          <div class="card">
+            <div class="card-title">💰 API 价格计算器</div>
+            <div class="calculator">
+              <div class="calc-row">
+                <div class="calc-field">
+                  <label>选择模型</label>
+                  <select id="calcModel" onchange="updatePrice()">
+                    <option value="v3">DeepSeek-V3 (¥1/M In, ¥2/M Out)</option>
+                    <option value="r1">DeepSeek-R1 (¥4/M In, ¥16/M Out)</option>
+                  </select>
+                </div>
+                <div class="calc-field">
+                  <label>计费单位</label>
+                  <select id="calcUnit" onchange="updatePrice()">
+                    <option value="cny">人民币 (¥)</option>
+                    <option value="usd">美元 ($)</option>
+                  </select>
+                </div>
               </div>
-              <pre><code># Python
-pip install openai
-
-# Node.js
-npm install openai</code></pre>
-            </div>
-
-            <div class="step">
-              <h4>配置环境变量</h4>
-              <p>�?API Key 保存为环境变量，避免在代码中硬编码�?/p>
-              <div class="code-header">
-                <span class="code-lang">bash</span>
-                <button class="copy-btn" onclick="copyCode(this)" aria-label="复制">复制</button>
+              <div class="calc-row">
+                <div class="calc-field">
+                  <label>输入 Tokens (K)</label>
+                  <input type="number" id="inputK" value="10" oninput="updatePrice()">
+                </div>
+                <div class="calc-field">
+                  <label>输出 Tokens (K)</label>
+                  <input type="number" id="outputK" value="5" oninput="updatePrice()">
+                </div>
               </div>
-              <pre><code># Linux/macOS
-export DEEPSEEK_API_KEY="your-api-key"
-
-# Windows PowerShell
-$env:DEEPSEEK_API_KEY="your-api-key"</code></pre>
-            </div>
-
-            <div class="step">
-              <h4>发送第一个请�?/h4>
-              <p>使用以下代码测试 API 是否正常工作�?/p>
-              <div class="code-header">
-                <span class="code-lang">Python</span>
-                <button class="copy-btn" onclick="copyCode(this)" aria-label="复制">复制</button>
+              <div class="calc-result">
+                <div class="calc-price" id="totalPrice">¥0.02</div>
+                <div class="calc-detail">预估费用 (输入 + 输出)</div>
               </div>
-              <pre><code><span class="keyword">from</span> openai <span class="keyword">import</span> OpenAI
+            </div>
+          </div>
+        </div>
+
+        <!-- Code Tab -->
+        <div id="code" class="tab-content">
+          <div class="card">
+            <div class="card-title">🐍 Python 调用示例</div>
+            <pre><button class="copy-code-btn" onclick="copyCode(this)">复制</button><code>from openai import OpenAI
 
 client = OpenAI(
-    api_key=<span class="string">"your-api-key"</span>,
-    base_url=<span class="string">"https://api.deepseek.com"</span>
+    api_key="YOUR_DEEPSEEK_API_KEY",
+    base_url="https://api.deepseek.com"
 )
 
 response = client.chat.completions.create(
-    model=<span class="string">"deepseek-chat"</span>,  <span class="comment"># V3 模型</span>
+    model="deepseek-chat",
     messages=[
-        {<span class="string">"role"</span>: <span class="string">"user"</span>, <span class="string">"content"</span>: <span class="string">"你好，请介绍一下你自己"</span>}
-    ]
-)
-
-<span class="function">print</span>(response.choices[<span class="number">0</span>].message.content)</code></pre>
-            </div>
-          </div>
-
-          <div class="tip">
-            <div class="tip-title">💡 提示</div>
-            <p>API Key 仅在创建时显示一次，请务必保存。如果丢失，需要删除重新创建�?/p>
-          </div>
-        </div>
-      </div>
-
-      <!-- 模型对比 -->
-      <div id="models" class="tab-content">
-        <div class="card">
-          <h2>模型列表</h2>
-          <div style="overflow-x: auto">
-            <table class="model-table">
-              <thead>
-                <tr>
-                  <th>模型名称</th>
-                  <th>API 标识</th>
-                  <th>特点</th>
-                  <th>上下�?/th>
-                  <th>输入价格</th>
-                  <th>输出价格</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    <strong>DeepSeek-V3</strong>
-                    <span class="badge badge-hot">HOT</span>
-                  </td>
-                  <td><code>deepseek-chat</code></td>
-                  <td>通用对话，速度�?/td>
-                  <td>128K</td>
-                  <td>¥1/M</td>
-                  <td>¥2/M</td>
-                </tr>
-                <tr>
-                  <td>
-                    <strong>DeepSeek-R1</strong>
-                    <span class="badge badge-reasoning">推理</span>
-                  </td>
-                  <td><code>deepseek-reasoner</code></td>
-                  <td>深度思考，数学/代码�?/td>
-                  <td>128K</td>
-                  <td>¥4/M</td>
-                  <td>¥16/M</td>
-                </tr>
-                <tr>
-                  <td><strong>DeepSeek-Coder</strong></td>
-                  <td><code>deepseek-coder</code></td>
-                  <td>代码生成与补�?/td>
-                  <td>128K</td>
-                  <td>¥1/M</td>
-                  <td>¥2/M</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="warning">
-            <div class="tip-title">⚠️ 注意</div>
-            <p>
-              <strong>缓存命中价格更低</strong>
-              ：当输入内容与之前请求相似时，缓存命中的 token 价格仅为 ¥0.1/百万（V3）或
-              ¥1/百万（R1）�?
-            </p>
-          </div>
-        </div>
-
-        <div class="card">
-          <h2>如何选择模型�?/h2>
-          <div class="info-grid">
-            <div class="info-item">
-              <label>日常对话 / 文本处理</label>
-              <div class="value">deepseek-chat (V3)</div>
-              <p style="color: var(--color-text-secondary); font-size: 0.85rem; margin-top: 0.5rem">
-                速度快、成本低，适合大多数场�?
-              </p>
-            </div>
-            <div class="info-item">
-              <label>数学 / 逻辑推理</label>
-              <div class="value">deepseek-reasoner (R1)</div>
-              <p style="color: var(--color-text-secondary); font-size: 0.85rem; margin-top: 0.5rem">
-                支持 Chain-of-Thought，复杂问题首�?
-              </p>
-            </div>
-            <div class="info-item">
-              <label>代码生成 / 补全</label>
-              <div class="value">deepseek-coder</div>
-              <p style="color: var(--color-text-secondary); font-size: 0.85rem; margin-top: 0.5rem">
-                专门优化，代码质量更�?
-              </p>
-            </div>
-            <div class="info-item">
-              <label>长文档处�?/label>
-              <div class="value">deepseek-chat (V3)</div>
-              <p style="color: var(--color-text-secondary); font-size: 0.85rem; margin-top: 0.5rem">
-                128K 上下文，支持长文�?
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 价格计算 -->
-      <div id="pricing" class="tab-content">
-        <div class="card">
-          <h2>价格计算�?/h2>
-          <div class="calculator">
-            <div class="calc-row">
-              <div class="calc-field">
-                <label>选择模型</label>
-                <select id="calcModel" onchange="calculatePrice()">
-                  <option value="v3">DeepSeek-V3 (deepseek-chat)</option>
-                  <option value="r1">DeepSeek-R1 (deepseek-reasoner)</option>
-                  <option value="coder">DeepSeek-Coder</option>
-                </select>
-              </div>
-              <div class="calc-field">
-                <label>计费周期</label>
-                <select id="calcPeriod" onchange="calculatePrice()">
-                  <option value="day">每天</option>
-                  <option value="month">每月</option>
-                </select>
-              </div>
-            </div>
-            <div class="calc-row">
-              <div class="calc-field">
-                <label for="input----tokens----">输入 Tokens (�?</label>
-                <input
-                  type="number"
-                  id="inputTokens"
-                  value="100"
-                  min="0"
-                  onchange="calculatePrice()"
-                  aria-label="数字输入�?
-                  placeholder="请输入数字输入框"
-                />
-              </div>
-              <div class="calc-field">
-                <label for="input----tokens----">输出 Tokens (�?</label>
-                <input
-                  type="number"
-                  id="outputTokens"
-                  value="50"
-                  min="0"
-                  onchange="calculatePrice()"
-                  aria-label="数字输入�?
-                  placeholder="请输入数字输入框"
-                />
-              </div>
-            </div>
-            <div class="calc-result">
-              <div class="price" id="totalPrice">¥0.00</div>
-              <div class="detail" id="priceDetail">预估费用</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <h2>价格对比</h2>
-          <div style="overflow-x: auto">
-            <table class="model-table">
-              <thead>
-                <tr>
-                  <th>模型</th>
-                  <th>输入价格 (每百�?</th>
-                  <th>输出价格 (每百�?</th>
-                  <th>相比 GPT-4</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>DeepSeek-V3</strong></td>
-                  <td>¥1 ($0.14)</td>
-                  <td>¥2 ($0.28)</td>
-                  <td style="color: var(--success-color)">便宜 97%</td>
-                </tr>
-                <tr>
-                  <td><strong>DeepSeek-R1</strong></td>
-                  <td>¥4 ($0.55)</td>
-                  <td>¥16 ($2.19)</td>
-                  <td style="color: var(--success-color)">便宜 85%</td>
-                </tr>
-                <tr>
-                  <td>GPT-4-Turbo</td>
-                  <td>$10</td>
-                  <td>$30</td>
-                  <td>-</td>
-                </tr>
-                <tr>
-                  <td>Claude 3.5 Sonnet</td>
-                  <td>$3</td>
-                  <td>$15</td>
-                  <td>便宜 70%</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- 代码示例 -->
-      <div id="code" class="tab-content">
-        <div class="card">
-          <h2>Python 示例</h2>
-
-          <h3>基础对话</h3>
-          <div class="code-header">
-            <span class="code-lang">Python</span>
-            <button class="copy-btn" onclick="copyCode(this)" aria-label="复制">复制</button>
-          </div>
-          <pre><code><span class="keyword">from</span> openai <span class="keyword">import</span> OpenAI
-
-client = OpenAI(
-    api_key=<span class="string">"your-api-key"</span>,
-    base_url=<span class="string">"https://api.deepseek.com"</span>
-)
-
-<span class="comment"># 简单对�?/span>
-response = client.chat.completions.create(
-    model=<span class="string">"deepseek-chat"</span>,
-    messages=[
-        {<span class="string">"role"</span>: <span class="string">"system"</span>, <span class="string">"content"</span>: <span class="string">"你是一个有帮助的助�?</span>},
-        {<span class="string">"role"</span>: <span class="string">"user"</span>, <span class="string">"content"</span>: <span class="string">"解释什么是机器学习"</span>}
+        {"role": "system", "content": "你是一个专业的编程助手"},
+        {"role": "user", "content": "解释什么是机器学习"},
     ],
-    temperature=<span class="number">0.7</span>,
-    max_tokens=<span class="number">2000</span>
+    stream=False
 )
 
-<span class="function">print</span>(response.choices[<span class="number">0</span>].message.content)</code></pre>
+print(response.choices[0].message.content)</code></pre>
 
-          <h3>流式输出</h3>
-          <div class="code-header">
-            <span class="code-lang">Python</span>
-            <button class="copy-btn" onclick="copyCode(this)" aria-label="复制">复制</button>
-          </div>
-          <pre><code><span class="comment"># 流式响应</span>
-stream = client.chat.completions.create(
-    model=<span class="string">"deepseek-chat"</span>,
-    messages=[{<span class="string">"role"</span>: <span class="string">"user"</span>, <span class="string">"content"</span>: <span class="string">"写一首关于春天的�?</span>}],
-    stream=<span class="keyword">True</span>
-)
+            <div class="card-title" style="margin-top: 24px;">📦 Node.js 调用示例</div>
+            <pre><button class="copy-code-btn" onclick="copyCode(this)">复制</button><code>const OpenAI = require("openai");
 
-<span class="keyword">for</span> chunk <span class="keyword">in</span> stream:
-    <span class="keyword">if</span> chunk.choices[<span class="number">0</span>].delta.content:
-        <span class="function">print</span>(chunk.choices[<span class="number">0</span>].delta.content, end=<span class="string">""</span>)</code></pre>
-
-          <h3>使用 R1 推理模型</h3>
-          <div class="code-header">
-            <span class="code-lang">Python</span>
-            <button class="copy-btn" onclick="copyCode(this)" aria-label="复制">复制</button>
-          </div>
-          <pre><code><span class="comment"># DeepSeek-R1 推理模型（带思考过程）</span>
-response = client.chat.completions.create(
-    model=<span class="string">"deepseek-reasoner"</span>,
-    messages=[{
-        <span class="string">"role"</span>: <span class="string">"user"</span>, 
-        <span class="string">"content"</span>: <span class="string">"一个农夫带着狼、羊和白菜过河，每次只能带一�?.."</span>
-    }]
-)
-
-<span class="comment"># R1 会返回思考过�?/span>
-<span class="function">print</span>(<span class="string">"思考过�?"</span>, response.choices[<span class="number">0</span>].message.reasoning_content)
-<span class="function">print</span>(<span class="string">"最终答�?"</span>, response.choices[<span class="number">0</span>].message.content)</code></pre>
-        </div>
-
-        <div class="card">
-          <h2>JavaScript/Node.js 示例</h2>
-          <div class="code-header">
-            <span class="code-lang">JavaScript</span>
-            <button class="copy-btn" onclick="copyCode(this)" aria-label="复制">复制</button>
-          </div>
-          <pre><code><span class="keyword">import</span> OpenAI <span class="keyword">from</span> <span class="string">'openai'</span>;
-
-<span class="keyword">const</span> client = <span class="keyword">new</span> <span class="function">OpenAI</span>({
-    apiKey: <span class="string">'your-api-key'</span>,
-    baseURL: <span class="string">'https://api.deepseek.com'</span>
+const openai = new OpenAI({
+    apiKey: "YOUR_DEEPSEEK_API_KEY",
+    baseURL: "https://api.deepseek.com"
 });
 
-<span class="keyword">async function</span> <span class="function">chat</span>() {
-    <span class="keyword">const</span> response = <span class="keyword">await</span> client.chat.completions.<span class="function">create</span>({
-        model: <span class="string">'deepseek-chat'</span>,
-        messages: [
-            { role: <span class="string">'user'</span>, content: <span class="string">'Hello, DeepSeek!'</span> }
-        ]
+async function main() {
+    const completion = await openai.chat.completions.create({
+        messages: [{ role: "user", content: "你好" }],
+        model: "deepseek-chat",
     });
-    
-    console.<span class="function">log</span>(response.choices[<span class="number">0</span>].message.content);
+
+    console.log(completion.choices[0].message.content);
 }
 
-<span class="function">chat</span>();</code></pre>
+main();</code></pre>
+          </div>
         </div>
 
-        <div class="card">
-          <h2>cURL 示例</h2>
-          <div class="code-header">
-            <span class="code-lang">bash</span>
-            <button class="copy-btn" onclick="copyCode(this)" aria-label="复制">复制</button>
+        <!-- Quickstart Tab -->
+        <div id="quickstart" class="tab-content">
+          <div class="card">
+            <div class="card-title">🏁 3 步快速接入</div>
+            <ol style="padding-left: 20px;">
+              <li style="margin-bottom: 16px;">
+                <strong>创建 API Key：</strong>访问 DeepSeek 开放平台，注册并完成实名认证后创建密钥。
+              </li>
+              <li style="margin-bottom: 16px;">
+                <strong>配置环境：</strong>安装 OpenAI SDK (<code>pip install openai</code>)，并配置 <code>base_url</code>。
+              </li>
+              <li style="margin-bottom: 16px;">
+                <strong>发送请求：</strong>使用上述代码示例发送您的第一个请求，新用户通常有 500 万免费 Tokens 额度。
+              </li>
+            </ol>
           </div>
-          <pre><code>curl https://api.deepseek.com/chat/completions \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer your-api-key" \
-  -d '{
-    "model": "deepseek-chat",
-    "messages": [
-      {"role": "user", "content": "Hello!"}
-    ]
-  }'</code></pre>
         </div>
+      </main>
+
+      <!-- Google AdSense Bottom -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
       </div>
+
+      <article class="seo-content">
+        <h2>DeepSeek API 深度解析：2025 年开发者的最佳选择</h2>
+        <p>随着生成式 AI 的爆发，API 的调用成本和响应速度成为了衡量生产力的核心指标。DeepSeek (深度求索) 作为国产 AI 的佼佼者，通过 <strong>DeepSeek-V3</strong> 和 <strong>DeepSeek-R1</strong> 两款重磅模型，打破了国外厂商在高端模型市场的垄断。本文将深入探讨 DeepSeek API 的技术细节、价格体系及最佳实践。</p>
+        
+        <h3>1. DeepSeek-V3：性价比之王</h3>
+        <p>V3 模型采用了创新的 MoE (Mixture-of-Experts) 架构，总参数量达 685B。这意味着它在保持极高性能的同时，推理时的计算开销极低。对于开发者而言，这意味着您可以以极低的价格（每百万 Tokens 仅 1-2 元）获得媲美 GPT-4o 的对话和编程体验。它是大规模文本处理、自动化内容生成和基础代码辅助的理想选择。</p>
+
+        <h3>2. DeepSeek-R1：推理能力的飞跃</h3>
+        <p>如果说 V3 是全才，那么 R1 就是“理科学霸”。R1 模型引入了大规模强化学习和思维链 (Chain-of-Thought) 技术。在处理复杂的数学证明、逻辑谜题或高难度系统架构设计时，R1 会先进行“深度思考”，并返回详细的思考过程。这使得它在垂直领域的专业性远超普通对话模型。</p>
+
+        <h3>3. 开发者友好：无缝迁移 OpenAI 生态</h3>
+        <p>DeepSeek API 团队做出了一个非常明智的决策：<strong>完全兼容 OpenAI API 规范</strong>。这意味着：</p>
+        <ul>
+          <li><strong>无需学习新 SDK：</strong> 您可以继续使用 <code>openai-python</code> 或 <code>openai-node</code>。</li>
+          <li><strong>一键替换：</strong> 如果您之前的代码是调用 GPT-4，只需将 <code>base_url</code> 改为 <code>https://api.deepseek.com</code> 并更换 <code>api_key</code> 即可完成迁移。</li>
+          <li><strong>低迁移成本：</strong> 现有的 LangChain、LlamaIndex 等框架均可原生支持。</li>
+        </ul>
+
+        <h3>4. API 调用优化建议</h3>
+        <p>为了获得最佳的 API 使用体验，建议开发者遵循以下原则：</p>
+        <ul>
+          <li><strong>使用流式输出：</strong> 设置 <code>stream=True</code> 可以显著降低首字延迟，提升终端用户的交互体验。</li>
+          <li><strong>上下文管理：</strong> 虽然支持 128K 上下文，但合理裁剪历史对话（Context Window Management）可以显著降低成本并提升模型专注度。</li>
+          <li><strong>利用缓存：</strong> DeepSeek API 支持 Context Caching（上下文缓存），对于重复的长提示词，可以享受更低的价格优惠。</li>
+        </ul>
+
+        <h3>5. 结语</h3>
+        <p>在 2025 年，选择 DeepSeek API 不仅仅是为了节省成本，更是为了拥抱更开放、更专业的 AI 生态。无论您是在构建个人效率工具，还是在开发企业级智能应用，DeepSeek 都能提供坚实的技术支撑。</p>
+      </article>
+
+      <footer style="margin-top: 32px; text-align: center; color: var(--text-muted); font-size: 0.75rem;">
+        <p>© 2026 WebUtils. All rights reserved. 关注 DeepSeek 官方 API 动态，获取最新模型更新。</p>
+      </footer>
     </div>
 
     <script>
-      // 主题切换
-      window.toggleTheme = function () {
+      function switchTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        
+        document.querySelector(`[onclick="switchTab('${tabId}')"]`).classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+      }
+
+      function updatePrice() {
+        const model = document.getElementById('calcModel').value;
+        const unit = document.getElementById('calcUnit').value;
+        const inputK = parseFloat(document.getElementById('inputK').value) || 0;
+        const outputK = parseFloat(document.getElementById('outputK').value) || 0;
+
+        let inPrice = model === 'v3' ? 1 : 4;
+        let outPrice = model === 'v3' ? 2 : 16;
+        
+        let total = (inputK * inPrice + outputK * outPrice) / 1000;
+        
+        const symbol = unit === 'cny' ? '¥' : '$';
+        if (unit === 'usd') total = total / 7.2; // 粗略汇率
+
+        document.getElementById('totalPrice').innerText = `${symbol}${total.toFixed(4)}`;
+      }
+
+      function copyCode(btn) {
+        const code = btn.nextElementSibling.innerText;
+        navigator.clipboard.writeText(code).then(() => {
+          const originalText = btn.innerText;
+          btn.innerText = '已复制';
+          setTimeout(() => btn.innerText = originalText, 2000);
+        });
+      }
+
+      function toggleTheme() {
         const html = document.documentElement;
         const currentTheme = html.getAttribute("data-theme");
         const newTheme = currentTheme === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
-      };
-
-      // 加载保存的主�?
-      (function () {
-        const savedTheme = localStorage.getItem("theme") || "dark";
-        document.documentElement.setAttribute("data-theme", savedTheme);
-      })();
-
-      // Tab 切换
-      window.showTab = function (tabId) {
-        document.querySelectorAll(".tab-content").forEach((el) => el.classList.remove("active"));
-        document.querySelectorAll(".tab-btn").forEach((el) => el.classList.remove("active"));
-
-        document.getElementById(tabId).classList.add("active");
-        event.target.classList.add("active");
-      };
-
-      // 复制代码
-      window.copyCode = function (btn) {
-        const pre = btn.closest(".card").querySelector("pre");
-        const code = pre.textContent;
-
-        navigator.clipboard.writeText(code).then(() => {
-          const originalText = btn.textContent;
-          btn.textContent = "已复�?";
-          setTimeout(() => (btn.textContent = originalText), 2000);
-        });
-      };
-
-      // 价格计算
-      const pricing = {
-        v3: { input: 1, output: 2 }, // 每百�?tokens (RMB)
-        r1: { input: 4, output: 16 },
-        coder: { input: 1, output: 2 }
-      };
-
-      function calculatePrice() {
-        const model = document.getElementById("calcModel").value;
-        const period = document.getElementById("calcPeriod").value;
-        const inputTokens = parseFloat(document.getElementById("inputTokens").value) || 0;
-        const outputTokens = parseFloat(document.getElementById("outputTokens").value) || 0;
-
-        const prices = pricing[model];
-
-        // 转换为百�?tokens (输入是万)
-        const inputM = inputTokens / 100;
-        const outputM = outputTokens / 100;
-
-        let totalPerDay = inputM * prices.input + outputM * prices.output;
-        let total = period === "month" ? totalPerDay * 30 : totalPerDay;
-
-        document.getElementById("totalPrice").textContent = "¥" + total.toFixed(2);
-        document.getElementById("priceDetail").textContent =
-          `输入: ${inputTokens}�?× ¥${prices.input}/百万 + 输出: ${outputTokens}�?× ¥${prices.output}/百万` +
-          (period === "month" ? " × 30�? : "");
+        setTheme(newTheme);
       }
 
-      // 初始化计�?
-      calculatePrice();
+      function setTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        document.getElementById("theme-icon").textContent = theme === "light" ? "☀️" : "🌙";
+        localStorage.setItem("theme", theme);
+      }
+
+      // 初始化
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      setTheme(savedTheme);
+      updatePrice();
     </script>
   </body>
 </html>
-
-
