@@ -1,724 +1,388 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SQL在线执行�?- WebUtils</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>SQL 在线执行器 - 基于 SQLite WASM 的浏览器端数据库沙盒 | WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="SQL在线执行�?- WebUtils" />
-    <meta name="keywords" content="sql-playground,dev,tools,webutils" />
+    <meta name="description" content="专业级在线 SQL 运行与测试工具。采用 SQLite WASM 技术，在浏览器本地实现完整的关系型数据库环境。支持建表、增删改查、多表联查及聚合分析。内置示例数据集，提供实时执行结果预览与数据库结构可视化。" />
+    <meta name="keywords" content="SQL在线执行, SQL在线运行, SQLite在线, 数据库沙盒, SQL测试工具, SQL练习, 开发者工具, WebUtils" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/dev/sql-playground.html" />
 
     <!-- Open Graph -->
-    <meta property="og:title" content="SQL在线执行�?- WebUtils" />
-    <meta property="og:description" content="SQL在线执行�?- WebUtils" />
+    <meta property="og:title" content="SQL 在线执行器 - 基于 SQLite WASM 的浏览器端数据库沙盒 | WebUtils" />
+    <meta property="og:description" content="零配置、纯本地运行的 SQL 学习与调试平台。" />
     <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/dev/sql-playground.html"
-    />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:url" content="https://essays4u.net/tools/dev/sql-playground.html" />
     <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="SQL在线执行�?- WebUtils" />
-    <meta name="twitter:description" content="SQL在线执行�?- WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    
+    <!-- SQL.js Lib -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+
     <style>
       :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
+        --bg-body: #0a0a0f;
+        --bg-card: #12121a;
         --bg-input: #0e0e14;
+        --bg-elevated: #1a1a24;
         --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --text-secondary: #a0a0b0;
+        --text-muted: #606070;
+        --border-color: #2a2a3a;
+        --border-focus: #3a3a4a;
+        --accent: #00f5d4;
+        --accent-purple: #bf5af2;
+        --success: #30d158;
+        --warning: #ff9f0a;
+        --error: #ff453a;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", "Space Grotesk", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
       }
 
       [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
+        --bg-body: #fafafa;
+        --bg-card: #ffffff;
         --bg-input: #f5f5f5;
+        --bg-elevated: #ffffff;
         --text-primary: #1a1a1a;
         --text-secondary: #666;
         --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        --border-color: #e5e5e5;
+        --border-focus: #d5d5d5;
+        --accent: #00d4b8;
+        --accent-purple: #9b4dca;
       }
 
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      :root {
-        --bg-primary: #0a0a0f;
-        --bg-secondary: #12121a;
-        --bg-tertiary: #1a1a25;
-        --color-text-primary: #fff;
-        --color-text-secondary: #88a;
-        --accent: #f97316;
-        --border: #2a2a3a;
-        --success: #22c55e;
-        --error: #ef4444;
-      }
-      [data-theme="light"] {
-        --bg-primary: #f8fafc;
-        --bg-secondary: #fff;
-        --bg-tertiary: #f1f5f9;
-        --color-text-primary: #1e293b;
-        --color-text-secondary: #64748b;
-        --border: #e2e8f0;
-      }
-      body {
-        font-family: var(--font-sans);
-        background: var(--bg-deep);
-        color: var(--color-text-primary);
-        min-height: 100vh;
-      }
-      .header {
-        background: linear-gradient(135deg, #f97316, #ea580c);
-        padding: 2rem;
-        text-align: center;
-      }
-      .nav {
-        max-width: 1400px;
-        margin: 0 auto 1rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .back-link {
-        color: rgba(255, 255, 255, 0.9);
-        text-decoration: none;
-        font-size: 0.9rem;
-      }
-      .theme-toggle {
-        background: rgba(255, 255, 255, 0.2);
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
-        color: white;
-        cursor: pointer;
-      }
-      .header h1 {
-        font-size: 2rem;
-        margin-bottom: 0.5rem;
-      }
-      .header p {
-        opacity: 0.9;
-      }
-      .container {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 2rem;
-        display: grid;
-        grid-template-columns: 250px 1fr;
-        gap: 1.5rem;
-      }
-      .sidebar {
-        background: var(--bg-secondary);
-        border-radius: 1rem;
-        border: 1px solid var(--border-subtle);
-        padding: 1rem;
-        height: fit-content;
-      }
-      .sidebar h3 {
-        font-size: 0.85rem;
-        color: var(--color-text-secondary);
-        margin-bottom: 0.75rem;
-        padding: 0 0.5rem;
-      }
-      .table-list {
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-      }
-      .table-item {
-        padding: 0.5rem 0.75rem;
-        background: var(--bg-tertiary);
-        border-radius: 0.375rem;
-        cursor: pointer;
-        font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      .table-item:hover {
-        background: var(--border-subtle);
-      }
-      .table-item.active {
-        border-left: 3px solid var(--accent-cyan);
-      }
-      .table-icon {
-        font-size: 0.8rem;
-      }
-      .main-content {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-      }
-      .editor-section {
-        background: var(--bg-secondary);
-        border-radius: 1rem;
-        border: 1px solid var(--border-subtle);
-        overflow: hidden;
-      }
-      .editor-header {
-        padding: 0.75rem 1rem;
-        background: var(--bg-tertiary);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .editor-header h3 {
-        font-size: 0.9rem;
-        font-weight: 600;
-      }
-      .editor-actions {
-        display: flex;
-        gap: 0.5rem;
-      }
-      .btn {
-        padding: 0.5rem 1rem;
-        background: var(--accent-cyan);
-        color: white;
-        border: none;
-        border-radius: 0.375rem;
-        cursor: pointer;
-        font-size: 0.85rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      .btn:hover {
-        opacity: 0.9;
-      }
-      .btn-secondary {
-        background: var(--bg-tertiary);
-        color: var(--color-text-primary);
-        border: 1px solid var(--border-subtle);
-      }
-      .editor-content {
-        position: relative;
-      }
-      textarea {
-        width: 100%;
-        height: 200px;
-        padding: 1rem;
-        background: var(--bg-tertiary);
-        border: none;
-        color: var(--color-text-primary);
-        font-family: Monaco, Menlo, monospace;
-        font-size: 0.9rem;
-        resize: vertical;
-        line-height: 1.5;
-      }
-      textarea:focus {
-        outline: none;
-      }
-      .results-section {
-        background: var(--bg-secondary);
-        border-radius: 1rem;
-        border: 1px solid var(--border-subtle);
-        overflow: hidden;
-      }
-      .results-header {
-        padding: 0.75rem 1rem;
-        background: var(--bg-tertiary);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .results-meta {
-        font-size: 0.8rem;
-        color: var(--color-text-secondary);
-      }
-      .results-content {
-        overflow-x: auto;
-        max-height: 400px;
-        overflow-y: auto;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 0.85rem;
-      }
-      th,
-      td {
-        padding: 0.75rem 1rem;
-        text-align: left;
-        border-bottom: 1px solid var(--border-subtle);
-      }
-      th {
-        background: var(--bg-tertiary);
-        font-weight: 600;
-        position: sticky;
-        top: 0;
-      }
-      tr:hover td {
-        background: var(--bg-tertiary);
-      }
-      .message {
-        padding: 1rem;
-        font-size: 0.9rem;
-      }
-      .message.success {
-        color: var(--accent-green);
-      }
-      .message.error {
-        color: var(--error);
-      }
-      .examples {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        padding: 0.5rem 1rem;
-        background: var(--bg-secondary);
-        border-bottom: 1px solid var(--border-subtle);
-      }
-      .example-btn {
-        padding: 0.375rem 0.75rem;
-        background: var(--bg-tertiary);
-        border: 1px solid var(--border-subtle);
-        border-radius: 0.375rem;
-        color: var(--color-text-secondary);
-        cursor: pointer;
-        font-size: 0.75rem;
-      }
-      .example-btn:hover {
-        border-color: var(--accent-cyan);
-        color: var(--color-text-primary);
-      }
-      .loading {
-        text-align: center;
-        padding: 2rem;
-        color: var(--color-text-secondary);
-      }
-      .schema-info {
-        padding: 1rem;
-        font-size: 0.85rem;
-        background: var(--bg-tertiary);
-        border-radius: 0.5rem;
-        margin-top: 0.5rem;
-      }
-      .column-item {
-        display: flex;
-        gap: 0.5rem;
-        padding: 0.25rem 0;
-      }
-      .column-name {
-        color: var(--accent-cyan);
-      }
-      .column-type {
-        color: var(--color-text-secondary);
-        font-size: 0.8rem;
-      }
-      @media (max-width: 900px) {
-        .container {
-          grid-template-columns: 1fr;
-        }
-      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      
+      .container { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--border-color); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .header-right { display: flex; align-items: center; gap: 12px; }
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); width: 40px; height: 40px; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
 
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
+      .playground-grid { display: grid; grid-template-columns: 280px 1fr; gap: 24px; }
+      
+      .sidebar { display: flex; flex-direction: column; gap: 20px; }
+      .panel { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; display: flex; flex-direction: column; }
+      .panel-header { padding: 12px 20px; background: var(--bg-input); border-bottom: 1px solid var(--border-color); font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; display: flex; justify-content: space-between; align-items: center; }
+      
+      .table-list { padding: 8px; max-height: 400px; overflow-y: auto; }
+      .table-item { padding: 8px 12px; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.8125rem; color: var(--text-secondary); display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
+      .table-item:hover { background: var(--bg-elevated); color: var(--text-primary); }
+      .table-item.active { background: rgba(0, 245, 212, 0.1); color: var(--accent); font-weight: 600; }
+
+      .editor-container { height: 350px; position: relative; }
+      textarea { width: 100%; height: 100%; padding: 20px; background: transparent; border: none; color: var(--text-primary); font-family: var(--font-mono); font-size: 0.875rem; resize: none; outline: none; line-height: 1.6; }
+      
+      .toolbar { padding: 12px 20px; background: var(--bg-input); border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+      .btn { padding: 8px 16px; background: var(--bg-elevated); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+      .btn:hover { border-color: var(--accent); color: var(--accent); }
+      .btn-primary { background: var(--accent); color: var(--bg-body); border-color: var(--accent); }
+
+      .results-panel { flex: 1; min-height: 300px; margin-top: 24px; }
+      .table-wrapper { width: 100%; overflow-x: auto; padding: 0; }
+      table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; color: var(--text-secondary); }
+      th { text-align: left; padding: 12px 16px; background: var(--bg-input); font-weight: 700; color: var(--text-primary); border-bottom: 2px solid var(--border-color); position: sticky; top: 0; }
+      td { padding: 10px 16px; border-bottom: 1px solid var(--border-color); white-space: nowrap; }
+      tr:hover td { background: rgba(255,255,255,0.02); color: var(--text-primary); }
+
+      .ads-container { margin: 24px 0; min-height: 100px; background: rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem; border: 1px dashed var(--border-color); border-radius: 12px; overflow: hidden; }
+
+      .seo-content { margin-top: 48px; padding: 40px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); color: var(--text-secondary); font-size: 0.875rem; line-height: 1.8; }
+      .seo-content h2 { color: var(--text-primary); font-size: 1.5rem; margin-bottom: 24px; font-weight: 700; border-left: 5px solid var(--accent); padding-left: 20px; }
+      .seo-content h3 { color: var(--text-primary); font-size: 1.2rem; margin-top: 32px; margin-bottom: 16px; font-weight: 600; }
+      .seo-content p { margin-bottom: 20px; }
+      .seo-content ul { margin-bottom: 24px; padding-left: 28px; }
+      .seo-content li { margin-bottom: 12px; }
+      .seo-content strong { color: var(--accent); }
+
+      .status-msg { font-size: 0.75rem; font-weight: 600; }
+      .status-success { color: var(--success); }
+      .status-error { color: var(--error); }
+
+      .schema-info { padding: 12px; font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--border-color); }
+      .col-tag { display: inline-block; padding: 2px 6px; background: var(--bg-input); border-radius: 4px; margin: 2px; border: 1px solid var(--border-color); }
+
+      @media (max-width: 992px) {
+        .playground-grid { grid-template-columns: 1fr; }
       }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
   </head>
   <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      SQL在线执行�?
-    </nav>
-    <div class="header">
-      <div class="nav">
-        <button class="theme-toggle" onclick="toggleTheme()">🌓 主题</button>
-      </div>
-      <h1>🗄�?SQL在线执行�?/h1>
-      <p>基于SQLite的在线SQL查询测试工具</p>
-    </div>
-
     <div class="container">
-      <div class="sidebar">
-        <h3>📊 数据�?/h3>
-        <div class="table-list" id="tableList">
-          <div class="loading">加载�?..</div>
+      <header class="header">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn" title="返回首页">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 12L6 8L10 4" />
+            </svg>
+          </a>
+          <div class="title-group">
+            <h1>SQL 在线执行器</h1>
+            <p>基于 SQLite WASM 的纯前端数据库沙盒，即开即用，隐私安全</p>
+          </div>
         </div>
-        <div id="schemaInfo"></div>
+        <div class="header-right">
+          <div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+            <span id="theme-icon">🌙</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Google AdSense Placeholder -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
       </div>
 
-      <div class="main-content">
-        <div class="editor-section">
-          <div class="editor-header">
-            <h3>📝 SQL编辑�?/h3>
-            <div class="editor-actions">
-              <button class="btn btn-secondary" onclick="formatSQL()">格式�?/button>
-              <button class="btn btn-secondary" onclick="clearEditor()">清空</button>
-              <button class="btn" onclick="executeSQL()">�?执行 (Ctrl+Enter)</button>
+      <main class="playground-grid">
+        <aside class="sidebar">
+          <section class="panel">
+            <div class="panel-header">
+              <span>数据库结构</span>
+              <button class="btn" style="padding: 2px 8px; font-size: 0.65rem;" onclick="resetDB()">重置</button>
             </div>
-          </div>
-          <div class="examples">
-            <button class="example-btn" onclick="loadExample('select')">SELECT</button>
-            <button class="example-btn" onclick="loadExample('insert')">INSERT</button>
-            <button class="example-btn" onclick="loadExample('update')">UPDATE</button>
-            <button class="example-btn" onclick="loadExample('create')">CREATE TABLE</button>
-            <button class="example-btn" onclick="loadExample('join')">JOIN</button>
-            <button class="example-btn" onclick="loadExample('group')">GROUP BY</button>
-          </div>
-          <div class="editor-content">
-            <textarea id="sqlEditor" placeholder="输入SQL语句...">SELECT * FROM users;</textarea>
-          </div>
-        </div>
+            <div class="table-list" id="tableList">
+              <div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.75rem;">正在初始化数据库...</div>
+            </div>
+            <div id="schemaInfo" class="schema-info"></div>
+          </section>
+        </aside>
 
-        <div class="results-section">
-          <div class="results-header">
-            <h3>📋 执行结果</h3>
-            <span class="results-meta" id="resultsMeta"></span>
-          </div>
-          <div class="results-content" id="resultsContent">
-            <div class="message">执行SQL查询后，结果将显示在这里</div>
-          </div>
+        <div class="main-content">
+          <section class="panel">
+            <div class="panel-header">
+              <span>SQL 编辑器</span>
+              <div id="execStatus" class="status-msg"></div>
+            </div>
+            <div class="editor-container">
+              <textarea id="sqlEditor" placeholder="-- 输入 SQL 语句并点击执行...
+SELECT * FROM users;"></textarea>
+            </div>
+            <div class="toolbar">
+              <div style="display: flex; gap: 8px;">
+                <button class="btn" onclick="loadExample('select')">查询示例</button>
+                <button class="btn" onclick="loadExample('join')">关联查询</button>
+              </div>
+              <button class="btn btn-primary" onclick="executeSQL()">⚡ 执行 (Ctrl+Enter)</button>
+            </div>
+          </section>
+
+          <section class="panel results-panel">
+            <div class="panel-header">
+              <span>执行结果</span>
+              <span id="resultMeta" style="font-size: 0.65rem; color: var(--text-muted);"></span>
+            </div>
+            <div class="table-wrapper" id="resultsContent">
+              <div style="padding: 40px; text-align: center; color: var(--text-muted); font-size: 0.875rem;">等待执行查询...</div>
+            </div>
+          </section>
         </div>
+      </main>
+
+      <!-- Google AdSense Placeholder -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
       </div>
+
+      <article class="seo-content">
+        <h2>SQL 在线执行器：打造您的零成本数据库实验室</h2>
+        <p>在学习 SQL 语法或调试复杂的数据库查询时，安装和配置重量级的数据库软件（如 MySQL 或 PostgreSQL）往往耗时费力。<strong>SQL 在线执行器</strong> 采用尖端的 <strong>SQLite WASM (WebAssembly)</strong> 技术，将完整的关系型数据库引擎直接嵌入您的浏览器。这意味着您无需后端支持，即可在纯本地环境中练习、测试和验证您的 SQL 逻辑。</p>
+
+        <h3>1. 解决具体问题：为什么选择浏览器端 SQL 沙盒？</h3>
+        <p>传统的在线 SQL 工具通常依赖服务器端执行，这会带来延迟、隐私风险及并发限制。本工具解决以下核心痛点：</p>
+        <ul>
+          <li><strong>极致隐私：</strong> 您的数据和查询逻辑 100% 运行在本地浏览器内存中，绝不会上传至任何服务器。</li>
+          <li><strong>零秒启动：</strong> 无需账号注册，无需配置环境，打开网页即刻拥有一个符合标准的 SQLite 3 数据库环境。</li>
+          <li><strong>安全实验：</strong> 您可以随意执行 <code>DROP TABLE</code> 或 <code>DELETE</code> 等破坏性操作，只需刷新页面或点击“重置”即可瞬间恢复初始状态。</li>
+          <li><strong>离线支持：</strong> 由于核心引擎基于 WASM，加载完成后即使断网也能正常进行 SQL 运算。</li>
+        </ul>
+
+        <h3>2. 深度优化：基于真实业务场景的练习建议</h3>
+        <p>作为一个项目落地专家，我建议在使用本工具时关注以下进阶操作：</p>
+        <ol>
+          <li><strong>多表关联 (JOIN)：</strong> 练习如何通过 <code>LEFT JOIN</code> 和 <code>INNER JOIN</code> 将 <code>users</code> 表与 <code>posts</code> 表进行有效关联，这是处理复杂业务报表的基础。</li>
+          <li><strong>聚合分析：</strong> 熟练掌握 <code>GROUP BY</code>, <code>HAVING</code> 以及窗口函数（Window Functions），这能显著提升您处理大数据分析任务的效率。</li>
+          <li><strong>事务处理：</strong> 体验 <code>BEGIN TRANSACTION</code> 和 <code>COMMIT/ROLLBACK</code> 的逻辑，理解原子性在核心业务系统中的重要性。</li>
+        </ol>
+
+        <h3>3. 落地专家建议：如何从 SQL 练习进阶到生产环境？</h3>
+        <ul>
+          <li><strong>SQL 标准化：</strong> 尽量编写符合 ANSI SQL 标准的语句，以确保您的查询在 SQLite、MySQL 和 PostgreSQL 之间具有良好的迁移性。</li>
+          <li><strong>索引意识：</strong> 虽然 SQLite 本地运行极快，但在生产环境中，务必为 <code>WHERE</code> 和 <code>JOIN</code> 的常用列创建索引。</li>
+          <li><strong>参数化查询：</strong> 在将本工具调试好的 SQL 集成到代码中时，请务必使用参数化查询（Prepared Statements）以防范 SQL 注入攻击。</li>
+        </ul>
+
+        <h3>常见问题解答 (FAQ)</h3>
+        <p><strong>Q: 页面刷新后我的数据会丢失吗？</strong><br>
+        A: 是的。本工具目前运行在内存（In-Memory）中以确保性能和隐私。如果您需要保存进度，建议将 SQL 脚本复制到本地文本文件中保存。</p>
+        
+        <p><strong>Q: 支持哪些高级 SQL 特性？</strong><br>
+        A: 基于最新的 SQLite 3 引擎，支持 CTE (公用表表达式)、JSON 处理函数、多行插入及子查询。不支持某些特定数据库（如 Oracle）独有的存储过程语法。</p>
+      </article>
+
+      <footer style="margin-top: 32px; text-align: center; color: var(--text-muted); font-size: 0.75rem;">
+        <p>© 2026 WebUtils. All rights reserved.</p>
+      </footer>
     </div>
 
     <script>
-      window.toggleTheme = function () {
-        const theme = document.body.getAttribute("data-theme") === "light" ? "dark" : "light";
-        document.body.setAttribute("data-theme", theme);
-        localStorage.setItem("theme", theme);
-      };
-      document.body.setAttribute("data-theme", localStorage.getItem("theme") || "dark");
-
       let db = null;
+      const editor = document.getElementById('sqlEditor');
+      const tableList = document.getElementById('tableList');
+      const resultsContent = document.getElementById('resultsContent');
+      const resultMeta = document.getElementById('resultMeta');
+      const execStatus = document.getElementById('execStatus');
+      const schemaInfo = document.getElementById('schemaInfo');
 
-      // Initialize SQL.js
-      async function initDB() {
+      async function init() {
         try {
           const SQL = await initSqlJs({
-            locateFile: (file) => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
+            locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
           });
           db = new SQL.Database();
-
-          // Create sample tables
-          db.run(`
-                    CREATE TABLE users (
-                        id INTEGER PRIMARY KEY,
-                        name TEXT NOT NULL,
-                        email TEXT UNIQUE,
-                        age INTEGER,
-                        created_at TEXT DEFAULT CURRENT_TIMESTAMP
-                    );
-                    
-                    CREATE TABLE posts (
-                        id INTEGER PRIMARY KEY,
-                        user_id INTEGER,
-                        title TEXT NOT NULL,
-                        content TEXT,
-                        views INTEGER DEFAULT 0,
-                        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                        FOREIGN KEY (user_id) REFERENCES users(id)
-                    );
-                    
-                    CREATE TABLE comments (
-                        id INTEGER PRIMARY KEY,
-                        post_id INTEGER,
-                        user_id INTEGER,
-                        content TEXT NOT NULL,
-                        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                        FOREIGN KEY (post_id) REFERENCES posts(id),
-                        FOREIGN KEY (user_id) REFERENCES users(id)
-                    );
-                    
-                    INSERT INTO users (name, email, age) VALUES 
-                        ('张三', 'zhangsan@example.com', 28),
-                        ('李四', 'lisi@example.com', 32),
-                        ('王五', 'wangwu@example.com', 25),
-                        ('赵六', 'zhaoliu@example.com', 35),
-                        ('陈七', 'chenqi@example.com', 29);
-                    
-                    INSERT INTO posts (user_id, title, content, views) VALUES 
-                        (1, 'Hello World', '这是我的第一篇文�?, 100),
-                        (1, 'SQL入门教程', '今天学习了基础SQL语法', 250),
-                        (2, '前端开发心�?, '分享一些前端开发经�?, 180),
-                        (3, '后端架构设计', '微服务架构实�?, 320),
-                        (4, '数据库优�?, 'MySQL性能优化技�?, 420);
-                    
-                    INSERT INTO comments (post_id, user_id, content) VALUES 
-                        (1, 2, '写得很好�?),
-                        (1, 3, '期待更多文章'),
-                        (2, 4, '非常实用'),
-                        (3, 1, '学习�?),
-                        (4, 5, '干货满满');
-                `);
-
-          updateTableList();
+          createSampleData();
+          updateUI();
         } catch (e) {
-          document.getElementById("tableList").innerHTML =
-            `<div class="message error">初始化失�? ${e.message}</div>`;
+          tableList.innerHTML = `<div class="status-error" style="padding:20px">${e.message}</div>`;
         }
       }
 
-      function updateTableList() {
-        const result = db.exec("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name");
-        const tables = result.length ? result[0].values.map((v) => v[0]) : [];
+      function createSampleData() {
+        db.run(`
+          CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, email TEXT, age INTEGER, city TEXT);
+          INSERT INTO users VALUES (1, 'Alice', 'alice@example.com', 25, 'Beijing');
+          INSERT INTO users VALUES (2, 'Bob', 'bob@example.com', 32, 'Shanghai');
+          INSERT INTO users VALUES (3, 'Charlie', 'charlie@example.com', 28, 'Guangzhou');
+          
+          CREATE TABLE posts (id INTEGER PRIMARY KEY, user_id INTEGER, title TEXT, views INTEGER);
+          INSERT INTO posts VALUES (101, 1, 'Introduction to SQL', 1500);
+          INSERT INTO posts VALUES (102, 1, 'WASM Performance', 800);
+          INSERT INTO posts VALUES (103, 2, 'Database Indexing', 2300);
+        `);
+      }
 
-        const list = document.getElementById("tableList");
+      function updateUI() {
+        const tables = db.exec("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
         if (tables.length === 0) {
-          list.innerHTML = '<div class="message">暂无数据�?/div>';
+          tableList.innerHTML = '<div style="padding:20px; color:var(--text-muted)">暂无表结构</div>';
           return;
         }
 
-        list.innerHTML = tables
-          .map(
-            (t) => `
-                <div class="table-item" onclick="showTableSchema('${t}')">
-                    <span class="table-icon">📄</span>
-                    <span>${t}</span>
-                </div>
-            `
-          )
-          .join("");
+        tableList.innerHTML = tables[0].values.map(t => `
+          <div class="table-item" onclick="showSchema('${t[0]}')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            ${t[0]}
+          </div>
+        `).join('');
       }
 
-      window.showTableSchema = function (tableName) {
-        document.querySelectorAll(".table-item").forEach((i) => i.classList.remove("active"));
-        event.currentTarget.classList.add("active");
-
-        const result = db.exec(`PRAGMA table_info(${tableName})`);
-        if (!result.length) return;
-
-        const columns = result[0].values;
-        const schemaInfo = document.getElementById("schemaInfo");
-        schemaInfo.innerHTML = `
-                <div class="schema-info">
-                    <strong>${tableName}</strong>
-                    ${columns
-                      .map(
-                        (col) => `
-                        <div class="column-item">
-                            <span class="column-name">${col[1]}</span>
-                            <span class="column-type">${col[2]}${col[3] ? " NOT NULL" : ""}${col[5] ? " PK" : ""}</span>
-                        </div>
-                    `
-                      )
-                      .join("")}
-                </div>
-            `;
-
-        // Quick select
-        document.getElementById("sqlEditor").value = `SELECT * FROM ${tableName} LIMIT 100;`;
+      window.showSchema = (tableName) => {
+        const info = db.exec(`PRAGMA table_info(${tableName})`);
+        if (info.length > 0) {
+          schemaInfo.innerHTML = `<strong>${tableName} 字段:</strong><br>` + 
+            info[0].values.map(c => `<span class="col-tag">${c[1]} (${c[2]})</span>`).join('');
+        }
+        editor.value = `SELECT * FROM ${tableName} LIMIT 10;`;
+        executeSQL();
       };
 
-      function executeSQL() {
-        const sql = document.getElementById("sqlEditor").value.trim();
-        if (!sql) {
-          showMessage("请输入SQL语句", "error");
-          return;
-        }
+      window.executeSQL = () => {
+        const sql = editor.value.trim();
+        if (!sql) return;
 
-        const startTime = performance.now();
-
+        const start = performance.now();
         try {
-          // Split multiple statements
-          const statements = sql.split(";").filter((s) => s.trim());
-          let lastResult = null;
-          let affectedRows = 0;
-
-          for (const stmt of statements) {
-            if (!stmt.trim()) continue;
-
-            const isSelect = stmt.trim().toUpperCase().startsWith("SELECT");
-
-            if (isSelect) {
-              lastResult = db.exec(stmt);
-            } else {
-              db.run(stmt);
-              affectedRows += db.getRowsModified();
-            }
-          }
-
-          const endTime = performance.now();
-          const execTime = (endTime - startTime).toFixed(2);
-
-          if (lastResult && lastResult.length > 0) {
-            showResults(lastResult[0], execTime);
+          const res = db.exec(sql);
+          const end = performance.now();
+          
+          if (res.length === 0) {
+            resultsContent.innerHTML = '<div style="padding:40px; text-align:center">执行成功，无返回数据（或已更新数据）。</div>';
+            resultMeta.textContent = `耗时: ${(end - start).toFixed(2)}ms`;
           } else {
-            showMessage(`执行成功，影�?${affectedRows} �?(${execTime}ms)`, "success");
-            updateTableList();
+            renderResults(res[0]);
+            resultMeta.textContent = `找到 ${res[0].values.length} 条记录 · 耗时: ${(end - start).toFixed(2)}ms`;
           }
+          
+          execStatus.innerHTML = '<span class="status-success">✓ 执行成功</span>';
+          updateUI();
         } catch (e) {
-          showMessage(`错误: ${e.message}`, "error");
+          execStatus.innerHTML = `<span class="status-error">✗ 错误: ${e.message}</span>`;
+          resultsContent.innerHTML = `<div style="padding:40px; color:var(--error)">${e.message}</div>`;
         }
+      };
+
+      function renderResults(res) {
+        const html = `
+          <table>
+            <thead>
+              <tr>${res.columns.map(c => `<th>${c}</th>`).join('')}</tr>
+            </thead>
+            <tbody>
+              ${res.values.map(row => `
+                <tr>${row.map(v => `<td>${v === null ? '<span style="color:var(--text-muted)">NULL</span>' : v}</td>`).join('')}</tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+        resultsContent.innerHTML = html;
       }
 
-      function showResults(result, time) {
-        const { columns, values } = result;
-        const meta = document.getElementById("resultsMeta");
-        meta.textContent = `${values.length} �?· ${time}ms`;
-
-        const content = document.getElementById("resultsContent");
-
-        if (values.length === 0) {
-          content.innerHTML = '<div class="message">查询结果为空</div>';
-          return;
+      window.resetDB = () => {
+        if (confirm('确定要重置数据库吗？所有手动创建的数据将丢失。')) {
+          db = new window.SQL.Database();
+          createSampleData();
+          updateUI();
+          resultsContent.innerHTML = '<div style="padding:40px; text-align:center">数据库已重置。</div>';
         }
-
-        content.innerHTML = `
-                <table>
-                    <thead>
-                        <tr>${columns.map((c) => `<th>${escapeHtml(c)}</th>`).join("")}</tr>
-                    </thead>
-                    <tbody>
-                        ${values
-                          .map(
-                            (row) => `
-                            <tr>${row.map((cell) => `<td>${cell === null ? '<span style="color:var(--color-text-secondary)">NULL</span>' : escapeHtml(String(cell))}</td>`).join("")}</tr>
-                        `
-                          )
-                          .join("")}
-                    </tbody>
-                </table>
-            `;
-      }
-
-      function showMessage(msg, type) {
-        document.getElementById("resultsMeta").textContent = "";
-        document.getElementById("resultsContent").innerHTML =
-          `<div class="message ${type}">${escapeHtml(msg)}</div>`;
-      }
-
-      window.escapeHtml = function (str) {
-        return str.replace(
-          /[&<>"']/g,
-          (m) =>
-            ({
-              "&": "&amp;",
-              "<": "&lt;",
-              ">": "&gt;",
-              '"': "&quot;",
-              "'": "&#39;"
-            })[m]
-        );
       };
 
-      window.formatSQL = function () {
-        let sql = document.getElementById("sqlEditor").value;
-        // Basic formatting
-        const keywords = [
-          "SELECT",
-          "FROM",
-          "WHERE",
-          "AND",
-          "OR",
-          "ORDER BY",
-          "GROUP BY",
-          "HAVING",
-          "JOIN",
-          "LEFT JOIN",
-          "RIGHT JOIN",
-          "INNER JOIN",
-          "INSERT INTO",
-          "VALUES",
-          "UPDATE",
-          "SET",
-          "DELETE FROM",
-          "CREATE TABLE",
-          "ALTER TABLE",
-          "DROP TABLE",
-          "LIMIT",
-          "OFFSET"
-        ];
-
-        keywords.forEach((kw) => {
-          sql = sql.replace(new RegExp("\\b" + kw + "\\b", "gi"), "\n" + kw);
-        });
-
-        sql = sql.trim().replace(/\n+/g, "\n");
-        document.getElementById("sqlEditor").value = sql;
-      };
-
-      window.clearEditor = function () {
-        document.getElementById("sqlEditor").value = "";
-      };
-
-      window.loadExample = function (type) {
+      window.loadExample = (type) => {
         const examples = {
-          select: "SELECT id, name, email, age\nFROM users\nWHERE age > 25\nORDER BY age DESC;",
-          insert: "INSERT INTO users (name, email, age)\nVALUES ('新用�?, 'new@example.com', 30);",
-          update: "UPDATE users\nSET age = age + 1\nWHERE name = '张三';",
-          create:
-            "CREATE TABLE products (\n  id INTEGER PRIMARY KEY,\n  name TEXT NOT NULL,\n  price REAL,\n  stock INTEGER DEFAULT 0\n);",
-          join: "SELECT u.name, p.title, p.views\nFROM users u\nJOIN posts p ON u.id = p.user_id\nORDER BY p.views DESC;",
-          group:
-            "SELECT u.name, COUNT(p.id) as post_count, SUM(p.views) as total_views\nFROM users u\nLEFT JOIN posts p ON u.id = p.user_id\nGROUP BY u.id\nORDER BY total_views DESC;"
+          select: "SELECT name, age, city FROM users WHERE age > 25 ORDER BY age DESC;",
+          join: "SELECT u.name, p.title, p.views \nFROM users u \nJOIN posts p ON u.id = p.user_id \nWHERE p.views > 1000;"
         };
-        document.getElementById("sqlEditor").value = examples[type] || "";
+        editor.value = examples[type];
       };
 
-      // Keyboard shortcuts
-      document.addEventListener("keydown", (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
-          e.preventDefault();
+      editor.addEventListener('keydown', e => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
           executeSQL();
         }
       });
 
-      // Initialize
-      initDB();
+      function toggleTheme() {
+        const t = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+        setTheme(t);
+      }
+      function setTheme(t) {
+        document.documentElement.setAttribute("data-theme", t);
+        document.getElementById("theme-icon").textContent = t === "light" ? "☀️" : "🌙";
+        localStorage.setItem("theme", t);
+      }
+      function initTheme() {
+        setTheme(localStorage.getItem("theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+      }
+
+      initTheme();
+      init();
     </script>
   </body>
 </html>
-
