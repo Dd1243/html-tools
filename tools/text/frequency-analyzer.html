@@ -1,676 +1,344 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="light">
+<html lang="zh-CN">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>文本频率分析器 - WebUtils</title>
+    <title>在线文本频率分析器 - 深度字频、词频与语义分布工具 - WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="文本频率分析器 - WebUtils" />
-    <meta name="keywords" content="frequency-analyzer,text,tools,webutils" />
+    <meta name="description" content="免费在线文本频率分析器（Frequency Analyzer）。支持字符频率、词频分析及 N-gram 语义分布计算。提供信息熵、最高频项统计及可视化图表。解决文本特征提取、语言风格分析、SEO 关键词密度检测等痛点。" />
+    <meta name="keywords" content="文本频率分析,字频统计,词频分析,N-gram分析,信息熵计算,文本特征提取,SEO工具,WebUtils" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
-    <link
-      rel="canonical"
-      href="https://essays4u.net/tools/text/frequency-analyzer.html"
-    />
+    <link rel="canonical" href="https://essays4u.net/tools/text/frequency-analyzer.html" />
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="文本频率分析器 - WebUtils" />
-    <meta property="og:description" content="文本频率分析器 - WebUtils" />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content="在线文本频率分析器 - 极简文本挖掘专家 - WebUtils" />
+    <meta property="og:description" content="深入洞察文本背后的规律！支持中英文混合分析、信息熵计算及多种可视化展示模式。" />
     <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/text/frequency-analyzer.html"
-    />
+    <meta property="og:url" content="https://essays4u.net/tools/text/frequency-analyzer.html" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
     <meta property="og:site_name" content="WebUtils" />
     <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="文本频率分析器 - WebUtils" />
-    <meta name="twitter:description" content="文本频率分析器 - WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "文本频率分析器",
+      "url": "https://essays4u.net/tools/text/frequency-analyzer.html",
+      "description": "提供字频、词频、N-gram及信息熵分析的高级文本挖掘工具。",
+      "applicationCategory": "UtilityApplication",
+      "operatingSystem": "All",
+      "author": {
+        "@type": "Organization",
+        "name": "WebUtils"
+      }
+    }
+    </script>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
+    <!-- Google AdSense Header Placeholder -->
+    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
 
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--color-bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
-
-      body {
-        padding: 1rem;
-      }
-      .container {
-        max-width: 1200px;
-      }
-      header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-      }
-      header h1 {
-        margin: 0;
-        font-size: 1.5rem;
-      }
-      textarea {
-        font-family: inherit;
-        min-height: 150px;
-        resize: vertical;
-      }
-      .controls {
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-        margin-bottom: 1rem;
-        align-items: center;
-      }
-      .controls label {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin: 0;
-      }
-      .controls select,
-      .controls input[type="number"] {
-        width: auto;
-        margin: 0;
-        padding: 0.5rem;
-      }
-      .tabs {
-        display: flex;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-        flex-wrap: wrap;
-      }
-      .tabs button {
-        padding: 0.5rem 1rem;
-        border-radius: 4px;
-      }
-      .tabs button.active {
-        background: var(--pico-primary);
-        color: white;
-      }
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-      }
-      .stat-card {
-        background: var(--pico-card-background-color);
-        padding: 1rem;
-        border-radius: 8px;
-        text-align: center;
-        border: 1px solid var(--pico-muted-border-color);
-      }
-      .stat-value {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: var(--pico-primary);
-      }
-      .stat-label {
-        font-size: 0.85rem;
-        color: var(--pico-muted-color);
-      }
-      .result-section {
-        margin-top: 1.5rem;
-      }
-      .result-section h3 {
-        margin-bottom: 0.5rem;
-        font-size: 1rem;
-      }
-      .freq-table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-      .freq-table th,
-      .freq-table td {
-        padding: 0.5rem;
-        text-align: left;
-        border-bottom: 1px solid var(--pico-muted-border-color);
-      }
-      .freq-table th {
-        background: var(--pico-card-background-color);
-        font-weight: 600;
-      }
-      .freq-bar {
-        height: 20px;
-        background: var(--pico-primary);
-        border-radius: 2px;
-        min-width: 2px;
-      }
-      .freq-bar-container {
-        width: 150px;
-        background: var(--pico-muted-border-color);
-        border-radius: 2px;
-      }
-      .char-display {
-        font-family: var(--font-mono);
-        font-size: 1.1rem;
-        padding: 0.25rem 0.5rem;
-        background: var(--pico-card-background-color);
-        border-radius: 4px;
-      }
-      .word-cloud {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        padding: 1rem;
-        background: var(--pico-card-background-color);
-        border-radius: 8px;
-        min-height: 100px;
-        align-items: center;
-        justify-content: center;
-      }
-      .word-cloud span {
-        padding: 0.25rem 0.5rem;
-        border-radius: 4px;
-        background: var(--pico-primary-background);
-        cursor: default;
-        transition: transform 0.2s;
-      }
-      .word-cloud span:hover {
-        transform: scale(1.1);
-      }
-      .ngram-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-      }
-      .ngram-item {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem;
-        background: var(--pico-card-background-color);
-        border-radius: 4px;
-      }
-      .ngram-text {
-        font-family: var(--font-mono);
-      }
-      .ngram-count {
-        font-size: 0.8rem;
-        color: var(--pico-muted-color);
-      }
-      .export-btn {
-        padding: 0.5rem 1rem;
-        font-size: 0.85rem;
-      }
-      .hidden {
-        display: none !important;
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-    </style>
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+
+    <style>
+      :root {
+        --bg-body: #0a0a0f;
+        --bg-card: #12121a;
+        --bg-input: #0e0e14;
+        --bg-elevated: #1a1a24;
+        --text-primary: #e8e8ed;
+        --text-secondary: #a0a0b0;
+        --text-muted: #606070;
+        --border-color: #2a2a3a;
+        --border-focus: #3a3a4a;
+        --accent: #10b981;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", "Space Grotesk", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+
+      [data-theme="light"] {
+        --bg-body: #fafafa;
+        --bg-card: #ffffff;
+        --bg-input: #f5f5f5;
+        --bg-elevated: #ffffff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #666;
+        --text-muted: #999;
+        --border-color: #e5e5e5;
+        --border-focus: #d5d5d5;
+        --accent: #059669;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      
+      .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 32px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--border-color); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .header-right { display: flex; align-items: center; gap: 12px; }
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; width: 40px; height: 40px; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+      .theme-toggle:hover { border-color: var(--accent); }
+
+      .editor-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; }
+      textarea { width: 100%; height: 200px; padding: 20px; background: var(--bg-input); border: none; color: var(--text-primary); font-family: var(--font-mono); font-size: 0.9375rem; line-height: 1.6; resize: vertical; outline: none; }
+
+      .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px; padding: 20px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); align-items: end; }
+      .control-group { display: flex; flex-direction: column; gap: 8px; }
+      .control-group label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+      select, input[type="number"] { padding: 10px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary); outline: none; }
+      .checkbox-group { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 8px; }
+      .checkbox-item { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; color: var(--text-secondary); cursor: pointer; }
+
+      .btn-primary { padding: 12px 24px; background: var(--accent); border: none; border-radius: var(--radius-md); color: #fff; font-weight: 700; cursor: pointer; transition: 0.2s; }
+      .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+      .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+      .stat-card { padding: 20px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); text-align: center; }
+      .stat-val { font-size: 1.5rem; font-weight: 700; color: var(--accent); font-family: var(--font-mono); }
+      .stat-lab { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+
+      .result-section { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; }
+      .tabs { display: flex; background: var(--bg-elevated); border-bottom: 1px solid var(--border-color); }
+      .tab-btn { padding: 12px 24px; border: none; background: transparent; color: var(--text-muted); font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
+      .tab-btn.active { color: var(--accent); background: var(--bg-card); box-shadow: inset 0 -2px 0 var(--accent); }
+
+      .table-wrapper { overflow-x: auto; padding: 20px; }
+      table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+      th { text-align: left; padding: 12px; color: var(--text-muted); border-bottom: 2px solid var(--border-color); }
+      td { padding: 12px; border-bottom: 1px solid var(--border-color); }
+      .bar-bg { width: 100px; height: 8px; background: var(--bg-input); border-radius: 4px; overflow: hidden; }
+      .bar-fg { height: 100%; background: var(--accent); border-radius: 4px; }
+
+      .ads-container { margin: 24px 0; min-height: 90px; background: rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem; border: 1px dashed var(--border-color); border-radius: var(--radius-md); }
+
+      .seo-content { margin-top: 64px; padding: 40px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); color: var(--text-secondary); font-size: 0.95rem; line-height: 1.8; }
+      .seo-content h2 { color: var(--text-primary); font-size: 1.5rem; margin-bottom: 24px; font-weight: 700; border-left: 4px solid var(--accent); padding-left: 16px; }
+      .seo-content h3 { color: var(--text-primary); font-size: 1.2rem; margin-top: 32px; margin-bottom: 16px; font-weight: 600; }
+      .seo-content p { margin-bottom: 16px; }
+
+      @media (max-width: 800px) {
+        .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      }
+    </style>
   </head>
   <body>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
-      <span id="theme-icon">🌙</span>
-    </button>
-
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>›</span>
-      文本频率分析器
-    </nav>
-    <main class="container">
-      <header>
-        <h1>📊 文本频率分析器</h1>
-        <button id="themeToggle" class="outline" style="padding: 0.5rem">🌓</button>
+    <div class="container">
+      <header class="header">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn" title="返回首页">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 12L6 8L10 4" />
+            </svg>
+          </a>
+          <div class="title-group">
+            <h1>文本频率分析器</h1>
+            <p>深度字频、词频与语义规律挖掘</p>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+            <span id="theme-icon">🌙</span>
+          </div>
+        </div>
       </header>
 
-      <textarea id="textInput" placeholder="输入要分析的文本...">
-春眠不觉晓，处处闻啼鸟。夜来风雨声，花落知多少。
+      <!-- Google AdSense Top -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
+      </div>
 
-The quick brown fox jumps over the lazy dog. The dog was not amused by the fox's antics. Foxes are known for their cunning nature.</textarea
-      >
+      <div class="editor-card">
+        <textarea id="textInput" placeholder="在此粘贴要分析的文本..."></textarea>
+      </div>
 
       <div class="controls">
-        <label>
-          分析模式：
+        <div class="control-group">
+          <label>分析模式</label>
           <select id="modeSelect">
-            <option value="char">字符频率</option>
-            <option value="word">词频分析</option>
-            <option value="ngram">N-gram 分析</option>
+            <option value="char">字频分析 (Characters)</option>
+            <option value="word">词频分析 (Words)</option>
+            <option value="ngram">N-gram 语义分布</option>
           </select>
-        </label>
-        <label id="ngramSizeLabel">
-          N 值：
-          <input type="number" id="ngramSize" value="2" min="2" max="5" style="width: 70px" />
-        </label>
-        <label>
-          <input type="checkbox" id="ignoreCase" checked />
-          忽略大小写
-        </label>
-        <label>
-          <input type="checkbox" id="ignoreSpaces" checked />
-          忽略空白
-        </label>
-        <label>
-          <input type="checkbox" id="ignorePunct" />
-          忽略标点
-        </label>
-        <button onclick="analyze()">分析</button>
-        <button class="outline export-btn" onclick="exportCSV()">导出 CSV</button>
-      </div>
-
-      <div class="stats-grid" id="statsGrid">
-        <div class="stat-card">
-          <div class="stat-value" id="totalChars">0</div>
-          <div class="stat-label">总字符数</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-value" id="uniqueItems">0</div>
-          <div class="stat-label">唯一项数</div>
+        <div class="control-group" id="ngramControl" style="display: none;">
+          <label>N 值</label>
+          <input type="number" id="ngramSize" value="2" min="2" max="5">
         </div>
-        <div class="stat-card">
-          <div class="stat-value" id="entropy">0</div>
-          <div class="stat-label">信息熵 (bits)</div>
+        <div class="control-group" style="grid-column: span 2;">
+          <label>预处理选项</label>
+          <div class="checkbox-group">
+            <label class="checkbox-item"><input type="checkbox" id="ignoreCase" checked> 忽略大小写</label>
+            <label class="checkbox-item"><input type="checkbox" id="ignoreSpaces" checked> 忽略空格</label>
+            <label class="checkbox-item"><input type="checkbox" id="ignorePunct"> 忽略标点</label>
+          </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-value" id="topItem">-</div>
-          <div class="stat-label">最高频项</div>
+        <button class="btn-primary" onclick="analyzeText()">立即分析</button>
+      </div>
+
+      <div id="statsGrid" class="stats-grid" style="display: none;">
+        <div class="stat-card"><div class="stat-val" id="statTotal">0</div><div class="stat-lab">总样本数</div></div>
+        <div class="stat-card"><div class="stat-val" id="statUnique">0</div><div class="stat-lab">唯一项数</div></div>
+        <div class="stat-card"><div class="stat-val" id="statEntropy">0</div><div class="stat-lab">信息熵 (bits)</div></div>
+        <div class="stat-card"><div class="stat-val" id="statTop">-</div><div class="stat-lab">最高频项</div></div>
+      </div>
+
+      <div class="result-section" id="resultArea" style="display: none;">
+        <div class="tabs">
+          <button class="tab-btn active">分析结果列表</button>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>排名</th>
+                <th>内容</th>
+                <th>出现频次</th>
+                <th>百分比占比</th>
+                <th>相对分布</th>
+              </tr>
+            </thead>
+            <tbody id="resultBody"></tbody>
+          </table>
         </div>
       </div>
 
-      <div class="tabs">
-        <button class="active" onclick="showView('table')">表格视图</button>
-        <button onclick="showView('chart')">图表视图</button>
-        <button onclick="showView('cloud')">词云视图</button>
+      <!-- Google AdSense Bottom -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
       </div>
 
-      <div id="tableView" class="result-section">
-        <table class="freq-table">
-          <thead>
-            <tr>
-              <th>排名</th>
-              <th>内容</th>
-              <th>频次</th>
-              <th>占比</th>
-              <th>分布</th>
-            </tr>
-          </thead>
-          <tbody id="freqTableBody"></tbody>
-        </table>
-      </div>
+      <article class="seo-content">
+        <h2>文本频率分析器：为什么它是深度内容创作与数据挖掘的导航仪？</h2>
+        <p>在海量的信息时代，<strong>文本频率分析（Frequency Analysis）</strong>不仅是密码学的基础，更是现代内容营销、SEO 优化以及语言学研究的核心技术。通过对一段文本进行量化拆解，我们可以洞察作者的用词偏好、提取核心关键词，甚至通过<strong>信息熵（Entropy）</strong>计算出文本的信息密度。<strong>在线文本频率分析器</strong>为您提供了一个极简而强大的窗口，帮助您看透文字背后的数据规律。</p>
+        
+        <h3>1. 什么是 N-gram 分析及其重要性？</h3>
+        <p>除了基础的字频和词频，本工具还引入了高级的 <strong>N-gram 分析</strong>。N-gram 是指文本中连续出现的 N 个项。通过 N-gram，您可以识别出文本中的固定搭配、常用短语以及潜在的语义模式。例如，在 2-gram（Bigram）分析中，“内容营销”会被视为一个整体，这比单独分析“内容”和“营销”更能反映文本的真实主题。</p>
 
-      <div id="chartView" class="result-section hidden">
-        <canvas id="freqChart" height="300"></canvas>
-      </div>
+        <h3>2. 解决 SEO 与内容优化的具体痛点</h3>
+        <p><strong>痛点一：关键词堆砌风险。</strong> SEO 专家通过词频分析，可以精确控制核心关键词的出现频率（Density），避免因过度优化而受到搜索引擎处罚。</p>
+        <p><strong>痛点二：文章可读性评估。</strong> 通过分析词频分布和唯一项比例，创作者可以判断文章是否用词过于重复或过于晦涩，从而优化读者的阅读体验。</p>
+        <p><strong>痛点三：风格迁移与模拟。</strong> 研究特定作家的词频特征，可以帮助模仿其写作风格，或在学术研究中进行作者身份鉴定。</p>
 
-      <div id="cloudView" class="result-section hidden">
-        <div class="word-cloud" id="wordCloud"></div>
-      </div>
-    </main>
+        <h3>3. 科学理解“信息熵”</h3>
+        <p>信息熵是衡量信息不确定性的指标。在文本分析中，熵值越高，意味着词汇分布越均匀、信息量越大；熵值越低，则意味着用词高度集中、重复性强。通过这一指标，您可以量化评估一份报告或一篇推文的“含金量”。</p>
+
+        <h3>4. 操作指南与最佳实践</h3>
+        <ol>
+          <li><strong>选择合适的模式：</strong> 英文建议使用“词频分析”，中文诗词建议使用“字频分析”，而进行深度语义挖掘时首选“N-gram”。</li>
+          <li><strong>合理使用预处理：</strong> 忽略标点和大小写可以合并重复项，使统计结果更具代表性。</li>
+          <li><strong>导出数据：</strong> 目前支持实时在线查看，您可以根据频率排名快速调整您的文章结构或关键词策略。</li>
+        </ol>
+        <p><em>数据揭示规律，规律指引创作。立即输入文本，开启您的文字挖掘之旅！</em></p>
+      </article>
+
+      <footer style="margin-top: 32px; text-align: center; color: var(--text-muted); font-size: 0.75rem;">
+        <p>© 2026 WebUtils. All rights reserved.</p>
+      </footer>
+    </div>
 
     <script>
-      let currentData = [];
-      let currentMode = "char";
+      const modeSelect = document.getElementById('modeSelect');
+      const ngramControl = document.getElementById('ngramControl');
+      
+      modeSelect.addEventListener('change', () => {
+        ngramControl.style.display = modeSelect.value === 'ngram' ? 'flex' : 'none';
+      });
 
-      window.analyze = function () {
-        const text = document.getElementById("textInput").value;
-        const mode = document.getElementById("modeSelect").value;
-        const ignoreCase = document.getElementById("ignoreCase").checked;
-        const ignoreSpaces = document.getElementById("ignoreSpaces").checked;
-        const ignorePunct = document.getElementById("ignorePunct").checked;
-        const ngramSize = parseInt(document.getElementById("ngramSize").value);
+      function analyzeText() {
+        const text = document.getElementById('textInput').value.trim();
+        if (!text) return alert('请输入文本内容');
 
-        currentMode = mode;
-        let processedText = text;
+        const mode = modeSelect.value;
+        const ignoreCase = document.getElementById('ignoreCase').checked;
+        const ignoreSpaces = document.getElementById('ignoreSpaces').checked;
+        const ignorePunct = document.getElementById('ignorePunct').checked;
+        const n = parseInt(document.getElementById('ngramSize').value);
 
-        if (ignoreCase) processedText = processedText.toLowerCase();
-        if (ignorePunct) processedText = processedText.replace(/[^\w\s\u4e00-\u9fff]/g, "");
+        let processed = text;
+        if (ignoreCase) processed = processed.toLowerCase();
+        if (ignorePunct) processed = processed.replace(/[^\w\s\u4e00-\u9fff]/g, '');
 
         let items = [];
-
-        if (mode === "char") {
-          items = processedText.split("");
-          if (ignoreSpaces) items = items.filter((c) => !/\s/.test(c));
-        } else if (mode === "word") {
-          // 支持中英文分词
-          items = processedText.match(/[\u4e00-\u9fff]|[a-zA-Z]+/g) || [];
-        } else if (mode === "ngram") {
-          const chars = processedText.split("").filter((c) => !ignoreSpaces || !/\s/.test(c));
-          for (let i = 0; i <= chars.length - ngramSize; i++) {
-            items.push(chars.slice(i, i + ngramSize).join(""));
+        if (mode === 'char') {
+          items = processed.split('').filter(c => !ignoreSpaces || !/\s/.test(c));
+        } else if (mode === 'word') {
+          items = processed.match(/[\u4e00-\u9fff]|[a-zA-Z0-9']+/g) || [];
+        } else if (mode === 'ngram') {
+          const chars = processed.split('').filter(c => !ignoreSpaces || !/\s/.test(c));
+          for (let i = 0; i <= chars.length - n; i++) {
+            items.push(chars.slice(i, i + n).join(''));
           }
         }
 
-        // 统计频率
         const freq = {};
-        items.forEach((item) => {
-          freq[item] = (freq[item] || 0) + 1;
-        });
+        items.forEach(it => freq[it] = (freq[it] || 0) + 1);
 
-        // 转换为数组并排序
-        currentData = Object.entries(freq)
-          .map(([item, count]) => ({
-            item,
-            count,
-            percent: ((count / items.length) * 100).toFixed(2)
-          }))
+        const sorted = Object.entries(freq)
+          .map(([item, count]) => ({ item, count, p: (count / items.length * 100).toFixed(2) }))
           .sort((a, b) => b.count - a.count);
 
-        // 更新统计
-        updateStats(items.length, currentData);
-
-        // 更新视图
-        updateTableView();
-        updateChartView();
-        updateCloudView();
-      };
-
-      function updateStats(total, data) {
-        document.getElementById("totalChars").textContent = total;
-        document.getElementById("uniqueItems").textContent = data.length;
-        document.getElementById("topItem").textContent =
-          data.length > 0
-            ? data[0].item.length > 5
-              ? data[0].item.slice(0, 5) + "..."
-              : data[0].item
-            : "-";
-
-        // 计算信息熵
-        let entropy = 0;
-        data.forEach((d) => {
-          const p = d.count / total;
-          if (p > 0) entropy -= p * Math.log2(p);
+        // Stats
+        document.getElementById('statTotal').textContent = items.length;
+        document.getElementById('statUnique').textContent = sorted.length;
+        document.getElementById('statTop').textContent = sorted[0]?.item.substring(0, 8) || '-';
+        
+        let ent = 0;
+        sorted.forEach(d => {
+          const p = d.count / items.length;
+          ent -= p * Math.log2(p);
         });
-        document.getElementById("entropy").textContent = entropy.toFixed(3);
-      }
+        document.getElementById('statEntropy').textContent = ent.toFixed(3);
 
-      function updateTableView() {
-        const tbody = document.getElementById("freqTableBody");
-        const maxCount = currentData.length > 0 ? currentData[0].count : 1;
-
-        tbody.textContent = "";
-        currentData.slice(0, 100).forEach((d, i) => {
-          const tr = document.createElement("tr");
-
-          const rankTd = document.createElement("td");
-          rankTd.textContent = i + 1;
-          tr.appendChild(rankTd);
-
-          const itemTd = document.createElement("td");
-          const itemSpan = document.createElement("span");
-          itemSpan.className = "char-display";
-          itemSpan.textContent = d.item === " " ? "␣" : d.item === "\n" ? "↵" : d.item;
-          itemTd.appendChild(itemSpan);
-          tr.appendChild(itemTd);
-
-          const countTd = document.createElement("td");
-          countTd.textContent = d.count;
-          tr.appendChild(countTd);
-
-          const percentTd = document.createElement("td");
-          percentTd.textContent = d.percent + "%";
-          tr.appendChild(percentTd);
-
-          const barTd = document.createElement("td");
-          const barContainer = document.createElement("div");
-          barContainer.className = "freq-bar-container";
-          const bar = document.createElement("div");
-          bar.className = "freq-bar";
-          bar.style.width = (d.count / maxCount) * 100 + "%";
-          barContainer.appendChild(bar);
-          barTd.appendChild(barContainer);
-          tr.appendChild(barTd);
-
-          tbody.appendChild(tr);
-        });
-      }
-
-      function updateChartView() {
-        const canvas = document.getElementById("freqChart");
-        const ctx = canvas.getContext("2d");
-        const data = currentData.slice(0, 20);
-
-        // 清空画布
-        canvas.width = canvas.parentElement.offsetWidth;
-        canvas.height = 300;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        if (data.length === 0) return;
-
-        const padding = { top: 20, right: 20, bottom: 60, left: 50 };
-        const chartWidth = canvas.width - padding.left - padding.right;
-        const chartHeight = canvas.height - padding.top - padding.bottom;
-        const barWidth = (chartWidth / data.length) * 0.8;
-        const barGap = (chartWidth / data.length) * 0.2;
-        const maxCount = data[0].count;
-
-        // 绘制背景色适配主题
-        const isDark = document.documentElement.getAttribute("data-theme") === "dark";
-        ctx.fillStyle = isDark ? "#1a1a2e" : "#ffffff";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        // 绘制柱状图
-        data.forEach((d, i) => {
-          const x = padding.left + i * (barWidth + barGap);
-          const barHeight = (d.count / maxCount) * chartHeight;
-          const y = padding.top + chartHeight - barHeight;
-
-          // 渐变色
-          const gradient = ctx.createLinearGradient(x, y, x, y + barHeight);
-          gradient.addColorStop(0, "#667eea");
-          gradient.addColorStop(1, "#764ba2");
-
-          ctx.fillStyle = gradient;
-          ctx.fillRect(x, y, barWidth, barHeight);
-
-          // 标签
-          ctx.fillStyle = isDark ? "#e0e0e0" : "#333333";
-          ctx.font = "12px sans-serif";
-          ctx.textAlign = "center";
-
-          // X轴标签
-          ctx.save();
-          ctx.translate(x + barWidth / 2, canvas.height - padding.bottom + 15);
-          ctx.rotate(-Math.PI / 4);
-          const label =
-            d.item === " " ? "␣" : d.item.length > 8 ? d.item.slice(0, 8) + ".." : d.item;
-          ctx.fillText(label, 0, 0);
-          ctx.restore();
-
-          // 数值
-          ctx.fillText(d.count, x + barWidth / 2, y - 5);
+        // Table
+        const body = document.getElementById('resultBody');
+        body.innerHTML = '';
+        const max = sorted[0]?.count || 1;
+        sorted.slice(0, 100).forEach((d, i) => {
+          const row = `<tr>
+            <td>${i+1}</td>
+            <td style="font-family:var(--font-mono)">${d.item === ' ' ? '␣ (空格)' : d.item}</td>
+            <td>${d.count}</td>
+            <td>${d.p}%</td>
+            <td><div class="bar-bg"><div class="bar-fg" style="width:${d.count/max*100}%"></div></div></td>
+          </tr>`;
+          body.innerHTML += row;
         });
 
-        // Y轴
-        ctx.strokeStyle = isDark ? "#444" : "#ddd";
-        ctx.beginPath();
-        ctx.moveTo(padding.left, padding.top);
-        ctx.lineTo(padding.left, padding.top + chartHeight);
-        ctx.stroke();
+        document.getElementById('statsGrid').style.display = 'grid';
+        document.getElementById('resultArea').style.display = 'block';
       }
 
-      function updateCloudView() {
-        const cloud = document.getElementById("wordCloud");
-        cloud.textContent = "";
-
-        const data = currentData.slice(0, 50);
-        if (data.length === 0) return;
-
-        const maxCount = data[0].count;
-        const minSize = 14;
-        const maxSize = 48;
-
-        data.forEach((d) => {
-          const span = document.createElement("span");
-          const size = minSize + (d.count / maxCount) * (maxSize - minSize);
-          span.style.fontSize = size + "px";
-          span.style.opacity = 0.5 + (d.count / maxCount) * 0.5;
-          span.textContent = d.item === " " ? "␣" : d.item;
-          span.title = d.item + ": " + d.count + " (" + d.percent + "%)";
-          cloud.appendChild(span);
-        });
-      }
-
-      window.showView = function (view) {
-        document.querySelectorAll(".tabs button").forEach((btn) => btn.classList.remove("active"));
-        document.querySelector('.tabs button[onclick*="' + view + '"]').classList.add("active");
-
-        document.getElementById("tableView").classList.toggle("hidden", view !== "table");
-        document.getElementById("chartView").classList.toggle("hidden", view !== "chart");
-        document.getElementById("cloudView").classList.toggle("hidden", view !== "cloud");
-
-        if (view === "chart") updateChartView();
-      };
-
-      window.exportCSV = function () {
-        if (currentData.length === 0) {
-          alert("请先进行分析");
-          return;
-        }
-
-        const headers = ["排名", "内容", "频次", "占比(%)"];
-        const rows = currentData.map((d, i) => [
-          i + 1,
-          '"' + d.item.replace(/"/g, '""') + '"',
-          d.count,
-          d.percent
-        ]);
-        const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
-
-        const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "frequency_analysis.csv";
-        a.click();
-        URL.revokeObjectURL(url);
-      };
-
-      // 模式切换时显示/隐藏 N-gram 大小设置
-      document.getElementById("modeSelect").addEventListener("change", function () {
-        document.getElementById("ngramSizeLabel").style.display =
-          this.value === "ngram" ? "flex" : "none";
-      });
-
-      // 主题切换
-      const themeToggle = document.getElementById("themeToggle");
-      const html = document.documentElement;
-      const savedTheme = localStorage.getItem("theme") || "light";
-      html.setAttribute("data-theme", savedTheme);
-
-      themeToggle.addEventListener("click", () => {
-        const current = html.getAttribute("data-theme");
-        const next = current === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", next);
-        localStorage.setItem("theme", next);
-        if (!document.getElementById("chartView").classList.contains("hidden")) {
-          updateChartView();
-        }
-      });
-
-      // 窗口大小变化时重绘图表
-      window.addEventListener("resize", () => {
-        if (!document.getElementById("chartView").classList.contains("hidden")) {
-          updateChartView();
-        }
-      });
-
-      // 初始化
-      document.getElementById("ngramSizeLabel").style.display = "none";
-      analyze();
-
-      // Theme toggle
       function toggleTheme() {
         const html = document.documentElement;
         const currentTheme = html.getAttribute("data-theme");
         const newTheme = currentTheme === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        document.getElementById("theme-icon").textContent = newTheme === "light" ? "☀️" : "🌙";
-        localStorage.setItem("theme", newTheme);
+        setTheme(newTheme);
       }
+
+      function setTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        document.getElementById("theme-icon").textContent = theme === "light" ? "☀️" : "🌙";
+        localStorage.setItem("theme", theme);
+      }
+
+      setTheme(localStorage.getItem("theme") || "dark");
     </script>
   </body>
 </html>
