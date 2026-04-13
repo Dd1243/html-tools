@@ -1,452 +1,327 @@
 <!doctype html>
 <html lang="zh-CN">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>行号添加工具 - WebUtils</title>
+    <title>在线行号添加/移除工具 - 文本格式化与代码整理利器 - WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="行号添加工具 - WebUtils" />
-    <meta name="keywords" content="line-number,text,tools,webutils" />
+    <meta name="description" content="免费在线行号添加与移除工具。支持自定义起始行号、分隔符（冒号/点号/Tab等）、行号对齐宽度。一键为文本或代码添加序号，或快速清除已有行号。解决文档整理、代码分享、数据索引等痛点。适配手机与电脑。" />
+    <meta name="keywords" content="添加行号,删除行号,文本序号,代码整理,在线工具,行号对齐,文本格式化,WebUtils" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/text/line-number.html" />
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="行号添加工具 - WebUtils" />
-    <meta property="og:description" content="行号添加工具 - WebUtils" />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content="在线行号添加工具 - 极简文本格式化专家 - WebUtils" />
+    <meta property="og:description" content="快速为您的文本或代码添加/删除行号！支持高度自定义格式与实时预览，提升文档整理效率。" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://essays4u.net/tools/text/line-number.html" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
     <meta property="og:site_name" content="WebUtils" />
     <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="行号添加工具 - WebUtils" />
-    <meta name="twitter:description" content="行号添加工具 - WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "行号添加工具",
+      "url": "https://essays4u.net/tools/text/line-number.html",
+      "description": "多功能的在线文本行号管理工具，支持灵活的添加与移除操作。",
+      "applicationCategory": "UtilityApplication",
+      "operatingSystem": "All",
+      "author": {
+        "@type": "Organization",
+        "name": "WebUtils"
+      }
+    }
+    </script>
 
-    <meta name="description" content="为文本添加或删除行号，支持自定义格式、起始编号和分隔符" />
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
+    <!-- Google AdSense Header Placeholder -->
+    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
 
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      :root {
-        --bg-primary: #0a0a0f;
-        --bg-secondary: #12121a;
-        --bg-tertiary: #1a1a25;
-        --color-text-primary: #fff;
-        --color-text-secondary: #88a;
-        --accent: #6366f1;
-        --border: #2a2a3a;
-        --success: #22c55e;
-      }
-      [data-theme="light"] {
-        --bg-primary: #f8fafc;
-        --bg-secondary: #fff;
-        --bg-tertiary: #f1f5f9;
-        --color-text-primary: #1e293b;
-        --color-text-secondary: #64748b;
-        --border: #e2e8f0;
-      }
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      body {
-        font-family:
-          Inter,
-          -apple-system,
-          sans-serif;
-        font-size: 16px;
-        line-height: 1.6;
-        background: var(--bg-deep);
-        color: var(--color-text-primary);
-        min-height: 100vh;
-        padding: 2rem;
-      }
-      .container {
-        max-width: 1000px;
-        margin: 0 auto;
-      }
-      .header {
-        text-align: center;
-        margin-bottom: 2rem;
-        position: relative;
-      }
-      .header h1 {
-        font-size: 2rem;
-        background: linear-gradient(135deg, var(--accent-cyan), #a855f7);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-      .header p {
-        color: var(--color-text-secondary);
-        margin-top: 0.5rem;
-      }
-      .back-link {
-        position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--accent-cyan);
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 0.875rem;
-      }
-      .theme-toggle {
-        position: absolute;
-        right: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        background: var(--bg-tertiary);
-        border: 1px solid var(--border-subtle);
-        color: var(--color-text-primary);
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        cursor: pointer;
-        font-size: 1.25rem;
-      }
-      .card {
-        background: var(--bg-secondary);
-        border: 1px solid var(--border-subtle);
-        border-radius: 16px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-      }
-      .options {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-      }
-      .form-group label {
-        display: block;
-        margin-bottom: 0.5rem;
-        color: var(--color-text-secondary);
-        font-size: 0.875rem;
-      }
-      input,
-      select {
-        width: 100%;
-        padding: 0.75rem;
-        background: var(--bg-tertiary);
-        border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        color: var(--color-text-primary);
-        font-size: 0.875rem;
-      }
-      input:focus {
-        outline: none;
-        border-color: var(--accent-cyan);
-      }
-      .text-panels {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
-      }
-      .panel label {
-        display: block;
-        margin-bottom: 0.5rem;
-        color: var(--color-text-secondary);
-        font-size: 0.875rem;
-      }
-      textarea {
-        width: 100%;
-        height: 350px;
-        padding: 1rem;
-        background: var(--bg-tertiary);
-        border: 1px solid var(--border-subtle);
-        border-radius: 10px;
-        color: var(--color-text-primary);
-        font-family: Monaco, monospace;
-        font-size: 0.8rem;
-        resize: vertical;
-        line-height: 1.6;
-      }
-      textarea:focus {
-        outline: none;
-        border-color: var(--accent-cyan);
-      }
-      .btn-group {
-        display: flex;
-        gap: 0.75rem;
-        justify-content: center;
-        margin: 1.5rem 0;
-        flex-wrap: wrap;
-      }
-      .btn {
-        padding: 0.75rem 1.5rem;
-        border-radius: 10px;
-        font-size: 0.875rem;
-        font-weight: 500;
-        cursor: pointer;
-        border: none;
-        transition: all 0.2s;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      .btn-primary {
-        background: linear-gradient(135deg, var(--accent-cyan), #a855f7);
-        color: white;
-      }
-      .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-      }
-      .btn-secondary {
-        background: var(--bg-tertiary);
-        color: var(--color-text-primary);
-        border: 1px solid var(--border-subtle);
-      }
-      .btn-secondary:hover {
-        border-color: var(--accent-cyan);
-      }
-      .toast {
-        position: fixed;
-        bottom: 2rem;
-        left: 50%;
-        transform: translateX(-50%);
-        padding: 0.75rem 1.5rem;
-        background: var(--accent-green);
-        color: white;
-        border-radius: 10px;
-        opacity: 0;
-        transition: opacity 0.3s;
-      }
-      .toast.show {
-        opacity: 1;
-      }
-      @media (max-width: 768px) {
-        .text-panels {
-          grid-template-columns: 1fr;
-        }
-        .back-link span {
-          display: none;
-        }
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-      .visually-hidden {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        margin: -1px;
-        padding: 0;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0;
-      }
-    </style>
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+
+    <style>
+      :root {
+        --bg-body: #0a0a0f;
+        --bg-card: #12121a;
+        --bg-input: #0e0e14;
+        --bg-elevated: #1a1a24;
+        --text-primary: #e8e8ed;
+        --text-secondary: #a0a0b0;
+        --text-muted: #606070;
+        --border-color: #2a2a3a;
+        --border-focus: #3a3a4a;
+        --accent: #a855f7;
+        --accent-glow: rgba(168, 85, 247, 0.3);
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", "Space Grotesk", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+
+      [data-theme="light"] {
+        --bg-body: #fafafa;
+        --bg-card: #ffffff;
+        --bg-input: #f5f5f5;
+        --bg-elevated: #ffffff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #666;
+        --text-muted: #999;
+        --border-color: #e5e5e5;
+        --border-focus: #d5d5d5;
+        --accent: #8b5cf6;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      
+      .container { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 32px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--border-color); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .header-right { display: flex; align-items: center; gap: 12px; }
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; width: 40px; height: 40px; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+      .theme-toggle:hover { border-color: var(--accent); }
+
+      .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 24px; }
+      
+      .options-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
+      .option-group { display: flex; flex-direction: column; gap: 8px; }
+      .option-group label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+      
+      select, input { padding: 10px 14px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary); font-size: 0.875rem; outline: none; transition: 0.2s; }
+      select:focus, input:focus { border-color: var(--accent); }
+
+      .editors-container { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+      .editor-box { display: flex; flex-direction: column; gap: 8px; }
+      .editor-box label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+      textarea { width: 100%; height: 350px; padding: 16px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary); font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.6; resize: vertical; outline: none; }
+      textarea:focus { border-color: var(--accent); }
+
+      .toolbar { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+      .btn-primary { padding: 12px 32px; background: var(--accent); border: none; border-radius: var(--radius-md); color: #fff; font-weight: 700; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 12px var(--accent-glow); }
+      .btn-secondary { padding: 12px 24px; background: var(--bg-elevated); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-secondary); font-weight: 600; cursor: pointer; transition: 0.2s; }
+      .btn-primary:hover { transform: translateY(-1px); opacity: 0.9; }
+
+      .ads-container { margin: 24px 0; min-height: 90px; background: rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem; border: 1px dashed var(--border-color); border-radius: var(--radius-md); }
+
+      .seo-content { margin-top: 64px; padding: 40px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); color: var(--text-secondary); font-size: 0.95rem; line-height: 1.8; }
+      .seo-content h2 { color: var(--text-primary); font-size: 1.5rem; margin-bottom: 24px; font-weight: 700; border-left: 4px solid var(--accent); padding-left: 16px; }
+      .seo-content h3 { color: var(--text-primary); font-size: 1.2rem; margin-top: 32px; margin-bottom: 16px; font-weight: 600; }
+      .seo-content p { margin-bottom: 16px; }
+
+      @media (max-width: 800px) {
+        .editors-container { grid-template-columns: 1fr; }
+      }
+    </style>
   </head>
   <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>›</span>
-      行号添加/移除
-    </nav>
     <div class="container">
-      <div class="header">
-        <h1>🔢 行号添加工具</h1>
-        <p>为文本添加或删除行号</p>
-        <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+      <header class="header">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn" title="返回首页">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 12L6 8L10 4" />
+            </svg>
+          </a>
+          <div class="title-group">
+            <h1>行号添加/移除工具</h1>
+            <p>快速格式化文本行号，支持高度自定义规则</p>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+            <span id="theme-icon">🌙</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Google AdSense Top -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
       </div>
 
       <div class="card">
-        <div class="options">
-          <div class="form-group">
+        <div class="options-grid">
+          <div class="option-group">
             <label>操作模式</label>
             <select id="mode" onchange="process()">
               <option value="add">添加行号</option>
-              <option value="remove">删除行号</option>
+              <option value="remove">移除已有行号</option>
             </select>
           </div>
-          <div class="form-group">
-            <label>起始行号</label>
-            <input type="number" id="start" value="1" min="0" onchange="process()" />
+          <div class="option-group">
+            <label>起始编号</label>
+            <input type="number" id="startNum" value="1" min="0" onchange="process()">
           </div>
-          <div class="form-group">
+          <div class="option-group">
             <label>分隔符</label>
-            <select id="separator" onchange="process()">
+            <select id="sep" onchange="process()">
               <option value=": ">: (冒号)</option>
               <option value=". ">. (点号)</option>
               <option value=") ">) (括号)</option>
-              <option value="| ">| (竖线)</option>
-              <option value="\t">Tab</option>
+              <option value=" | ">| (竖线)</option>
+              <option value="\t">Tab 制表符</option>
               <option value="  ">双空格</option>
             </select>
           </div>
-          <div class="form-group">
-            <label>行号宽度</label>
-            <select id="padding" onchange="process()">
-              <option value="0">自动</option>
-              <option value="2">2位</option>
-              <option value="3">3位</option>
-              <option value="4">4位</option>
-              <option value="5">5位</option>
+          <div class="option-group">
+            <label>编号宽度</label>
+            <select id="width" onchange="process()">
+              <option value="0">自动匹配</option>
+              <option value="2">2 位 (01)</option>
+              <option value="3">3 位 (001)</option>
+              <option value="4">4 位 (0001)</option>
             </select>
           </div>
         </div>
 
-        <div class="text-panels">
-          <div class="panel">
-            <label>输入文本</label>
-            <textarea id="input" oninput="process()" placeholder="在此输入文本...">
-第一行内容
+        <div class="editors-container">
+          <div class="editor-box">
+            <label>原始文本输入</label>
+            <textarea id="inputText" placeholder="请在此粘贴您的文本..." oninput="process()">第一行内容
 第二行内容
 第三行内容
-第四行内容
-第五行内容</textarea
-            >
+第四行内容</textarea>
           </div>
-          <div class="panel">
-            <label>输出结果</label>
-            <textarea id="output" readonly placeholder="处理结果..."></textarea>
+          <div class="editor-box">
+            <label>处理结果输出</label>
+            <textarea id="outputText" readonly placeholder="处理结果将在此实时显示..."></textarea>
           </div>
         </div>
 
-        <div class="btn-group">
-          <button class="btn btn-primary" onclick="process()">🔄 处理</button>
-          <button class="btn btn-secondary" onclick="copyOutput()">📋 复制结果</button>
-          <button class="btn btn-secondary" onclick="swapTexts()">↔️ 交换</button>
-          <button class="btn btn-secondary" onclick="clearAll()">🗑️ 清空</button>
+        <div class="toolbar">
+          <button class="btn-primary" onclick="process()">立即处理</button>
+          <button class="btn-secondary" onclick="copyOutput()">复制结果</button>
+          <button class="btn-secondary" onclick="swapText()">交换内外</button>
+          <button class="btn-secondary" onclick="clearAll()">清空全部</button>
         </div>
       </div>
+
+      <!-- Google AdSense Bottom -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
+      </div>
+
+      <article class="seo-content">
+        <h2>在线行号添加/移除工具：提升文本整理与代码分享的效率</h2>
+        <p>在处理长篇文档、代码片段或结构化数据时，<strong>行号（Line Numbers）</strong>起着至关重要的索引作用。无论是为了方便在会议中精准定位某一行，还是为了将一段代码整洁地插入到 PDF 或邮件中，手动添加行号都是一项极其枯燥的工作。<strong>在线行号添加/移除工具</strong>通过自动化脚本，一键解决您的文本格式化难题。</p>
+        
+        <h3>1. 为什么需要行号管理？</h3>
+        <p>行号不仅仅是一个数字，它是信息的坐标：</p>
+        <ul>
+          <li><strong>沟通效率：</strong> 在团队协作中，“看第 45 行”远比“看那段中间位置”要高效得多。</li>
+          <li><strong>代码审计：</strong> 虽然 IDE 自带行号，但在网页、文档或即时通讯软件中分享代码时，显式的行号能帮助审查者更清晰地理解逻辑流。</li>
+          <li><strong>数据清洗：</strong> 有时我们从旧文档中复制出带行号的文本，需要将其清除以获得原始数据。本工具的“移除模式”能精准识别并清除各种格式的旧行号。</li>
+        </ul>
+
+        <h3>2. 我们的工具能解决哪些具体痛点？</h3>
+        <p><strong>痛点一：格式不统一。</strong> 有人喜欢用“1.”，有人喜欢用“01:”。本工具提供多种分隔符和补全位数选择，确保您的文档格式严谨统一。</p>
+        <p><strong>痛点二：对齐困难。</strong> 当行数超过 10 或 100 时，数字位数的增加会导致文本错位。我们的“编号宽度”功能支持自动补零（如 01, 02...09, 10），确保所有文本左侧完美对齐。</p>
+        <p><strong>痛点三：手动移除费时。</strong> 复制出来的文本带了“1) ”这种序号，想批量删掉？手动删几百行简直是折磨。通过本工具的正则识别算法，一秒钟即可恢复纯净文本。</p>
+
+        <h3>3. 核心功能亮点</h3>
+        <ol>
+          <li><strong>双向操作：</strong> 既能加号，也能删号，满足内容生产的全周期需求。</li>
+          <li><strong>实时预览：</strong> 采用高性能处理算法，在您输入或调整配置的同时，结果区域即时更新，无需频繁点击按钮。</li>
+          <li><strong>高度自定义：</strong> 支持自定义起始编号（例如从 100 开始），支持 Tab 等特殊分隔符，适配各种专业场景。</li>
+        </ol>
+
+        <h3>4. 使用小建议</h3>
+        <ul>
+          <li><strong>对齐美学：</strong> 如果您的文本超过 100 行，建议将“编号宽度”设置为 3 位，这样视觉效果最平衡。</li>
+          <li><strong>交换功能：</strong> 如果您处理完一段文本发现需要进一步微调，点击“交换内外”可以将结果转为输入，进行二次加工。</li>
+          <li><strong>隐私安全：</strong> 所有的处理过程均在您的浏览器本地内存中完成，数据绝不上传，确保您的隐私万无一失。</li>
+        </ul>
+        <p><em>让每一行都有迹可循，让文本整理更有条理。立即体验高效的行号管理！</em></p>
+      </article>
+
+      <footer style="margin-top: 32px; text-align: center; color: var(--text-muted); font-size: 0.75rem;">
+        <p>© 2026 WebUtils. All rights reserved.</p>
+      </footer>
     </div>
-    <div class="toast" id="toast">已复制</div>
 
     <script>
-      window.toggleTheme = function () {
-        const t =
-          document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
-        document.documentElement.setAttribute("data-theme", t);
-        localStorage.setItem("theme", t);
-      };
-      document.documentElement.setAttribute("data-theme", localStorage.getItem("theme") || "dark");
-
       function process() {
-        const input = document.getElementById("input").value;
-        const mode = document.getElementById("mode").value;
-        const start = parseInt(document.getElementById("start").value) || 1;
-        const separator = document.getElementById("separator").value.replace("\\t", "\t");
-        const padding = parseInt(document.getElementById("padding").value);
+        const input = document.getElementById('inputText').value;
+        const mode = document.getElementById('mode').value;
+        const start = parseInt(document.getElementById('startNum').value) || 1;
+        const separator = document.getElementById('sep').value.replace('\\t', '\t');
+        const paddingWidth = parseInt(document.getElementById('width').value);
 
-        const lines = input.split("\n");
-        let result;
-
-        if (mode === "add") {
-          const maxWidth = padding || String(start + lines.length - 1).length;
-          result = lines
-            .map((line, i) => {
-              const num = String(start + i).padStart(maxWidth, "0");
-              return num + separator + line;
-            })
-            .join("\n");
-        } else {
-          result = lines
-            .map((line) => {
-              return line.replace(/^\s*\d+[\s.:)\-|]+/, "");
-            })
-            .join("\n");
+        if (!input) {
+          document.getElementById('outputText').value = '';
+          return;
         }
 
-        document.getElementById("output").value = result;
+        const lines = input.split('\n');
+        let result = '';
+
+        if (mode === 'add') {
+          const totalLines = lines.length;
+          const maxWidth = paddingWidth || String(start + totalLines - 1).length;
+          
+          result = lines.map((line, index) => {
+            const num = String(start + index).padStart(maxWidth, '0');
+            return num + separator + line;
+          }).join('\n');
+        } else {
+          // Regex to match common line number patterns at start of line
+          // Supports: "1. ", "01: ", "1) ", "  1 | ", etc.
+          const lineNumRegex = /^\s*\d+[\s.:)\-|]+/;
+          result = lines.map(line => line.replace(lineNumRegex, '')).join('\n');
+        }
+
+        document.getElementById('outputText').value = result;
       }
 
-      window.copyOutput = function () {
-        const output = document.getElementById("output").value;
-        if (output) {
-          navigator.clipboard.writeText(output);
-          const toast = document.getElementById("toast");
-          toast.classList.add("show");
-          setTimeout(() => toast.classList.remove("show"), 2000);
-        }
-      };
+      function copyOutput() {
+        const output = document.getElementById('outputText');
+        output.select();
+        document.execCommand('copy');
+        alert('结果已复制到剪贴板');
+      }
 
-      window.swapTexts = function () {
-        const input = document.getElementById("input");
-        const output = document.getElementById("output");
-        const temp = input.value;
+      function swapText() {
+        const input = document.getElementById('inputText');
+        const output = document.getElementById('outputText');
         input.value = output.value;
-        output.value = temp;
-      };
+        process();
+      }
 
-      window.clearAll = function () {
-        document.getElementById("input").value = "";
-        document.getElementById("output").value = "";
-      };
+      function clearAll() {
+        document.getElementById('inputText').value = '';
+        document.getElementById('outputText').value = '';
+      }
 
+      function toggleTheme() {
+        const html = document.documentElement;
+        const currentTheme = html.getAttribute("data-theme");
+        const newTheme = currentTheme === "light" ? "dark" : "light";
+        setTheme(newTheme);
+      }
+
+      function setTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        document.getElementById("theme-icon").textContent = theme === "light" ? "☀️" : "🌙";
+        localStorage.setItem("theme", theme);
+      }
+
+      setTheme(localStorage.getItem("theme") || "dark");
       process();
     </script>
   </body>
