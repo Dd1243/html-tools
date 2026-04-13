@@ -2,1302 +2,475 @@
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>卡路里计算器 - WebUtils</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>卡路里计算器 - TDEE与BMR热量需求分析 - WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="卡路里需求计算器 - 计算每日热量需求和宏量营养素配�? />
-    <meta name="keywords" content="卡路�?热量 计算�?TDEE BMR 宏量营养" />
+    <meta name="description" content="专业卡路里计算器，基于 Mifflin-St Jeor 公式精确计算您的基础代谢率 (BMR) 和每日总能量消耗 (TDEE)。提供科学的减脂、增肌与维持体重建议，包含宏量营养素分配方案。" />
+    <meta name="keywords" content="卡路里计算器,TDEE计算,BMR计算,热量需求,宏量营养素,减脂饮食,增肌饮食,WebUtils" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
-    <link
-      rel="canonical"
-      href="https://essays4u.net/tools/health/calorie-calculator.html"
-    />
+    <link rel="canonical" href="https://essays4u.net/tools/health/calorie-calculator.html" />
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="卡路里计算器 - WebUtils" />
-    <meta property="og:description" content="卡路里需求计算器 - 计算每日热量需求和宏量营养素配�? />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content="卡路里计算器 - TDEE与BMR热量需求分析 - WebUtils" />
+    <meta property="og:description" content="精确计算您的每日热量需求，获取科学的饮食分配建议。" />
     <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/health/calorie-calculator.html"
-    />
+    <meta property="og:url" content="https://essays4u.net/tools/health/calorie-calculator.html" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
     <meta property="og:site_name" content="WebUtils" />
     <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
 
     <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="卡路里计算器 - WebUtils" />
-    <meta
-      name="twitter:description"
-      content="卡路里需求计算器 - 计算每日热量需求和宏量营养素配�?
-    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="卡路里计算器 - TDEE与BMR热量需求分析 - WebUtils" />
+    <meta name="twitter:description" content="专业卡路里计算器，助您科学规划健身饮食。" />
     <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
 
-    <!-- JSON-LD BreadcrumbList Schema -->
+    <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "首页",
-            "item": "https://essays4u.net/"
-          },
-          {
-            "@type": "ListItem",
-            "position": 2,
-            "name": "健康工具",
-            "item": "https://essays4u.net/#health"
-          },
-          {
-            "@type": "ListItem",
-            "position": 3,
-            "name": "卡路里计算器",
-            "item": "https://essays4u.net/tools/health/calorie-calculator.html"
-          }
-        ]
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "卡路里计算器",
+      "url": "https://essays4u.net/tools/health/calorie-calculator.html",
+      "description": "基于科学公式计算 BMR 和 TDEE，提供宏量营养素分配建议。",
+      "applicationCategory": "HealthApplication",
+      "operatingSystem": "All",
+      "author": {
+        "@type": "Organization",
+        "name": "WebUtils"
       }
+    }
     </script>
 
-    <!-- Preload fonts -->
+    <!-- Google AdSense Header Placeholder -->
+    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
 
     <style>
-      /* ============================================
-         Design System - CSS Variables
-         ============================================ */
       :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
+        --bg-body: #0a0a0f;
+        --bg-card: #12121a;
         --bg-input: #0e0e14;
+        --bg-elevated: #1a1a24;
         --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --text-secondary: #a0a0b0;
+        --text-muted: #606070;
+        --border-color: #2a2a3a;
+        --border-focus: #3a3a4a;
+        --accent: #00f5d4;
+        --accent-purple: #bf5af2;
+        --success: #30d158;
+        --warning: #ff9f0a;
+        --error: #ff453a;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", "Space Grotesk", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
       }
 
       [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
+        --bg-body: #fafafa;
+        --bg-card: #ffffff;
         --bg-input: #f5f5f5;
+        --bg-elevated: #ffffff;
         --text-primary: #1a1a1a;
         --text-secondary: #666;
         --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      /* Light Theme */
-
-      /* ============================================
-         Base Styles
-         ============================================ */
-      *,
-      *::before,
-      *::after {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      html {
-        font-size: 16px;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-      }
-
-      body {
-        font-family: var(--font-sans);
-        background: var(--color-bg-deep);
-        color: var(--color-text-primary);
-        min-height: 100vh;
-        min-height: 100dvh;
-        line-height: 1.5;
-        transition:
-          background-color var(--transition-normal),
-          color var(--transition-normal);
-      }
-
-      /* Subtle background gradient */
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        z-index: 0;
-        background:
-          radial-gradient(circle at 20% 20%, rgba(0, 212, 170, 0.03) 0%, transparent 50%),
-          radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.03) 0%, transparent 50%);
-      }
-
-      [data-theme="light"] body::before {
-        background:
-          radial-gradient(circle at 20% 20%, rgba(0, 184, 148, 0.05) 0%, transparent 50%),
-          radial-gradient(circle at 80% 80%, rgba(124, 58, 237, 0.05) 0%, transparent 50%);
-      }
-
-      /* ============================================
-         Navigation Bar
-         ============================================ */
-      .nav-bar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 1000;
-        height: calc(var(--nav-height) + var(--safe-area-top));
-        padding-top: var(--safe-area-top);
-        background: var(--glass-bg);
-        backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-        -webkit-backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-        border-bottom: 1px solid var(--glass-border);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: background var(--transition-normal);
-      }
-
-      .nav-content {
-        width: 100%;
-        max-width: var(--container-max);
-        height: var(--nav-height);
-        padding: 0 var(--space-6);
-        display: grid;
-        grid-template-columns: 1fr auto 1fr;
-        align-items: center;
-        gap: var(--space-4);
-      }
-
-      /* Back Button */
-      .nav-back {
-        display: flex;
-        align-items: center;
-        gap: var(--space-1);
-        color: var(--color-accent-primary);
-        text-decoration: none;
-        font-size: 0.9375rem;
-        font-weight: 500;
-        padding: var(--space-2) var(--space-1);
-        margin-left: calc(var(--space-2) * -1);
-        border-radius: var(--radius-sm);
-        transition: all var(--transition-fast);
-        justify-self: start;
-      }
-
-      .nav-back:hover {
-        background: var(--color-border-subtle);
-      }
-
-      .nav-back-icon {
-        width: 20px;
-        height: 20px;
-        stroke-width: 2.5;
-      }
-
-      .nav-back-text {
-        display: inline;
-      }
-
-      /* Nav Title */
-      .nav-title {
-        font-size: 1rem;
-        font-weight: 600;
-        color: var(--color-text-primary);
-        text-align: center;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      /* Nav Actions */
-      .nav-actions {
-        display: flex;
-        align-items: center;
-        gap: var(--space-2);
-        justify-self: end;
-      }
-
-      /* Theme Toggle */
-      .theme-toggle {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 36px;
-        height: 36px;
-        border: none;
-        border-radius: var(--radius-full);
-        background: var(--color-bg-subtle);
-        color: var(--color-text-secondary);
-        cursor: pointer;
-        transition: all var(--transition-fast);
-      }
-
-      .theme-toggle:hover {
-        background: var(--color-border-strong);
-        color: var(--color-text-primary);
-        transform: scale(1.05);
-      }
-
-      .theme-toggle svg {
-        width: 18px;
-        height: 18px;
-      }
-
-      .theme-icon-dark,
-      .theme-icon-light {
-        display: none;
-      }
-
-      [data-theme="dark"] .theme-icon-light,
-      :root:not([data-theme]) .theme-icon-light {
-        display: block;
-      }
-
-      [data-theme="light"] .theme-icon-dark {
-        display: block;
-      }
-
-      /* ============================================
-         Main Content
-         ============================================ */
-      .main-content {
-        position: relative;
-        z-index: 1;
-        min-height: 100vh;
-        min-height: 100dvh;
-        padding-top: calc(var(--nav-height) + var(--safe-area-top) + var(--space-6));
-        padding-bottom: calc(var(--space-8) + var(--safe-area-bottom));
-        padding-left: var(--space-6);
-        padding-right: var(--space-6);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .container {
-        width: 100%;
-        max-width: var(--container-max);
-      }
-
-      /* ============================================
-         Card Styles
-         ============================================ */
-      .card {
-        background: var(--glass-bg);
-        backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-        -webkit-backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-        border: 1px solid var(--color-border-default);
-        border-radius: var(--radius-lg);
-        padding: var(--space-6);
-        margin-bottom: var(--space-5);
-        box-shadow: var(--shadow-md);
-      }
-
-      .card-title {
-        font-size: 1.125rem;
-        font-weight: 600;
-        margin-bottom: var(--space-5);
-        color: var(--color-text-primary);
-      }
-
-      /* ============================================
-         Form Elements
-         ============================================ */
-      .input-group {
-        margin-bottom: var(--space-4);
-      }
-
-      .input-group label {
-        display: block;
-        font-weight: 500;
-        margin-bottom: var(--space-2);
-        font-size: 0.9375rem;
-        color: var(--color-text-secondary);
-      }
-
-      input[type="text"],
-      input[type="number"],
-      select {
-        width: 100%;
-        padding: var(--space-3) var(--space-4);
-        font-size: 0.9375rem;
-        border: 1px solid var(--color-border-default);
-        border-radius: var(--radius-md);
-        background: var(--color-bg-input);
-        color: var(--color-text-primary);
-        font-family: var(--font-mono);
-        transition: all var(--transition-fast);
-      }
-
-      input:focus,
-      select:focus {
-        outline: none;
-        border-color: var(--color-accent-primary);
-        box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.1);
-      }
-
-      /* Radio Group */
-      .radio-group {
-        display: flex;
-        gap: var(--space-3);
-        flex-wrap: wrap;
-      }
-
-      .radio-btn {
-        flex: 1;
-        min-width: 100px;
-        padding: var(--space-3) var(--space-4);
-        border: 1px solid var(--color-border-default);
-        border-radius: var(--radius-md);
-        background: var(--color-bg-input);
-        color: var(--color-text-primary);
-        cursor: pointer;
-        text-align: center;
-        font-size: 0.9375rem;
-        font-weight: 500;
-        transition: all var(--transition-fast);
-        font-family: var(--font-sans);
-      }
-
-      .radio-btn:hover {
-        border-color: var(--color-accent-primary);
-        background: var(--color-bg-surface);
-      }
-
-      .radio-btn.active {
-        background: var(--color-accent-primary);
-        border-color: var(--color-accent-primary);
-        color: #fff;
-        font-weight: 600;
-      }
-
-      /* Buttons */
-      button {
-        padding: var(--space-3) var(--space-4);
-        font-size: 0.9375rem;
-        font-weight: 500;
-        border: 1px solid var(--color-border-default);
-        border-radius: var(--radius-md);
-        background: var(--color-bg-subtle);
-        color: var(--color-text-primary);
-        cursor: pointer;
-        transition: all var(--transition-fast);
-        font-family: var(--font-sans);
-      }
-
-      button:hover {
-        border-color: var(--color-accent-primary);
-        background: var(--color-bg-surface);
-        transform: translateY(-1px);
-      }
-
-      button:active {
-        transform: translateY(0);
-      }
-
-      button.primary {
-        background: var(--color-accent-primary);
-        border-color: var(--color-accent-primary);
-        color: #fff;
-        font-weight: 600;
-      }
-
-      button.primary:hover {
-        background: #00c299;
-        border-color: #00c299;
-        box-shadow: var(--shadow-glow);
-      }
-
-      /* ============================================
-         Result Display
-         ============================================ */
-      .result-hero {
-        background: var(--glass-bg);
-        backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-        -webkit-backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-        border: 1px solid var(--color-border-default);
-        border-radius: var(--radius-lg);
-        padding: var(--space-6);
-        text-align: center;
-        box-shadow: var(--shadow-md);
-        margin-bottom: var(--space-5);
-      }
-
-      .result-hero .label {
-        font-size: 0.875rem;
-        color: var(--text-muted);
-        margin-bottom: var(--space-2);
-        font-weight: 500;
-      }
-
-      .result-hero .big {
-        font-size: 2.5rem;
-        font-weight: 700;
-        font-family: var(--font-mono);
-        color: var(--color-accent-primary);
-        letter-spacing: -0.02em;
-      }
-
-      .result-hero .unit {
-        font-size: 1rem;
-        color: var(--color-text-secondary);
-        margin-left: var(--space-2);
-      }
-
-      .result-hero .sub {
-        margin-top: var(--space-2);
-        font-size: 0.9375rem;
-        color: var(--color-text-secondary);
-        font-family: var(--font-mono);
-      }
-
-      /* Goals Grid */
-      .goals {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: var(--space-4);
-        margin-bottom: var(--space-5);
-      }
-
-      .goal {
-        background: var(--glass-bg);
-        backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-        -webkit-backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-        border: 2px solid var(--color-border-default);
-        border-radius: var(--radius-lg);
-        padding: var(--space-4);
-        text-align: center;
-        cursor: pointer;
-        transition: all var(--transition-fast);
-        box-shadow: var(--shadow-md);
-      }
-
-      .goal:hover {
-        transform: translateY(-2px);
-        border-color: var(--color-accent-primary);
-      }
-
-      .goal.active {
-        border-color: var(--color-accent-primary);
-        background: var(--glass-bg);
-        box-shadow: var(--shadow-glow);
-      }
-
-      .goal .name {
-        font-weight: 600;
-        margin-bottom: var(--space-1);
-        color: var(--color-text-primary);
-      }
-
-      .goal .calories {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--color-accent-primary);
-        font-family: var(--font-mono);
-        margin-bottom: var(--space-1);
-      }
-
-      .goal .desc {
-        font-size: 0.8125rem;
-        color: var(--text-muted);
-      }
-
-      /* Macro Chart */
-      .macro-chart {
-        display: flex;
-        height: 24px;
-        border-radius: var(--radius-md);
-        overflow: hidden;
-        margin: var(--space-4) 0;
-        box-shadow: var(--shadow-sm);
-      }
-
-      .macro-segment {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.7rem;
-        color: white;
-        font-weight: 500;
-        transition: flex var(--transition-fast);
-      }
-
-      .macro-legend {
-        display: flex;
-        justify-content: space-around;
-        gap: var(--space-3);
-        margin-top: var(--space-3);
-      }
-
-      .macro-item {
-        text-align: center;
-        flex: 1;
-      }
-
-      .macro-dot {
-        width: 12px;
-        height: 12px;
-        border-radius: var(--radius-sm);
-        display: inline-block;
-        margin-right: var(--space-1);
-      }
-
-      .macro-value {
-        font-size: 1rem;
-        font-weight: 600;
-        display: block;
-        color: var(--color-text-primary);
-        font-family: var(--font-mono);
-      }
-
-      .macro-label {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-        margin-top: var(--space-1);
-      }
-
-      /* Result Row */
-      .result-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: var(--space-3) var(--space-4);
-        background: var(--color-bg-input);
-        border-radius: var(--radius-md);
-        margin-bottom: var(--space-2);
-        border: 1px solid var(--color-border-subtle);
-      }
-
-      .result-row .label {
-        color: var(--color-text-secondary);
-        font-weight: 500;
-      }
-
-      .result-row .value {
-        font-weight: 600;
-        color: var(--color-accent-primary);
-        font-family: var(--font-mono);
-      }
-
-      /* Meal Plan */
-      .meal-plan {
-        margin-top: var(--space-4);
-      }
-
-      .meal {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: var(--space-3) var(--space-4);
-        background: var(--color-bg-input);
-        border-radius: var(--radius-md);
-        margin-bottom: var(--space-2);
-        border: 1px solid var(--color-border-subtle);
-        transition: all var(--transition-fast);
-      }
-
-      .meal:hover {
-        border-color: var(--color-accent-primary);
-      }
-
-      .meal-name {
-        display: flex;
-        align-items: center;
-        gap: var(--space-2);
-        flex: 1;
-      }
-
-      .meal-icon {
-        font-size: 1.25rem;
-      }
-
-      .meal-info {
-        display: flex;
-        flex-direction: column;
-        gap: var(--space-1);
-      }
-
-      .meal-title {
-        color: var(--color-text-primary);
-        font-weight: 500;
-      }
-
-      .food-examples {
-        font-size: 0.8125rem;
-        color: var(--text-muted);
-      }
-
-      .meal-calories {
-        font-weight: 600;
-        color: var(--color-accent-primary);
-        font-family: var(--font-mono);
-      }
-
-      /* Note */
-      .note {
-        background: var(--color-bg-input);
-        border: 1px solid var(--color-border-subtle);
-        border-radius: var(--radius-md);
-        padding: var(--space-4);
-        font-size: 0.875rem;
-        color: var(--color-text-secondary);
-        line-height: 1.6;
-      }
-
-      /* Grid Layout */
-      .grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: var(--space-5);
-      }
-
-      /* ============================================
-         Mobile Responsive
-         ============================================ */
-      @media (max-width: 768px) {
-        :root {
-          --nav-height: 52px;
-        }
-
-        .nav-content {
-          padding: 0 var(--space-4);
-        }
-
-        .nav-back-text {
-          display: none;
-        }
-
-        .main-content {
-          padding-top: calc(var(--nav-height) + var(--safe-area-top) + var(--space-4));
-          padding-left: var(--space-4);
-          padding-right: var(--space-4);
-        }
-
-        .grid {
-          grid-template-columns: 1fr;
-        }
-
-        .goals {
-          grid-template-columns: 1fr;
-        }
-
-        .result-hero .big {
-          font-size: 2rem;
-        }
-
-        .card {
-          padding: var(--space-4);
-        }
-
-        .radio-group {
-          flex-direction: column;
-        }
-
-        .radio-btn {
-          width: 100%;
-        }
-      }
-
-      @media (max-width: 480px) {
-        :root {
-          --space-6: 16px;
-        }
-
-        .nav-title {
-          font-size: 0.9375rem;
-        }
-
-        .result-hero {
-          padding: var(--space-4);
-        }
-
-        .result-hero .big {
-          font-size: 1.75rem;
-        }
-
-        .macro-legend {
-          flex-wrap: wrap;
-        }
-
-        .macro-item {
-          min-width: 80px;
-        }
-      }
-
-      /* Desktop */
-      @media (min-width: 1024px) {
-        .main-content {
-          padding-top: calc(var(--nav-height) + var(--safe-area-top) + var(--space-8));
-        }
-      }
-
-      /* ============================================
-         Accessibility
-         ============================================ */
-      @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.01ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.01ms !important;
-        }
-      }
-
-      :focus-visible {
-        outline: 2px solid var(--color-accent-primary);
-        outline-offset: 2px;
-      }
-
-      button:focus:not(:focus-visible),
-      a:focus:not(:focus-visible),
-      input:focus:not(:focus-visible),
-      .radio-btn:focus:not(:focus-visible),
-      .goal:focus:not(:focus-visible) {
-        outline: none;
-      }
-
-      .radio-btn:focus-visible,
-      .goal:focus-visible {
-        outline: 2px solid var(--color-accent-primary);
-        outline-offset: 2px;
+        --border-color: #e5e5e5;
+        --border-focus: #d5d5d5;
+        --accent: #00d4b8;
+        --accent-purple: #9b4dca;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      
+      .container { max-width: 1000px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--border-color); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .header-right { display: flex; align-items: center; gap: 12px; }
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; width: 40px; height: 40px; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+      .theme-toggle:hover { border-color: var(--accent); }
+
+      .tool-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 24px; margin-bottom: 24px; }
+      
+      .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 24px; }
+      .card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+      
+      .input-group { margin-bottom: 16px; }
+      .input-group label { display: block; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px; }
+      
+      .radio-group { display: flex; gap: 8px; }
+      .radio-btn { flex: 1; padding: 10px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-secondary); cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: all 0.2s; text-align: center; }
+      .radio-btn.active { background: var(--accent); color: var(--bg-body); border-color: var(--accent); }
+      
+      input, select { width: 100%; padding: 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary); font-family: var(--font-mono); font-size: 0.95rem; outline: none; transition: all 0.2s; }
+      input:focus, select:focus { border-color: var(--accent); }
+
+      .result-hero { background: linear-gradient(135deg, rgba(0, 245, 212, 0.05), rgba(191, 90, 242, 0.05)); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 32px; text-align: center; margin-bottom: 24px; }
+      .result-hero .label { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+      .result-hero .value { font-size: 3rem; font-weight: 700; color: var(--accent); font-family: var(--font-mono); line-height: 1; }
+      .result-hero .unit { font-size: 1rem; color: var(--text-secondary); margin-left: 4px; }
+      .result-hero .sub { font-size: 0.85rem; color: var(--text-muted); margin-top: 12px; font-family: var(--font-mono); }
+
+      .goals-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+      .goal-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; text-align: center; cursor: pointer; transition: all 0.2s; }
+      .goal-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+      .goal-card.active { border-color: var(--accent); background: rgba(0, 245, 212, 0.05); box-shadow: 0 0 20px rgba(0, 245, 212, 0.1); }
+      .goal-card .name { font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; }
+      .goal-card .cals { font-size: 1.25rem; font-weight: 700; color: var(--accent); font-family: var(--font-mono); }
+      .goal-card .desc { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+
+      .macro-section { margin-top: 24px; }
+      .macro-chart { height: 12px; background: var(--bg-input); border-radius: 6px; overflow: hidden; display: flex; margin-bottom: 16px; }
+      .macro-segment { height: 100%; transition: width 0.3s ease; }
+      .macro-legend { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+      .macro-item { text-align: center; }
+      .macro-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+      .macro-val { display: block; font-size: 1rem; font-weight: 700; color: var(--text-primary); font-family: var(--font-mono); }
+      .macro-lab { font-size: 0.75rem; color: var(--text-muted); }
+
+      .meal-plan { margin-top: 24px; display: grid; gap: 12px; }
+      .meal-item { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+      .meal-info { display: flex; align-items: center; gap: 12px; }
+      .meal-icon { font-size: 1.25rem; }
+      .meal-text .name { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
+      .meal-text .foods { font-size: 0.75rem; color: var(--text-muted); }
+      .meal-cals { font-size: 0.95rem; font-weight: 700; color: var(--accent); font-family: var(--font-mono); }
+
+      .ads-container { margin: 24px 0; min-height: 90px; background: rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem; border: 1px dashed var(--border-color); border-radius: var(--radius-md); }
+
+      .seo-content { margin-top: 32px; padding: 32px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); color: var(--text-secondary); font-size: 0.95rem; }
+      .seo-content h2 { color: var(--text-primary); font-size: 1.5rem; margin-bottom: 20px; font-weight: 700; border-left: 4px solid var(--accent); padding-left: 16px; }
+      .seo-content h3 { color: var(--text-primary); font-size: 1.2rem; margin-top: 32px; margin-bottom: 16px; font-weight: 600; }
+      .seo-content p { margin-bottom: 16px; line-height: 1.8; }
+      .seo-content ul, .seo-content ol { margin-bottom: 20px; padding-left: 24px; }
+      .seo-content li { margin-bottom: 12px; line-height: 1.6; }
+      .seo-content strong { color: var(--accent); }
+
+      @media (max-width: 850px) {
+        .tool-grid { grid-template-columns: 1fr; }
+        .result-hero .value { font-size: 2.5rem; }
+      }
+      @media (max-width: 640px) {
+        .container { padding: 16px; }
+        .goals-grid { grid-template-columns: 1fr; }
+        .macro-legend { grid-template-columns: 1fr; gap: 16px; }
       }
     </style>
   </head>
   <body>
-    <!-- Navigation Bar -->
-    <nav class="nav-bar">
-      <div class="nav-content">
-        <a href="../../index.html" class="nav-back" aria-label="返回首页">
-          <svg
-            class="nav-back-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polyline points="15 18 9 12 15 6"></polyline>
-          </svg>
-          <span class="nav-back-text">首页</span>
-        </a>
-
-        <h1 class="nav-title">卡路里计算器</h1>
-
-        <div class="nav-actions">
-          <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
-            <svg
-              class="theme-icon-light"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+    <div class="container">
+      <header class="header">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn" title="返回首页">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 12L6 8L10 4" />
             </svg>
-            <svg
-              class="theme-icon-dark"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <circle cx="12" cy="12" r="5"></circle>
-              <line x1="12" y1="1" x2="12" y2="3"></line>
-              <line x1="12" y1="21" x2="12" y2="23"></line>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-              <line x1="1" y1="12" x2="3" y2="12"></line>
-              <line x1="21" y1="12" x2="23" y2="12"></line>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-            </svg>
-          </button>
+          </a>
+          <div class="title-group">
+            <h1>卡路里计算器</h1>
+            <p>基于 Mifflin-St Jeor 公式的科学热量分析</p>
+          </div>
         </div>
-      </div>
-    </nav>
+        <div class="header-right">
+          <div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+            <span id="theme-icon">🌙</span>
+          </div>
+        </div>
+      </header>
 
-    <!-- Main Content -->
-    <main class="main-content">
-      <div class="container">
-        <div class="grid">
-          <!-- Input Card -->
+      <!-- Google AdSense Top -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
+      </div>
+
+      <main class="tool-grid">
+        <section class="card">
+          <h2 class="card-title">输入您的数据</h2>
+          
+          <div class="input-group">
+            <label>性别</label>
+            <div class="radio-group">
+              <div class="radio-btn active" onclick="setField('gender', 'male', this)">男性</div>
+              <div class="radio-btn" onclick="setField('gender', 'female', this)">女性</div>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label>年龄 (岁)</label>
+            <input type="number" id="age" value="25" min="10" max="100" oninput="calculate()">
+          </div>
+
+          <div class="input-group">
+            <label>身高 (cm)</label>
+            <input type="number" id="height" value="175" min="100" max="250" oninput="calculate()">
+          </div>
+
+          <div class="input-group">
+            <label>体重 (kg)</label>
+            <input type="number" id="weight" value="70" min="30" max="250" oninput="calculate()">
+          </div>
+
+          <div class="input-group">
+            <label>活动水平</label>
+            <select id="activity" onchange="calculate()">
+              <option value="1.2">久坐（几乎不运动）</option>
+              <option value="1.375">轻度活动（每周1-3天运动）</option>
+              <option value="1.55" selected>中度活动（每周3-5天运动）</option>
+              <option value="1.725">高度活动（每周6-7天运动）</option>
+              <option value="1.9">极高强度（专业运动员/体力劳动）</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label>体脂率 (%, 可选 - 提供更精确计算)</label>
+            <input type="number" id="bodyFat" placeholder="留空使用标准公式" min="3" max="50" oninput="calculate()">
+          </div>
+        </section>
+
+        <section>
+          <div class="result-hero">
+            <div class="label">每日总能量消耗 (TDEE)</div>
+            <div class="value-row">
+              <span class="value" id="tdeeDisplay">0</span>
+              <span class="unit">千卡/日</span>
+            </div>
+            <div class="sub" id="bmrDisplay">基础代谢率 (BMR): 0 千卡</div>
+          </div>
+
+          <div class="goals-grid">
+            <div class="goal-card" onclick="setGoal('lose', this)">
+              <div class="name">科学减脂</div>
+              <div class="cals" id="loseCals">0</div>
+              <div class="desc">-500 千卡/日</div>
+            </div>
+            <div class="goal-card active" onclick="setGoal('maintain', this)">
+              <div class="name">维持体重</div>
+              <div class="cals" id="maintainCals">0</div>
+              <div class="desc">保持当前状态</div>
+            </div>
+            <div class="goal-card" onclick="setGoal('gain', this)">
+              <div class="name">科学增肌</div>
+              <div class="cals" id="gainCals">0</div>
+              <div class="desc">+300 千卡/日</div>
+            </div>
+          </div>
+
           <div class="card">
-            <h2 class="card-title">基本信息</h2>
-
-            <div class="input-group">
-              <label>性别</label>
-              <div class="radio-group">
-                <button
-                  class="radio-btn active"
-                  data-value="male"
-                  onclick="setGender('male')"
-                  aria-label="选择男�?
-                >
-                  男�?
-                </button>
-                <button
-                  class="radio-btn"
-                  data-value="female"
-                  onclick="setGender('female')"
-                  aria-label="选择女�?
-                >
-                  女�?
-                </button>
+            <h3 class="card-title">宏量营养素分配 (每日)</h3>
+            <div class="macro-chart" id="macroChart">
+              <div class="macro-segment" style="background: var(--error)"></div>
+              <div class="macro-segment" style="background: var(--accent)"></div>
+              <div class="macro-segment" style="background: var(--warning)"></div>
+            </div>
+            <div class="macro-legend">
+              <div class="macro-item">
+                <span class="macro-dot" style="background: var(--error)"></span>
+                <span class="macro-lab">蛋白质</span>
+                <span class="macro-val" id="proteinGrams">0g</span>
+              </div>
+              <div class="macro-item">
+                <span class="macro-dot" style="background: var(--accent)"></span>
+                <span class="macro-lab">碳水化合物</span>
+                <span class="macro-val" id="carbGrams">0g</span>
+              </div>
+              <div class="macro-item">
+                <span class="macro-dot" style="background: var(--warning)"></span>
+                <span class="macro-lab">脂肪</span>
+                <span class="macro-val" id="fatGrams">0g</span>
               </div>
             </div>
 
-            <div class="input-group">
-              <label>年龄 (�?</label>
-              <input
-                type="number"
-                id="age"
-                value="25"
-                min="10"
-                max="100"
-                oninput="calculate()"
-                aria-label="输入年龄"
-              />
-            </div>
-
-            <div class="input-group">
-              <label>身高 (cm)</label>
-              <input
-                type="number"
-                id="height"
-                value="170"
-                min="100"
-                max="250"
-                oninput="calculate()"
-                aria-label="输入身高"
-              />
-            </div>
-
-            <div class="input-group">
-              <label>体重 (kg)</label>
-              <input
-                type="number"
-                id="weight"
-                value="65"
-                min="30"
-                max="200"
-                oninput="calculate()"
-                aria-label="输入体重"
-              />
-            </div>
-
-            <div class="input-group">
-              <label>活动水平</label>
-              <select id="activity" onchange="calculate()" aria-label="选择活动水平">
-                <option value="1.2">久坐（几乎不运动�?/option>
-                <option value="1.375">轻度活动（每�?-3天）</option>
-                <option value="1.55" selected>中度活动（每�?-5天）</option>
-                <option value="1.725">高度活动（每�?-7天）</option>
-                <option value="1.9">专业运动�?/option>
-              </select>
-            </div>
-
-            <div class="input-group">
-              <label>体脂�?(%, 可�?- 更精确计�?</label>
-              <input
-                type="number"
-                id="bodyFat"
-                placeholder="留空使用标准公式"
-                min="3"
-                max="50"
-                oninput="calculate()"
-                aria-label="输入体脂�?
-              />
-            </div>
+            <div class="meal-plan" id="mealPlan"></div>
           </div>
+        </section>
+      </main>
 
-          <!-- Results Card -->
-          <div>
-            <!-- TDEE Display -->
-            <div class="result-hero">
-              <div class="label">每日总能量消�?/div>
-              <div>
-                <span class="big" id="tdee">0</span>
-                <span class="unit">千卡</span>
-              </div>
-              <div class="sub" id="bmrNote">基础代谢�? 0 千卡</div>
-            </div>
-
-            <!-- Goals -->
-            <div class="goals">
-              <button
-                class="goal"
-                onclick="setGoal('lose')"
-                aria-label="选择减脂目标"
-                aria-pressed="false"
-              >
-                <div class="name">减脂</div>
-                <div class="calories" id="loseCalories">0</div>
-                <div class="desc">每周�?.5kg</div>
-              </button>
-              <button
-                class="goal active"
-                onclick="setGoal('maintain')"
-                aria-label="选择维持目标"
-                aria-pressed="true"
-              >
-                <div class="name">维持</div>
-                <div class="calories" id="maintainCalories">0</div>
-                <div class="desc">保持体重</div>
-              </button>
-              <button
-                class="goal"
-                onclick="setGoal('gain')"
-                aria-label="选择增肌目标"
-                aria-pressed="false"
-              >
-                <div class="name">增肌</div>
-                <div class="calories" id="gainCalories">0</div>
-                <div class="desc">每周�?.25kg</div>
-              </button>
-            </div>
-
-            <!-- Macro Chart -->
-            <div class="card">
-              <h3 class="card-title">宏量营养素配�?/h3>
-              <div class="macro-chart" id="macroChart"></div>
-              <div class="macro-legend" id="macroLegend"></div>
-            </div>
-
-            <!-- Macro Recommendations -->
-            <div class="card">
-              <h3 class="card-title">每日摄入建议</h3>
-              <div class="result-row">
-                <span class="label">目标热量</span>
-                <span class="value" id="targetCalories">0 千卡</span>
-              </div>
-              <div class="result-row">
-                <span class="label">蛋白�?/span>
-                <span class="value" id="proteinGrams">0g</span>
-              </div>
-              <div class="result-row">
-                <span class="label">碳水化合�?/span>
-                <span class="value" id="carbGrams">0g</span>
-              </div>
-              <div class="result-row">
-                <span class="label">脂肪</span>
-                <span class="value" id="fatGrams">0g</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Meal Plan -->
-        <div class="card">
-          <h2 class="card-title">建议餐食分配</h2>
-          <div class="meal-plan" id="mealPlan"></div>
-        </div>
-
-        <!-- Note -->
-        <div class="note">
-          以上计算基于 Mifflin-St Jeor
-          公式，仅供参考。实际需求可能因个体差异而不同。减脂时每周减重不宜超过体重�?%，增肌时需配合力量训练�?
-        </div>
+      <!-- Google AdSense Bottom -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
       </div>
-    </main>
+
+      <article class="seo-content">
+        <h2>深度解析：如何科学使用卡路里计算器？</h2>
+        <p>在追求健康、减脂或增肌的过程中，<strong>热量平衡</strong>是决定成败的核心法则。本工具通过科学的算法，帮助您量化身体的能量需求，从而让您的健身计划从“猜测”转变为“精准控制”。</p>
+        
+        <h3>1. BMR 与 TDEE：这两个核心概念是什么？</h3>
+        <ul>
+          <li><strong>BMR (基础代谢率)：</strong> 指您在静息状态下（即躺着不动）维持基本生命体征（呼吸、心跳、体温等）所需的最低能量。</li>
+          <li><strong>TDEE (每日总能量消耗)：</strong> 在 BMR 的基础上，加上了您日常生活、工作和运动所消耗的所有能量。它是您真正维持当前体重所需的摄入量。</li>
+        </ul>
+
+        <h3>2. Mifflin-St Jeor 公式：为什么选择它？</h3>
+        <p>目前学术界公认最准确的估算公式是 <strong>Mifflin-St Jeor</strong>。与旧的 Harris-Benedict 公式相比，它更符合现代人的身体组成特征。如果您知道自己的<strong>体脂率</strong>，我们还会启用更精确的 <strong>Katch-McArdle</strong> 公式，因为它考虑了肌肉量对代谢的巨大贡献。</p>
+
+        <h3>3. 如何根据目标调整摄入量？</h3>
+        <ol>
+          <li><strong>减脂 (Fat Loss)：</strong> 建议在 TDEE 基础上减少 300-500 千卡。这能确保每周减重约 0.5kg，且最大限度保留肌肉。</li>
+          <li><strong>维持 (Maintenance)：</strong> 摄入量等于 TDEE。适合在达成目标后进入稳定期。</li>
+          <li><strong>增肌 (Muscle Gain)：</strong> 建议在 TDEE 基础上增加 200-300 千卡。过高的热量盈余会导致体脂过快增长，配合抗阻训练是增肌的关键。</li>
+        </ol>
+
+        <h3>4. 宏量营养素分配的重要性</h3>
+        <p>仅仅关注卡路里是不够的，<strong>营养质量</strong>同样重要：</p>
+        <ul>
+          <li><strong>蛋白质：</strong> 肌肉修复与合成的原材料。减脂期高蛋白能提供更强饱腹感。</li>
+          <li><strong>碳水化合物：</strong> 身体的首选能源。在训练日提供动力。</li>
+          <li><strong>脂肪：</strong> 维持激素平衡和细胞健康的必需品。</li>
+        </ul>
+
+        <p><strong>注意：</strong> 本工具提供的数据为科学估算值。由于基因、肠道菌群和代谢适应等个体差异，建议您以计算结果为起点，观察 2-4 周的体重趋势，再进行微调。</p>
+      </article>
+
+      <footer style="margin-top: 32px; text-align: center; color: var(--text-muted); font-size: 0.75rem;">
+        <p>© 2026 WebUtils. All rights reserved. 科学健身，从精准开始。</p>
+      </footer>
+    </div>
 
     <script>
-      // ============================================
-      // State Management
-      // ============================================
-      let gender = "male";
-      let goal = "maintain";
-      let tdeeValue = 0;
-      let bmrValue = 0;
+      let state = {
+        gender: 'male',
+        goal: 'maintain',
+        tdee: 0,
+        bmr: 0
+      };
 
-      // ============================================
-      // Gender Selection
-      // ============================================
-      function setGender(g) {
-        gender = g;
-        document.querySelectorAll(".radio-btn").forEach((btn) => {
-          btn.classList.toggle("active", btn.dataset.value === g);
-        });
+      function setField(name, value, el) {
+        state[name] = value;
+        if (el) {
+          const parent = el.parentElement;
+          parent.querySelectorAll('.radio-btn').forEach(btn => btn.classList.remove('active'));
+          el.classList.add('active');
+        }
         calculate();
       }
 
-      // ============================================
-      // Goal Selection
-      // ============================================
-      function setGoal(g) {
-        goal = g;
-        document.querySelectorAll(".goal").forEach((el) => {
-          const isActive = el
-            .querySelector(".name")
-            .textContent.includes(g === "lose" ? "减脂" : g === "gain" ? "增肌" : "维持");
-          el.classList.toggle("active", isActive);
-          el.setAttribute("aria-pressed", isActive.toString());
-        });
+      function setGoal(goal, el) {
+        state.goal = goal;
+        document.querySelectorAll('.goal-card').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
         updateMacros();
       }
 
-      // ============================================
-      // BMR & TDEE Calculation
-      // ============================================
       function calculate() {
-        const age = parseFloat(document.getElementById("age").value) || 25;
-        const height = parseFloat(document.getElementById("height").value) || 170;
-        const weight = parseFloat(document.getElementById("weight").value) || 65;
-        const activity = parseFloat(document.getElementById("activity").value) || 1.55;
-        const bodyFat = document.getElementById("bodyFat").value;
+        const age = parseFloat(document.getElementById('age').value) || 0;
+        const height = parseFloat(document.getElementById('height').value) || 0;
+        const weight = parseFloat(document.getElementById('weight').value) || 0;
+        const activity = parseFloat(document.getElementById('activity').value);
+        const bodyFat = document.getElementById('bodyFat').value;
 
-        // Calculate BMR
-        if (bodyFat && !isNaN(parseFloat(bodyFat))) {
-          // Katch-McArdle formula (requires body fat percentage)
-          const leanMass = weight * (1 - parseFloat(bodyFat) / 100);
-          bmrValue = 370 + 21.6 * leanMass;
-        } else {
-          // Mifflin-St Jeor formula
-          if (gender === "male") {
-            bmrValue = 10 * weight + 6.25 * height - 5 * age + 5;
+        if (age && height && weight) {
+          if (bodyFat && !isNaN(parseFloat(bodyFat))) {
+            const leanMass = weight * (1 - parseFloat(bodyFat) / 100);
+            state.bmr = 370 + 21.6 * leanMass;
           } else {
-            bmrValue = 10 * weight + 6.25 * height - 5 * age - 161;
+            if (state.gender === 'male') {
+              state.bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+            } else {
+              state.bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+            }
           }
+
+          state.tdee = Math.round(state.bmr * activity);
+          
+          document.getElementById('tdeeDisplay').textContent = state.tdee.toLocaleString();
+          document.getElementById('bmrDisplay').textContent = `基础代谢率 (BMR): ${Math.round(state.bmr).toLocaleString()} 千卡`;
+          
+          document.getElementById('loseCals').textContent = Math.round(state.tdee - 500).toLocaleString();
+          document.getElementById('maintainCals').textContent = state.tdee.toLocaleString();
+          document.getElementById('gainCals').textContent = Math.round(state.tdee + 300).toLocaleString();
+          
+          updateMacros();
         }
-
-        tdeeValue = Math.round(bmrValue * activity);
-
-        document.getElementById("tdee").textContent = tdeeValue.toLocaleString();
-        document.getElementById("bmrNote").textContent =
-          "基础代谢�? " + Math.round(bmrValue).toLocaleString() + " 千卡";
-
-        // Goal calories
-        const loseCalories = Math.round(tdeeValue - 500);
-        const gainCalories = Math.round(tdeeValue + 300);
-
-        document.getElementById("loseCalories").textContent = loseCalories.toLocaleString();
-        document.getElementById("maintainCalories").textContent = tdeeValue.toLocaleString();
-        document.getElementById("gainCalories").textContent = gainCalories.toLocaleString();
-
-        updateMacros();
       }
 
-      // ============================================
-      // Macros Calculation & Display
-      // ============================================
       function updateMacros() {
-        let targetCalories = tdeeValue;
-        let proteinPercent, carbPercent, fatPercent;
+        let targetCals = state.tdee;
+        let p, c, f; // percentages
 
-        if (goal === "lose") {
-          targetCalories = tdeeValue - 500;
-          proteinPercent = 35;
-          carbPercent = 35;
-          fatPercent = 30;
-        } else if (goal === "maintain") {
-          proteinPercent = 25;
-          carbPercent = 50;
-          fatPercent = 25;
+        if (state.goal === 'lose') {
+          targetCals -= 500;
+          p = 35; c = 35; f = 30;
+        } else if (state.goal === 'maintain') {
+          p = 25; c = 50; f = 25;
         } else {
-          targetCalories = tdeeValue + 300;
-          proteinPercent = 30;
-          carbPercent = 45;
-          fatPercent = 25;
+          targetCals += 300;
+          p = 30; c = 45; f = 25;
         }
 
-        // Calculate grams
-        const proteinCal = (targetCalories * proteinPercent) / 100;
-        const carbCal = (targetCalories * carbPercent) / 100;
-        const fatCal = (targetCalories * fatPercent) / 100;
+        const pG = Math.round((targetCals * p / 100) / 4);
+        const cG = Math.round((targetCals * c / 100) / 4);
+        const fG = Math.round((targetCals * f / 100) / 9);
 
-        const proteinGrams = Math.round(proteinCal / 4);
-        const carbGrams = Math.round(carbCal / 4);
-        const fatGrams = Math.round(fatCal / 9);
+        document.getElementById('proteinGrams').textContent = `${pG}g (${p}%)`;
+        document.getElementById('carbGrams').textContent = `${cG}g (${c}%)`;
+        document.getElementById('fatGrams').textContent = `${fG}g (${f}%)`;
 
-        document.getElementById("targetCalories").textContent =
-          Math.round(targetCalories).toLocaleString() + " 千卡";
-        document.getElementById("proteinGrams").textContent =
-          proteinGrams + "g (" + proteinPercent + "%)";
-        document.getElementById("carbGrams").textContent = carbGrams + "g (" + carbPercent + "%)";
-        document.getElementById("fatGrams").textContent = fatGrams + "g (" + fatPercent + "%)";
+        const segments = document.querySelectorAll('.macro-segment');
+        segments[0].style.width = p + '%';
+        segments[1].style.width = c + '%';
+        segments[2].style.width = f + '%';
 
-        // Render macro chart
-        renderMacroChart(
-          proteinPercent,
-          carbPercent,
-          fatPercent,
-          proteinGrams,
-          carbGrams,
-          fatGrams
-        );
-
-        // Render meal plan
-        renderMealPlan(targetCalories);
+        renderMealPlan(targetCals);
       }
 
-      // ============================================
-      // Macro Chart Rendering
-      // ============================================
-      function renderMacroChart(protein, carb, fat, pGrams, cGrams, fGrams) {
-        const chart = document.getElementById("macroChart");
-        chart.textContent = "";
-
-        const segments = [
-          { percent: protein, color: "#ef4444", label: "蛋白�? },
-          { percent: carb, color: "#3b82f6", label: "碳水" },
-          { percent: fat, color: "#fbbf24", label: "脂肪" }
+      function renderMealPlan(total) {
+        const container = document.getElementById('mealPlan');
+        container.innerHTML = '';
+        const plans = [
+          { name: '早餐', icon: '🌅', p: 25, foods: '高蛋白(蛋/奶) + 复合碳水' },
+          { name: '午餐', icon: '☀️', p: 35, foods: '优质瘦肉 + 蔬菜 + 主食' },
+          { name: '加餐', icon: '🍎', p: 10, foods: '水果或坚果' },
+          { name: '晚餐', icon: '🌙', p: 30, foods: '轻食蛋白质 + 大量蔬菜' }
         ];
 
-        segments.forEach((seg) => {
-          const div = document.createElement("div");
-          div.className = "macro-segment";
-          div.style.width = seg.percent + "%";
-          div.style.background = seg.color;
-          if (seg.percent > 5) {
-            div.textContent = seg.percent + "%";
-          }
-          chart.appendChild(div);
-        });
-
-        const legend = document.getElementById("macroLegend");
-        legend.textContent = "";
-
-        const grams = [pGrams, cGrams, fGrams];
-        segments.forEach((seg, i) => {
-          const item = document.createElement("div");
-          item.className = "macro-item";
-
-          const dot = document.createElement("span");
-          dot.className = "macro-dot";
-          dot.style.background = seg.color;
-
-          const value = document.createElement("span");
-          value.className = "macro-value";
-          value.textContent = grams[i] + "g";
-
-          const label = document.createElement("span");
-          label.className = "macro-label";
-          label.textContent = seg.label;
-
-          item.appendChild(dot);
-          item.appendChild(value);
-          item.appendChild(label);
-          legend.appendChild(item);
+        plans.forEach(plan => {
+          const item = document.createElement('div');
+          item.className = 'meal-item';
+          item.innerHTML = `
+            <div class="meal-info">
+              <span class="meal-icon">${plan.icon}</span>
+              <div class="meal-text">
+                <div class="name">${plan.name}</div>
+                <div class="foods">${plan.foods}</div>
+              </div>
+            </div>
+            <div class="meal-cals">${Math.round(total * plan.p / 100)} kcal</div>
+          `;
+          container.appendChild(item);
         });
       }
 
-      // ============================================
-      // Meal Plan Rendering
-      // ============================================
-      function renderMealPlan(totalCalories) {
-        const container = document.getElementById("mealPlan");
-        container.textContent = "";
-
-        const meals = [
-          { name: "早餐", icon: "🌅", percent: 25, examples: "燕麦、鸡蛋、牛奶、水�? },
-          { name: "午餐", icon: "☀�?, percent: 35, examples: "米饭/面条、肉类、蔬�? },
-          { name: "加餐", icon: "🍎", percent: 10, examples: "坚果、酸奶、水�? },
-          { name: "晚餐", icon: "🌙", percent: 30, examples: "主食、鱼/鸡肉、蔬�? }
-        ];
-
-        meals.forEach((meal) => {
-          const calories = Math.round((totalCalories * meal.percent) / 100);
-
-          const div = document.createElement("div");
-          div.className = "meal";
-
-          const nameDiv = document.createElement("div");
-          nameDiv.className = "meal-name";
-
-          const icon = document.createElement("span");
-          icon.className = "meal-icon";
-          icon.textContent = meal.icon;
-
-          const info = document.createElement("div");
-          info.className = "meal-info";
-
-          const title = document.createElement("div");
-          title.className = "meal-title";
-          title.textContent = meal.name;
-
-          const examples = document.createElement("div");
-          examples.className = "food-examples";
-          examples.textContent = meal.examples;
-
-          info.appendChild(title);
-          info.appendChild(examples);
-
-          nameDiv.appendChild(icon);
-          nameDiv.appendChild(info);
-
-          const caloriesDiv = document.createElement("div");
-          caloriesDiv.className = "meal-calories";
-          caloriesDiv.textContent = calories + " 千卡";
-
-          div.appendChild(nameDiv);
-          div.appendChild(caloriesDiv);
-          container.appendChild(div);
-        });
-      }
-
-      // ============================================
-      // Theme Management
-      // ============================================
       function toggleTheme() {
         const html = document.documentElement;
-        const currentTheme = html.getAttribute("data-theme") || "dark";
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-
-        html.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
+        const current = html.getAttribute('data-theme') || 'dark';
+        const target = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', target);
+        document.getElementById('theme-icon').textContent = target === 'dark' ? '🌙' : '☀️';
+        localStorage.setItem('theme', target);
       }
 
-      function initTheme() {
-        const savedTheme = localStorage.getItem("theme");
-        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        const theme = savedTheme || (prefersDark ? "dark" : "light");
-
-        document.documentElement.setAttribute("data-theme", theme);
-      }
-
-      // ============================================
-      // Initialize
-      // ============================================
-      initTheme();
+      // Init
+      const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      document.getElementById('theme-icon').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
       calculate();
     </script>
   </body>
 </html>
-
