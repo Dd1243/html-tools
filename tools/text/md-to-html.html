@@ -1,575 +1,438 @@
-<!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Markdown 转 HTML - WebUtils</title>
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Markdown 转 HTML - WebUtils" />
-    <meta name="keywords" content="md-to-html,text,tools,webutils" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/text/md-to-html.html" />
-
-    <!-- Open Graph -->
-    <meta property="og:title" content="Markdown 转 HTML - WebUtils" />
-    <meta property="og:description" content="Markdown 转 HTML - WebUtils" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/text/md-to-html.html" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Markdown 转 HTML - WebUtils" />
-    <meta name="twitter:description" content="Markdown 转 HTML - WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-
-    <meta name="description" content="在线将 Markdown 转换为 HTML 代码，支持实时预览和代码高亮" />
-    <meta name="keywords" content="markdown,html,转换,converter,实时预览,代码" />
-    <link
-      rel="icon"
-      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>"
-    />
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      :root {
-        --bg-primary: #fff;
-        --bg-secondary: #f8fafc;
-        --bg-tertiary: #f1f5f9;
-        --color-text-primary: #1e293b;
-        --color-text-secondary: #64748b;
-        --border-color: #e2e8f0;
-        --accent-color: #10b981;
-        --accent-hover: #059669;
-      }
-
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      body {
-        font-family: var(--font-sans);
-        font-size: 16px;
-        line-height: 1.6;
-        background: var(--bg-deep);
-        color: var(--color-text-primary);
-        min-height: 100vh;
-        padding: 20px;
-      }
-      .container {
-        max-width: 1400px;
-        margin: 0 auto;
-      }
-      .header {
-        text-align: center;
-        margin-bottom: 20px;
-      }
-      .header h1 {
-        font-size: 1.8rem;
-        margin-bottom: 8px;
-      }
-      .header p {
-        color: var(--color-text-secondary);
-      }
-      .theme-toggle {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 8px 12px;
-        border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        background: var(--bg-secondary);
-        cursor: pointer;
-        font-size: 1.2rem;
-      }
-      .toolbar {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 15px;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-      .btn {
-        padding: 8px 16px;
-        border: 1px solid var(--border-subtle);
-        border-radius: 6px;
-        background: var(--bg-secondary);
-        color: var(--color-text-primary);
-        cursor: pointer;
-        font-size: 0.85rem;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        transition: all 0.2s;
-      }
-      .btn:hover {
-        background: var(--bg-tertiary);
-      }
-      .btn-primary {
-        background: var(--accent-color);
-        color: white;
-        border-color: var(--accent-color);
-      }
-      .btn-primary:hover {
-        background: var(--accent-hover);
-      }
-      .tabs {
-        display: flex;
-        gap: 5px;
-        background: var(--bg-tertiary);
-        padding: 4px;
-        border-radius: 8px;
-      }
-      .tab-btn {
-        padding: 6px 14px;
-        border: none;
-        border-radius: 6px;
-        background: transparent;
-        color: var(--color-text-secondary);
-        cursor: pointer;
-        font-size: 0.85rem;
-      }
-      .tab-btn.active {
-        background: var(--bg-deep);
-        color: var(--color-text-primary);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      }
-      .main-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
-        height: calc(100vh - 200px);
-        min-height: 500px;
-      }
-      .panel {
-        background: var(--bg-secondary);
-        border: 1px solid var(--border-subtle);
-        border-radius: 10px;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-      }
-      .panel-header {
-        padding: 10px 15px;
-        background: var(--bg-tertiary);
-        border-bottom: 1px solid var(--border-subtle);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 0.9rem;
-        font-weight: 500;
-      }
-      .panel-content {
-        flex: 1;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-      }
-      .code-area {
-        flex: 1;
-        width: 100%;
-        padding: 15px;
-        border: none;
-        background: var(--bg-deep);
-        color: var(--color-text-primary);
-        font-family: Monaco, Menlo, monospace;
-        font-size: 13px;
-        line-height: 1.6;
-        resize: none;
-      }
-      .preview-area {
-        flex: 1;
-        padding: 20px;
-        overflow: auto;
-        background: var(--bg-deep);
-      }
-      .preview-area h1,
-      .preview-area h2,
-      .preview-area h3,
-      .preview-area h4,
-      .preview-area h5,
-      .preview-area h6 {
-        margin: 1em 0 0.5em;
-        line-height: 1.3;
-      }
-      .preview-area h1 {
-        font-size: 1.8em;
-        border-bottom: 1px solid var(--border-subtle);
-        padding-bottom: 0.3em;
-      }
-      .preview-area h2 {
-        font-size: 1.5em;
-        border-bottom: 1px solid var(--border-subtle);
-        padding-bottom: 0.3em;
-      }
-      .preview-area h3 {
-        font-size: 1.25em;
-      }
-      .preview-area p {
-        margin: 1em 0;
-        line-height: 1.7;
-      }
-      .preview-area ul,
-      .preview-area ol {
-        margin: 1em 0;
-        padding-left: 2em;
-      }
-      .preview-area li {
-        margin: 0.5em 0;
-      }
-      .preview-area code {
-        background: var(--bg-tertiary);
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-family: Monaco, Menlo, monospace;
-        font-size: 0.9em;
-      }
-      .preview-area pre {
-        background: var(--bg-tertiary);
-        padding: 15px;
-        border-radius: 8px;
-        overflow-x: auto;
-        margin: 1em 0;
-      }
-      .preview-area pre code {
-        background: none;
-        padding: 0;
-      }
-      .preview-area blockquote {
-        border-left: 4px solid var(--accent-color);
-        padding-left: 15px;
-        margin: 1em 0;
-        color: var(--color-text-secondary);
-      }
-      .preview-area table {
-        border-collapse: collapse;
-        width: 100%;
-        margin: 1em 0;
-      }
-      .preview-area th,
-      .preview-area td {
-        border: 1px solid var(--border-subtle);
-        padding: 8px 12px;
-        text-align: left;
-      }
-      .preview-area th {
-        background: var(--bg-tertiary);
-      }
-      .preview-area a {
-        color: var(--accent-color);
-      }
-      .preview-area img {
-        max-width: 100%;
-      }
-      .preview-area hr {
-        border: none;
-        border-top: 1px solid var(--border-subtle);
-        margin: 2em 0;
-      }
-      .html-output {
-        display: none;
-      }
-      .html-output.active {
-        display: block;
-      }
-      .stats {
-        font-size: 0.8rem;
-        color: var(--color-text-secondary);
-      }
-      @media (max-width: 768px) {
-        .main-grid {
-          grid-template-columns: 1fr;
-          height: auto;
-        }
-        .panel {
-          min-height: 300px;
-        }
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-      .visually-hidden {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        margin: -1px;
-        padding: 0;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0;
-      }
-    </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>›</span>
-      Markdown 转 HTML
-    </nav>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="🌓">🌓</button>
-
-    <div class="container">
-      <div class="header">
-        <h1>📄 Markdown 转 HTML</h1>
-        <p>实时将 Markdown 转换为 HTML 代码</p>
-      </div>
-
-      <div class="toolbar">
-        <button class="btn" onclick="loadExample()" aria-label="📝 示例">📝 示例</button>
-        <button class="btn" onclick="clearAll()" aria-label="🗑️ 清空">🗑️ 清空</button>
-        <button class="btn btn-primary" onclick="copyHTML()" aria-label="📋 复制 HTML">
-          📋 复制 HTML
-        </button>
-        <button class="btn" onclick="downloadHTML()" aria-label="💾 下载">💾 下载</button>
-      </div>
-
-      <div class="main-grid">
-        <div class="panel">
-          <div class="panel-header">
-            <span>✏️ Markdown 输入</span>
-            <span class="stats" id="inputStats">0 字符</span>
-          </div>
-          <div class="panel-content">
-            <textarea
-              class="code-area"
-              id="mdInput"
-              placeholder="输入 Markdown 内容..."
-              oninput="convert()"
-            ></textarea>
-          </div>
-        </div>
-
-        <div class="panel">
-          <div class="panel-header">
-            <span>📤 输出</span>
-            <div class="tabs">
-              <button class="tab-btn active" onclick="switchTab('preview')" aria-label="预览">
-                预览
-              </button>
-              <button class="tab-btn" onclick="switchTab('html')" aria-label="HTML 代码">
-                HTML 代码
-              </button>
-            </div>
-          </div>
-          <div class="panel-content">
-            <div class="preview-area" id="previewArea"></div>
-            <textarea class="code-area html-output" id="htmlOutput" readonly></textarea>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <script>
-      // Theme
-      function initTheme() {
-        const saved = localStorage.getItem("theme");
-        if (saved) document.documentElement.setAttribute("data-theme", saved);
-        else if (window.matchMedia("(prefers-color-scheme: dark)").matches)
-          document.documentElement.setAttribute("data-theme", "dark");
-      }
-      window.toggleTheme = function () {
-        const current = document.documentElement.getAttribute("data-theme");
-        const next = current === "dark" ? "light" : "dark";
-        document.documentElement.setAttribute("data-theme", next);
-        localStorage.setItem("theme", next);
-      };
-      initTheme();
-
-      // Configure marked
-      marked.setOptions({
-        breaks: true,
-        gfm: true
-      });
-
-      function convert() {
-        const md = document.getElementById("mdInput").value;
-        const html = marked.parse(md);
-
-        document.getElementById("previewArea").innerHTML = html;
-        document.getElementById("htmlOutput").value = html;
-        document.getElementById("inputStats").textContent = md.length + " 字符";
-      }
-
-      window.switchTab = function (tab) {
-        document.querySelectorAll(".tab-btn").forEach((btn) => {
-          btn.classList.toggle(
-            "active",
-            btn.textContent.includes(tab === "preview" ? "预览" : "HTML")
-          );
-        });
-
-        document.getElementById("previewArea").style.display = tab === "preview" ? "block" : "none";
-        document.getElementById("htmlOutput").classList.toggle("active", tab === "html");
-      };
-
-      window.loadExample = function () {
-        document.getElementById("mdInput").value = `# Markdown 示例
-
-这是一个 **Markdown** 转 *HTML* 的示例。
-
-## 功能特点
-
-- 实时预览
-- 支持 GFM 语法
-- 代码高亮
-
-### 代码示例
-
-\`\`\`javascript
-function hello() {
-    console.log('Hello, World!');
-}
-\`\`\`
-
-### 表格示例
-
-| 名称 | 价格 | 数量 |
-|------|------|------|
-| 苹果 | ¥5   | 10   |
-| 香蕉 | ¥3   | 20   |
-
-### 引用
-
-> 这是一段引用文字。
-> 可以多行。
-
-### 链接和图片
-
-[访问 GitHub](https://github.com)
-
-### 任务列表
-
-- [x] 已完成任务
-- [ ] 待完成任务
-
----
-
-*感谢使用！*`;
-        convert();
-      };
-
-      window.clearAll = function () {
-        document.getElementById("mdInput").value = "";
-        document.getElementById("previewArea").innerHTML = "";
-        document.getElementById("htmlOutput").value = "";
-        document.getElementById("inputStats").textContent = "0 字符";
-      };
-
-      window.copyHTML = function () {
-        const html = document.getElementById("htmlOutput").value;
-        if (html) {
-          navigator.clipboard.writeText(html);
-          alert("HTML 已复制");
-        }
-      };
-
-      window.downloadHTML = function () {
-        const html = document.getElementById("htmlOutput").value;
-        if (!html) return;
-
-        const fullHTML = `<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document - WebUtils</title>
+    <title>Markdown 转 HTML 工具 - 在线实时预览与转换 - WebUtils</title>
+    <meta name="description" content="免费在线 Markdown 转 HTML 工具，支持实时预览、代码高亮、GFM 语法。一键将 MD 文档转换为干净的 HTML 代码，适用于博客发布、技术文档和网页开发。">
+    <meta name="keywords" content="Markdown转HTML,MD转HTML,Markdown预览,在线Markdown编辑器,Markdown转换器,HTML代码生成">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://essays4u.net/tools/text/md-to-html.html">
+    <meta property="og:title" content="Markdown 转 HTML 工具 - 在线实时预览与转换">
+    <meta property="og:description" content="免费在线 Markdown 转 HTML 工具，支持实时预览、代码高亮、GFM 语法。">
+    <meta property="og:image" content="https://essays4u.net/social-preview.png">
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
     <style>
-        body { font-family: var(--font-sans); line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }
-        pre { background: #f5f5f5; padding: 15px; border-radius: 5px; overflow-x: auto; }
-        code { background: #f5f5f5; padding: 2px 5px; border-radius: 3px; }
-        blockquote { border-left: 4px solid #ddd; padding-left: 15px; color: #666; }
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background: #f5f5f5; }
+        :root {
+            --bg-deep: #0a0a0f;
+            --bg-surface: #12121a;
+            --bg-card: #1a1a24;
+            --bg-input: #0e0e14;
+            --text-primary: #e8e8ed;
+            --text-secondary: #8888a0;
+            --text-muted: #55556a;
+            --border-subtle: #2a2a3a;
+            --border-strong: #3a3a4a;
+            --accent-cyan: #00f5d4;
+            --accent-magenta: #f72585;
+            --accent-green: #10b981;
+            --radius-md: 8px;
+            --font-sans: "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
+            --font-mono: "JetBrains Mono", "Courier New", monospace;
+        }
+
+        [data-theme="light"] {
+            --bg-deep: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-card: #ffffff;
+            --bg-input: #f1f5f9;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-subtle: #e2e8f0;
+            --border-strong: #cbd5e1;
+            --accent-cyan: #0891b2;
+            --accent-magenta: #be185d;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+            transition: background 0.3s;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        /* Breadcrumb */
+        .breadcrumb { margin-bottom: 20px; font-size: 0.9rem; }
+        .breadcrumb a { color: var(--accent-cyan); text-decoration: none; }
+        .breadcrumb span { color: var(--text-muted); margin: 0 8px; }
+
+        /* Header */
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { font-size: 2.5rem; margin-bottom: 10px; color: var(--accent-cyan); }
+        .header p { color: var(--text-secondary); }
+
+        /* Ads Placeholder */
+        .ads-placeholder {
+            background: var(--bg-surface);
+            border: 1px dashed var(--border-strong);
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+            color: var(--text-muted);
+            border-radius: var(--radius-md);
+        }
+
+        /* Tool UI */
+        .tool-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-surface);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); transform: translateY(-1px); }
+        .btn-primary { background: var(--accent-cyan); border-color: var(--accent-cyan); color: var(--bg-deep); font-weight: bold; }
+        .btn-primary:hover { opacity: 0.9; color: var(--bg-deep); }
+
+        .editor-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            height: 600px;
+        }
+
+        .panel { display: flex; flex-direction: column; height: 100%; }
+        .panel-label { 
+            font-family: var(--font-mono); 
+            font-size: 0.8rem; 
+            color: var(--text-muted); 
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .tabs { display: flex; gap: 8px; }
+        .tab { 
+            padding: 4px 12px; 
+            font-size: 0.8rem; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            border: 1px solid var(--border-subtle);
+        }
+        .tab.active { background: var(--accent-cyan); color: var(--bg-deep); border-color: var(--accent-cyan); }
+
+        textarea, .preview-box {
+            flex: 1;
+            background: var(--bg-input);
+            border: 2px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            padding: 16px;
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            resize: none;
+            overflow: auto;
+        }
+        textarea:focus { outline: none; border-color: var(--accent-cyan); }
+
+        .preview-box { font-family: var(--font-sans); background: var(--bg-surface); }
+        .preview-box h1, .preview-box h2 { border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.3em; margin: 1em 0 0.5em; }
+        .preview-box blockquote { border-left: 4px solid var(--accent-cyan); padding-left: 1em; color: var(--text-secondary); }
+        .preview-box pre { background: var(--bg-input); padding: 1em; border-radius: 4px; overflow-x: auto; margin: 1em 0; }
+        .preview-box table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+        .preview-box th, .preview-box td { border: 1px solid var(--border-subtle); padding: 8px; }
+
+        /* SEO Content */
+        .seo-section { margin-top: 50px; }
+        .article { background: var(--bg-card); padding: 40px; border-radius: 12px; border: 1px solid var(--border-subtle); }
+        .article h2 { font-size: 1.8rem; color: var(--accent-cyan); margin: 30px 0 15px; }
+        .article p { margin-bottom: 15px; color: var(--text-secondary); }
+        .article ul { margin: 0 0 20px 25px; color: var(--text-secondary); }
+        .article li { margin-bottom: 10px; }
+
+        .faq { margin-top: 40px; }
+        .faq-item { margin-bottom: 25px; }
+        .faq-q { font-weight: bold; color: var(--text-primary); font-size: 1.1rem; margin-bottom: 8px; }
+        .faq-a { color: var(--text-secondary); }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--accent-cyan);
+            color: var(--bg-deep);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            z-index: 1000;
+        }
+
+        @media (max-width: 768px) {
+            .editor-container { grid-template-columns: 1fr; height: 800px; }
+            .header h1 { font-size: 1.8rem; }
+        }
     </style>
 </head>
 <body>
-${html}
+    <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="../../index.html">首页</a> <span>›</span> Markdown 转 HTML
+        </nav>
+
+        <header class="header">
+            <h1>📄 Markdown 转 HTML 工具</h1>
+            <p>专业、快捷的 Markdown 在线转换与实时预览工具</p>
+        </header>
+
+        <div class="ads-placeholder">
+            <!-- Google AdSense Placeholder -->
+            <p>广告位预留 - 顶部</p>
+        </div>
+
+        <div class="tool-card">
+            <div class="toolbar">
+                <button class="btn" onclick="loadExample()">📝 加载示例</button>
+                <button class="btn" onclick="clearAll()">🗑️ 清空内容</button>
+                <button class="btn btn-primary" onclick="copyHTML()">📋 复制 HTML</button>
+                <button class="btn" onclick="downloadHTML()">💾 下载 HTML</button>
+            </div>
+
+            <div class="editor-container">
+                <div class="panel">
+                    <div class="panel-label">
+                        <span>Markdown 输入</span>
+                        <span id="charCount">0 字符</span>
+                    </div>
+                    <textarea id="mdInput" placeholder="在此输入或粘贴您的 Markdown 内容..." oninput="update()"></textarea>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-label">
+                        <span>输出结果</span>
+                        <div class="tabs">
+                            <div id="tabPreview" class="tab active" onclick="setTab('preview')">实时预览</div>
+                            <div id="tabCode" class="tab" onclick="setTab('code')">HTML 代码</div>
+                        </div>
+                    </div>
+                    <div id="previewArea" class="preview-box"></div>
+                    <textarea id="codeArea" readonly style="display: none;"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="ads-placeholder">
+            <!-- Google AdSense Placeholder -->
+            <p>广告位预留 - 中部</p>
+        </div>
+
+        <section class="seo-section">
+            <div class="article">
+                <h2>什么是 Markdown 转 HTML 工具？</h2>
+                <p>Markdown 转 HTML 工具是一个在线应用程序，它允许用户将易于编写、易于阅读的 Markdown 文本格式转换为可在任何网页浏览器中呈现的标准 HTML（超文本标记语言）代码。Markdown 由 John Gruber 于 2004 年创建，旨在让人们能够“使用易读、易写的纯文本格式编写，然后将其转换为结构上有效的 XHTML 或 HTML”。</p>
+                
+                <h2>为什么需要将 Markdown 转换为 HTML？</h2>
+                <p>尽管 Markdown 在 GitHub、Stack Overflow 和各种笔记应用中非常流行，但网页浏览器的原生语言是 HTML。为了在博客、网站或电子邮件中发布内容，您通常需要将 Markdown 源文件转换为 HTML。我们的工具提供了以下核心优势：</p>
+                <ul>
+                    <li><strong>实时反馈：</strong> 在您键入时即时查看渲染后的效果，确保格式完全符合预期。</li>
+                    <li><strong>消除编码复杂性：</strong> 无需手动编写繁琐的 HTML 标签（如 &lt;p&gt;, &lt;h1&gt;, &lt;ul&gt;），只需专注于创作内容。</li>
+                    <li><strong>极简工作流：</strong> 非常适合技术作家、博客作者和开发人员，他们希望在保持文本简洁的同时生成高质量的网页内容。</li>
+                </ul>
+
+                <h2>如何使用此 Markdown 转换器？</h2>
+                <p>使用本工具非常简单直观：</p>
+                <ul>
+                    <li><strong>输入：</strong> 在左侧面板中输入您的 Markdown 文本。您也可以直接粘贴现有的文档内容。</li>
+                    <li><strong>预览：</strong> 右侧面板将自动显示渲染后的富文本效果。您可以随时切换到“HTML 代码”选项卡查看生成的源代码。</li>
+                    <li><strong>导出：</strong> 满意后，点击“复制 HTML”将代码保存到剪贴板，或者点击“下载 HTML”保存为完整的 HTML 文件。</li>
+                </ul>
+
+                <h2>解决的具体场景与问题</h2>
+                <p><strong>1. 快速发布博客文章：</strong> 如果您习惯在本地使用 Markdown 软件（如 Typora 或 Obsidian）写作，本工具可以帮助您瞬间将草稿转为适用于 WordPress、Ghost 或 Hexo 的 HTML 代码。</p>
+                <p><strong>2. 制作美观的 GitHub README：</strong> 在提交代码前，使用本工具测试您的 README 渲染效果，特别是复杂的表格、任务列表和代码块。</p>
+                <p><strong>3. 构建静态网页：</strong> 对于简单的单页面，您可以直接在我们的工具中完成所有内容的布局和格式调整，然后下载文件作为 index.html 使用。</p>
+
+                <div class="faq">
+                    <h2>常见问题解答 (FAQ)</h2>
+                    <div class="faq-item">
+                        <p class="faq-q">问：这个工具支持 GFM（GitHub Flavored Markdown）吗？</p>
+                        <p class="faq-a">答：是的，我们使用了功能强大的 Marked.js 解析引擎，完整支持任务列表、表格、删除线等 GFM 特性。</p>
+                    </div>
+                    <div class="faq-item">
+                        <p class="faq-q">问：我的数据会上传到服务器吗？</p>
+                        <p class="faq-a">答：绝对不会。这是一个纯客户端工具，所有的转换和预览逻辑都在您的浏览器本地执行，您的隐私和内容是 100% 安全的。</p>
+                    </div>
+                    <div class="faq-item">
+                        <p class="faq-q">问：生成的 HTML 代码包含样式吗？</p>
+                        <p class="faq-a">答：默认生成的 HTML 是纯结构化的。下载功能会附带基础的 CSS 样式，以确保下载后的 HTML 文件在浏览器中打开时依然美观。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 50px; padding: 20px; color: var(--text-muted); border-top: 1px solid var(--border-subtle);">
+            &copy; 2026 WebUtils · 纯前端安全转换工具 · <a href="https://github.com/chicogong/html-tools" target="_blank" style="color: var(--text-muted); text-decoration: none;">GitHub</a>
+        </footer>
+    </div>
+
+    <script>
+        const mdInput = document.getElementById('mdInput');
+        const previewArea = document.getElementById('previewArea');
+        const codeArea = document.getElementById('codeArea');
+        const charCount = document.getElementById('charCount');
+
+        // Configure marked
+        marked.setOptions({
+            breaks: true,
+            gfm: true,
+            headerIds: true
+        });
+
+        function update() {
+            const md = mdInput.value;
+            const html = marked.parse(md);
+            
+            previewArea.innerHTML = html;
+            codeArea.value = html;
+            charCount.textContent = `${md.length} 字符`;
+            
+            saveToLocal();
+        }
+
+        function setTab(tab) {
+            document.getElementById('tabPreview').classList.toggle('active', tab === 'preview');
+            document.getElementById('tabCode').classList.toggle('active', tab === 'code');
+            
+            previewArea.style.display = tab === 'preview' ? 'block' : 'none';
+            codeArea.style.display = tab === 'code' ? 'block' : 'none';
+        }
+
+        function loadExample() {
+            mdInput.value = `# Markdown 示例
+
+这是一段 **加粗** 和 *斜体* 的文字。
+
+## 列表演示
+1. 第一项
+2. 第二项
+   - 子项 A
+   - 子项 B
+
+### 代码块
+\`\`\`javascript
+function greet(name) {
+    console.log("Hello, " + name + "!");
+}
+\`\`\`
+
+> 这是一个引用块，常用于强调重要的名言或观点。
+
+| 特性 | 支持情况 |
+| :--- | :--- |
+| 实时预览 | ✅ |
+| GFM 语法 | ✅ |
+| 纯本地转换 | ✅ |
+`;
+            update();
+        }
+
+        function clearAll() {
+            if(confirm('确定要清空所有内容吗？')) {
+                mdInput.value = '';
+                update();
+            }
+        }
+
+        function copyHTML() {
+            codeArea.select();
+            document.execCommand('copy');
+            alert('HTML 代码已成功复制到剪贴板！');
+        }
+
+        function downloadHTML() {
+            const htmlContent = `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Exported Markdown</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; max-width: 800px; margin: 40px auto; padding: 20px; color: #333; }
+        h1, h2, h3 { color: #0891b2; border-bottom: 1px solid #eee; padding-bottom: 0.3em; }
+        code { background: #f4f4f4; padding: 2px 5px; border-radius: 3px; font-family: monospace; }
+        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        blockquote { border-left: 4px solid #0891b2; padding-left: 15px; color: #666; font-style: italic; margin: 1em 0; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    </style>
+</head>
+<body>
+    ${codeArea.value}
 </body>
 </html>`;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'document.html';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
 
-        const blob = new Blob([fullHTML], { type: "text/html" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "document.html";
-        a.click();
-        URL.revokeObjectURL(url);
-      };
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        }
 
-      // Load example on start
-      loadExample();
+        function saveToLocal() {
+            localStorage.setItem('md_to_html_content', mdInput.value);
+        }
+
+        // Initialize
+        (function init() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            const savedContent = localStorage.getItem('md_to_html_content');
+            if(savedContent) {
+                mdInput.value = savedContent;
+                update();
+            } else {
+                loadExample();
+            }
+        })();
     </script>
-  </body>
+</body>
 </html>
