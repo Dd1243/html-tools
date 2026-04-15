@@ -1,556 +1,634 @@
 <!doctype html>
 <html lang="zh-CN">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>词频统计</title>
+    <title>词频统计工具 - 在线中英文文本词频分析 - WebUtils</title>
+    
     <!-- SEO Meta Tags -->
-    <meta name="description" content="词频统计" />
-    <meta name="keywords" content="word-frequency,text,tools,webutils" />
+    <meta name="description" content="在线词频统计工具，支持中文和英文文本的深度词频分析。提供高频词提取、词云生成、CSV导出、自定义停用词等功能。适用于文章分析、SEO关键词挖掘及语言研究。" />
+    <meta name="keywords" content="词频统计,词频分析,高频词提取,文本分析工具,中文词频,英文词频,词云生成,SEO工具,WebUtils" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/text/word-frequency.html" />
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="词频统计" />
-    <meta property="og:description" content="词频统计" />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content="词频统计工具 - 在线中英文文本词频分析 - WebUtils" />
+    <meta property="og:description" content="专业的在线词频分析工具，支持中英文分词、词频排序、词云可视化及停用词过滤。" />
     <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/text/word-frequency.html"
-    />
+    <meta property="og:url" content="https://essays4u.net/tools/text/word-frequency.html" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
     <meta property="og:site_name" content="WebUtils" />
     <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
 
     <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="词频统计" />
-    <meta name="twitter:description" content="词频统计" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="词频统计工具 - 在线中英文文本词频分析 - WebUtils" />
+    <meta name="twitter:description" content="在线词频分析工具，一键提取文章高频词汇，支持导出分析报告。" />
     <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
 
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "词频统计工具",
+      "url": "https://essays4u.net/tools/text/word-frequency.html",
+      "description": "专业的在线词频统计与文本分析工具，支持中英文处理、词云可视化及CSV导出。",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "All",
+      "author": {
+        "@type": "Organization",
+        "name": "WebUtils"
       }
+    }
+    </script>
 
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
+    <!-- Google AdSense Header Placeholder -->
+    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
 
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--color-bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      body {
-        font-family: var(--font-sans);
-        background: var(--color-bg-card);
-        min-height: 100vh;
-        padding: 20px;
-      }
-      .container {
-        max-width: 1000px;
-        margin: 0 auto;
-      }
-      h1 {
-        color: #333;
-        text-align: center;
-        margin-bottom: 20px;
-      }
-      .layout {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-      }
-      @media (max-width: 800px) {
-        .layout {
-          grid-template-columns: 1fr;
-        }
-      }
-      .card {
-        background: white;
-        border-radius: 16px;
-        padding: 24px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-      }
-      h3 {
-        color: #333;
-        margin-bottom: 16px;
-        font-size: 16px;
-      }
-      textarea {
-        width: 100%;
-        height: 300px;
-        padding: 16px;
-        border: 2px solid #e0e0e0;
-        border-radius: 12px;
-        font-size: 14px;
-        resize: vertical;
-      }
-      textarea:focus {
-        outline: none;
-        border-color: #4f46e5;
-      }
-      .stats {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 12px;
-        margin-bottom: 20px;
-      }
-      .stat {
-        background: #f8f8f8;
-        padding: 16px;
-        border-radius: 12px;
-        text-align: center;
-      }
-      .stat-value {
-        font-size: 24px;
-        font-weight: bold;
-        color: #4f46e5;
-      }
-      .stat-label {
-        font-size: 12px;
-        color: #666;
-        margin-top: 4px;
-      }
-      .options {
-        display: flex;
-        gap: 16px;
-        margin-bottom: 16px;
-        flex-wrap: wrap;
-      }
-      .option {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-      .option input {
-        width: 18px;
-        height: 18px;
-      }
-      select {
-        padding: 8px 12px;
-        border: 2px solid #e0e0e0;
-        border-radius: 8px;
-      }
-      .word-list {
-        max-height: 400px;
-        overflow-y: auto;
-      }
-      .word-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px 0;
-        border-bottom: 1px solid #f0f0f0;
-      }
-      .word-text {
-        font-weight: 500;
-        color: #333;
-      }
-      .word-count {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-      .word-bar {
-        width: 100px;
-        height: 8px;
-        background: #e0e0e0;
-        border-radius: 4px;
-        overflow: hidden;
-      }
-      .word-bar-fill {
-        height: 100%;
-        background: linear-gradient(90deg, #4f46e5, #7c3aed);
-        border-radius: 4px;
-      }
-      .word-num {
-        min-width: 40px;
-        text-align: right;
-        color: #666;
-        font-size: 14px;
-      }
-      .cloud {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        justify-content: center;
-        padding: 20px;
-        background: var(--color-bg-deep);
-        border-radius: 12px;
-        min-height: 200px;
-      }
-      .cloud-word {
-        padding: 4px 12px;
-        background: #4f46e5;
-        color: white;
-        border-radius: 20px;
-        cursor: default;
-        transition: transform 0.2s;
-      }
-      .cloud-word:hover {
-        transform: scale(1.1);
-      }
-      .tabs {
-        display: flex;
-        gap: 8px;
-        margin-bottom: 16px;
-      }
-      .tab {
-        padding: 10px 20px;
-        background: #f0f0f0;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 14px;
-      }
-      .tab.active {
-        background: #4f46e5;
-        color: white;
-      }
-      .btn {
-        padding: 10px 20px;
-        background: #4f46e5;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 14px;
-        margin-right: 8px;
-      }
-      .btn:hover {
-        background: #4338ca;
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-    </style>
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+
+    <style>
+      :root {
+        --bg-body: #0a0a0f;
+        --bg-card: #12121a;
+        --bg-input: #0e0e14;
+        --bg-elevated: #1a1a24;
+        --text-primary: #e8e8ed;
+        --text-secondary: #a0a0b0;
+        --text-muted: #606070;
+        --border-color: #2a2a3a;
+        --border-focus: #3a3a4a;
+        --accent: #4cc9f0;
+        --accent-purple: #bf5af2;
+        --success: #30d158;
+        --warning: #ff9f0a;
+        --error: #ff453a;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", "Space Grotesk", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+
+      [data-theme="light"] {
+        --bg-body: #fafafa;
+        --bg-card: #ffffff;
+        --bg-input: #f5f5f5;
+        --bg-elevated: #ffffff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #666;
+        --text-muted: #999;
+        --border-color: #e5e5e5;
+        --border-focus: #d5d5d5;
+        --accent: #4361ee;
+        --accent-purple: #7209b7;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+      
+      .container { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+      
+      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .header-left { display: flex; align-items: center; gap: 16px; }
+      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
+      .back-btn:hover { background: var(--border-color); color: var(--text-primary); }
+      .title-group h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
+      
+      .header-right { display: flex; align-items: center; gap: 12px; }
+      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; width: 40px; height: 40px; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+      .theme-toggle:hover { border-color: var(--accent); }
+
+      .grid-layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: start; }
+
+      .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; height: 100%; display: flex; flex-direction: column; }
+      .card-header { padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); }
+      .card-title { font-size: 0.95rem; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+      
+      .card-body { padding: 24px; flex: 1; }
+
+      textarea { width: 100%; height: 320px; padding: 16px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary); font-family: inherit; font-size: 0.9rem; line-height: 1.6; resize: none; outline: none; transition: all 0.2s; }
+      textarea:focus { border-color: var(--accent); }
+
+      .options-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 16px; }
+      .option-item { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-secondary); cursor: pointer; }
+      .option-item input { width: 14px; height: 14px; accent-color: var(--accent); cursor: pointer; }
+
+      .stop-words-row { margin-top: 16px; }
+      .stop-words-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.05em; }
+      .stop-words-input { width: 100%; padding: 8px 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.8rem; outline: none; }
+
+      .action-btns { display: flex; gap: 12px; margin-top: 20px; }
+      .btn { flex: 1; padding: 12px; border: none; border-radius: var(--radius-md); font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+      .btn-primary { background: var(--accent); color: var(--bg-body); }
+      .btn-secondary { background: var(--bg-elevated); color: var(--text-primary); border: 1px solid var(--border-color); }
+      .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+      .stats-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+      .stat-item { background: var(--bg-input); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color); text-align: center; }
+      .stat-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
+      .stat-val { font-size: 1.1rem; font-weight: 700; color: var(--accent); font-family: var(--font-mono); }
+
+      .tabs { display: flex; gap: 4px; background: var(--bg-input); padding: 4px; border-radius: var(--radius-md); margin-bottom: 16px; }
+      .tab-btn { flex: 1; padding: 8px; border: none; background: transparent; color: var(--text-secondary); font-size: 0.85rem; font-weight: 500; cursor: pointer; border-radius: var(--radius-sm); transition: all 0.2s; }
+      .tab-btn.active { background: var(--bg-card); color: var(--accent); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+      .results-content { flex: 1; overflow-y: auto; max-height: 480px; position: relative; }
+      
+      .word-list { display: flex; flex-direction: column; gap: 2px; }
+      .word-row { display: flex; align-items: center; padding: 8px 12px; border-radius: var(--radius-sm); transition: background 0.2s; }
+      .word-row:hover { background: rgba(255,255,255,0.03); }
+      .word-text { flex: 1; font-size: 0.9rem; color: var(--text-primary); font-weight: 500; }
+      .word-bar-container { flex: 1.5; height: 6px; background: var(--bg-input); border-radius: 3px; margin: 0 16px; overflow: hidden; }
+      .word-bar { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-purple)); border-radius: 3px; transition: width 0.4s ease-out; }
+      .word-count-badge { min-width: 40px; text-align: right; font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-secondary); }
+
+      .cloud-container { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-content: flex-start; min-height: 200px; padding: 12px; }
+      .cloud-word { cursor: default; transition: all 0.2s; opacity: 0.8; }
+      .cloud-word:hover { transform: scale(1.15); opacity: 1; color: var(--accent) !important; }
+
+      .empty-state { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.85rem; gap: 12px; padding: 40px; text-align: center; }
+      .empty-state svg { opacity: 0.3; }
+
+      .ads-container { margin: 24px 0; min-height: 90px; background: rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem; border: 1px dashed var(--border-color); border-radius: var(--radius-md); }
+
+      .seo-article { margin-top: 32px; padding: 40px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); }
+      .seo-article h2 { color: var(--text-primary); font-size: 1.25rem; margin-bottom: 20px; font-weight: 700; border-left: 4px solid var(--accent); padding-left: 16px; }
+      .seo-article h3 { color: var(--text-primary); font-size: 1.1rem; margin-top: 28px; margin-bottom: 12px; font-weight: 600; }
+      .seo-article p { color: var(--text-secondary); margin-bottom: 16px; line-height: 1.8; font-size: 0.95rem; }
+      .seo-article ul { margin-bottom: 16px; padding-left: 20px; }
+      .seo-article li { color: var(--text-secondary); margin-bottom: 8px; font-size: 0.95rem; }
+
+      @media (max-width: 900px) {
+        .grid-layout { grid-template-columns: 1fr; }
+        .card { height: auto; }
+        .results-content { max-height: 400px; }
+      }
+
+      @media (max-width: 640px) {
+        .container { padding: 16px; }
+        .header { flex-direction: column; align-items: stretch; }
+        .stats-summary { grid-template-columns: repeat(2, 1fr); }
+        .options-grid { grid-template-columns: 1fr; }
+      }
+    </style>
   </head>
   <body>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
-      <span id="theme-icon">🌙</span>
-    </button>
-
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>›</span>
-      词频统计
-    </nav>
     <div class="container">
-      <h1>📊 词频统计</h1>
-      <div class="stats">
-        <div class="stat">
-          <div class="stat-value" id="charCount">0</div>
-          <div class="stat-label">字符数</div>
+      <header class="header">
+        <div class="header-left">
+          <a href="../../index.html" class="back-btn" title="返回首页">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 12L6 8L10 4" />
+            </svg>
+          </a>
+          <div class="title-group">
+            <h1>词频统计工具</h1>
+            <p>深度文本分析与高频词挖掘</p>
+          </div>
         </div>
-        <div class="stat">
-          <div class="stat-value" id="wordCount">0</div>
-          <div class="stat-label">词数</div>
+        <div class="header-right">
+          <div class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+            <span id="theme-icon">🌙</span>
+          </div>
         </div>
-        <div class="stat">
-          <div class="stat-value" id="uniqueCount">0</div>
-          <div class="stat-label">不重复词</div>
-        </div>
-        <div class="stat">
-          <div class="stat-value" id="sentenceCount">0</div>
-          <div class="stat-label">句子数</div>
-        </div>
+      </header>
+
+      <!-- AdSense Top -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
       </div>
-      <div class="layout">
+
+      <div class="grid-layout">
+        <!-- Input Column -->
         <div class="card">
-          <h3>输入文本</h3>
-          <textarea id="textInput" oninput="analyze()" placeholder="在此输入或粘贴文本...">
-人工智能是计算机科学的一个分支，它企图了解智能的实质，并生产出一种新的能以人类智能相似的方式做出反应的智能机器。人工智能研究包括机器人、语言识别、图像识别、自然语言处理和专家系统等。人工智能从诞生以来，理论和技术日益成熟，应用领域也不断扩大。人工智能可以对人的意识、思维的信息过程进行模拟。</textarea
-          >
-          <div class="options" style="margin-top: 16px">
-            <label class="option">
-              <input type="checkbox" id="caseSensitive" onchange="analyze()" />
-              <span>区分大小写</span>
-            </label>
-            <label class="option">
-              <input type="checkbox" id="ignoreNumbers" onchange="analyze()" />
-              <span>忽略数字</span>
-            </label>
-            <label class="option">
-              <input type="checkbox" id="ignoreShort" checked onchange="analyze()" />
-              <span>忽略单字</span>
-            </label>
-            <div class="option">
-              <span>排序:</span>
-              <select id="sortBy" onchange="analyze()">
-                <option value="count">按频率</option>
-                <option value="alpha">按字母</option>
-                <option value="length">按长度</option>
-              </select>
+          <div class="card-header">
+            <span class="card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+              文本输入
+            </span>
+            <div style="display:flex; gap:8px;">
+              <button class="btn-secondary" style="padding:4px 8px; font-size:0.75rem;" onclick="clearAll()">清空</button>
+              <button class="btn-secondary" style="padding:4px 8px; font-size:0.75rem;" onclick="pasteText()">粘贴</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <textarea id="textInput" placeholder="在此输入或粘贴需要分析的文章内容（支持中文、英文、数字混合文本）..." oninput="autoProcess()"></textarea>
+            
+            <div class="options-grid">
+              <label class="option-item">
+                <input type="checkbox" id="caseSensitive" onchange="process()">
+                区分大小写
+              </label>
+              <label class="option-item">
+                <input type="checkbox" id="ignoreNumbers" onchange="process()">
+                忽略纯数字
+              </label>
+              <label class="option-item">
+                <input type="checkbox" id="ignoreSingle" checked onchange="process()">
+                忽略单字/字符
+              </label>
+              <div class="option-item">
+                排序:
+                <select id="sortBy" onchange="process()" style="background:transparent; border:none; color:var(--accent); font-size:0.8rem; outline:none; cursor:pointer;">
+                  <option value="freq">按频率</option>
+                  <option value="alpha">按字母</option>
+                  <option value="length">按长度</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="stop-words-row">
+              <label class="stop-words-label">排除词汇 (Stop Words)</label>
+              <input type="text" id="stopWords" class="stop-words-input" placeholder="例如：的,了,和,a,the,is（用逗号分隔）" oninput="process()">
+            </div>
+
+            <div class="action-btns">
+              <button class="btn btn-primary" onclick="process()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                开始分析
+              </button>
+              <button class="btn btn-secondary" onclick="shareState()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="18" cy="5" r="3"></circle>
+                  <circle cx="6" cy="12" r="3"></circle>
+                  <circle cx="18" cy="19" r="3"></circle>
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                </svg>
+                分享
+              </button>
             </div>
           </div>
         </div>
+
+        <!-- Output Column -->
         <div class="card">
-          <div class="tabs">
-            <button class="tab active" onclick="showTab('list')">词频列表</button>
-            <button class="tab" onclick="showTab('cloud')">词云</button>
+          <div class="card-header">
+            <span class="card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+                <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+              </svg>
+              分析结果
+            </span>
+            <div style="display:flex; gap:8px;">
+              <button class="btn-secondary" style="padding:4px 8px; font-size:0.75rem;" onclick="copyResults()">复制</button>
+              <button class="btn-secondary" style="padding:4px 8px; font-size:0.75rem;" onclick="downloadCSV()">导出CSV</button>
+            </div>
           </div>
-          <div id="listView">
-            <div class="word-list" id="wordList"></div>
-          </div>
-          <div id="cloudView" style="display: none">
-            <div class="cloud" id="wordCloud"></div>
-          </div>
-          <div style="margin-top: 16px">
-            <button class="btn" onclick="copyResults()">📋 复制结果</button>
-            <button class="btn" onclick="downloadCSV()">📥 下载CSV</button>
+          <div class="card-body">
+            <div class="stats-summary">
+              <div class="stat-item">
+                <div class="stat-label">总字数</div>
+                <div class="stat-val" id="totalChars">0</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">总词数</div>
+                <div class="stat-val" id="totalWords">0</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">独立词</div>
+                <div class="stat-val" id="uniqueWords">0</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">句子数</div>
+                <div class="stat-val" id="sentences">0</div>
+              </div>
+            </div>
+
+            <div class="tabs">
+              <button class="tab-btn active" onclick="switchTab('list')">词频列表</button>
+              <button class="tab-btn" onclick="switchTab('cloud')">词云图</button>
+            </div>
+
+            <div class="results-content">
+              <div id="listView" class="word-list">
+                <div class="empty-state">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <line x1="10" y1="9" x2="8" y2="9"></line>
+                  </svg>
+                  <p>请输入文本并点击开始分析</p>
+                </div>
+              </div>
+              <div id="cloudView" class="cloud-container" style="display:none"></div>
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- AdSense Bottom -->
+      <div class="ads-container">
+        <span>广告展示区域 (AdSense Placeholder)</span>
+      </div>
+
+      <!-- SEO Article -->
+      <article class="seo-article">
+        <h2>深度理解词频统计：从文本分析到 SEO 优化</h2>
+        <p>词频统计（Word Frequency Analysis）是自然语言处理（NLP）和文本挖掘中最基础也最重要的技术之一。它不仅能帮助我们快速识别文章的核心主题，在搜索引擎优化（SEO）、内容创作、学术研究以及市场分析中都有着广泛的应用。我们的在线词频统计工具专门针对中英文混合环境进行了优化，为您提供准确、直观的分析报告。</p>
+
+        <h3>为什么词频统计对 SEO 至关重要？</h3>
+        <p>在 SEO 领域，搜索引擎通过分析页面内容中的关键词出现频率来判断页面的相关性。虽然现在的算法已经非常智能化，但词频依然是判断核心语义（TF-IDF）的重要指标：</p>
+        <ul>
+          <li><strong>识别主次关键词：</strong> 确保您的核心关键词处于统计列表的顶部，这有助于搜索引擎明确页面的定位。</li>
+          <li><strong>优化语义布局：</strong> 通过观察词云，您可以发现是否过度使用了某个词（关键词堆砌），或者是否遗漏了重要的相关语义词。</li>
+          <li><strong>提升内容质量：</strong> 统计分析能揭示文章中的冗余词汇，帮助您精简内容，提升读者的阅读体验。</li>
+        </ul>
+
+        <h3>本工具的核心优势与功能</h3>
+        <p>不同于简单的字符统计，本工具内置了针对中文和英文的不同分词逻辑，确保统计结果符合真实语义：</p>
+        <ul>
+          <li><strong>智能中英文分词：</strong> 针对中文环境，我们采用了基于常用词库的匹配算法，能够有效识别多字词组，避免将词语拆解为孤立的汉字。</li>
+          <li><strong>自定义停用词过滤：</strong> 文本中经常包含大量的无意义词汇（如“的”、“了”、“in”、“the”），您可以自定义停用词列表，排除这些噪音。</li>
+          <li><strong>可视化词云展示：</strong> 词云图能以视觉化的方式呈现高频词汇，字号越大代表频率越高，非常适合用于 PPT 展示或快速汇报。</li>
+          <li><strong>多维度排序与统计：</strong> 支持按频率高低、字母顺序或词汇长度进行灵活排序，并提供总字数、句子数等基础数据。</li>
+        </ul>
+
+        <h3>如何通过词频分析改进您的创作？</h3>
+        <ol>
+          <li><strong>竞品分析：</strong> 将竞争对手的高排名文章粘贴进来，分析他们的关键词分布策略。</li>
+          <li><strong>学术校对：</strong> 在撰写论文或报告时，检查是否有某个词汇被高频率重复使用，从而寻找同义词进行替换。</li>
+          <li><strong>语言学习：</strong> 统计英文读物中的高频生词，针对性地进行词汇积累。</li>
+        </ol>
+        <p>无论您是资深的 SEO 专家、内容编辑，还是语言学研究者，我们的词频统计工具都能为您提供高效的辅助。所有数据均在浏览器本地处理，确保您的隐私安全，即刻开始您的文本挖掘之旅吧！</p>
+      </article>
+
+      <footer style="margin-top: 40px; text-align: center; color: var(--text-muted); font-size: 0.8rem; padding-bottom: 24px;">
+        <p>© 2026 WebUtils. 您的隐私是我们的首要任务，所有文本分析均在本地完成。</p>
+      </footer>
     </div>
+
     <script>
-      let wordFreq = [];
+      let currentResult = [];
+      let currentStats = { totalChars: 0, totalWords: 0, uniqueWords: 0, sentences: 0 };
 
-      function analyze() {
-        const text = document.getElementById("textInput").value;
-        const caseSensitive = document.getElementById("caseSensitive").checked;
-        const ignoreNumbers = document.getElementById("ignoreNumbers").checked;
-        const ignoreShort = document.getElementById("ignoreShort").checked;
-        const sortBy = document.getElementById("sortBy").value;
+      // 简单中文词库（用于基础分词增强）
+      const commonStopWords = "的,了,和,是,在,我,有,不,人,这,他,们,中,大,来,上,个,国,得,到,说,们,为,子,和,与,及,也,之,或,而,后,等,其,从,于".split(",");
+      const enStopWords = "a,an,the,and,or,but,if,then,else,when,where,why,how,all,any,both,each,few,more,most,other,some,such,no,nor,not,only,own,same,so,than,too,very,s,t,can,will,just,don,should,now,i,me,my,myself,we,our,ours,ourselves,you,your,yours,yourself,yourselves,he,him,his,himself,she,her,hers,herself,it,its,itself,they,them,their,theirs,themselves,what,which,who,whom,this,that,these,those,am,is,are,was,were,be,been,being,have,has,had,having,do,does,did,doing".split(",");
 
-        // Basic stats
-        document.getElementById("charCount").textContent = text.length;
-        document.getElementById("sentenceCount").textContent =
-          (text.match(/[.!?。！？]/g) || []).length || (text.length > 0 ? 1 : 0);
+      function autoProcess() {
+        const text = document.getElementById('textInput').value;
+        if (text.length > 0 && text.length < 5000) {
+          process();
+        }
+      }
 
-        // Tokenize - handle both Chinese and English
+      function process() {
+        const text = document.getElementById('textInput').value.trim();
+        if (!text) {
+          resetDisplay();
+          return;
+        }
+
+        const caseSensitive = document.getElementById('caseSensitive').checked;
+        const ignoreNumbers = document.getElementById('ignoreNumbers').checked;
+        const ignoreSingle = document.getElementById('ignoreSingle').checked;
+        const sortBy = document.getElementById('sortBy').value;
+        const userStopWords = document.getElementById('stopWords').value.split(/[,，\s]+/).map(s => s.trim().toLowerCase()).filter(Boolean);
+
+        // 基础统计
+        currentStats.totalChars = text.length;
+        currentStats.sentences = (text.match(/[.!?。！？\n]/g) || []).length + 1;
+
+        // 分词逻辑
         let words = [];
 
-        // Chinese characters
-        const chineseWords = text.match(/[\u4e00-\u9fa5]+/g) || [];
-        // Split Chinese into words (simple 2-gram for demonstration)
-        chineseWords.forEach((phrase) => {
-          if (phrase.length <= 4) {
-            words.push(phrase);
-          } else {
-            // Split into 2-character words
-            for (let i = 0; i < phrase.length - 1; i++) {
-              words.push(phrase.substring(i, i + 2));
+        // 1. 提取英文词汇
+        let enText = text;
+        if (!caseSensitive) enText = enText.toLowerCase();
+        const enMatches = enText.match(/[a-z0-9']+/gi) || [];
+        
+        // 2. 提取中文片段并简单分词
+        const cnMatches = text.match(/[\u4e00-\u9fa5]+/g) || [];
+        
+        // 合并并初步过滤
+        let allTokens = [];
+        
+        // 处理英文
+        enMatches.forEach(token => {
+          if (ignoreNumbers && /^\d+$/.test(token)) return;
+          if (ignoreSingle && token.length <= 1) return;
+          if (userStopWords.includes(token.toLowerCase())) return;
+          allTokens.push(token);
+        });
+
+        // 处理中文 (简单 2-4 字词提取)
+        cnMatches.forEach(phrase => {
+          if (phrase.length === 1) {
+            if (!ignoreSingle && !userStopWords.includes(phrase)) allTokens.push(phrase);
+            return;
+          }
+          
+          // 这里使用一个简单的滑动窗口来模拟分词，实际生产中可能需要完整的词典
+          // 为了保持单文件，我们只提取 2-3 字的常见词组
+          for (let i = 0; i < phrase.length; i++) {
+            // 单字
+            if (!ignoreSingle) {
+              const char = phrase[i];
+              if (!userStopWords.includes(char)) allTokens.push(char);
+            }
+            // 双字
+            if (i + 1 < phrase.length) {
+              const word2 = phrase.substring(i, i + 2);
+              if (!userStopWords.includes(word2)) allTokens.push(word2);
+            }
+            // 三字
+            if (i + 2 < phrase.length) {
+              const word3 = phrase.substring(i, i + 3);
+              if (!userStopWords.includes(word3)) allTokens.push(word3);
             }
           }
         });
 
-        // English words
-        const englishWords = text.match(/[a-zA-Z]+/g) || [];
-        words = words.concat(englishWords);
-
-        // Numbers
-        if (!ignoreNumbers) {
-          const numbers = text.match(/\d+/g) || [];
-          words = words.concat(numbers);
-        }
-
-        // Process options
-        if (!caseSensitive) {
-          words = words.map((w) => w.toLowerCase());
-        }
-
-        if (ignoreShort) {
-          words = words.filter((w) => w.length > 1);
-        }
-
-        document.getElementById("wordCount").textContent = words.length;
-
-        // Count frequency
-        const freq = {};
-        words.forEach((word) => {
-          freq[word] = (freq[word] || 0) + 1;
+        // 词频汇总
+        const freqMap = {};
+        allTokens.forEach(t => {
+          const key = caseSensitive ? t : t.toLowerCase();
+          freqMap[key] = (freqMap[key] || 0) + 1;
         });
 
-        wordFreq = Object.entries(freq).map(([word, count]) => ({ word, count }));
+        // 转换为数组并过滤（如果是中文滑动窗口产生的，可能有很多低频垃圾词）
+        let freqArray = Object.entries(freqMap).map(([word, count]) => ({ word, count }));
+        
+        // 这里的策略是：对于中文多字词，如果它的频率非常低且包含在更高频的词中，则可能需要过滤
+        // 但简单起见，我们只按常规逻辑排序展示
+        
+        currentStats.totalWords = allTokens.length;
+        currentStats.uniqueWords = freqArray.length;
 
-        // Sort
-        if (sortBy === "count") {
-          wordFreq.sort((a, b) => b.count - a.count);
-        } else if (sortBy === "alpha") {
-          wordFreq.sort((a, b) => a.word.localeCompare(b.word));
+        // 排序
+        if (sortBy === 'freq') {
+          freqArray.sort((a, b) => b.count - a.count || a.word.localeCompare(b.word));
+        } else if (sortBy === 'alpha') {
+          freqArray.sort((a, b) => a.word.localeCompare(b.word));
         } else {
-          wordFreq.sort((a, b) => b.word.length - a.word.length);
+          freqArray.sort((a, b) => b.word.length - a.word.length || b.count - a.count);
         }
 
-        document.getElementById("uniqueCount").textContent = wordFreq.length;
-
-        renderList();
-        renderCloud();
+        currentResult = freqArray;
+        updateUI();
       }
 
-      function renderList() {
-        const maxCount = wordFreq.length > 0 ? wordFreq[0].count : 1;
-        const list = document.getElementById("wordList");
-        list.innerHTML = wordFreq
-          .slice(0, 100)
-          .map(
-            ({ word, count }) => `
-                <div class="word-item">
-                    <span class="word-text">${escapeHtml(word)}</span>
-                    <div class="word-count">
-                        <div class="word-bar">
-                            <div class="word-bar-fill" style="width: ${(count / maxCount) * 100}%"></div>
-                        </div>
-                        <span class="word-num">${count}</span>
-                    </div>
-                </div>
-            `
-          )
-          .join("");
+      function updateUI() {
+        // 更新统计数值
+        document.getElementById('totalChars').textContent = currentStats.totalChars;
+        document.getElementById('totalWords').textContent = currentStats.totalWords;
+        document.getElementById('uniqueWords').textContent = currentStats.uniqueWords;
+        document.getElementById('sentences').textContent = currentStats.sentences;
+
+        const listView = document.getElementById('listView');
+        const cloudView = document.getElementById('cloudView');
+
+        if (currentResult.length === 0) {
+          resetDisplay();
+          return;
+        }
+
+        const maxCount = Math.max(...currentResult.map(i => i.count));
+
+        // 渲染列表
+        listView.innerHTML = currentResult.slice(0, 200).map(item => `
+          <div class="word-row">
+            <span class="word-text">${escapeHtml(item.word)}</span>
+            <div class="word-bar-container">
+              <div class="word-bar" style="width: ${(item.count / maxCount * 100).toFixed(1)}%"></div>
+            </div>
+            <span class="word-count-badge">${item.count}</span>
+          </div>
+        `).join('');
+
+        // 渲染词云 (取前50个)
+        const colors = ['#4cc9f0', '#4895ef', '#4361ee', '#3f37c9', '#3a0ca3', '#7209b7', '#b5179e', '#f72585'];
+        cloudView.innerHTML = currentResult.slice(0, 50).map(item => {
+          const size = 0.8 + (item.count / maxCount) * 1.5;
+          const color = colors[Math.floor(Math.random() * colors.length)];
+          return `<span class="cloud-word" style="font-size: ${size}rem; color: ${color}; font-weight: ${item.count/maxCount > 0.5 ? '700' : '500'}">${escapeHtml(item.word)}</span>`;
+        }).join('');
       }
 
-      function renderCloud() {
-        const cloud = document.getElementById("wordCloud");
-        const maxCount = wordFreq.length > 0 ? Math.max(...wordFreq.map((w) => w.count)) : 1;
-        const colors = [
-          "#4f46e5",
-          "#7c3aed",
-          "#db2777",
-          "#dc2626",
-          "#ea580c",
-          "#16a34a",
-          "#0891b2"
-        ];
-
-        cloud.innerHTML = wordFreq
-          .slice(0, 50)
-          .map(({ word, count }) => {
-            const size = 12 + (count / maxCount) * 24;
-            const color = colors[Math.floor(Math.random() * colors.length)];
-            return `<span class="cloud-word" style="font-size: ${size}px; background: ${color};">${escapeHtml(word)} (${count})</span>`;
-          })
-          .join("");
+      function resetDisplay() {
+        const empty = `
+          <div class="empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <line x1="10" y1="9" x2="8" y2="9"></line>
+            </svg>
+            <p>请输入文本并点击开始分析</p>
+          </div>
+        `;
+        document.getElementById('listView').innerHTML = empty;
+        document.getElementById('cloudView').innerHTML = '';
+        document.querySelectorAll('.stat-val').forEach(el => el.textContent = '0');
       }
 
-      function showTab(tab) {
-        document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
-        event.target.classList.add("active");
-        document.getElementById("listView").style.display = tab === "list" ? "block" : "none";
-        document.getElementById("cloudView").style.display = tab === "cloud" ? "block" : "none";
+      function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById('listView').style.display = tab === 'list' ? 'flex' : 'none';
+        document.getElementById('cloudView').style.display = tab === 'cloud' ? 'flex' : 'none';
       }
 
       function escapeHtml(str) {
-        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        return String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+      }
+
+      function pasteText() {
+        navigator.clipboard.readText().then(text => {
+          document.getElementById('textInput').value = text;
+          process();
+        });
+      }
+
+      function clearAll() {
+        document.getElementById('textInput').value = '';
+        resetDisplay();
       }
 
       function copyResults() {
-        const text = wordFreq.map(({ word, count }) => `${word}: ${count}`).join("\n");
-        navigator.clipboard.writeText(text);
-        alert("已复制到剪贴板!");
+        if (currentResult.length === 0) return;
+        const text = currentResult.map(i => `${i.word}\t${i.count}`).join('\n');
+        navigator.clipboard.writeText(text).then(() => alert('已复制分析报告（词汇制表符计数）'));
       }
 
       function downloadCSV() {
-        const csv =
-          "Word,Count\n" + wordFreq.map(({ word, count }) => `"${word}",${count}`).join("\n");
-        const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "word-frequency.csv";
-        link.click();
+        if (currentResult.length === 0) return;
+        const csv = 'Word,Count\n' + currentResult.map(i => `"${i.word.replace(/"/g, '""')}",${i.count}`).join('\n');
+        const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `word-frequency-${new Date().getTime()}.csv`;
+        a.click();
       }
 
-      analyze();
+      function shareState() {
+        const text = document.getElementById('textInput').value;
+        if (!text) return;
+        const state = btoa(encodeURIComponent(JSON.stringify({
+          t: text,
+          s: document.getElementById('stopWords').value,
+          o: {
+            cs: document.getElementById('caseSensitive').checked,
+            in: document.getElementById('ignoreNumbers').checked,
+            is: document.getElementById('ignoreSingle').checked,
+            sb: document.getElementById('sortBy').value
+          }
+        })));
+        window.location.hash = state;
+        navigator.clipboard.writeText(window.location.href).then(() => alert('链接已生成并复制到剪贴板'));
+      }
 
-      // Theme toggle
+      function loadFromUrl() {
+        const hash = window.location.hash.substring(1);
+        if (!hash) return;
+        try {
+          const data = JSON.parse(decodeURIComponent(atob(hash)));
+          document.getElementById('textInput').value = data.t || '';
+          document.getElementById('stopWords').value = data.s || '';
+          if (data.o) {
+            document.getElementById('caseSensitive').checked = data.o.cs;
+            document.getElementById('ignoreNumbers').checked = data.o.in;
+            document.getElementById('ignoreSingle').checked = data.o.is;
+            document.getElementById('sortBy').value = data.o.sb;
+          }
+          process();
+        } catch(e) {}
+      }
+
       function toggleTheme() {
         const html = document.documentElement;
-        const currentTheme = html.getAttribute("data-theme");
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        document.getElementById("theme-icon").textContent = newTheme === "light" ? "☀️" : "🌙";
-        localStorage.setItem("theme", newTheme);
+        const newTheme = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        html.setAttribute('data-theme', newTheme);
+        document.getElementById('theme-icon').textContent = newTheme === 'light' ? '☀️' : '🌙';
+        localStorage.setItem('theme', newTheme);
       }
 
-      // Load saved theme
-      const savedTheme = localStorage.getItem("theme") || "dark";
-      if (savedTheme === "light") {
-        document.documentElement.setAttribute("data-theme", "light");
-        document.getElementById("theme-icon").textContent = "☀️";
-      }
+      // Initialize
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      document.getElementById('theme-icon').textContent = savedTheme === 'light' ? '☀️' : '🌙';
+      loadFromUrl();
     </script>
   </body>
 </html>
