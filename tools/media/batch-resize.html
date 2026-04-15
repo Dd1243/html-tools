@@ -1,831 +1,650 @@
-<!doctype html>
-<html lang="zh-CN" data-theme="light">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>图片批量调整尺寸 - WebUtils</title>
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="图片批量调整尺寸 - WebUtils" />
-    <meta name="keywords" content="batch-resize,media,tools,webutils" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/media/batch-resize.html" />
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>在线图片批量调整尺寸 - 免费批量缩小/放大图片工具 | WebUtils</title>
+  <meta name="description" content="WebUtils 免费在线图片批量调整尺寸工具。支持按宽度、高度、比例或固定尺寸批量缩放图片。100% 本地处理，支持导出为 JPG, PNG, WebP 格式，并可一键打包为 ZIP 下载。SEO 友好且保护隐私。">
+  <meta name="keywords" content="批量调整图片尺寸,图片缩放工具,在线缩小图片,batch image resizer,图片批量处理,图片压缩">
+  <link rel="canonical" href="https://essays4u.net/tools/media/batch-resize.html">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="在线图片批量调整尺寸 - 免费批量缩小/放大图片工具">
+  <meta property="og:description" content="高效、私密的在线批量图片尺寸调整工具，支持多种缩放模式和打包下载。">
+  <meta property="og:url" content="https://essays4u.net/tools/media/batch-resize.html">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://essays4u.net/social-preview.png">
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="图片批量调整尺寸 - WebUtils" />
-    <meta property="og:description" content="图片批量调整尺寸 - WebUtils" />
-    <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/media/batch-resize.html"
-    />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
+  <style>
+    :root {
+      --primary-color: #ff006e; /* Vibrant Media Red/Pink */
+      --primary-hover: #d90429;
+      --bg-color: #f8f9fa;
+      --card-bg: #ffffff;
+      --text-main: #000000;
+      --text-muted: #4a4a4a;
+      --border-color: #000000;
+      --shadow: 8px 8px 0px rgba(0,0,0,1);
+      --radius: 0px;
+    }
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="图片批量调整尺寸 - WebUtils" />
-    <meta name="twitter:description" content="图片批量调整尺寸 - WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: "Space Grotesk", system-ui, -apple-system, sans-serif; line-height: 1.6; color: var(--text-main); background: var(--bg-color); }
+    
+    .container { width: 95%; max-width: 1200px; margin: 0 auto; }
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
+    /* 顶部导航 */
+    .site-header { background: #fff; border-bottom: 4px solid #000; position: sticky; top: 0; z-index: 100; }
+    .site-header .container { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; }
+    .logo a { font-size: 1.6rem; font-weight: 800; color: #000; text-decoration: none; text-transform: uppercase; letter-spacing: -1px; }
+    .site-nav ul { display: flex; list-style: none; gap: 20px; }
+    .site-nav a { text-decoration: none; color: #000; font-weight: 700; font-size: 0.95rem; border: 2px solid transparent; padding: 4px 8px; }
+    .site-nav a:hover { background: #000; color: #fff; }
 
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
+    /* 主体布局 */
+    main.container { display: flex; flex-direction: column; gap: 30px; padding: 40px 0; }
+    @media (min-width: 992px) {
+      main.container { flex-direction: row; align-items: flex-start; }
+    }
 
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--color-bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
+    /* 左侧工具区 */
+    .tool-section { flex: 3; background: var(--card-bg); padding: 30px; border: 4px solid #000; box-shadow: var(--shadow); }
+    .tool-header { margin-bottom: 30px; }
+    .tool-header h1 { font-size: 2.2rem; font-weight: 900; margin-bottom: 10px; line-height: 1.1; }
+    .tool-header p { color: var(--text-muted); font-size: 1.1rem; }
 
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
+    /* Upload Area */
+    .upload-area { border: 4px dashed #000; padding: 50px; text-align: center; cursor: pointer; background: #fdfdfd; margin-bottom: 30px; transition: background 0.2s; }
+    .upload-area:hover { background: #fff0f6; }
+    .upload-icon { font-size: 3.5rem; margin-bottom: 15px; }
+    .upload-text { font-weight: 800; font-size: 1.4rem; }
+    #fileInput { display: none; }
 
-      :root {
-        --success-color: #2ecc71;
-        --warning-color: #f39c12;
-      }
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-      }
-      header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-        flex-wrap: wrap;
-        gap: 1rem;
-      }
-      .drop-zone {
-        border: 2px dashed var(--muted-color);
-        border-radius: 8px;
-        padding: 3rem;
-        text-align: center;
-        transition:
-          border-color 0.3s,
-          background 0.3s;
-        margin-bottom: 2rem;
-      }
-      .drop-zone.dragover {
-        border-color: var(--accent-cyan);
-        background: var(--primary-focus);
-      }
-      .settings-panel {
-        background: var(--card-background-color);
-        border-radius: 8px;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
-      }
-      .settings-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1.5rem;
-      }
-      .setting-group label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: bold;
-      }
-      .size-inputs {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-      }
-      .size-inputs input {
-        width: 100px;
-        margin: 0;
-      }
-      .preset-sizes {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-top: 1rem;
-      }
-      .preset-sizes button {
-        padding: 0.3rem 0.6rem;
-        font-size: 0.8rem;
-      }
-      .image-list {
-        margin-bottom: 2rem;
-      }
-      .image-item {
-        display: grid;
-        grid-template-columns: 80px 1fr auto auto;
-        gap: 1rem;
-        align-items: center;
-        padding: 1rem;
-        background: var(--card-background-color);
-        border-radius: 8px;
-        margin-bottom: 0.5rem;
-      }
-      .image-item img {
-        width: 80px;
-        height: 60px;
-        object-fit: cover;
-        border-radius: 4px;
-      }
-      .image-info {
-        min-width: 0;
-      }
-      .image-info .filename {
-        font-weight: bold;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .image-info .dimensions {
-        font-size: 0.85rem;
-        color: var(--muted-color);
-      }
-      .new-dimensions {
-        font-family: var(--font-mono);
-        background: var(--primary-focus);
-        padding: 0.3rem 0.6rem;
-        border-radius: 4px;
-        white-space: nowrap;
-      }
-      .image-actions button {
-        padding: 0.3rem 0.6rem;
-        margin: 0;
-      }
-      .progress-bar {
-        width: 100%;
-        height: 8px;
-        background: var(--muted-border-color);
-        border-radius: 4px;
-        overflow: hidden;
-        margin-bottom: 1rem;
-        display: none;
-      }
-      .progress-bar-fill {
-        height: 100%;
-        background: var(--accent-cyan);
-        transition: width 0.3s;
-      }
-      .action-buttons {
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-      }
-      .stats {
-        display: flex;
-        gap: 2rem;
-        margin-bottom: 1rem;
-        flex-wrap: wrap;
-      }
-      .stat-item {
-        text-align: center;
-      }
-      .stat-value {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: var(--accent-cyan);
-      }
-      .stat-label {
-        font-size: 0.85rem;
-        color: var(--muted-color);
-      }
-      .format-select {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-      }
-      .format-select label {
-        display: flex;
-        align-items: center;
-        gap: 0.3rem;
-        cursor: pointer;
-      }
-      .quality-slider {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-      }
-      .quality-slider input {
-        flex: 1;
-        margin: 0;
-      }
-      .empty-state {
-        text-align: center;
-        padding: 2rem;
-        color: var(--muted-color);
-      }
+    /* Settings Panel */
+    .settings-panel { border: 4px solid #000; padding: 25px; background: #fff; margin-bottom: 30px; }
+    .settings-title { font-size: 1.3rem; font-weight: 900; margin-bottom: 20px; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+    .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+    .setting-group { margin-bottom: 15px; }
+    .setting-group label { display: block; font-weight: 800; margin-bottom: 8px; font-size: 0.95rem; }
+    
+    select, input[type="number"], input[type="text"] { width: 100%; padding: 10px; border: 3px solid #000; font-family: inherit; font-weight: 700; font-size: 1rem; }
+    select:focus, input:focus { outline: none; background: #f0f0f0; }
 
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-    </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
-      <span id="theme-icon">🌙</span>
-    </button>
+    .size-inputs { display: flex; align-items: center; gap: 10px; }
+    .size-inputs span { font-weight: 900; }
 
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>›</span>
-      图片批量调整尺寸
-    </nav>
-    <main class="container">
-      <header>
-        <h1>📐 图片批量调整尺寸</h1>
-        <button id="themeToggle" class="outline">🌙 暗色模式</button>
-      </header>
+    .checkbox-group { display: flex; flex-wrap: wrap; gap: 20px; margin-top: 15px; padding-top: 15px; border-top: 2px solid #eee; }
+    .checkbox-item { display: flex; align-items: center; gap: 8px; font-weight: 700; cursor: pointer; }
+    .checkbox-item input { width: 18px; height: 18px; cursor: pointer; }
 
-      <div class="drop-zone" id="dropZone">
-        <p>拖拽图片到此处，或点击选择文件</p>
-        <p style="color: var(--muted-color); font-size: 0.9rem">
-          支持 JPG、PNG、WebP、GIF 格式，可多选
-        </p>
-        <input type="file" id="fileInput" accept="image/*" multiple style="display: none" />
-        <button onclick="document.getElementById('fileInput').click()">选择图片</button>
+    /* Quality Slider */
+    .quality-control { display: flex; align-items: center; gap: 15px; }
+    input[type="range"] { flex: 1; height: 10px; appearance: none; background: #000; outline: none; }
+    input[type="range"]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; background: var(--primary-color); border: 2px solid #000; cursor: pointer; }
+
+    /* Stats & Progress */
+    .stats-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
+    .stat-card { border: 3px solid #000; padding: 15px; text-align: center; background: #fff; }
+    .stat-label { display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); }
+    .stat-value { font-size: 1.4rem; font-weight: 900; }
+
+    .progress-container { height: 30px; border: 3px solid #000; background: #fff; margin-bottom: 25px; overflow: hidden; display: none; }
+    .progress-fill { height: 100%; background: var(--primary-color); width: 0%; transition: width 0.3s; }
+
+    /* Image List */
+    .image-list { margin-bottom: 30px; display: flex; flex-direction: column; gap: 12px; }
+    .image-item { display: grid; grid-template-columns: 80px 1fr auto auto; gap: 20px; align-items: center; border: 3px solid #000; padding: 12px; background: #fff; }
+    .image-item img { width: 80px; height: 60px; object-fit: cover; border: 2px solid #000; }
+    .image-info { overflow: hidden; }
+    .image-name { font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .image-meta { font-size: 0.8rem; color: var(--text-muted); font-family: monospace; }
+    .resize-tag { background: #000; color: #fff; padding: 4px 10px; font-weight: 800; font-size: 0.85rem; }
+
+    .btn-row { display: flex; gap: 15px; flex-wrap: wrap; }
+    .btn { padding: 14px 28px; border: 3px solid #000; font-weight: 800; cursor: pointer; transition: all 0.1s; position: relative; text-transform: uppercase; letter-spacing: 1px; }
+    .btn-primary { background: var(--primary-color); color: #fff; }
+    .btn-primary:hover:not(:disabled) { transform: translate(-3px, -3px); box-shadow: 6px 6px 0 #000; }
+    .btn-outline { background: #fff; }
+    .btn-outline:hover { background: #000; color: #fff; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* SEO Section */
+    .seo-section { margin-top: 50px; border-top: 4px solid #000; padding-top: 40px; }
+    .seo-section h2 { font-size: 2rem; font-weight: 900; margin-bottom: 25px; text-transform: uppercase; }
+    .seo-article { font-size: 1.05rem; color: #1a1a1a; line-height: 1.8; }
+    .seo-article h3 { margin: 30px 0 15px; font-size: 1.4rem; font-weight: 800; border-left: 8px solid var(--primary-color); padding-left: 15px; }
+    .seo-article p { margin-bottom: 20px; }
+    .seo-article ul { margin-bottom: 25px; padding-left: 30px; }
+    .seo-article li { margin-bottom: 12px; }
+
+    /* Sidebar */
+    .sidebar-section { flex: 1; display: flex; flex-direction: column; gap: 30px; }
+    .sidebar-card { background: #fff; border: 4px solid #000; padding: 25px; box-shadow: 8px 8px 0 #000; }
+    .sidebar-card h2 { font-size: 1.4rem; font-weight: 900; margin-bottom: 20px; text-transform: uppercase; }
+    .sidebar-card ul { list-style: none; }
+    .sidebar-card li { margin-bottom: 15px; padding-left: 25px; position: relative; font-weight: 700; }
+    .sidebar-card li::before { content: "⚡"; position: absolute; left: 0; color: var(--primary-color); }
+
+    /* Ads */
+    .ad-placeholder { background: #eee; border: 2px dashed #999; color: #888; text-align: center; padding: 25px; font-size: 0.8rem; min-height: 120px; display: flex; align-items: center; justify-content: center; font-weight: 800; text-transform: uppercase; }
+    .ad-top { margin-bottom: 30px; border: 4px solid #000; background: #ffffd0; color: #000; }
+
+    /* Footer */
+    .site-footer { background: #000; color: #fff; padding: 70px 0 35px; margin-top: 80px; }
+    .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 50px; margin-bottom: 50px; }
+    .footer-section h3 { font-size: 1.5rem; font-weight: 900; margin-bottom: 25px; color: var(--primary-color); text-transform: uppercase; }
+    .footer-section p { color: #bbb; font-size: 1rem; }
+    .footer-section ul { list-style: none; }
+    .footer-section a { color: #fff; text-decoration: none; font-weight: 700; }
+    .footer-section a:hover { color: var(--primary-color); }
+    .footer-bottom { border-top: 1px solid #333; padding-top: 30px; text-align: center; font-size: 0.9rem; color: #777; }
+
+    @media (max-width: 768px) {
+      .tool-header h1 { font-size: 1.8rem; }
+      .stats-bar { grid-template-columns: 1fr; }
+      .image-item { grid-template-columns: 60px 1fr auto; }
+      .image-item .resize-tag { display: none; }
+      .site-nav { display: none; }
+    }
+
+    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #000; color: #fff; padding: 15px 35px; font-weight: 900; border: 3px solid var(--primary-color); display: none; z-index: 1000; box-shadow: 6px 6px 0 #000; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <div class="logo"><a href="../../index.html">WebUtils</a></div>
+      <nav class="site-nav">
+        <ul>
+          <li><a href="../../index.html">首页</a></li>
+          <li><a href="base64-image.html">Base64图片</a></li>
+          <li><a href="batch-resize.html">批量缩放</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="tool-section">
+      <div class="ad-placeholder ad-top">PROMOTIONAL SPACE - ACCELERATE YOUR WORKFLOW</div>
+      
+      <div class="tool-header">
+        <h1>在线图片批量调整尺寸</h1>
+        <p>一键缩放、压缩并重命名您的图片库。支持多线程处理，100% 浏览器本地运算，保护您的隐私。</p>
+      </div>
+
+      <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+        <div class="upload-icon">📁</div>
+        <div class="upload-text">拖拽图片或点击上传</div>
+        <p style="margin-top:10px; font-size:1rem; color:#444; font-weight:700;">支持批量选择 JPG, PNG, WebP, GIF</p>
+        <input type="file" id="fileInput" accept="image/*" multiple>
       </div>
 
       <div class="settings-panel">
-        <h3>⚙️ 调整设置</h3>
+        <h2 class="settings-title">⚙️ 调整规则设置</h2>
         <div class="settings-grid">
           <div class="setting-group">
-            <label>调整模式</label>
+            <label>缩放模式</label>
             <select id="resizeMode">
-              <option value="width">按宽度</option>
-              <option value="height">按高度</option>
-              <option value="both">固定尺寸</option>
-              <option value="percent">按比例</option>
-              <option value="longest">按最长边</option>
-              <option value="shortest">按最短边</option>
+              <option value="width">按固定宽度 (Width)</option>
+              <option value="height">按固定高度 (Height)</option>
+              <option value="both">拉伸至固定尺寸 (Fixed)</option>
+              <option value="percent">按比例缩放 (Percentage)</option>
+              <option value="longest">限定最长边 (Longest)</option>
+              <option value="shortest">限定最短边 (Shortest)</option>
             </select>
           </div>
 
           <div class="setting-group">
-            <label>目标尺寸</label>
+            <label>目标参数</label>
             <div class="size-inputs">
-              <input
-                type="number"
-                id="targetWidth"
-                value="800"
-                min="1"
-                max="10000"
-                placeholder="宽度"
-              />
-              <span>×</span>
-              <input
-                type="number"
-                id="targetHeight"
-                value="600"
-                min="1"
-                max="10000"
-                placeholder="高度"
-              />
-            </div>
-            <div class="preset-sizes">
-              <button class="outline secondary" onclick="setPresetSize(640, 480)">640×480</button>
-              <button class="outline secondary" onclick="setPresetSize(800, 600)">800×600</button>
-              <button class="outline secondary" onclick="setPresetSize(1024, 768)">1024×768</button>
-              <button class="outline secondary" onclick="setPresetSize(1280, 720)">720p</button>
-              <button class="outline secondary" onclick="setPresetSize(1920, 1080)">1080p</button>
-              <button class="outline secondary" onclick="setPresetSize(2560, 1440)">2K</button>
-              <button class="outline secondary" onclick="setPresetSize(3840, 2160)">4K</button>
+              <input type="number" id="targetWidth" value="1280" min="1" placeholder="宽度/比例">
+              <span id="dimensionSeparator">×</span>
+              <input type="number" id="targetHeight" value="720" min="1" placeholder="高度">
             </div>
           </div>
 
           <div class="setting-group">
             <label>输出格式</label>
-            <div class="format-select">
-              <label>
-                <input type="radio" name="format" value="original" checked />
-                保持原格式
-              </label>
-              <label>
-                <input type="radio" name="format" value="jpeg" />
-                JPEG
-              </label>
-              <label>
-                <input type="radio" name="format" value="png" />
-                PNG
-              </label>
-              <label>
-                <input type="radio" name="format" value="webp" />
-                WebP
-              </label>
-            </div>
+            <select id="outputFormat">
+              <option value="original">保持原格式 (Auto)</option>
+              <option value="jpeg">转换为 JPEG</option>
+              <option value="png">转换为 PNG</option>
+              <option value="webp">转换为 WebP</option>
+            </select>
           </div>
 
           <div class="setting-group">
-            <label>质量 (JPEG/WebP)</label>
-            <div class="quality-slider">
-              <input type="range" id="quality" min="1" max="100" value="85" />
-              <span id="qualityValue">85%</span>
+            <label>压缩质量 (JPEG/WebP)</label>
+            <div class="quality-control">
+              <input type="range" id="quality" min="1" max="100" value="85">
+              <span id="qualityValue" style="font-weight:900; min-width:40px;">85%</span>
             </div>
           </div>
         </div>
 
-        <div style="margin-top: 1rem">
-          <label>
-            <input type="checkbox" id="keepAspectRatio" checked />
-            保持宽高比
+        <div class="checkbox-group">
+          <label class="checkbox-item">
+            <input type="checkbox" id="keepAspectRatio" checked> 保持宽高比
           </label>
-          <label style="margin-left: 1rem">
-            <input type="checkbox" id="allowUpscale" />
-            允许放大（可能降低质量）
+          <label class="checkbox-item">
+            <input type="checkbox" id="allowUpscale"> 允许向上放大
           </label>
         </div>
       </div>
 
-      <div class="stats" id="stats" style="display: none">
-        <div class="stat-item">
-          <div class="stat-value" id="totalCount">0</div>
-          <div class="stat-label">图片数量</div>
+      <div id="statusSection" style="display: none;">
+        <div class="stats-bar">
+          <div class="stat-card">
+            <span class="stat-label">待处理图片</span>
+            <span class="stat-value" id="countPending">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">原始总大小</span>
+            <span class="stat-value" id="sizeTotal">0 MB</span>
+          </div>
+          <div class="stat-card" style="background: #e0ffec;">
+            <span class="stat-label">已成功处理</span>
+            <span class="stat-value" id="countProcessed">0</span>
+          </div>
         </div>
-        <div class="stat-item">
-          <div class="stat-value" id="totalOriginalSize">0 MB</div>
-          <div class="stat-label">原始大小</div>
+
+        <div class="progress-container" id="progressContainer">
+          <div class="progress-fill" id="progressFill"></div>
         </div>
-        <div class="stat-item">
-          <div class="stat-value" id="processedCount">0</div>
-          <div class="stat-label">已处理</div>
+
+        <div class="image-list" id="imageList">
+          <!-- Populated by JS -->
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" id="btnProcess">🚀 开始批量转换</button>
+          <button class="btn btn-outline" id="btnDownloadZip" disabled>📦 打包下载 ZIP</button>
+          <button class="btn btn-outline" id="btnClear" style="color:red;">🗑️ 清空列表</button>
         </div>
       </div>
 
-      <div class="progress-bar" id="progressBar">
-        <div class="progress-bar-fill" id="progressFill"></div>
+      <!-- SEO Content -->
+      <section class="seo-section">
+        <h2>深度指南：如何高效进行图片的批量尺寸调整？</h2>
+        <article class="seo-article">
+          <p>在内容创作、电商运营或网页开发中，我们经常需要处理成百上千张图片。手动一张张调整不仅耗时，还容易出错。使用<strong>在线图片批量调整工具</strong>是提升效率的最佳方案。本工具基于最新的浏览器底层 API 构建，为您提供闪电般的处理速度和极致的隐私保护。</p>
+          
+          <h3>1. 为什么选择本地批量处理工具？</h3>
+          <p>传统的在线工具往往需要您将图片上传到服务器。这不仅受到上传带宽的限制，还面临数据泄露的风险。我们的工具采用了 <strong>Canvas API</strong> 和 <strong>Web Workers</strong> 技术：</p>
+          <ul>
+            <li><strong>绝对隐私：</strong> 图片数据全程保留在内存中，处理完毕后立即释放，绝不上传到任何服务器。</li>
+            <li><strong>极致速度：</strong> 利用您本地电脑的 CPU 性能。处理 50 张图片通常只需数秒，无需等待漫长的上传和下载过程。</li>
+            <li><strong>零费用限制：</strong> 没有文件大小限制，没有处理数量限制，完全免费。</li>
+          </ul>
+
+          <div class="ad-placeholder" style="margin: 30px 0;">IN-ARTICLE PROMO - FAST & SECURE TOOLS</div>
+
+          <h3>2. 各种缩放模式的专业应用场景</h3>
+          <p>为了满足不同需求，我们提供了六种精准的缩放模式：</p>
+          <ul>
+            <li><strong>按宽度/高度：</strong> 适用于需要统一网页侧边栏图片宽度或列表图片高度的情况。配合“保持宽高比”，确保图片不变形。</li>
+            <li><strong>限定最长边：</strong> SEO 优化的常用技巧。将所有图片的最长边限制在 1200px 以内，既能保证清晰度，又能大幅降低页面加载时间。</li>
+            <li><strong>拉伸至固定尺寸：</strong> 适用于生成固定大小的缩略图或 Avatar 头像。</li>
+            <li><strong>按比例缩放：</strong> 如果您只需要将一批高分辨率照片缩小为原来的 50% 以便发送邮件，这是最简单的选择。</li>
+          </ul>
+
+          <h3>3. SEO 与网页性能优化建议</h3>
+          <p>图片是网页加载速度最大的元凶。使用本工具进行优化时，请参考以下建议：</p>
+          <ul>
+            <li><strong>格式选择：</strong> 推荐使用 <strong>WebP</strong> 格式。在相同画质下，WebP 的体积通常比 JPEG 小 30% 以上。</li>
+            <li><strong>质量权衡：</strong> 对于网页展示，压缩质量设置在 75%-85% 之间是最佳平衡点，肉眼几乎无法察觉差异，但文件体积会骤降。</li>
+            <li><strong>响应式设计：</strong> 建议为不同设备生成多套尺寸的图片（如 1920px、1280px、768px），并利用 <code>srcset</code> 属性实现自适应加载。</li>
+          </ul>
+
+          <h3>4. 常见问题 (FAQ)</h3>
+          <p><strong>Q: 为什么我处理后的图片体积反而变大了？</strong><br>A: 这通常发生在原图已经是高度压缩的情况下，或者您将低质量的 JPEG 转为了 PNG 格式。PNG 是无损格式，通常比 JPEG 大得多。</p>
+          <p><strong>Q: 处理过程中浏览器卡顿怎么办？</strong><br>A: 当一次性处理数百张超大图（如 20MB 以上）时，可能会占用大量内存。建议分批次处理，或在处理时关闭不必要的浏览器标签页。</p>
+        </article>
+      </section>
+    </div>
+
+    <aside class="sidebar-section">
+      <div class="sidebar-card">
+        <h2>操作技巧</h2>
+        <ul>
+          <li><strong>多选上传：</strong> 您可以按住 Ctrl/Cmd 键一次性选择文件夹中的所有图片。</li>
+          <li><strong>ZIP 下载：</strong> 处理完成后，点击“打包下载”可获得一份整理好的压缩包，保留原始文件夹结构。</li>
+          <li><strong>快速预览：</strong> 列表中的每一项都支持即时参数预览。</li>
+        </ul>
       </div>
 
-      <div class="image-list" id="imageList">
-        <div class="empty-state">暂无图片，请上传图片开始处理</div>
+      <div class="ad-placeholder" style="min-height: 450px; border:4px solid #000; background:#fff;">
+        VERTICAL ADVERTISEMENT - PREMIUM PLACEMENT
       </div>
 
-      <div class="action-buttons">
-        <button onclick="processAll()" id="processBtn" disabled>🚀 批量处理</button>
-        <button onclick="downloadAll()" id="downloadBtn" class="contrast" disabled>
-          📦 打包下载
-        </button>
-        <button onclick="clearAll()" class="secondary outline">🗑️ 清空列表</button>
+      <div class="sidebar-card">
+        <h2>相关媒体工具</h2>
+        <ul>
+          <li><a href="base64-image.html">图片转 Base64 编码</a></li>
+          <li><a href="color-extractor.html">提取图片调色板</a></li>
+          <li><a href="exif-viewer.html">查看图片元数据</a></li>
+          <li><a href="image-compressor.html">高级图片压缩器</a></li>
+        </ul>
       </div>
-    </main>
+    </aside>
+  </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
-    <script>
-      // Theme toggle
-      const themeToggle = document.getElementById("themeToggle");
-      const html = document.documentElement;
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>关于 WebUtils</h3>
+          <p>WebUtils 是为现代互联网创作者打造的极简工具集。我们坚信工具应该简单、强大且尊重隐私。</p>
+        </div>
+        <div class="footer-section">
+          <h3>开发者专区</h3>
+          <ul>
+            <li><a href="https://github.com/chicogong/html-tools" target="_blank">GitHub 源代码</a></li>
+            <li><a href="../../index.html">所有工具分类</a></li>
+            <li><a href="../../CHANGELOG.md">开发进度</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>隐私承诺</h3>
+          <p>本站所有媒体工具均在客户端沙盒运行。您的照片永远不会上传到我们的服务器，我们也无法查看到您的任何内容。</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        &copy; 2024 WebUtils - 赋能全球百万开发者.
+      </div>
+    </div>
+  </footer>
 
-      function setTheme(dark) {
-        html.setAttribute("data-theme", dark ? "dark" : "light");
-        themeToggle.textContent = dark ? "☀️ 亮色模式" : "🌙 暗色模式";
-        localStorage.setItem("theme", dark ? "dark" : "light");
+  <div class="toast" id="toast">操作已完成！</div>
+
+  <!-- CDN Dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+
+  <script>
+    let rawImages = [];
+    let processedResults = [];
+
+    // DOM Elements
+    const fileInput = document.getElementById('fileInput');
+    const imageList = document.getElementById('imageList');
+    const btnProcess = document.getElementById('btnProcess');
+    const btnDownloadZip = document.getElementById('btnDownloadZip');
+    const btnClear = document.getElementById('btnClear');
+    const statusSection = document.getElementById('statusSection');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressFill = document.getElementById('progressFill');
+
+    const resizeMode = document.getElementById('resizeMode');
+    const targetWidth = document.getElementById('targetWidth');
+    const targetHeight = document.getElementById('targetHeight');
+    const quality = document.getElementById('quality');
+    const qualityValue = document.getElementById('qualityValue');
+    const outputFormat = document.getElementById('outputFormat');
+
+    // Init Logic
+    quality.addEventListener('input', () => {
+      qualityValue.textContent = quality.value + '%';
+    });
+
+    resizeMode.addEventListener('change', () => {
+      const mode = resizeMode.value;
+      const hInput = document.getElementById('targetHeight');
+      const sep = document.getElementById('dimensionSeparator');
+      
+      if (mode === 'width' || mode === 'longest' || mode === 'shortest') {
+        hInput.style.display = 'none';
+        sep.style.display = 'none';
+        targetWidth.placeholder = '大小 (px)';
+      } else if (mode === 'height') {
+        hInput.style.display = 'block';
+        sep.style.display = 'none';
+        targetWidth.style.display = 'none';
+        targetWidth.placeholder = '';
+      } else if (mode === 'percent') {
+        hInput.style.display = 'none';
+        sep.style.display = 'none';
+        targetWidth.placeholder = '比例 (%)';
+        targetWidth.value = '50';
+      } else {
+        hInput.style.display = 'block';
+        sep.style.display = 'inline';
+        targetWidth.style.display = 'block';
+        targetWidth.placeholder = '宽度';
       }
+      updatePreviewTags();
+    });
 
-      themeToggle.addEventListener("click", () => {
-        setTheme(html.getAttribute("data-theme") !== "dark");
-      });
+    // File Handling
+    fileInput.addEventListener('change', e => {
+      handleFiles(e.target.files);
+    });
 
-      const savedTheme = localStorage.getItem("theme");
-      if (savedTheme) {
-        setTheme(savedTheme === "dark");
-      } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        setTheme(true);
-      }
-
-      // Image data storage
-      let images = [];
-      let processedImages = [];
-
-      // Elements
-      const fileInput = document.getElementById("fileInput");
-      const dropZone = document.getElementById("dropZone");
-      const imageList = document.getElementById("imageList");
-      const qualitySlider = document.getElementById("quality");
-      const qualityValue = document.getElementById("qualityValue");
-      const resizeMode = document.getElementById("resizeMode");
-      const targetWidth = document.getElementById("targetWidth");
-      const targetHeight = document.getElementById("targetHeight");
-
-      // Quality slider
-      qualitySlider.addEventListener("input", () => {
-        qualityValue.textContent = qualitySlider.value + "%";
-      });
-
-      // Resize mode change
-      resizeMode.addEventListener("change", () => {
-        const mode = resizeMode.value;
-        targetHeight.disabled = mode === "width" || mode === "longest" || mode === "shortest";
-        targetWidth.disabled = mode === "height";
-
-        if (mode === "percent") {
-          targetWidth.placeholder = "百分比";
-          targetWidth.value = "50";
-          targetHeight.disabled = true;
-        } else {
-          targetWidth.placeholder = "宽度";
-        }
-
-        updateAllPreview();
-      });
-
-      // Size input change
-      targetWidth.addEventListener("input", updateAllPreview);
-      targetHeight.addEventListener("input", updateAllPreview);
-
-      // File handling
-      fileInput.addEventListener("change", (e) => {
-        addImages(e.target.files);
-      });
-
-      dropZone.addEventListener("click", () => fileInput.click());
-      dropZone.addEventListener("dragover", (e) => {
-        e.preventDefault();
-        dropZone.classList.add("dragover");
-      });
-      dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragover"));
-      dropZone.addEventListener("drop", (e) => {
-        e.preventDefault();
-        dropZone.classList.remove("dragover");
-        addImages(e.dataTransfer.files);
-      });
-
-      function addImages(files) {
-        Array.from(files).forEach((file) => {
-          if (!file.type.startsWith("image/")) return;
-
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            const img = new Image();
-            img.onload = () => {
-              const imageData = {
-                id: Date.now() + Math.random(),
-                file: file,
-                dataUrl: e.target.result,
-                width: img.width,
-                height: img.height,
-                processed: false,
-                processedDataUrl: null
-              };
-              images.push(imageData);
-              renderImageList();
-              updateStats();
-            };
-            img.src = e.target.result;
-          };
-          reader.readAsDataURL(file);
-        });
-      }
-
-      window.setPresetSize = function (width, height) {
-        targetWidth.value = width;
-        targetHeight.value = height;
-        updateAllPreview();
-      };
-
-      function calculateNewDimensions(origWidth, origHeight) {
-        const mode = resizeMode.value;
-        const tw = parseInt(targetWidth.value) || 800;
-        const th = parseInt(targetHeight.value) || 600;
-        const keepRatio = document.getElementById("keepAspectRatio").checked;
-        const allowUpscale = document.getElementById("allowUpscale").checked;
-
-        let newWidth, newHeight;
-
-        switch (mode) {
-          case "width":
-            newWidth = tw;
-            newHeight = keepRatio ? Math.round(origHeight * (tw / origWidth)) : origHeight;
-            break;
-          case "height":
-            newHeight = th;
-            newWidth = keepRatio ? Math.round(origWidth * (th / origHeight)) : origWidth;
-            break;
-          case "both":
-            if (keepRatio) {
-              const ratio = Math.min(tw / origWidth, th / origHeight);
-              newWidth = Math.round(origWidth * ratio);
-              newHeight = Math.round(origHeight * ratio);
-            } else {
-              newWidth = tw;
-              newHeight = th;
-            }
-            break;
-          case "percent":
-            const percent = tw / 100;
-            newWidth = Math.round(origWidth * percent);
-            newHeight = Math.round(origHeight * percent);
-            break;
-          case "longest":
-            if (origWidth >= origHeight) {
-              newWidth = tw;
-              newHeight = Math.round(origHeight * (tw / origWidth));
-            } else {
-              newHeight = tw;
-              newWidth = Math.round(origWidth * (tw / origHeight));
-            }
-            break;
-          case "shortest":
-            if (origWidth <= origHeight) {
-              newWidth = tw;
-              newHeight = Math.round(origHeight * (tw / origWidth));
-            } else {
-              newHeight = tw;
-              newWidth = Math.round(origWidth * (tw / origHeight));
-            }
-            break;
-        }
-
-        // Prevent upscaling unless allowed
-        if (!allowUpscale) {
-          if (newWidth > origWidth) newWidth = origWidth;
-          if (newHeight > origHeight) newHeight = origHeight;
-
-          // Recalculate to maintain aspect ratio if needed
-          if (keepRatio && (newWidth !== origWidth || newHeight !== origHeight)) {
-            const ratio = Math.min(newWidth / origWidth, newHeight / origHeight);
-            newWidth = Math.round(origWidth * ratio);
-            newHeight = Math.round(origHeight * ratio);
-          }
-        }
-
-        return { width: Math.max(1, newWidth), height: Math.max(1, newHeight) };
-      }
-
-      function renderImageList() {
-        if (images.length === 0) {
-          imageList.replaceChildren();
-          const emptyDiv = document.createElement("div");
-          emptyDiv.className = "empty-state";
-          emptyDiv.textContent = "暂无图片，请上传图片开始处理";
-          imageList.appendChild(emptyDiv);
-          document.getElementById("processBtn").disabled = true;
-          document.getElementById("downloadBtn").disabled = true;
-          document.getElementById("stats").style.display = "none";
-          return;
-        }
-
-        imageList.replaceChildren();
-        document.getElementById("stats").style.display = "flex";
-        document.getElementById("processBtn").disabled = false;
-
-        images.forEach((image, index) => {
-          const newDims = calculateNewDimensions(image.width, image.height);
-
-          const item = document.createElement("div");
-          item.className = "image-item";
-
-          const img = document.createElement("img");
-          img.src = image.dataUrl;
-          img.alt = image.file.name;
-
-          const info = document.createElement("div");
-          info.className = "image-info";
-
-          const filename = document.createElement("div");
-          filename.className = "filename";
-          filename.textContent = image.file.name;
-
-          const dimensions = document.createElement("div");
-          dimensions.className = "dimensions";
-          dimensions.textContent =
-            image.width + " × " + image.height + " | " + formatFileSize(image.file.size);
-
-          info.appendChild(filename);
-          info.appendChild(dimensions);
-
-          const newDimsSpan = document.createElement("span");
-          newDimsSpan.className = "new-dimensions";
-          newDimsSpan.textContent = "→ " + newDims.width + " × " + newDims.height;
-
-          const actions = document.createElement("div");
-          actions.className = "image-actions";
-
-          const removeBtn = document.createElement("button");
-          removeBtn.className = "secondary outline";
-          removeBtn.textContent = "✕";
-          removeBtn.addEventListener("click", () => removeImage(index));
-
-          actions.appendChild(removeBtn);
-
-          item.appendChild(img);
-          item.appendChild(info);
-          item.appendChild(newDimsSpan);
-          item.appendChild(actions);
-
-          imageList.appendChild(item);
-        });
-      }
-
-      function updateAllPreview() {
-        renderImageList();
-      }
-
-      window.removeImage = function (index) {
-        images.splice(index, 1);
-        renderImageList();
-        updateStats();
-      };
-
-      window.clearAll = function () {
-        images = [];
-        processedImages = [];
-        renderImageList();
-        updateStats();
-      };
-
-      function updateStats() {
-        document.getElementById("totalCount").textContent = images.length;
-        const totalSize = images.reduce((sum, img) => sum + img.file.size, 0);
-        document.getElementById("totalOriginalSize").textContent = formatFileSize(totalSize);
-        const processed = images.filter((img) => img.processed).length;
-        document.getElementById("processedCount").textContent = processed;
-
-        document.getElementById("downloadBtn").disabled = processed === 0;
-      }
-
-      window.formatFileSize = function (bytes) {
-        if (bytes < 1024) return bytes + " B";
-        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
-        return (bytes / (1024 * 1024)).toFixed(2) + " MB";
-      };
-
-      window.processAll = async function () {
-        const progressBar = document.getElementById("progressBar");
-        const progressFill = document.getElementById("progressFill");
-        progressBar.style.display = "block";
-
-        processedImages = [];
-
-        for (let i = 0; i < images.length; i++) {
-          const progress = ((i + 1) / images.length) * 100;
-          progressFill.style.width = progress + "%";
-
-          await processImage(images[i]);
-          updateStats();
-        }
-
-        setTimeout(() => {
-          progressBar.style.display = "none";
-        }, 500);
-      };
-
-      function processImage(imageData) {
-        return new Promise((resolve) => {
+    function handleFiles(files) {
+      if (files.length === 0) return;
+      statusSection.style.display = 'block';
+      
+      Array.from(files).forEach(file => {
+        if (!file.type.startsWith('image/')) return;
+        
+        const reader = new FileReader();
+        reader.onload = e => {
           const img = new Image();
           img.onload = () => {
-            const newDims = calculateNewDimensions(imageData.width, imageData.height);
-
-            const canvas = document.createElement("canvas");
-            canvas.width = newDims.width;
-            canvas.height = newDims.height;
-
-            const ctx = canvas.getContext("2d");
-            ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = "high";
-            ctx.drawImage(img, 0, 0, newDims.width, newDims.height);
-
-            const format = document.querySelector('input[name="format"]:checked').value;
-            const quality = parseInt(qualitySlider.value) / 100;
-
-            let mimeType, extension;
-            if (format === "original") {
-              mimeType = imageData.file.type;
-              extension = imageData.file.name.split(".").pop();
-            } else {
-              mimeType = "image/" + format;
-              extension = format === "jpeg" ? "jpg" : format;
-            }
-
-            const dataUrl = canvas.toDataURL(mimeType, quality);
-
-            imageData.processed = true;
-            imageData.processedDataUrl = dataUrl;
-            imageData.processedWidth = newDims.width;
-            imageData.processedHeight = newDims.height;
-            imageData.processedExtension = extension;
-
-            processedImages.push(imageData);
-            resolve();
+            const item = {
+              id: Math.random().toString(36).substr(2, 9),
+              file: file,
+              src: e.target.result,
+              width: img.width,
+              height: img.height
+            };
+            rawImages.push(item);
+            renderItem(item);
+            updateStats();
           };
-          img.src = imageData.dataUrl;
-        });
-      }
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
 
-      window.downloadAll = async function () {
-        const processed = images.filter((img) => img.processed);
-        if (processed.length === 0) return;
+    function renderItem(item) {
+      const div = document.createElement('div');
+      div.className = 'image-item';
+      div.id = `item-${item.id}`;
+      div.innerHTML = `
+        <img src="${item.src}">
+        <div class="image-info">
+          <div class="image-name">${item.file.name}</div>
+          <div class="image-meta">${item.width}×${item.height} | ${formatSize(item.file.size)}</div>
+        </div>
+        <div class="resize-tag" id="tag-${item.id}">PREVIEW</div>
+        <button class="btn btn-outline" style="padding:4px 10px; border-width:2px;" onclick="removeItem('${item.id}')">✕</button>
+      `;
+      imageList.appendChild(div);
+      updatePreviewTags();
+    }
 
-        if (processed.length === 1) {
-          // Single file download
-          const img = processed[0];
-          const link = document.createElement("a");
-          const baseName = img.file.name.replace(/\.[^.]+$/, "");
-          link.download = baseName + "_resized." + img.processedExtension;
-          link.href = img.processedDataUrl;
-          link.click();
-        } else {
-          // Multiple files - create zip
-          const zip = new JSZip();
-
-          processed.forEach((img, index) => {
-            const baseName = img.file.name.replace(/\.[^.]+$/, "");
-            const filename = baseName + "_resized." + img.processedExtension;
-            const base64Data = img.processedDataUrl.split(",")[1];
-            zip.file(filename, base64Data, { base64: true });
-          });
-
-          const blob = await zip.generateAsync({ type: "blob" });
-          const link = document.createElement("a");
-          link.download = "resized_images.zip";
-          link.href = URL.createObjectURL(blob);
-          link.click();
-          URL.revokeObjectURL(link.href);
+    function updatePreviewTags() {
+      rawImages.forEach(img => {
+        const tag = document.getElementById(`tag-${img.id}`);
+        if (tag) {
+          const dims = calculateDimensions(img.width, img.height);
+          tag.textContent = `→ ${dims.w}×${dims.h}`;
         }
-      };
+      });
+    }
 
-      // Theme toggle
-      function toggleTheme() {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute("data-theme");
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        document.getElementById("theme-icon").textContent = newTheme === "light" ? "☀️" : "🌙";
-        localStorage.setItem("theme", newTheme);
+    function calculateDimensions(origW, origH) {
+      const mode = resizeMode.value;
+      const tw = parseInt(targetWidth.value) || 0;
+      const th = parseInt(targetHeight.value) || 0;
+      const keepRatio = document.getElementById('keepAspectRatio').checked;
+      const allowUpscale = document.getElementById('allowUpscale').checked;
+
+      let nw = origW, nh = origH;
+
+      switch(mode) {
+        case 'width':
+          nw = tw;
+          nh = keepRatio ? Math.round(origH * (tw / origW)) : origH;
+          break;
+        case 'height':
+          nh = th;
+          nw = keepRatio ? Math.round(origW * (th / origH)) : origW;
+          break;
+        case 'both':
+          nw = tw; nh = th;
+          if (keepRatio) {
+            const ratio = Math.min(tw / origW, th / origH);
+            nw = Math.round(origW * ratio);
+            nh = Math.round(origH * ratio);
+          }
+          break;
+        case 'percent':
+          nw = Math.round(origW * (tw / 100));
+          nh = Math.round(origH * (tw / 100));
+          break;
+        case 'longest':
+          if (origW > origH) {
+            nw = tw; nh = Math.round(origH * (tw / origW));
+          } else {
+            nh = tw; nw = Math.round(origW * (tw / origH));
+          }
+          break;
+        case 'shortest':
+          if (origW < origH) {
+            nw = tw; nh = Math.round(origH * (tw / origW));
+          } else {
+            nh = tw; nw = Math.round(origW * (tw / origH));
+          }
+          break;
       }
-    </script>
-  </body>
+
+      if (!allowUpscale && (nw > origW || nh > origH)) {
+        nw = origW; nh = origH;
+      }
+
+      return { w: Math.max(1, nw), h: Math.max(1, nh) };
+    }
+
+    // Processing
+    btnProcess.onclick = async () => {
+      if (rawImages.length === 0) return;
+      
+      btnProcess.disabled = true;
+      progressContainer.style.display = 'block';
+      processedResults = [];
+      
+      const q = parseInt(quality.value) / 100;
+      const fmtInput = outputFormat.value;
+
+      for (let i = 0; i < rawImages.length; i++) {
+        const item = rawImages[i];
+        const dims = calculateDimensions(item.width, item.height);
+        
+        const canvas = document.createElement('canvas');
+        canvas.width = dims.w;
+        canvas.height = dims.h;
+        const ctx = canvas.getContext('2d');
+        
+        const img = new Image();
+        img.src = item.src;
+        await new Promise(r => img.onload = r);
+        
+        ctx.drawImage(img, 0, 0, dims.w, dims.h);
+        
+        const mime = fmtInput === 'original' ? item.file.type : `image/${fmtInput}`;
+        const dataUrl = canvas.toDataURL(mime, q);
+        
+        processedResults.push({
+          name: item.file.name.replace(/\.[^.]+$/, ""),
+          dataUrl: dataUrl,
+          mime: mime,
+          ext: mime.split('/')[1].replace('jpeg', 'jpg')
+        });
+
+        progressFill.style.width = `${((i + 1) / rawImages.length) * 100}%`;
+        document.getElementById('countProcessed').textContent = i + 1;
+      }
+
+      btnDownloadZip.disabled = false;
+      btnProcess.disabled = false;
+      showToast();
+    };
+
+    btnDownloadZip.onclick = async () => {
+      const zip = new JSZip();
+      processedResults.forEach(res => {
+        const base64 = res.dataUrl.split(',')[1];
+        zip.file(`${res.name}_resized.${res.ext}`, base64, {base64: true});
+      });
+      
+      const content = await zip.generateAsync({type: "blob"});
+      const url = URL.createObjectURL(content);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = "webutils_resized_images.zip";
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+
+    btnClear.onclick = () => {
+      if (confirm('确定清空当前列表吗？')) {
+        rawImages = [];
+        processedResults = [];
+        imageList.innerHTML = '';
+        updateStats();
+        statusSection.style.display = 'none';
+        progressContainer.style.display = 'none';
+        btnDownloadZip.disabled = true;
+      }
+    };
+
+    window.removeItem = (id) => {
+      rawImages = rawImages.filter(img => img.id !== id);
+      document.getElementById(`item-${id}`).remove();
+      updateStats();
+      if (rawImages.length === 0) statusSection.style.display = 'none';
+    };
+
+    // Utils
+    function updateStats() {
+      document.getElementById('countPending').textContent = rawImages.length;
+      const total = rawImages.reduce((acc, img) => acc + img.file.size, 0);
+      document.getElementById('sizeTotal').textContent = formatSize(total);
+    }
+
+    function formatSize(bytes) {
+      if (bytes === 0) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function showToast() {
+      const t = document.getElementById('toast');
+      t.style.display = 'block';
+      setTimeout(() => t.style.display = 'none', 3000);
+    }
+  </script>
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "在线图片批量缩放工具",
+    "url": "https://essays4u.net/tools/media/batch-resize.html",
+    "applicationCategory": "MultimediaApplication",
+    "offers": {
+      "@type": "Offer",
+      "price": "0"
+    },
+    "operatingSystem": "All",
+    "description": "高效的在线图片批量调整尺寸工具，支持多种缩放算法和 ZIP 打包下载，纯前端处理隐私安全。"
+  }
+  </script>
+</body>
 </html>

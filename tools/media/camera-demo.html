@@ -1,527 +1,629 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>摄像头拍照 - WebUtils</title>
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="调用摄像头拍照并保存到本地" />
-    <meta name="keywords" content="摄像头 拍照 相机 camera photo" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/media/camera-demo.html" />
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>在线摄像头拍照工具 - 浏览器直接调用相机、自拍、不上传数据 | WebUtils</title>
+  <meta name="description" content="WebUtils 免费在线摄像头拍照工具。支持直接调用手机或电脑摄像头，高清拍照并保存到本地。100% 隐私保护，照片不上传服务器，支持镜像预览、多摄像头切换。">
+  <meta name="keywords" content="在线拍照,摄像头工具,自拍工具,网页相机,WebRTC相机,免插件拍照,隐私拍照,高清自拍,Online Camera,Webcam Capture">
+  <link rel="canonical" href="https://essays4u.net/tools/media/camera-demo.html">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="在线摄像头拍照工具 - 安全、快捷、高清自拍">
+  <meta property="og:description" content="直接在浏览器中调用摄像头进行拍照，支持多设备切换，100% 本地处理，保护隐私。">
+  <meta property="og:url" content="https://essays4u.net/tools/media/camera-demo.html">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://essays4u.net/social-preview.png">
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="摄像头拍照 - WebUtils" />
-    <meta property="og:description" content="调用摄像头拍照并保存到本地" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/media/camera-demo.html" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "在线摄像头拍照工具",
+    "description": "无需安装应用，直接在浏览器中调用摄像头拍照并保存照片。",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "Any",
+    "url": "https://essays4u.net/tools/media/camera-demo.html",
+    "offers": {
+      "@type": "Offer",
+      "price": "0"
+    }
+  }
+  </script>
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="摄像头拍照 - WebUtils" />
-    <meta name="twitter:description" content="调用摄像头拍照并保存到本地" />
-    <!-- OG Image -->
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+  <style>
+    :root {
+      --primary-color: #00f5d4; /* 蓝绿色 */
+      --secondary-color: #f72585; /* 品红 */
+      --bg-color: #0a0a0f;
+      --card-bg: #12121a;
+      --text-main: #e8e8ed;
+      --text-muted: #8888a0;
+      --border-color: #2a2a3a;
+      --neo-shadow: 8px 8px 0px 0px #000;
+      --neo-border: 3px solid #000;
+      --radius: 0px; /* 纯正野兽派倾向于直角或极小圆角 */
+    }
 
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: "Space Grotesk", "Segoe UI", system-ui, sans-serif; 
+      line-height: 1.6; 
+      color: var(--text-main); 
+      background: var(--bg-color); 
+      padding-bottom: 50px;
+    }
+    
+    .container { width: 95%; max-width: 1200px; margin: 0 auto; }
 
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
+    /* 顶部导航 */
+    .site-header { background: #000; border-bottom: 3px solid var(--primary-color); position: sticky; top: 0; z-index: 100; }
+    .site-header .container { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; }
+    .logo a { font-size: 1.6rem; font-weight: 800; color: var(--primary-color); text-decoration: none; text-transform: uppercase; letter-spacing: 1px; }
+    .site-nav ul { display: flex; list-style: none; gap: 20px; }
+    .site-nav a { text-decoration: none; color: #fff; font-weight: 600; font-size: 0.95rem; }
+    .site-nav a:hover { color: var(--primary-color); }
 
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-      }
+    /* 主体布局 */
+    main.container { display: flex; flex-direction: column; gap: 30px; padding: 40px 0; }
+    @media (min-width: 992px) {
+      main.container { flex-direction: row; align-items: flex-start; }
+    }
 
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
-      * {
-        box-sizing: border-box;
-      }
+    /* 左侧工具区 */
+    .tool-section { flex: 3; background: var(--card-bg); padding: 30px; border: var(--neo-border); box-shadow: var(--neo-shadow); position: relative; }
+    .tool-header { margin-bottom: 25px; border-bottom: 2px solid var(--border-color); padding-bottom: 15px; }
+    .tool-header h1 { font-size: 2.2rem; font-weight: 800; color: var(--primary-color); margin-bottom: 10px; }
+    .tool-header p { color: var(--text-muted); font-size: 1rem; }
 
-      body {
-        font-family:
-          system-ui,
-          -apple-system,
-          "Segoe UI",
-          Roboto,
-          sans-serif;
-        background: var(--bg-deep);
-        color: var(--text-primary);
-        margin: 0;
-        padding: 24px;
-        min-height: 100vh;
-      }
+    /* 摄像头主预览区 */
+    .camera-viewport {
+      background: #000;
+      border: 3px solid #000;
+      box-shadow: 4px 4px 0px 0px var(--primary-color);
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 25px;
+    }
+    #video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1); /* 默认镜像 */
+    }
+    #video.no-mirror { transform: scaleX(1); }
+    
+    .viewport-overlay {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .badge {
+      background: rgba(0,0,0,0.8);
+      color: var(--primary-color);
+      padding: 4px 10px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.75rem;
+      border: 1px solid var(--primary-color);
+    }
 
-      .container {
-        max-width: 800px;
-        margin: 0 auto;
-      }
+    /* 控制栏 */
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+    select {
+      background: #1a1a24;
+      border: 2px solid var(--border-color);
+      color: var(--text-main);
+      padding: 10px;
+      font-family: inherit;
+      outline: none;
+    }
+    select:focus { border-color: var(--primary-color); }
 
-      .back-link {
-        display: inline-block;
-        margin-bottom: 16px;
-        color: var(--accent-cyan);
-        text-decoration: none;
-        font-size: 0.9rem;
-      }
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 20px;
+      padding-top: 25px;
+      border-top: 1px solid var(--border-color);
+    }
 
-      .back-link:hover {
-        text-decoration: underline;
-      }
+    /* 按钮样式 */
+    .btn {
+      padding: 14px 28px;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      border: 3px solid #000;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.1s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px 0px #000; }
+    
+    .btn-primary { background: var(--primary-color); color: #000; box-shadow: 4px 4px 0px 0px #000; }
+    .btn-secondary { background: var(--secondary-color); color: #fff; box-shadow: 4px 4px 0px 0px #000; }
+    .btn-outline { background: transparent; border-color: var(--primary-color); color: var(--primary-color); box-shadow: 4px 4px 0px 0px #000; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; transform: none; }
 
-      h1 {
-        font-size: 1.75rem;
-        margin: 0 0 8px;
-      }
+    /* 相册区 */
+    .gallery-section { margin-top: 40px; }
+    .gallery-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 20px;
+    }
+    .photo-card {
+      background: #1a1a24;
+      border: 2px solid #000;
+      padding: 10px;
+      position: relative;
+      transition: transform 0.2s;
+    }
+    .photo-card img { width: 100%; aspect-ratio: 4/3; object-fit: cover; border: 1px solid #000; }
+    .photo-meta { font-size: 0.7rem; color: var(--text-muted); margin-top: 8px; font-family: "JetBrains Mono", monospace; }
+    .photo-actions {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      display: flex;
+      gap: 5px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .photo-card:hover .photo-actions { opacity: 1; }
+    .action-icon {
+      background: rgba(0,0,0,0.8);
+      color: #fff;
+      border: 1px solid #fff;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .action-icon:hover { background: var(--secondary-color); }
 
-      .desc {
-        color: var(--text-muted);
-        margin: 0 0 24px;
-        font-size: 0.95rem;
-      }
+    /* 侧边栏 */
+    .sidebar-section { flex: 1; display: flex; flex-direction: column; gap: 25px; }
+    .article-card { background: var(--card-bg); padding: 25px; border: var(--neo-border); box-shadow: var(--neo-shadow); }
+    .article-card h2 { font-size: 1.3rem; margin-bottom: 15px; color: var(--primary-color); text-transform: uppercase; border-left: 5px solid var(--secondary-color); padding-left: 12px; }
+    .article-card p { font-size: 0.95rem; color: var(--text-main); margin-bottom: 12px; }
+    .article-card ul { padding-left: 20px; font-size: 0.9rem; color: var(--text-muted); }
+    .article-card li { margin-bottom: 8px; }
 
-      .card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        padding: 20px;
-        box-shadow: var(--shadow);
-        margin-bottom: 20px;
-      }
+    /* 广告位 */
+    .ad-placeholder { background: #1a1a24; border: 2px dashed var(--border-color); color: var(--text-muted); text-align: center; padding: 20px; font-size: 0.8rem; min-height: 100px; display: flex; align-items: center; justify-content: center; text-transform: uppercase; letter-spacing: 1px; }
+    .ad-top { margin-bottom: 25px; }
 
-      .video-container {
-        text-align: center;
-      }
+    /* 页脚 */
+    .site-footer { background: #000; border-top: 3px solid var(--secondary-color); color: #fff; padding: 60px 0 30px; margin-top: 60px; }
+    .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; }
+    .footer-section h3 { font-size: 1.2rem; margin-bottom: 20px; color: var(--primary-color); }
+    .footer-section ul { list-style: none; }
+    .footer-section li { margin-bottom: 12px; }
+    .footer-section a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; }
+    .footer-section a:hover { color: #fff; }
 
-      #video {
-        width: 100%;
-        max-width: 640px;
-        border-radius: var(--radius-md);
-        background: #000;
-      }
+    /* 隐藏 Canvas */
+    #canvas { display: none; }
 
-      #canvas {
-        display: none;
-      }
-
-      .btn-row {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        justify-content: center;
-        margin-top: 16px;
-      }
-
-      button {
-        padding: 10px 20px;
-        font-size: 1rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        background: var(--bg-card);
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-
-      button:hover {
-        border-color: var(--accent-cyan);
-        color: var(--accent-cyan);
-      }
-
-      button.primary {
-        background: var(--accent-cyan);
-        border-color: var(--accent-cyan);
-        color: #fff;
-      }
-
-      button.primary:hover {
-        background: var(--accent-cyan);
-        border-color: var(--accent-cyan);
-        color: #fff;
-      }
-
-      .gallery-title {
-        font-size: 1.1rem;
-        margin: 0 0 16px;
-      }
-
-      #photoGallery {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 12px;
-      }
-
-      .gallery-empty {
-        color: var(--text-muted);
-        font-size: 0.9rem;
-      }
-
-      .photo-item {
-        position: relative;
-      }
-
-      .photo-item img {
-        width: 100%;
-        border-radius: var(--radius-md);
-        border: 1px solid var(--border-subtle);
-        cursor: pointer;
-        transition: transform 0.2s;
-      }
-
-      .photo-item img:hover {
-        transform: scale(1.02);
-      }
-
-      .photo-item .download-btn {
-        position: absolute;
-        bottom: 8px;
-        right: 8px;
-        padding: 4px 8px;
-        font-size: 0.75rem;
-        background: rgb(0, 0, 0, 0.7);
-        color: #fff;
-        border: none;
-        border-radius: 4px;
-      }
-
-      .photo-item .download-btn:hover {
-        background: rgb(0, 0, 0, 0.9);
-        color: #fff;
-      }
-
-      .status {
-        text-align: center;
-        color: var(--text-muted);
-        font-size: 0.9rem;
-        margin-top: 12px;
-      }
-
-      .status.error {
-        color: #dc3545;
-      }
-
-      footer {
-        text-align: center;
-        margin-top: 32px;
-        padding-top: 16px;
-        border-top: 1px solid var(--border-subtle);
-        color: var(--text-muted);
-        font-size: 0.85rem;
-      }
-
-      footer a {
-        color: var(--accent-cyan);
-        text-decoration: none;
-      }
-
-      footer a:hover {
-        text-decoration: underline;
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-    </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>›</span>
-      摄像头拍照
-    </nav>
+    @media (max-width: 768px) {
+      .tool-header h1 { font-size: 1.8rem; }
+      .controls { grid-template-columns: 1fr; }
+      .btn { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
     <div class="container">
-      <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">🌙</button>
-      <h1>摄像头拍照</h1>
-      <p class="desc">调用摄像头拍照，照片保存到本地，不上传任何服务器</p>
+      <div class="logo"><a href="../../index.html">WebUtils</a></div>
+      <nav class="site-nav">
+        <ul>
+          <li><a href="../../index.html">首页</a></li>
+          <li><a href="../media/image-compressor.html">图片压缩</a></li>
+          <li><a href="../media/camera-demo.html">在线拍照</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
 
-      <div class="card video-container">
+  <main class="container">
+    <div class="tool-section">
+      <div class="ad-placeholder ad-top">Advertisement - Sponsored Content</div>
+      
+      <div class="tool-header">
+        <h1>在线摄像头拍照工具</h1>
+        <p>通过浏览器 WebRTC API 直接访问摄像头。支持高清捕获、自拍镜像、多镜头切换，照片仅保存在浏览器本地，绝不上传。</p>
+      </div>
+
+      <!-- 摄像头区域 -->
+      <div class="camera-viewport">
         <video id="video" autoplay playsinline></video>
-        <canvas id="canvas"></canvas>
-        <div class="btn-row">
-          <button id="startBtn" class="primary">启动摄像头</button>
-          <button id="captureBtn" disabled>拍照</button>
-          <button id="clearBtn">清空相册</button>
+        <div class="viewport-overlay">
+          <div class="badge" id="resBadge">Ready</div>
+          <div class="badge" id="cameraNameBadge">Device: Off</div>
         </div>
-        <div id="status" class="status"></div>
+        <div id="statusMsg" style="position: absolute; bottom: 20px; background: rgba(0,0,0,0.7); padding: 5px 15px; font-size: 0.9rem; color: var(--primary-color); display: none;"></div>
       </div>
 
-      <div class="card">
-        <h3 class="gallery-title">照片相册</h3>
-        <div id="photoGallery">
-          <span id="emptyHint" class="gallery-empty">还没有拍摄照片</span>
+      <div class="controls">
+        <div class="control-group">
+          <label>选择摄像头</label>
+          <select id="videoSource"><option value="">等待启动...</option></select>
+        </div>
+        <div class="control-group">
+          <label>预览模式</label>
+          <select id="mirrorSelect">
+            <option value="mirror">镜像模式 (适合自拍)</option>
+            <option value="normal">正常模式 (真实视角)</option>
+          </select>
         </div>
       </div>
 
-      <footer>
-        <a
-          href="https://github.com/chicogong/html-tools/blob/main/tools/camera-demo.html"
-          target="_blank"
-          rel="noreferrer"
-        >
-          View source
-        </a>
-        · 纯前端工具 · 无服务器 ·
-        <a href="../../index.html">WebUtils</a>
-      </footer>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnStart">开启摄像头</button>
+        <button class="btn btn-secondary" id="btnCapture" disabled>📸 立即拍照</button>
+        <button class="btn btn-outline" id="btnClearGallery">清空相册</button>
+      </div>
+
+      <!-- 相册区域 -->
+      <div class="gallery-section">
+        <div class="gallery-header">
+          <h2 style="font-size: 1.4rem; color: var(--primary-color);">本地相册</h2>
+          <span id="photoCount" style="color: var(--text-muted); font-family: monospace;">0 张照片</span>
+        </div>
+        <div class="gallery-grid" id="photoGallery">
+          <!-- 照片卡片 -->
+        </div>
+        <div id="emptyHint" style="text-align: center; padding: 40px; border: 1px dashed var(--border-color); color: var(--text-muted);">
+          尚未拍摄任何照片。点击“开启摄像头”开始创作。
+        </div>
+      </div>
+
+      <!-- SEO 内容 -->
+      <section style="margin-top: 50px; border-top: 2px solid var(--border-color); padding-top: 40px;">
+        <h2 style="font-size: 1.8rem; margin-bottom: 25px; color: var(--primary-color);">深度解析：如何在浏览器中实现专业级在线拍照？</h2>
+        <article style="font-size: 1rem; color: var(--text-main); line-height: 1.8;">
+          <p>随着 HTML5 和 WebRTC（Web Real-Time Communication）技术的发展，浏览器直接调用硬件摄像头的性能已趋于成熟。WebUtils 提供的这款<strong>在线摄像头拍照工具</strong>正是利用了 <code>navigator.mediaDevices.getUserMedia</code> 这一核心 API，为用户提供零延迟、高保真的拍摄体验。</p>
+          
+          <h3 style="margin: 25px 0 15px; color: var(--secondary-color); text-transform: uppercase;">1. 为什么选择在线工具而非本地应用？</h3>
+          <p>传统的自拍软件通常需要下载并安装，不仅占用磁盘空间，还可能携带不必要的后台进程。在线拍照工具的优势在于：</p>
+          <ul>
+            <li><strong>即开即用：</strong> 无论是在电脑端、平板还是智能手机，只要有现代浏览器，就能瞬间开启相机。</li>
+            <li><strong>隐私绝对透明：</strong> Web 权限模型非常严格。您必须手动点击“允许”浏览器才能访问相机，且一旦关闭网页，所有访问权限都会立即失效。</li>
+            <li><strong>跨平台支持：</strong> 自动适配 iOS、Android、Windows 和 macOS 的不同摄像头驱动。</li>
+          </ul>
+
+          <div class="ad-placeholder" style="margin: 30px 0;">Advertisement - Mid-Article Support</div>
+
+          <h3 style="margin: 25px 0 15px; color: var(--secondary-color); text-transform: uppercase;">2. 镜像模式 vs 正常模式：你应该怎么选？</h3>
+          <p>在拍摄时，您可能会注意到预览画面与最终照片可能存在“左右颠倒”的情况。这是因为在自拍场景下，人们习惯于像照镜子一样查看自己的动作（镜像预览）。然而，如果您是在拍摄文档或他人，则需要关闭镜像以获得正确的文字方向。我们的工具允许您实时切换预览模式，确保所见即所得。</p>
+
+          <h3 style="margin: 25px 0 15px; color: var(--secondary-color); text-transform: uppercase;">3. 技术核心：100% 浏览器本地处理</h3>
+          <p>很多用户担心在线工具会将隐私照片上传到云端。<strong>WebUtils 郑重承诺：</strong> 您的照片处理完全发生在您的设备内存中。拍照时，我们捕捉 <code>&lt;video&gt;</code> 标签的当前帧并绘制到 <code>&lt;canvas&gt;</code> 上，最后导出为 Base64 格式的 Data URI。保存相册时使用的是 <code>localStorage</code>，这意味着照片从未离开过您的浏览器。即便是在断网的情况下，本工具依然可以正常运行。</p>
+
+          <h3 style="margin: 25px 0 15px; color: var(--secondary-color); text-transform: uppercase;">4. 常见问题 (FAQ)</h3>
+          <div style="background: #1a1a24; padding: 20px; border-left: 5px solid var(--primary-color); margin-bottom: 20px;">
+            <p><strong>问：为什么我的摄像头无法开启？</strong><br>答：请检查浏览器地址栏左侧的锁定图标，确保已授予“相机”访问权限。此外，请确保没有其他程序（如 Zoom 或 Skype）正在独占使用该摄像头。</p>
+          </div>
+          <div style="background: #1a1a24; padding: 20px; border-left: 5px solid var(--secondary-color);">
+            <p><strong>问：支持拍摄 4K 高清照片吗？</strong><br>答：这取决于您摄像头的硬件参数。我们的工具会请求“理想分辨率”（1280x720 及以上），浏览器会自动匹配您硬件支持的最佳清晰度。</p>
+          </div>
+        </article>
+      </section>
     </div>
 
-    <script>
-      const video = document.getElementById("video");
-      const canvas = document.getElementById("canvas");
-      const startBtn = document.getElementById("startBtn");
-      const captureBtn = document.getElementById("captureBtn");
-      const clearBtn = document.getElementById("clearBtn");
-      const photoGallery = document.getElementById("photoGallery");
-      const emptyHint = document.getElementById("emptyHint");
-      const statusEl = document.getElementById("status");
+    <aside class="sidebar-section">
+      <div class="article-card">
+        <h2>操作技巧</h2>
+        <ul>
+          <li><strong>快速拍照：</strong> 开启摄像头后，点击红色“拍照”按钮即可瞬间捕捉。</li>
+          <li><strong>切换镜头：</strong> 如果您的手机有前置和后置多个镜头，可以在“选择摄像头”下拉框中自由切换。</li>
+          <li><strong>一键保存：</strong> 拍照后，点击照片上的下载图标可将 JPG 文件永久存入您的电脑相册。</li>
+        </ul>
+      </div>
 
-      let stream = null;
-      const LS_KEY = "camera_demo_photos_v1";
+      <div class="ad-placeholder" style="min-height: 250px;">Banner Ad - Sidebar</div>
 
-      function updateEmptyHint() {
-        const hasPhotos = photoGallery.querySelectorAll(".photo-item").length > 0;
-        emptyHint.style.display = hasPhotos ? "none" : "inline";
-      }
+      <div class="article-card">
+        <h2>更多媒体工具</h2>
+        <ul>
+          <li><a href="image-compressor.html" style="color: var(--primary-color);">在线图片压缩</a></li>
+          <li><a href="batch-resize.html" style="color: var(--primary-color);">批量调整图片大小</a></li>
+          <li><a href="base64-image.html" style="color: var(--primary-color);">图片 Base64 互转</a></li>
+          <li><a href="exif-viewer.html" style="color: var(--primary-color);">图片 EXIF 信息查看</a></li>
+        </ul>
+      </div>
 
-      // 从 localStorage 加载照片
-      function loadPhotos() {
-        const saved = localStorage.getItem(LS_KEY);
-        if (!saved) return;
-        try {
-          const photos = JSON.parse(saved);
-          photos.forEach((photo) => addPhotoToGallery(photo.data, photo.timestamp, false));
-        } catch (e) {}
-      }
+      <div class="article-card" style="border-color: var(--secondary-color);">
+        <h2>隐私声明</h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">本页面不会将您的任何生物识别数据或照片上传到服务器。所有数据均存储在浏览器的本地存储（IndexedDB/LocalStorage）中。</p>
+      </div>
+    </aside>
+  </main>
 
-      // 保存照片到 localStorage
-      function savePhotos() {
-        const photos = [];
-        photoGallery.querySelectorAll(".photo-item").forEach((item) => {
-          photos.push({
-            data: item.querySelector("img").src,
-            timestamp: item.dataset.timestamp
-          });
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>关于 WebUtils</h3>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">WebUtils 提供纯净、极简、无后端的 Web 开发工具箱。所有工具基于浏览器 API 构建，致力于在提升效率的同时保护用户隐私。</p>
+        </div>
+        <div class="footer-section">
+          <h3>开源与贡献</h3>
+          <ul>
+            <li><a href="https://github.com/chicogong/html-tools" target="_blank">GitHub 源码</a></li>
+            <li><a href="../../index.html">返回导航首页</a></li>
+          </ul>
+        </div>
+      </div>
+      <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #333; text-align: center; color: #555; font-size: 0.8rem;">
+        &copy; 2024 WebUtils. 基于 Neo-Brutalism 设计哲学构建.
+      </div>
+    </div>
+  </footer>
+
+  <canvas id="canvas"></canvas>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const btnStart = document.getElementById('btnStart');
+    const btnCapture = document.getElementById('btnCapture');
+    const btnClearGallery = document.getElementById('btnClearGallery');
+    const videoSource = document.getElementById('videoSource');
+    const mirrorSelect = document.getElementById('mirrorSelect');
+    const photoGallery = document.getElementById('photoGallery');
+    const emptyHint = document.getElementById('emptyHint');
+    const photoCountEl = document.getElementById('photoCount');
+    const resBadge = document.getElementById('resBadge');
+    const cameraNameBadge = document.getElementById('cameraNameBadge');
+    const statusMsg = document.getElementById('statusMsg');
+
+    let currentStream = null;
+    const LS_KEY = 'webutils_camera_photos';
+
+    // 1. 获取设备列表
+    async function getDevices() {
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(device => device.kind === 'videoinput');
+        
+        videoSource.innerHTML = '';
+        if (videoDevices.length === 0) {
+          videoSource.innerHTML = '<option value="">未找到摄像头</option>';
+          return;
+        }
+
+        videoDevices.forEach((device, index) => {
+          const option = document.createElement('option');
+          option.value = device.deviceId;
+          option.text = device.label || `摄像头 ${index + 1}`;
+          videoSource.appendChild(option);
         });
+      } catch (e) {
+        showStatus('无法获取设备列表: ' + e.message);
+      }
+    }
+
+    // 2. 启动摄像头
+    async function startCamera(deviceId) {
+      if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
+      }
+
+      const constraints = {
+        video: {
+          deviceId: deviceId ? { exact: deviceId } : undefined,
+          width: { ideal: 1920 },
+          height: { ideal: 1080 }
+        }
+      };
+
+      try {
+        currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+        video.srcObject = currentStream;
+        
+        // 更新 UI
+        btnStart.textContent = '停止摄像头';
+        btnStart.classList.replace('btn-primary', 'btn-outline');
+        btnCapture.disabled = false;
+        
+        // 获取实际轨道信息
+        const track = currentStream.getVideoTracks()[0];
+        const settings = track.getSettings();
+        resBadge.textContent = `${settings.width} x ${settings.height}`;
+        cameraNameBadge.textContent = `Device: ${track.label}`;
+        
+        // 重新获取设备列表（为了获取 Label）
+        if (!videoSource.options[0].text.includes('摄像头')) {
+          await getDevices();
+          videoSource.value = deviceId || track.getDeviceId();
+        }
+
+        showStatus('摄像头已开启');
+      } catch (e) {
+        showStatus('错误: ' + e.message);
+        console.error(e);
+      }
+    }
+
+    function stopCamera() {
+      if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
+        currentStream = null;
+        video.srcObject = null;
+      }
+      btnStart.textContent = '开启摄像头';
+      btnStart.classList.replace('btn-outline', 'btn-primary');
+      btnCapture.disabled = true;
+      resBadge.textContent = 'Ready';
+      cameraNameBadge.textContent = 'Device: Off';
+      showStatus('摄像头已关闭');
+    }
+
+    // 3. 拍照
+    function capturePhoto() {
+      if (!currentStream) return;
+
+      const width = video.videoWidth;
+      const height = video.videoHeight;
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+
+      // 处理镜像
+      if (mirrorSelect.value === 'mirror') {
+        ctx.translate(width, 0);
+        ctx.scale(-1, 1);
+      }
+
+      ctx.drawImage(video, 0, 0, width, height);
+      
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+      const photo = {
+        id: Date.now(),
+        data: dataUrl,
+        time: new Date().toLocaleString(),
+        res: `${width}x${height}`
+      };
+
+      addPhotoToUI(photo);
+      savePhotoToLocalStorage(photo);
+      showStatus('拍照成功！');
+    }
+
+    // 4. UI 操作
+    function addPhotoToUI(photo) {
+      emptyHint.style.display = 'none';
+      const card = document.createElement('div');
+      card.className = 'photo-card';
+      card.dataset.id = photo.id;
+      card.innerHTML = `
+        <img src="${photo.data}" alt="Photo">
+        <div class="photo-meta">
+          <div>${photo.time}</div>
+          <div>${photo.res}</div>
+        </div>
+        <div class="photo-actions">
+          <div class="action-icon" onclick="downloadPhoto('${photo.data}', ${photo.id})" title="下载">💾</div>
+          <div class="action-icon" onclick="deletePhoto(${photo.id})" title="删除">❌</div>
+        </div>
+      `;
+      photoGallery.prepend(card);
+      updatePhotoCount();
+    }
+
+    function updatePhotoCount() {
+      const count = photoGallery.children.length;
+      photoCountEl.textContent = `${count} 张照片`;
+      emptyHint.style.display = count === 0 ? 'block' : 'none';
+    }
+
+    function showStatus(msg) {
+      statusMsg.textContent = msg;
+      statusMsg.style.display = 'block';
+      setTimeout(() => { statusMsg.style.display = 'none'; }, 3000);
+    }
+
+    window.downloadPhoto = (data, id) => {
+      const a = document.createElement('a');
+      a.href = data;
+      a.download = `WebUtils_Photo_${id}.jpg`;
+      a.click();
+    };
+
+    window.deletePhoto = (id) => {
+      const card = document.querySelector(`.photo-card[data-id="${id}"]`);
+      if (card) {
+        card.remove();
+        let photos = JSON.parse(localStorage.getItem(LS_KEY) || '[]');
+        photos = photos.filter(p => p.id !== id);
         localStorage.setItem(LS_KEY, JSON.stringify(photos));
+        updatePhotoCount();
       }
+    };
 
-      // 添加照片到相册
-      function addPhotoToGallery(imageData, timestamp, save = true) {
-        const photoItem = document.createElement("div");
-        photoItem.className = "photo-item";
-        photoItem.dataset.timestamp = timestamp;
+    function savePhotoToLocalStorage(photo) {
+      const photos = JSON.parse(localStorage.getItem(LS_KEY) || '[]');
+      photos.unshift(photo);
+      // 限制存储数量，防止 LS 溢出
+      if (photos.length > 20) photos.pop();
+      localStorage.setItem(LS_KEY, JSON.stringify(photos));
+    }
 
-        const img = document.createElement("img");
-        img.src = imageData;
-        img.alt = "拍摄的照片";
+    function loadPhotos() {
+      const photos = JSON.parse(localStorage.getItem(LS_KEY) || '[]');
+      photos.reverse().forEach(p => addPhotoToUI(p));
+    }
 
-        const downloadBtn = document.createElement("button");
-        downloadBtn.className = "download-btn";
-        downloadBtn.textContent = "下载";
-        downloadBtn.onclick = (e) => {
-          e.stopPropagation();
-          downloadPhoto(imageData, timestamp);
-        };
-
-        photoItem.appendChild(img);
-        photoItem.appendChild(downloadBtn);
-        photoGallery.insertBefore(photoItem, photoGallery.firstChild);
-
-        updateEmptyHint();
-
-        if (save) {
-          savePhotos();
-        }
+    // 事件绑定
+    btnStart.addEventListener('click', () => {
+      if (currentStream) {
+        stopCamera();
+      } else {
+        startCamera(videoSource.value);
       }
+    });
 
-      // 下载照片
-      function downloadPhoto(imageData, timestamp) {
-        const link = document.createElement("a");
-        link.href = imageData;
-        link.download = "photo_" + timestamp + ".jpg";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+    btnCapture.addEventListener('click', capturePhoto);
+
+    btnClearGallery.addEventListener('click', () => {
+      if (confirm('确定要清空相册吗？照片将无法找回。')) {
+        photoGallery.innerHTML = '';
+        localStorage.removeItem(LS_KEY);
+        updatePhotoCount();
       }
+    });
 
-      // 启动摄像头
-      async function startCamera() {
-        try {
-          statusEl.textContent = "正在请求摄像头权限...";
-          statusEl.className = "status";
-
-          stream = await navigator.mediaDevices.getUserMedia({
-            video: {
-              width: { ideal: 1280 },
-              height: { ideal: 720 },
-              facingMode: "user"
-            }
-          });
-
-          video.srcObject = stream;
-          startBtn.textContent = "停止摄像头";
-          captureBtn.disabled = false;
-          statusEl.textContent = "摄像头已启动";
-        } catch (err) {
-          console.error("Error accessing camera:", err);
-          statusEl.textContent = "无法访问摄像头：" + err.message;
-          statusEl.className = "status error";
-        }
+    videoSource.addEventListener('change', () => {
+      if (currentStream) {
+        startCamera(videoSource.value);
       }
+    });
 
-      // 停止摄像头
-      function stopCamera() {
-        if (stream) {
-          stream.getTracks().forEach((track) => track.stop());
-          stream = null;
-          video.srcObject = null;
-        }
-        startBtn.textContent = "启动摄像头";
-        captureBtn.disabled = true;
-        statusEl.textContent = "摄像头已停止";
+    mirrorSelect.addEventListener('change', () => {
+      if (mirrorSelect.value === 'mirror') {
+        video.classList.remove('no-mirror');
+      } else {
+        video.classList.add('no-mirror');
       }
+    });
 
-      // 拍照
-      function capturePhoto() {
-        if (!stream) return;
+    // 初始化
+    getDevices();
+    loadPhotos();
+    
+    // 监听设备变化
+    navigator.mediaDevices.ondevicechange = getDevices;
 
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-
-        const context = canvas.getContext("2d");
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        const imageData = canvas.toDataURL("image/jpeg", 0.9);
-        const timestamp = Date.now();
-
-        addPhotoToGallery(imageData, timestamp);
-        statusEl.textContent = "照片已保存到相册";
-      }
-
-      // 清空相册
-      function clearGallery() {
-        if (confirm("确定要清空所有照片吗？")) {
-          const items = photoGallery.querySelectorAll(".photo-item");
-          items.forEach((item) => item.remove());
-          localStorage.removeItem(LS_KEY);
-          updateEmptyHint();
-          statusEl.textContent = "相册已清空";
-        }
-      }
-
-      // 事件绑定
-      startBtn.onclick = () => {
-        if (stream) {
-          stopCamera();
-        } else {
-          startCamera();
-        }
-      };
-
-      captureBtn.onclick = capturePhoto;
-      clearBtn.onclick = clearGallery;
-
-      // 页面加载时恢复照片
-      loadPhotos();
-      updateEmptyHint();
-
-      // 页面关闭时停止摄像头
-      window.addEventListener("beforeunload", stopCamera);
-
-      window.toggleTheme = function () {
-        const html = document.documentElement;
-        const btn = document.querySelector(".theme-toggle");
-        const next = html.getAttribute("data-theme") === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", next);
-        btn.textContent = next === "light" ? "☀️" : "🌙";
-        localStorage.setItem("theme", next);
-      };
-
-      (function () {
-        const saved = localStorage.getItem("theme");
-        if (saved) {
-          document.documentElement.setAttribute("data-theme", saved);
-          const btn = document.querySelector(".theme-toggle");
-          if (btn) btn.textContent = saved === "light" ? "☀️" : "🌙";
-        }
-      })();
-    </script>
-  </body>
+  </script>
+</body>
 </html>
