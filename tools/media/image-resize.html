@@ -1,1233 +1,377 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>图片压缩对比 - WebUtils</title>
-
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="比较不同质量设置下的图片压缩效果" />
-    <meta name="keywords" content="图片 压缩 对比 质量 resize" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/media/image-resize.html" />
-
-    <!-- Open Graph -->
-    <meta property="og:title" content="图片压缩对比 - WebUtils" />
-    <meta property="og:description" content="比较不同质量设置下的图片压缩效果" />
-    <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/media/image-resize.html"
-    />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="图片压缩对比 - WebUtils" />
-    <meta name="twitter:description" content="比较不同质量设置下的图片压缩效果" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-
-    <!-- JSON-LD BreadcrumbList Schema -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "首页",
-            "item": "https://essays4u.net/"
-          },
-          {
-            "@type": "ListItem",
-            "position": 2,
-            "name": "媒体工具",
-            "item": "https://essays4u.net/#media"
-          },
-          {
-            "@type": "ListItem",
-            "position": 3,
-            "name": "图片压缩对比",
-            "item": "https://essays4u.net/tools/media/image-resize.html"
-          }
-        ]
-      }
-    </script>
-
-    <!-- Preload fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-
-    <style>
-      /* ============================================
-         Design System - CSS Variables
-         ============================================ */
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      /* Light Theme */
-
-      /* ============================================
-         Base Styles
-         ============================================ */
-      *,
-      *::before,
-      *::after {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      html {
-        font-size: 16px;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-      }
-
-      body {
-        font-family: var(--font-sans);
-        background: var(--color-bg-deep);
-        color: var(--color-text-primary);
-        min-height: 100vh;
-        min-height: 100dvh;
-        line-height: 1.5;
-        transition:
-          background-color var(--transition-normal),
-          color var(--transition-normal);
-      }
-
-      /* Subtle background gradient */
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        z-index: 0;
-        background:
-          radial-gradient(circle at 20% 20%, rgba(0, 212, 170, 0.03) 0%, transparent 50%),
-          radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.03) 0%, transparent 50%);
-      }
-
-      [data-theme="light"] body::before {
-        background:
-          radial-gradient(circle at 20% 20%, rgba(0, 184, 148, 0.05) 0%, transparent 50%),
-          radial-gradient(circle at 80% 80%, rgba(124, 58, 237, 0.05) 0%, transparent 50%);
-      }
-
-      /* ============================================
-         Navigation Bar
-         ============================================ */
-      .nav-bar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 1000;
-        height: calc(var(--nav-height) + var(--safe-area-top));
-        padding-top: var(--safe-area-top);
-        background: var(--glass-bg);
-        backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-        -webkit-backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-        border-bottom: 1px solid var(--glass-border);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: background var(--transition-normal);
-      }
-
-      .nav-content {
-        width: 100%;
-        max-width: var(--container-max);
-        height: var(--nav-height);
-        padding: 0 var(--space-6);
-        display: grid;
-        grid-template-columns: 1fr auto 1fr;
-        align-items: center;
-        gap: var(--space-4);
-      }
-
-      /* Back Button */
-      .nav-back {
-        display: flex;
-        align-items: center;
-        gap: var(--space-1);
-        color: var(--color-accent-primary);
-        text-decoration: none;
-        font-size: 0.9375rem;
-        font-weight: 500;
-        padding: var(--space-2) var(--space-1);
-        margin-left: calc(var(--space-2) * -1);
-        border-radius: var(--radius-sm);
-        transition: all var(--transition-fast);
-        justify-self: start;
-      }
-
-      .nav-back:hover {
-        background: var(--color-border-subtle);
-      }
-
-      .nav-back-icon {
-        width: 20px;
-        height: 20px;
-        stroke-width: 2.5;
-      }
-
-      .nav-back-text {
-        display: inline;
-      }
-
-      /* Nav Title */
-      .nav-title {
-        font-size: 1rem;
-        font-weight: 600;
-        color: var(--color-text-primary);
-        text-align: center;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      /* Nav Actions */
-      .nav-actions {
-        display: flex;
-        align-items: center;
-        gap: var(--space-2);
-        justify-self: end;
-      }
-
-      /* Theme Toggle */
-      .theme-toggle {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 36px;
-        height: 36px;
-        border: none;
-        border-radius: var(--radius-full);
-        background: var(--color-bg-subtle);
-        color: var(--color-text-secondary);
-        cursor: pointer;
-        transition: all var(--transition-fast);
-      }
-
-      .theme-toggle:hover {
-        background: var(--color-border-strong);
-        color: var(--color-text-primary);
-        transform: scale(1.05);
-      }
-
-      .theme-toggle svg {
-        width: 18px;
-        height: 18px;
-      }
-
-      .theme-icon-dark,
-      .theme-icon-light {
-        display: none;
-      }
-
-      [data-theme="dark"] .theme-icon-light,
-      :root:not([data-theme]) .theme-icon-light {
-        display: block;
-      }
-
-      [data-theme="light"] .theme-icon-dark {
-        display: block;
-      }
-
-      /* ============================================
-         Main Content
-         ============================================ */
-      .main-content {
-        position: relative;
-        z-index: 1;
-        min-height: 100vh;
-        min-height: 100dvh;
-        padding-top: calc(var(--nav-height) + var(--safe-area-top) + var(--space-6));
-        padding-bottom: calc(var(--space-8) + var(--safe-area-bottom));
-        padding-left: var(--space-6);
-        padding-right: var(--space-6);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .container {
-        width: 100%;
-        max-width: var(--container-max);
-      }
-
-      /* ============================================
-         Card Styles
-         ============================================ */
-      .card {
-        background: var(--glass-bg);
-        backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-        -webkit-backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-        border: 1px solid var(--color-border-default);
-        border-radius: var(--radius-lg);
-        padding: var(--space-6);
-        margin-bottom: var(--space-5);
-        box-shadow: var(--shadow-md);
-      }
-
-      .card-title {
-        font-size: 1.125rem;
-        font-weight: 600;
-        margin-bottom: var(--space-5);
-        color: var(--color-text-primary);
-      }
-
-      /* ============================================
-         Upload Zone
-         ============================================ */
-      .upload-zone {
-        background: var(--glass-bg);
-        backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-        -webkit-backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-        border: 2px dashed var(--color-border-default);
-        border-radius: var(--radius-lg);
-        padding: var(--space-8);
-        text-align: center;
-        cursor: pointer;
-        transition: all var(--transition-normal);
-        margin-bottom: var(--space-6);
-        box-shadow: var(--shadow-md);
-      }
-
-      .upload-zone:hover {
-        border-color: var(--color-accent-primary);
-        background: rgba(0, 212, 170, 0.05);
-      }
-
-      .upload-zone.dragover {
-        border-color: var(--color-accent-primary);
-        background: rgba(0, 212, 170, 0.1);
-      }
-
-      .upload-icon {
-        font-size: 2.5rem;
-        margin-bottom: var(--space-4);
-        display: block;
-      }
-
-      .upload-text {
-        font-size: 1rem;
-        margin-bottom: var(--space-1);
-        font-weight: 500;
-        color: var(--color-text-primary);
-      }
-
-      .upload-hint {
-        color: var(--text-muted);
-        font-size: 0.875rem;
-      }
-
-      input[type="file"] {
-        display: none;
-      }
-
-      /* ============================================
-         Form Elements
-         ============================================ */
-      .control-group {
-        display: flex;
-        flex-direction: column;
-        gap: var(--space-2);
-        margin-bottom: var(--space-4);
-      }
-
-      .control-group label {
-        display: block;
-        font-weight: 500;
-        font-size: 0.9375rem;
-        color: var(--color-text-secondary);
-      }
-
-      .control-row {
-        display: flex;
-        gap: var(--space-3);
-        flex-wrap: wrap;
-        align-items: flex-end;
-      }
-
-      input[type="number"],
-      input[type="range"],
-      select {
-        padding: var(--space-3) var(--space-4);
-        font-size: 0.9375rem;
-        border: 1px solid var(--color-border-default);
-        border-radius: var(--radius-md);
-        background: var(--color-bg-input);
-        color: var(--color-text-primary);
-        font-family: var(--font-mono);
-        transition: all var(--transition-fast);
-      }
-
-      input[type="number"],
-      select {
-        width: auto;
-        min-width: 120px;
-      }
-
-      input[type="number"]:focus,
-      input[type="range"]:focus,
-      select:focus {
-        outline: none;
-        border-color: var(--color-accent-primary);
-        box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.1);
-      }
-
-      .quality-value {
-        display: inline-block;
-        background: rgba(0, 212, 170, 0.2);
-        padding: var(--space-1) var(--space-3);
-        border-radius: var(--radius-sm);
-        font-size: 0.875rem;
-        color: var(--color-accent-primary);
-        min-width: 50px;
-        text-align: center;
-        font-family: var(--font-mono);
-      }
-
-      .checkbox-group {
-        display: flex;
-        align-items: center;
-        gap: var(--space-2);
-      }
-
-      .checkbox-group input[type="checkbox"] {
-        width: 18px;
-        height: 18px;
-        cursor: pointer;
-      }
-
-      .checkbox-group label {
-        margin: 0;
-        cursor: pointer;
-      }
-
-      .format-options {
-        display: flex;
-        gap: var(--space-2);
-        flex-wrap: wrap;
-      }
-
-      .format-btn {
-        padding: var(--space-2) var(--space-4);
-        border: 1px solid var(--color-border-default);
-        border-radius: var(--radius-md);
-        background: var(--color-bg-subtle);
-        color: var(--color-text-primary);
-        cursor: pointer;
-        transition: all var(--transition-fast);
-        font-size: 0.875rem;
-        font-weight: 500;
-      }
-
-      .format-btn:hover {
-        border-color: var(--color-accent-primary);
-        background: rgba(0, 212, 170, 0.1);
-      }
-
-      .format-btn.active {
-        border-color: var(--color-accent-primary);
-        background: rgba(0, 212, 170, 0.2);
-        color: var(--color-accent-primary);
-      }
-
-      /* ============================================
-         Buttons
-         ============================================ */
-      button {
-        padding: var(--space-3) var(--space-4);
-        font-size: 0.9375rem;
-        font-weight: 500;
-        border: 1px solid var(--color-border-default);
-        border-radius: var(--radius-md);
-        background: var(--color-bg-subtle);
-        color: var(--color-text-primary);
-        cursor: pointer;
-        transition: all var(--transition-fast);
-        font-family: var(--font-sans);
-      }
-
-      button:hover {
-        border-color: var(--color-accent-primary);
-        background: var(--color-bg-surface);
-        transform: translateY(-1px);
-      }
-
-      button:active {
-        transform: translateY(0);
-      }
-
-      button.primary {
-        background: var(--color-accent-primary);
-        border-color: var(--color-accent-primary);
-        color: #fff;
-        font-weight: 600;
-      }
-
-      button.primary:hover {
-        background: #00c299;
-        border-color: #00c299;
-        box-shadow: var(--shadow-glow);
-      }
-
-      button.success {
-        background: var(--color-success);
-        border-color: var(--color-success);
-        color: #fff;
-        font-weight: 600;
-      }
-
-      button.success:hover {
-        background: #16a34a;
-        border-color: #16a34a;
-        box-shadow: 0 0 20px rgba(34, 197, 94, 0.15);
-      }
-
-      /* ============================================
-         Stats and Comparison
-         ============================================ */
-      .comparison {
-        display: none;
-        margin-top: var(--space-6);
-      }
-
-      .comparison.show {
-        display: block;
-      }
-
-      .stats-bar {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-        gap: var(--space-4);
-        margin-bottom: var(--space-6);
-      }
-
-      .stat-card {
-        background: var(--glass-bg);
-        backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-        -webkit-backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-        border: 1px solid var(--color-border-default);
-        border-radius: var(--radius-lg);
-        padding: var(--space-5);
-        text-align: center;
-        box-shadow: var(--shadow-md);
-      }
-
-      .stat-value {
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin-bottom: var(--space-2);
-        font-family: var(--font-mono);
-      }
-
-      .stat-value.positive {
-        color: var(--color-success);
-      }
-
-      .stat-value.negative {
-        color: var(--color-error);
-      }
-
-      .stat-label {
-        font-size: 0.875rem;
-        color: var(--text-muted);
-        font-weight: 500;
-      }
-
-      /* ============================================
-         Preview Grid
-         ============================================ */
-      .preview-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: var(--space-6);
-      }
-
-      @media (max-width: 768px) {
-        .preview-grid {
-          grid-template-columns: 1fr;
-        }
-      }
-
-      .preview-card {
-        background: var(--glass-bg);
-        backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-        -webkit-backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-        border: 1px solid var(--color-border-default);
-        border-radius: var(--radius-lg);
-        overflow: hidden;
-        box-shadow: var(--shadow-md);
-        display: flex;
-        flex-direction: column;
-      }
-
-      .preview-header {
-        padding: var(--space-5);
-        background: var(--color-bg-subtle);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: var(--space-3);
-        flex-wrap: wrap;
-      }
-
-      .preview-title {
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: var(--space-2);
-        color: var(--color-text-primary);
-      }
-
-      .preview-badge {
-        padding: var(--space-1) var(--space-3);
-        border-radius: var(--radius-sm);
-        font-size: 0.75rem;
-        font-weight: 600;
-      }
-
-      .badge-original {
-        background: rgba(59, 130, 246, 0.2);
-        color: var(--color-accent-tertiary);
-      }
-
-      .badge-compressed {
-        background: rgba(34, 197, 94, 0.2);
-        color: var(--color-success);
-      }
-
-      .preview-info {
-        font-size: 0.875rem;
-        color: var(--text-muted);
-        font-family: var(--font-mono);
-      }
-
-      .preview-image {
-        padding: var(--space-6);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 300px;
-        background: var(--color-bg-input);
-        flex: 1;
-      }
-
-      .preview-image img {
-        max-width: 100%;
-        max-height: 400px;
-        border-radius: var(--radius-md);
-      }
-
-      .preview-actions {
-        padding: var(--space-5);
-        display: flex;
-        gap: var(--space-3);
-        justify-content: center;
-        background: var(--color-bg-subtle);
-      }
-
-      /* ============================================
-         Mobile Responsive
-         ============================================ */
-      @media (max-width: 480px) {
-        :root {
-          --nav-height: 52px;
-        }
-
-        .nav-content {
-          padding: 0 var(--space-4);
-        }
-
-        .nav-back-text {
-          display: none;
-        }
-
-        .main-content {
-          padding-top: calc(var(--nav-height) + var(--safe-area-top) + var(--space-4));
-          padding-left: var(--space-4);
-          padding-right: var(--space-4);
-        }
-
-        .card {
-          padding: var(--space-4);
-        }
-
-        .upload-zone {
-          padding: var(--space-5);
-        }
-
-        .control-row {
-          flex-direction: column;
-        }
-
-        input[type="number"],
-        select {
-          width: 100%;
-        }
-
-        .stats-bar {
-          grid-template-columns: repeat(2, 1fr);
-        }
-
-        .preview-header {
-          flex-direction: column;
-          align-items: flex-start;
-        }
-
-        .preview-actions {
-          flex-direction: column;
-        }
-
-        .preview-actions button {
-          width: 100%;
-        }
-      }
-
-      /* Desktop */
-      @media (min-width: 768px) {
-        .nav-back-text {
-          display: inline;
-        }
-      }
-
-      @media (min-width: 1024px) {
-        .main-content {
-          padding-top: calc(var(--nav-height) + var(--safe-area-top) + var(--space-8));
-        }
-      }
-
-      /* ============================================
-         Accessibility
-         ============================================ */
-      @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.01ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.01ms !important;
-        }
-      }
-
-      :focus-visible {
-        outline: 2px solid var(--color-accent-primary);
-        outline-offset: 2px;
-      }
-
-      button:focus:not(:focus-visible),
-      a:focus:not(:focus-visible),
-      input:focus:not(:focus-visible) {
-        outline: none;
-      }
-
-      #outputCanvas {
-        display: none;
-      }
-      .visually-hidden {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        margin: -1px;
-        padding: 0;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0;
-      }
-    </style>
-  </head>
-  <body>
-    <!-- Navigation Bar -->
-    <nav class="nav-bar">
-      <div class="nav-content">
-        <a href="../../index.html" class="nav-back" aria-label="返回首页">
-          <svg
-            class="nav-back-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polyline points="15 18 9 12 15 6"></polyline>
-          </svg>
-          <span class="nav-back-text">首页</span>
-        </a>
-
-        <h1 class="nav-title">图片压缩对比</h1>
-
-        <div class="nav-actions">
-          <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
-            <svg
-              class="theme-icon-light"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-            </svg>
-            <svg
-              class="theme-icon-dark"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <circle cx="12" cy="12" r="5"></circle>
-              <line x1="12" y1="1" x2="12" y2="3"></line>
-              <line x1="12" y1="21" x2="12" y2="23"></line>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-              <line x1="1" y1="12" x2="3" y2="12"></line>
-              <line x1="21" y1="12" x2="23" y2="12"></line>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-            </svg>
-          </button>
-        </div>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>在线图片尺寸修改与优化工具 - 快速缩放与压缩 | WebUtils</title>
+  <meta name="description" content="WebUtils 免费在线图片尺寸修改工具。支持批量调整图片大小、压缩体积、转换格式（WebP, AVIF, JPG, PNG）。提供比例锁定、百分比缩放及常用社交媒体尺寸预设。100% 浏览器本地处理，安全高效。">
+  <meta name="keywords" content="图片尺寸修改,在线缩放图片,图片压缩工具,批量图片处理,比例缩放,Web性能优化,前端开发工具">
+  <link rel="canonical" href="https://essays4u.net/tools/media/image-resize.html">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="图片尺寸修改与优化 - 极致性能的缩放方案">
+  <meta property="og:description" content="快速调整图片分辨率，优化文件大小。支持现代 Web 格式，纯前端运行，隐私安全。">
+  <meta property="og:url" content="https://essays4u.net/tools/media/image-resize.html">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://essays4u.net/social-preview.png">
+
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "图片尺寸修改器",
+    "description": "在线调整图片分辨率并进行质量压缩的专业工具。",
+    "applicationCategory": "DesignApplication",
+    "operatingSystem": "Any",
+    "url": "https://essays4u.net/tools/media/image-resize.html",
+    "offers": {
+      "@type": "Offer",
+      "price": "0"
+    }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --primary-color: #00f5d4;
+      --secondary-color: #f72585;
+      --accent-yellow: #fee440;
+      --accent-blue: #4cc9f0;
+      --bg-color: #0a0a0f;
+      --card-bg: #12121a;
+      --text-main: #e8e8ed;
+      --text-muted: #8888a0;
+      --neo-shadow: 8px 8px 0px 0px #000;
+      --neo-border: 3px solid #000;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: "Space Grotesk", sans-serif; background: var(--bg-color); color: var(--text-main); padding-bottom: 50px; }
+    .container { width: 95%; max-width: 1200px; margin: 0 auto; }
+
+    .site-header { background: #000; border-bottom: 3px solid var(--primary-color); position: sticky; top: 0; z-index: 1000; }
+    .site-header .container { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; }
+    .logo a { font-size: 1.6rem; font-weight: 800; color: var(--primary-color); text-decoration: none; text-transform: uppercase; }
+    .site-nav ul { display: flex; list-style: none; gap: 20px; }
+    .site-nav a { text-decoration: none; color: #fff; font-weight: 600; font-size: 0.95rem; }
+
+    main.container { display: flex; flex-direction: column; gap: 30px; padding: 40px 0; }
+
+    .tool-section { background: var(--card-bg); padding: 30px; border: var(--neo-border); box-shadow: var(--neo-shadow); }
+    .tool-header h1 { font-size: 2.2rem; font-weight: 800; color: var(--primary-color); margin-bottom: 10px; }
+    .tool-header p { color: var(--text-muted); margin-bottom: 30px; }
+
+    /* 布局 */
+    .editor-grid { display: grid; grid-template-columns: 1fr 400px; gap: 30px; }
+    
+    /* 左侧预览 */
+    .preview-container {
+      background: #1a1a24; border: var(--neo-border); position: relative; min-height: 400px; display: flex; align-items: center; justify-content: center;
+      background-image: linear-gradient(45deg, #12121a 25%, transparent 25%), linear-gradient(-45deg, #12121a 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #12121a 75%), linear-gradient(-45deg, transparent 75%, #12121a 75%);
+      background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+    }
+    .preview-placeholder { text-align: center; color: var(--text-muted); }
+    .preview-placeholder i { font-size: 3.5rem; display: block; margin-bottom: 10px; font-style: normal; }
+    #mainImage { max-width: 100%; max-height: 70vh; display: none; }
+
+    /* 右侧控制栏 */
+    .controls-card { display: flex; flex-direction: column; gap: 20px; }
+    .upload-zone { border: 3px dashed var(--text-muted); background: #1a1a24; padding: 30px 15px; text-align: center; cursor: pointer; transition: all 0.2s; }
+    .upload-zone:hover { border-color: var(--primary-color); background: #232331; }
+    
+    .settings-group { background: #000; padding: 20px; border: var(--neo-border); }
+    .group-label { display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 15px; }
+    
+    .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-items: end; }
+    .control-item label { display: block; font-size: 0.8rem; margin-bottom: 5px; color: var(--text-main); }
+    input[type="number"], select { width: 100%; padding: 10px; background: #1a1a24; border: 2px solid #2a2a3a; color: #fff; outline: none; font-family: "JetBrains Mono", monospace; }
+    input[type="number"]:focus { border-color: var(--primary-color); }
+
+    .preset-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .chip { padding: 4px 10px; font-size: 0.75rem; background: #2a2a3a; border: 1px solid #3a3a4a; cursor: pointer; transition: all 0.2s; }
+    .chip:hover { border-color: var(--primary-color); color: var(--primary-color); }
+
+    .btn-row { display: flex; flex-direction: column; gap: 15px; margin-top: 10px; }
+    .btn {
+      padding: 14px; font-weight: 800; cursor: pointer; border: 3px solid #000; text-transform: uppercase;
+      letter-spacing: 1px; transition: all 0.1s; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn:active { transform: translate(2px, 2px); }
+    .btn-primary { background: var(--primary-color); color: #000; box-shadow: 4px 4px 0px 0px #000; }
+    .btn-secondary { background: var(--secondary-color); color: #fff; box-shadow: 4px 4px 0px 0px #000; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* 底部统计 */
+    .stats-footer { display: flex; gap: 20px; margin-top: 20px; font-family: "JetBrains Mono", monospace; font-size: 0.85rem; color: var(--primary-color); }
+    .stats-footer b { color: #fff; }
+
+    .ad-placeholder { background: #1a1a24; border: 2px dashed #2a2a3a; color: var(--text-muted); text-align: center; padding: 20px; font-size: 0.8rem; min-height: 100px; display: flex; align-items: center; justify-content: center; }
+
+    .site-footer { background: #000; border-top: 3px solid var(--secondary-color); color: #fff; padding: 40px 0; margin-top: 60px; text-align: center; }
+
+    @media (max-width: 1024px) {
+      .editor-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <div class="logo"><a href="../../index.html">WebUtils</a></div>
+      <nav class="site-nav">
+        <ul>
+          <li><a href="../../index.html">首页</a></li>
+          <li><a href="image-resize.html">尺寸修改</a></li>
+          <li><a href="image-format-converter.html">格式转换</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="tool-section">
+      <div class="tool-header">
+        <h1>图片尺寸修改与优化</h1>
+        <p>快速缩放图片，优化 Web 性能。纯前端处理，隐私安全保障。</p>
       </div>
-    </nav>
 
-    <!-- Main Content -->
-    <main class="main-content">
-      <div class="container">
-        <!-- Upload Zone -->
-        <div
-          class="upload-zone"
-          id="uploadZone"
-          onclick="document.getElementById('fileInput').click()"
-        >
-          <span class="upload-icon">📷</span>
-          <div class="upload-text">点击或拖放图片到此处</div>
-          <div class="upload-hint">支持 PNG、JPG、WebP 格式，最大 50MB</div>
-          <input type="file" id="fileInput" accept="image/*" />
+      <div class="editor-grid">
+        <div class="preview-area">
+          <div class="preview-container" id="dropArea">
+            <div class="preview-placeholder" id="placeholder">
+              <i>🖼️</i>
+              <p>请先上传一张需要处理的图片</p>
+            </div>
+            <img id="mainImage" alt="预览图">
+          </div>
+          
+          <div class="stats-footer" id="statsFooter" style="display: none;">
+            <span>原始: <b id="origSize">-</b> (<span id="origDim">-</span>)</span>
+            <span>结果: <b id="resSize">-</b> (<span id="resDim">-</span>)</span>
+            <span>压缩率: <b id="compRate">-</b></span>
+          </div>
+          
+          <div class="ad-placeholder" style="margin-top: 30px;">Google AdSense</div>
         </div>
 
-        <!-- Controls Card -->
-        <div class="card">
-          <h2 class="card-title">压缩设置</h2>
-          <div class="control-group">
-            <label>输出格式</label>
-            <div class="format-options">
-              <button class="format-btn active" data-format="jpeg">JPEG</button>
-              <button class="format-btn" data-format="png">PNG</button>
-              <button class="format-btn" data-format="webp">WebP</button>
-            </div>
+        <aside class="controls-card">
+          <div class="upload-zone" id="uploadZone">
+            <span style="font-size: 1.5rem; display: block; margin-bottom: 5px;">📂</span>
+            <span style="font-weight: 700;">点击或拖入文件</span>
+            <input type="file" id="fileInput" accept="image/*" style="display: none;">
           </div>
 
-          <div class="control-group">
-            <label>
-              压缩质量:
-              <span class="quality-value" id="qualityValue">80%</span>
-            </label>
-            <input type="range" id="quality" min="1" max="100" value="80" />
-          </div>
-
-          <div class="control-row">
-            <div class="control-group" style="flex: 1; min-width: 150px">
-              <label for="input-------px-">最大宽度 (px)</label>
-              <input
-                type="number"
-                id="maxWidth"
-                value="1920"
-                min="1"
-                max="8192"
-                aria-label="数字输入框"
-                placeholder="请输入数字输入框"
-              />
-            </div>
-            <div class="control-group" style="flex: 1; min-width: 150px">
-              <label for="input-------px-">最大高度 (px)</label>
-              <input
-                type="number"
-                id="maxHeight"
-                value="1080"
-                min="1"
-                max="8192"
-                aria-label="数字输入框"
-                placeholder="请输入数字输入框"
-              />
-            </div>
-          </div>
-
-          <div class="checkbox-group" style="margin-bottom: var(--space-5)">
-            <input type="checkbox" id="keepRatio" checked />
-            <label for="keepRatio">保持宽高比</label>
-          </div>
-
-          <button
-            class="primary"
-            onclick="processImage()"
-            style="width: 100%"
-            aria-label="压缩图片"
-          >
-            压缩图片
-          </button>
-        </div>
-
-        <!-- Comparison Results -->
-        <div class="comparison" id="comparison">
-          <!-- Stats Bar -->
-          <div class="stats-bar">
-            <div class="stat-card">
-              <div class="stat-value" id="originalSizeStat">-</div>
-              <div class="stat-label">原始大小</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-value" id="compressedSizeStat">-</div>
-              <div class="stat-label">压缩后大小</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-value positive" id="savedStat">-</div>
-              <div class="stat-label">节省空间</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-value" id="ratioStat">-</div>
-              <div class="stat-label">压缩比</div>
-            </div>
-          </div>
-
-          <!-- Preview Grid -->
-          <div class="preview-grid">
-            <!-- Original Preview -->
-            <div class="preview-card">
-              <div class="preview-header">
-                <span class="preview-title">
-                  原始图片
-                  <span class="preview-badge badge-original">ORIGINAL</span>
-                </span>
-                <span class="preview-info" id="originalInfo">-</span>
+          <div class="settings-group">
+            <label class="group-label">尺寸设置</label>
+            <div class="input-row">
+              <div class="control-item">
+                <label>宽度 (px)</label>
+                <input type="number" id="targetWidth" placeholder="Width">
               </div>
-              <div class="preview-image">
-                <img id="originalPreview" alt="原始图片" />
+              <div class="control-item">
+                <label>高度 (px)</label>
+                <input type="number" id="targetHeight" placeholder="Height">
               </div>
             </div>
+            
+            <div style="margin-top: 15px;">
+              <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.85rem;">
+                <input type="checkbox" id="lockRatio" checked style="width: 18px; height: 18px;"> 锁定宽高比
+              </label>
+            </div>
 
-            <!-- Compressed Preview -->
-            <div class="preview-card">
-              <div class="preview-header">
-                <span class="preview-title">
-                  压缩后
-                  <span class="preview-badge badge-compressed">COMPRESSED</span>
-                </span>
-                <span class="preview-info" id="compressedInfo">-</span>
-              </div>
-              <div class="preview-image">
-                <img id="compressedPreview" alt="压缩后图片" />
-              </div>
-              <div class="preview-actions">
-                <button class="success" onclick="downloadCompressed()" aria-label="下载压缩图片">
-                  下载压缩图片
-                </button>
-              </div>
+            <div class="preset-chips">
+              <span class="chip" onclick="applyPreset(0.5)">50%</span>
+              <span class="chip" onclick="applyPreset(0.25)">25%</span>
+              <span class="chip" onclick="setFixed(1920, 1080)">1080P</span>
+              <span class="chip" onclick="setFixed(1280, 720)">720P</span>
+              <span class="chip" onclick="setFixed(1080, 1080)">Ins/广场</span>
             </div>
           </div>
-        </div>
+
+          <div class="settings-group">
+            <label class="group-label">输出选项</label>
+            <div class="control-item" style="margin-bottom: 15px;">
+              <label>目标格式</label>
+              <select id="targetFormat">
+                <option value="webp">WebP (推荐)</option>
+                <option value="jpeg">JPEG (通用)</option>
+                <option value="png">PNG (无损)</option>
+                <option value="avif">AVIF (下一代)</option>
+              </select>
+            </div>
+            <div class="control-item">
+              <label>压缩质量: <span id="qualityVal">85</span>%</label>
+              <input type="range" id="quality" min="10" max="100" value="85" style="width: 100%; margin-top: 8px; height: 6px; appearance: none; background: #2a2a3a; border-radius: 3px;">
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn btn-primary" id="btnDownload" disabled onclick="processAndDownload()">🚀 下载处理后的图片</button>
+            <button class="btn btn-secondary" id="btnPreview" disabled onclick="updatePreview()">👁️ 刷新预览</button>
+          </div>
+        </aside>
       </div>
-    </main>
 
-    <canvas id="outputCanvas"></canvas>
+      <section style="margin-top: 60px; border-top: 2px solid #2a2a3a; padding-top: 40px;">
+        <h2 style="color: var(--primary-color); margin-bottom: 20px;">图片尺寸修改：为什么 Web 性能优化离不开它？</h2>
+        <article style="line-height: 1.8; color: var(--text-main);">
+          <p>在现代 Web 开发中，图片的加载速度直接影响到 Core Web Vitals (CWV) 指标，进而影响 SEO 排名和用户留存。WebUtils 图片修改器为您提供了一站式的本地优化方案。</p>
+          
+          <h3 style="margin-top: 25px; color: var(--secondary-color);">1. 什么是“响应式图片”？</h3>
+          <p>“响应式图片”意味着为不同屏幕尺寸的设备提供最合适的图片分辨率。如果您的网站在移动端加载一张 4000x3000 像素的背景图，不仅会浪费用户的手机流量，还会导致浏览器渲染阻塞。通过修改尺寸，您可以创建适配移动端的缩略图，大幅提升首次加载速度。</p>
 
-    <script>
-      // ============================================
-      // Elements
-      // ============================================
-      var uploadZone = document.getElementById("uploadZone");
-      var fileInput = document.getElementById("fileInput");
-      var quality = document.getElementById("quality");
-      var qualityValue = document.getElementById("qualityValue");
-      var maxWidth = document.getElementById("maxWidth");
-      var maxHeight = document.getElementById("maxHeight");
-      var keepRatio = document.getElementById("keepRatio");
-      var comparison = document.getElementById("comparison");
-      var originalPreview = document.getElementById("originalPreview");
-      var compressedPreview = document.getElementById("compressedPreview");
-      var canvas = document.getElementById("outputCanvas");
-      var ctx = canvas.getContext("2d");
+          <h3 style="margin-top: 25px; color: var(--secondary-color);">2. 宽高比 (Aspect Ratio) 的重要性</h3>
+          <p>在修改尺寸时，锁定宽高比是防止图片拉伸变形的关键。我们的工具默认开启比例锁定，当您修改宽度时，高度会自动按比例调整。这在制作产品展示图、社交媒体封面时尤为重要，确保视觉呈现的专业性。</p>
 
-      var currentFile = null;
-      var currentFormat = "jpeg";
-      var compressedDataUrl = null;
+          <h3 style="margin-top: 25px; color: var(--secondary-color);">3. 像素 vs 体积：寻找平衡点</h3>
+          <p>修改尺寸（Downsampling）是减少文件体积最直接有效的手段。将一张 4K 图片缩小到 1080P，即便不进行额外的质量压缩，文件体积通常也能下降 70% 以上。配合我们的 WebP/AVIF 格式转换，您可以轻松实现肉眼无感的“极致瘦身”。</p>
 
-      // ============================================
-      // Format Button Handler
-      // ============================================
-      document.querySelectorAll(".format-btn").forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          document.querySelectorAll(".format-btn").forEach(function (b) {
-            b.classList.remove("active");
-          });
-          btn.classList.add("active");
-          currentFormat = btn.dataset.format;
-          if (currentFile) {
-            processImage();
-          }
-        });
-      });
+          <h3 style="margin-top: 25px; color: var(--secondary-color);">4. 纯前端处理：安全与效率兼得</h3>
+          <p>WebUtils 图片修改器不涉及任何服务器端交互。所有操作均在您的浏览器内存（WebAssembly 或 Canvas API）中完成。您的敏感图片、商业机密永远不会离开您的设备。这种去中心化的工具模式，既保护了隐私，又省去了大文件上传的漫长等待。</p>
+        </article>
+      </section>
+    </div>
+  </main>
 
-      // ============================================
-      // Quality Slider Handler
-      // ============================================
-      quality.addEventListener("input", function () {
-        qualityValue.textContent = quality.value + "%";
-      });
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; 2026 WebUtils. 基于纯前端技术，构建高效、安全的 Web 体验.</p>
+    </div>
+  </footer>
 
-      quality.addEventListener("change", function () {
-        if (currentFile) {
-          processImage();
-        }
-      });
+  <script>
+    let originalFile = null;
+    let originalImg = null;
+    let currentBlob = null;
 
-      // ============================================
-      // Dimensions Change Handler
-      // ============================================
-      [maxWidth, maxHeight].forEach(function (el) {
-        el.addEventListener("change", function () {
-          if (currentFile) {
-            processImage();
-          }
-        });
-      });
+    const fileInput = document.getElementById('fileInput');
+    const uploadZone = document.getElementById('uploadZone');
+    const mainImage = document.getElementById('mainImage');
+    const placeholder = document.getElementById('placeholder');
+    const targetWidthInput = document.getElementById('targetWidth');
+    const targetHeightInput = document.getElementById('targetHeight');
+    const lockRatio = document.getElementById('lockRatio');
+    const targetFormat = document.getElementById('targetFormat');
+    const qualityInput = document.getElementById('quality');
+    const qualityVal = document.getElementById('qualityVal');
+    const btnDownload = document.getElementById('btnDownload');
+    const btnPreview = document.getElementById('btnPreview');
 
-      // ============================================
-      // Drag & Drop Handlers
-      // ============================================
-      uploadZone.addEventListener("dragover", function (e) {
+    function init() {
+      uploadZone.onclick = () => fileInput.click();
+      fileInput.onchange = (e) => handleFile(e.target.files[0]);
+      
+      document.getElementById('dropArea').ondragover = (e) => e.preventDefault();
+      document.getElementById('dropArea').ondrop = (e) => {
         e.preventDefault();
-        uploadZone.classList.add("dragover");
-      });
-
-      uploadZone.addEventListener("dragleave", function () {
-        uploadZone.classList.remove("dragover");
-      });
-
-      uploadZone.addEventListener("drop", function (e) {
-        e.preventDefault();
-        uploadZone.classList.remove("dragover");
-        var files = e.dataTransfer.files;
-        if (files.length > 0 && files[0].type.startsWith("image/")) {
-          handleFile(files[0]);
-        }
-      });
-
-      // ============================================
-      // File Input Handler
-      // ============================================
-      fileInput.addEventListener("change", function () {
-        if (fileInput.files.length > 0) {
-          handleFile(fileInput.files[0]);
-        }
-      });
-
-      // ============================================
-      // File Handling
-      // ============================================
-      function handleFile(file) {
-        currentFile = file;
-
-        var reader = new FileReader();
-        reader.onload = function (e) {
-          originalPreview.src = e.target.result;
-          processImage();
-        };
-        reader.readAsDataURL(file);
-      }
-
-      // ============================================
-      // Utility Functions
-      // ============================================
-      function formatSize(bytes) {
-        if (bytes < 1024) return bytes + " B";
-        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + " KB";
-        return (bytes / (1024 * 1024)).toFixed(2) + " MB";
-      }
-
-      // ============================================
-      // Image Processing
-      // ============================================
-      window.processImage = function () {
-        if (!currentFile) {
-          alert("请先选择图片");
-          return;
-        }
-
-        var img = new Image();
-        img.onload = function () {
-          var originalWidth = img.width;
-          var originalHeight = img.height;
-          var targetWidth = parseInt(maxWidth.value) || originalWidth;
-          var targetHeight = parseInt(maxHeight.value) || originalHeight;
-
-          // 保持比例
-          if (keepRatio.checked) {
-            var ratioW = targetWidth / originalWidth;
-            var ratioH = targetHeight / originalHeight;
-            var ratio = Math.min(ratioW, ratioH, 1); // 不放大
-            targetWidth = Math.round(originalWidth * ratio);
-            targetHeight = Math.round(originalHeight * ratio);
-          } else {
-            targetWidth = Math.min(targetWidth, originalWidth);
-            targetHeight = Math.min(targetHeight, originalHeight);
-          }
-
-          // 设置 canvas
-          canvas.width = targetWidth;
-          canvas.height = targetHeight;
-
-          // 绘制
-          ctx.clearRect(0, 0, targetWidth, targetHeight);
-          ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
-
-          // 压缩
-          var mimeType =
-            currentFormat === "jpeg"
-              ? "image/jpeg"
-              : currentFormat === "webp"
-                ? "image/webp"
-                : "image/png";
-          var qualityVal = currentFormat === "png" ? undefined : parseInt(quality.value) / 100;
-
-          compressedDataUrl = canvas.toDataURL(mimeType, qualityVal);
-          compressedPreview.src = compressedDataUrl;
-
-          // 计算大小
-          var originalSize = currentFile.size;
-          var compressedSize = Math.round((compressedDataUrl.length - 22) * 0.75); // base64 估算
-
-          // 更新统计
-          document.getElementById("originalSizeStat").textContent = formatSize(originalSize);
-          document.getElementById("compressedSizeStat").textContent = formatSize(compressedSize);
-
-          var saved = originalSize - compressedSize;
-          var savedPercent = ((saved / originalSize) * 100).toFixed(1);
-          var savedEl = document.getElementById("savedStat");
-          savedEl.textContent =
-            (saved > 0 ? "-" : "+") +
-            formatSize(Math.abs(saved)) +
-            " (" +
-            Math.abs(savedPercent) +
-            "%)";
-          savedEl.className = "stat-value " + (saved > 0 ? "positive" : "negative");
-
-          var ratio = (originalSize / compressedSize).toFixed(2);
-          document.getElementById("ratioStat").textContent = ratio + "x";
-
-          // 更新信息
-          document.getElementById("originalInfo").textContent =
-            originalWidth + " x " + originalHeight;
-          document.getElementById("compressedInfo").textContent =
-            targetWidth + " x " + targetHeight;
-
-          // 显示对比
-          comparison.classList.add("show");
-        };
-
-        img.src = originalPreview.src;
+        handleFile(e.dataTransfer.files[0]);
       };
 
-      // ============================================
-      // Download Handler
-      // ============================================
-      window.downloadCompressed = function () {
-        if (!compressedDataUrl) {
-          alert("请先压缩图片");
-          return;
+      qualityInput.oninput = (e) => qualityVal.innerText = e.target.value;
+      
+      targetWidthInput.oninput = () => {
+        if(lockRatio.checked && originalImg) {
+          targetHeightInput.value = Math.round(targetWidthInput.value / (originalImg.width / originalImg.height));
         }
-
-        var ext = currentFormat === "jpeg" ? "jpg" : currentFormat;
-        var originalName = currentFile ? currentFile.name.replace(/\.[^.]+$/, "") : "image";
-
-        var link = document.createElement("a");
-        link.download = originalName + "-compressed." + ext;
-        link.href = compressedDataUrl;
-        link.click();
       };
 
-      // ============================================
-      // Theme Management
-      // ============================================
-      function toggleTheme() {
-        var html = document.documentElement;
-        var currentTheme = html.getAttribute("data-theme") || "dark";
-        var newTheme = currentTheme === "light" ? "dark" : "light";
+      targetHeightInput.oninput = () => {
+        if(lockRatio.checked && originalImg) {
+          targetWidthInput.value = Math.round(targetHeightInput.value * (originalImg.width / originalImg.height));
+        }
+      };
+    }
 
-        html.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
+    function handleFile(file) {
+      if (!file || !file.type.startsWith('image/')) return;
+      originalFile = file;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          originalImg = img;
+          targetWidthInput.value = img.width;
+          targetHeightInput.value = img.height;
+          mainImage.src = e.target.result;
+          mainImage.style.display = 'block';
+          placeholder.style.display = 'none';
+          
+          btnDownload.disabled = false;
+          btnPreview.disabled = false;
+          
+          document.getElementById('statsFooter').style.display = 'flex';
+          document.getElementById('origSize').innerText = formatSize(file.size);
+          document.getElementById('origDim').innerText = `${img.width}x${img.height}`;
+          updatePreview();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function applyPreset(factor) {
+      if(!originalImg) return;
+      targetWidthInput.value = Math.round(originalImg.width * factor);
+      targetHeightInput.value = Math.round(originalImg.height * factor);
+      updatePreview();
+    }
+
+    function setFixed(w, h) {
+      if(!originalImg) return;
+      targetWidthInput.value = w;
+      if(lockRatio.checked) {
+        targetHeightInput.value = Math.round(w / (originalImg.width / originalImg.height));
+      } else {
+        targetHeightInput.value = h;
       }
+      updatePreview();
+    }
 
-      function initTheme() {
-        var savedTheme = localStorage.getItem("theme");
-        var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        var theme = savedTheme || (prefersDark ? "dark" : "light");
+    async function updatePreview() {
+      if(!originalImg) return;
+      const w = parseInt(targetWidthInput.value);
+      const h = parseInt(targetHeightInput.value);
+      const q = parseInt(qualityInput.value) / 100;
+      const format = targetFormat.value;
 
-        document.documentElement.setAttribute("data-theme", theme);
-      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(originalImg, 0, 0, w, h);
 
-      window.toggleTheme = toggleTheme;
+      canvas.toBlob((blob) => {
+        currentBlob = blob;
+        mainImage.src = URL.createObjectURL(blob);
+        document.getElementById('resSize').innerText = formatSize(blob.size);
+        document.getElementById('resDim').innerText = `${w}x${h}`;
+        document.getElementById('compRate').innerText = ((1 - blob.size / originalFile.size) * 100).toFixed(1) + '%';
+      }, `image/${format}`, q);
+    }
 
-      // ============================================
-      // Initialize
-      // ============================================
-      initTheme();
-    </script>
-  </body>
+    function processAndDownload() {
+      if(!currentBlob) return;
+      const format = targetFormat.value;
+      const ext = format === 'jpeg' ? 'jpg' : format;
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(currentBlob);
+      link.download = `resized-${originalFile.name.split('.')[0]}.${ext}`;
+      link.click();
+    }
+
+    function formatSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / 1048576).toFixed(1) + ' MB';
+    }
+
+    window.onload = init;
+  </script>
+</body>
 </html>

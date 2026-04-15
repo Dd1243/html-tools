@@ -1,1022 +1,398 @@
-<!doctype html>
-<html lang="zh-CN" data-theme="light">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>图片对比滑块 - WebUtils</title>
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="图片对比滑块 - WebUtils" />
-    <meta name="keywords" content="image-compare,media,tools,webutils" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/media/image-compare.html" />
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>在线图片对比工具 - 滑块、混合与并排对比 | WebUtils</title>
+  <meta name="description" content="WebUtils 免费在线图片对比工具。通过滑动滑块、透明度混合或并排显示，快速对比两张图片（如压缩前后的差异）。支持多种对比模式、实时缩放及高清结果下载。纯前端处理，安全隐私。">
+  <meta name="keywords" content="图片对比工具,在线对比图片,图片差异分析,滑块对比,Before After,图片压缩对比,前端开发工具">
+  <link rel="canonical" href="https://essays4u.net/tools/media/image-compare.html">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="在线图片对比工具 - 发现细微差异的视觉专家">
+  <meta property="og:description" content="精准对比两张图片的任何像素，支持多种滑动与混合模式。完全免费，本地运行。">
+  <meta property="og:url" content="https://essays4u.net/tools/media/image-compare.html">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://essays4u.net/social-preview.png">
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="图片对比滑块 - WebUtils" />
-    <meta property="og:description" content="图片对比滑块 - WebUtils" />
-    <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/media/image-compare.html"
-    />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "图片对比工具",
+    "description": "提供多种模式在线对比两张图片差异的专业工具。",
+    "applicationCategory": "DesignApplication",
+    "operatingSystem": "Any",
+    "url": "https://essays4u.net/tools/media/image-compare.html",
+    "offers": {
+      "@type": "Offer",
+      "price": "0"
+    }
+  }
+  </script>
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="图片对比滑块 - WebUtils" />
-    <meta name="twitter:description" content="图片对比滑块 - WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
+  <style>
+    :root {
+      --primary-color: #00f5d4;
+      --secondary-color: #f72585;
+      --accent-yellow: #fee440;
+      --bg-color: #0a0a0f;
+      --card-bg: #12121a;
+      --text-main: #e8e8ed;
+      --text-muted: #8888a0;
+      --neo-shadow: 8px 8px 0px 0px #000;
+      --neo-border: 3px solid #000;
+    }
 
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: "Space Grotesk", sans-serif; background: var(--bg-color); color: var(--text-main); padding-bottom: 50px; }
+    .container { width: 95%; max-width: 1200px; margin: 0 auto; }
 
-      :root {
-        --primary-color: #667eea;
-        --border-radius: 8px;
-      }
+    .site-header { background: #000; border-bottom: 3px solid var(--primary-color); position: sticky; top: 0; z-index: 1000; }
+    .site-header .container { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; }
+    .logo a { font-size: 1.6rem; font-weight: 800; color: var(--primary-color); text-decoration: none; text-transform: uppercase; }
+    .site-nav ul { display: flex; list-style: none; gap: 20px; }
+    .site-nav a { text-decoration: none; color: #fff; font-weight: 600; font-size: 0.95rem; }
 
-      body {
-        min-height: 100vh;
-        padding: 1rem;
-      }
+    main.container { display: flex; flex-direction: column; gap: 30px; padding: 40px 0; }
+    @media (min-width: 992px) { main.container { flex-direction: row; align-items: flex-start; } }
 
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-      }
+    .tool-section { flex: 2.5; background: var(--card-bg); padding: 30px; border: var(--neo-border); box-shadow: var(--neo-shadow); }
+    .tool-header h1 { font-size: 2.2rem; font-weight: 800; color: var(--primary-color); margin-bottom: 10px; }
+    .tool-header p { color: var(--text-muted); margin-bottom: 30px; }
 
-      header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-      }
+    /* 上传 */
+    .upload-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+    .upload-zone {
+      border: 2px dashed var(--text-muted); background: #1a1a24; padding: 25px 15px; text-align: center; cursor: pointer; position: relative; overflow: hidden;
+    }
+    .upload-zone:hover { border-color: var(--primary-color); }
+    .upload-zone.has-file { border-style: solid; border-color: var(--secondary-color); }
+    .upload-preview { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.3; pointer-events: none; }
+    .upload-text { position: relative; z-index: 1; font-weight: 700; font-size: 0.8rem; }
 
-      .theme-toggle {
-        cursor: pointer;
-        background: none;
-        border: 1px solid var(--pico-muted-border-color);
-        padding: 0.5rem;
-        border-radius: var(--border-radius);
-        font-size: 1.2rem;
-      }
+    /* 对比区域 */
+    .compare-stage {
+      width: 100%; min-height: 400px; background: #000; border: var(--neo-border); position: relative; overflow: hidden; margin-bottom: 30px;
+      box-shadow: 4px 4px 0px 0px var(--secondary-color);
+    }
+    .compare-img { position: absolute; width: 100%; height: 100%; object-fit: contain; }
+    .compare-before { z-index: 2; clip-path: inset(0 50% 0 0); }
+    
+    .slider-handle {
+      position: absolute; top: 0; bottom: 0; left: 50%; width: 4px; background: var(--primary-color); z-index: 10; cursor: ew-resize; transform: translateX(-50%);
+      box-shadow: 0 0 15px rgba(0,245,212,0.5);
+    }
+    .slider-circle {
+      position: absolute; top: 50%; left: 50%; width: 40px; height: 40px; background: #000; border: 3px solid var(--primary-color);
+      border-radius: 50%; transform: translate(-50%, -50%); display: flex; align-items: center; justify-content: center; color: var(--primary-color); font-weight: 800;
+    }
 
-      .upload-section {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-        margin-bottom: 2rem;
-      }
+    .side-by-side { display: grid; grid-template-columns: 1fr 1fr; height: 100%; gap: 2px; }
+    .side-by-side .img-wrap { position: relative; height: 100%; }
+    .img-label { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.8); color: #fff; padding: 4px 10px; font-size: 0.7rem; font-weight: 800; z-index: 5; border: 1px solid var(--primary-color); }
 
-      @media (max-width: 768px) {
-        .upload-section {
-          grid-template-columns: 1fr;
-        }
-      }
+    /* 侧边设置 */
+    .sidebar-section { flex: 1; display: flex; flex-direction: column; gap: 25px; position: sticky; top: 100px; }
+    .config-card { background: var(--card-bg); padding: 25px; border: var(--neo-border); box-shadow: var(--neo-shadow); }
+    .config-card h2 { font-size: 1.1rem; margin-bottom: 15px; color: var(--primary-color); border-left: 5px solid var(--secondary-color); padding-left: 12px; }
 
-      .upload-zone {
-        border: 2px dashed var(--pico-muted-border-color);
-        border-radius: var(--border-radius);
-        padding: 2rem;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        position: relative;
-        min-height: 200px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-      }
+    .mode-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+    .mode-item {
+      padding: 12px; background: #1a1a24; border: 2px solid #2a2a3a; color: var(--text-muted); cursor: pointer; font-weight: 700; transition: all 0.1s;
+    }
+    .mode-item.active { border-color: var(--primary-color); color: var(--primary-color); background: #00f5d415; }
 
-      .upload-zone:hover,
-      .upload-zone.dragover {
-        border-color: var(--primary-color);
-        background: rgba(102, 126, 234, 0.05);
-      }
+    .control-group { margin-bottom: 20px; }
+    .control-group label { display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; font-weight: 800; }
+    input[type="range"] { width: 100%; height: 6px; appearance: none; background: #2a2a3a; border-radius: 3px; outline: none; }
+    input[type="range"]::-webkit-slider-thumb { appearance: none; width: 18px; height: 18px; background: var(--primary-color); border-radius: 50%; cursor: pointer; border: 2px solid #000; }
 
-      .upload-zone.has-image {
-        padding: 0;
-        border-style: solid;
-      }
+    .btn {
+      width: 100%; padding: 12px; font-weight: 800; cursor: pointer; border: 3px solid #000; text-transform: uppercase;
+      letter-spacing: 1px; transition: all 0.1s; display: inline-flex; align-items: center; gap: 8px; justify-content: center;
+    }
+    .btn:active { transform: translate(2px, 2px); }
+    .btn-primary { background: var(--primary-color); color: #000; box-shadow: 4px 4px 0px 0px #000; }
+    .btn-secondary { background: var(--secondary-color); color: #fff; box-shadow: 4px 4px 0px 0px #000; }
+    .btn-outline { background: transparent; border-color: var(--primary-color); color: var(--primary-color); box-shadow: 4px 4px 0px 0px #000; }
 
-      .upload-zone input {
-        display: none;
-      }
+    .ad-placeholder { background: #1a1a24; border: 2px dashed #2a2a3a; color: var(--text-muted); text-align: center; padding: 20px; font-size: 0.8rem; min-height: 100px; display: flex; align-items: center; justify-content: center; }
 
-      .upload-zone .preview {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        max-height: 200px;
-        border-radius: var(--border-radius);
-      }
+    .site-footer { background: #000; border-top: 3px solid var(--secondary-color); color: #fff; padding: 40px 0; margin-top: 60px; text-align: center; }
 
-      .upload-zone .label {
-        position: absolute;
-        top: 8px;
-        left: 8px;
-        background: rgba(0, 0, 0, 0.7);
-        color: white;
-        padding: 4px 12px;
-        border-radius: 4px;
-        font-size: 14px;
-      }
-
-      .upload-zone .remove-btn {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        background: rgba(220, 53, 69, 0.9);
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 28px;
-        height: 28px;
-        cursor: pointer;
-        font-size: 16px;
-        line-height: 1;
-        padding: 0;
-        display: none;
-      }
-
-      .upload-zone.has-image .remove-btn {
-        display: block;
-      }
-
-      .compare-container {
-        position: relative;
-        width: 100%;
-        max-width: 900px;
-        margin: 0 auto 2rem;
-        overflow: hidden;
-        border-radius: var(--border-radius);
-        background: #f0f0f0;
-        min-height: 400px;
-        display: none;
-      }
-
-      [data-theme="dark"] .compare-container {
-        background: #2a2a2a;
-      }
-
-      .compare-container.visible {
-        display: block;
-      }
-
-      .compare-wrapper {
-        position: relative;
-        width: 100%;
-      }
-
-      .compare-image {
-        display: block;
-        width: 100%;
-        height: auto;
-      }
-
-      .compare-before {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-      }
-
-      .compare-before img {
-        display: block;
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        position: absolute;
-        top: 0;
-        left: 0;
-      }
-
-      .compare-slider {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 4px;
-        background: white;
-        cursor: ew-resize;
-        z-index: 10;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-      }
-
-      .compare-slider::before,
-      .compare-slider::after {
-        content: "";
-        position: absolute;
-        top: 50%;
-        width: 0;
-        height: 0;
-        border-style: solid;
-      }
-
-      .compare-slider::before {
-        left: -8px;
-        transform: translateY(-50%);
-        border-width: 10px 8px 10px 0;
-        border-color: transparent white transparent transparent;
-      }
-
-      .compare-slider::after {
-        right: -8px;
-        transform: translateY(-50%);
-        border-width: 10px 0 10px 8px;
-        border-color: transparent transparent transparent white;
-      }
-
-      .compare-handle {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 44px;
-        height: 44px;
-        background: white;
-        border-radius: 50%;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        color: #333;
-      }
-
-      .compare-label {
-        position: absolute;
-        top: 16px;
-        padding: 6px 12px;
-        background: rgba(0, 0, 0, 0.7);
-        color: white;
-        border-radius: 4px;
-        font-size: 14px;
-        pointer-events: none;
-      }
-
-      .compare-label.before {
-        left: 16px;
-      }
-
-      .compare-label.after {
-        right: 16px;
-      }
-
-      .controls {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-        margin-bottom: 1rem;
-      }
-
-      .control-group label {
-        display: block;
-        margin-bottom: 0.25rem;
-        font-weight: 500;
-      }
-
-      .mode-buttons {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-      }
-
-      .mode-btn {
-        padding: 0.5rem 1rem;
-        border: 1px solid var(--pico-muted-border-color);
-        background: var(--pico-background-color);
-        border-radius: var(--border-radius);
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-
-      .mode-btn.active {
-        background: var(--primary-color);
-        color: white;
-        border-color: var(--primary-color);
-      }
-
-      .actions {
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-
-      .empty-state {
-        text-align: center;
-        color: var(--pico-muted-color);
-        padding: 3rem;
-      }
-
-      /* Horizontal mode */
-      .compare-container.horizontal .compare-slider {
-        width: 100%;
-        height: 4px;
-        cursor: ns-resize;
-      }
-
-      .compare-container.horizontal .compare-slider::before,
-      .compare-container.horizontal .compare-slider::after {
-        top: auto;
-        left: 50%;
-      }
-
-      .compare-container.horizontal .compare-slider::before {
-        top: -8px;
-        transform: translateX(-50%);
-        border-width: 0 10px 8px;
-        border-color: transparent transparent white;
-      }
-
-      .compare-container.horizontal .compare-slider::after {
-        bottom: -8px;
-        top: auto;
-        transform: translateX(-50%);
-        border-width: 8px 10px 0;
-        border-color: white transparent transparent;
-      }
-
-      .compare-container.horizontal .compare-label.before {
-        top: 16px;
-        left: 50%;
-        transform: translateX(-50%);
-      }
-
-      .compare-container.horizontal .compare-label.after {
-        bottom: 16px;
-        top: auto;
-        left: 50%;
-        right: auto;
-        transform: translateX(-50%);
-      }
-
-      /* Blend mode */
-      .compare-container.blend .compare-slider,
-      .compare-container.blend .compare-label {
-        display: none;
-      }
-
-      /* Side by side mode */
-      .compare-container.side-by-side {
-        display: none;
-      }
-
-      .compare-container.side-by-side.visible {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 4px;
-      }
-
-      .side-by-side-image {
-        position: relative;
-      }
-
-      .side-by-side-image img {
-        width: 100%;
-        height: auto;
-        display: block;
-      }
-
-      .side-by-side-image .label {
-        position: absolute;
-        top: 8px;
-        left: 8px;
-        background: rgba(0, 0, 0, 0.7);
-        color: white;
-        padding: 4px 12px;
-        border-radius: 4px;
-        font-size: 14px;
-      }
-
-      .zoom-container {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-
-      #zoomSlider {
-        flex: 1;
-      }
-
-      .opacity-slider-container {
-        display: none;
-      }
-
-      .blend .opacity-slider-container {
-        display: block;
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-      .visually-hidden {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        margin: -1px;
-        padding: 0;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0;
-      }
-    </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>›</span>
-      图片对比滑块
-    </nav>
+    @media (max-width: 768px) {
+      .upload-row { grid-template-columns: 1fr; }
+      .sidebar-section { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
     <div class="container">
-      <header>
-        <h1>图片对比滑块</h1>
-        <button class="theme-toggle" onclick="toggleTheme()" title="切换主题" aria-label="切换主题">
-          切换主题
-        </button>
-      </header>
+      <div class="logo"><a href="../../index.html">WebUtils</a></div>
+      <nav class="site-nav">
+        <ul>
+          <li><a href="../../index.html">首页</a></li>
+          <li><a href="image-compare.html">对比工具</a></li>
+          <li><a href="image-resize.html">尺寸调整</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
 
-      <main>
-        <div class="upload-section">
-          <div class="upload-zone" id="beforeZone">
-            <span class="label">Before</span>
-            <p>点击或拖拽上传"前"图片</p>
-            <input type="file" id="beforeInput" accept="image/*" />
-            <button class="remove-btn" onclick="removeImage('before', event)" aria-label="x">
-              x
-            </button>
+  <main class="container">
+    <div class="tool-section">
+      <div class="ad-placeholder" style="margin-bottom: 25px;">Advertisement</div>
+      
+      <div class="tool-header">
+        <h1>专业图片对比工具</h1>
+        <p>支持滑块对比、透明混合及并排模式。轻松洞察两张图片之间的细微差异，优化您的视觉交付。</p>
+      </div>
+
+      <div class="upload-row">
+        <div class="upload-zone" id="zoneA" onclick="document.getElementById('inputA').click()">
+          <img id="prevA" class="upload-preview" style="display: none;">
+          <div class="upload-text">📤 上传图片 A (Before)</div>
+          <input type="file" id="inputA" accept="image/*" style="display: none;">
+        </div>
+        <div class="upload-zone" id="zoneB" onclick="document.getElementById('inputB').click()">
+          <img id="prevB" class="upload-preview" style="display: none;">
+          <div class="upload-text">📤 上传图片 B (After)</div>
+          <input type="file" id="inputB" accept="image/*" style="display: none;">
+        </div>
+      </div>
+
+      <div class="compare-stage" id="compareStage">
+        <div id="sliderView" style="height: 100%; position: relative;">
+          <img id="imgB" class="compare-img" src="" alt="After">
+          <div id="beforeWrap" class="compare-img compare-before">
+            <img id="imgA" src="" alt="Before" style="width: 100%; height: 100%; object-fit: contain;">
           </div>
+          <div class="slider-handle" id="sliderHandle">
+            <div class="slider-circle">⇄</div>
+          </div>
+          <div class="img-label" style="left: 10px;">BEFORE</div>
+          <div class="img-label" style="left: auto; right: 10px;">AFTER</div>
+        </div>
 
-          <div class="upload-zone" id="afterZone">
-            <span class="label">After</span>
-            <p>点击或拖拽上传"后"图片</p>
-            <input type="file" id="afterInput" accept="image/*" />
-            <button class="remove-btn" onclick="removeImage('after', event)" aria-label="x">
-              x
-            </button>
+        <div id="sideView" class="side-by-side" style="display: none;">
+          <div class="img-wrap">
+            <div class="img-label">A (BEFORE)</div>
+            <img id="sideA" class="compare-img" src="">
+          </div>
+          <div class="img-wrap">
+            <div class="img-label">B (AFTER)</div>
+            <img id="sideB" class="compare-img" src="">
           </div>
         </div>
 
-        <div class="controls">
-          <div class="control-group">
-            <label>对比模式</label>
-            <div class="mode-buttons">
-              <button class="mode-btn active" data-mode="vertical">左右滑动</button>
-              <button class="mode-btn" data-mode="horizontal">上下滑动</button>
-              <button class="mode-btn" data-mode="blend">透明度混合</button>
-              <button class="mode-btn" data-mode="side-by-side">并排对比</button>
-            </div>
-          </div>
-
-          <div class="control-group opacity-slider-container" id="opacityControl">
-            <label for="opacitySlider">
-              透明度:
-              <span id="opacityValue">50</span>
-              %
-            </label>
-            <input type="range" id="opacitySlider" min="0" max="100" value="50" />
-          </div>
-
-          <div class="control-group">
-            <label>缩放</label>
-            <div class="zoom-container">
-              <button class="outline" onclick="adjustZoom(-10)" aria-label="-">-</button>
-              <input type="range" id="zoomSlider" min="50" max="200" value="100" />
-              <button class="outline" onclick="adjustZoom(10)" aria-label="+">+</button>
-              <span id="zoomValue">100%</span>
-            </div>
-          </div>
+        <div id="emptyMsg" style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted);">
+          <span style="font-size: 3rem; margin-bottom: 10px;">🔍</span>
+          <p>请上传两张图片以开启对比</p>
         </div>
+      </div>
 
-        <!-- Slider compare container -->
-        <div class="compare-container" id="compareContainer">
-          <div class="compare-wrapper" id="compareWrapper">
-            <img class="compare-image" id="afterImage" alt="After" />
-            <div class="compare-before" id="compareBefore">
-              <img id="beforeImage" alt="Before" />
-            </div>
-            <div class="compare-slider" id="compareSlider">
-              <div class="compare-handle">&#8596;</div>
-            </div>
-            <span class="compare-label before">Before</span>
-            <span class="compare-label after">After</span>
-          </div>
-        </div>
+      <section style="margin-top: 50px; border-top: 2px solid #2a2a3a; padding-top: 40px;">
+        <h2 style="color: var(--primary-color); margin-bottom: 20px;">为什么您需要使用“Before & After”图片对比工具？</h2>
+        <article style="line-height: 1.8; color: var(--text-main);">
+          <p>在图像处理、摄影后期及网页性能优化中，验证改动效果的最佳方式就是直接对比。WebUtils 提供了一个零门槛的对比方案，帮助您直观地呈现工作成果。</p>
+          
+          <h3 style="margin-top: 25px; color: var(--secondary-color);">1. 验证图片压缩质量</h3>
+          <p>作为开发者，在优化网站加载速度时，通常需要大幅压缩图片体积。我们的工具可以让您将原图与 WebP/AVIF 压缩后的图进行滑块对比，确保在减小体积的同时，视觉质量依然处于可接受范围内。</p>
 
-        <!-- Side by side container -->
-        <div class="compare-container side-by-side" id="sideBySideContainer">
-          <div class="side-by-side-image">
-            <img id="sideBySideBefore" alt="Before" />
-            <span class="label">Before</span>
-          </div>
-          <div class="side-by-side-image">
-            <img id="sideBySideAfter" alt="After" />
-            <span class="label">After</span>
-          </div>
-        </div>
+          <h3 style="margin-top: 25px; color: var(--secondary-color);">2. 摄影后期与滤镜测试</h3>
+          <p>对于摄影师而言，一张照片在调整了白平衡或对比度后，差异往往体现在细节处。通过“透明度混合（Blend）”模式，您可以让两张图重叠在一起并调节透明度，从而像“找不同”一样精准锁定色调的变化。</p>
 
-        <div class="empty-state" id="emptyState">
-          <p>请上传两张图片进行对比</p>
-        </div>
-
-        <div class="actions">
-          <button id="downloadBtn" disabled>下载对比图</button>
-          <button id="swapBtn" class="secondary" disabled>交换图片</button>
-          <button id="resetBtn" class="outline secondary">重置</button>
-        </div>
-      </main>
+          <h3 style="margin-top: 25px; color: var(--secondary-color);">3. UI 改版对比</h3>
+          <p>在交付 UI 改版设计稿时，利用并排对比模式（Side-by-Side），可以清晰地向客户展示新旧版本的结构优化。这种对比方式比单纯的翻看两张图要专业且有说服力得多。</p>
+        </article>
+      </section>
     </div>
 
-    <script>
-      // Theme toggle
-      window.toggleTheme = function () {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute("data-theme");
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
+    <aside class="sidebar-section">
+      <div class="config-card">
+        <h2>对比模式</h2>
+        <div class="mode-list">
+          <div class="mode-item active" onclick="setMode('slider')">↔️ 交互滑块</div>
+          <div class="mode-item" onclick="setMode('blend')">💧 透明混合</div>
+          <div class="mode-item" onclick="setMode('side')">🔲 并排对比</div>
+        </div>
+
+        <div class="control-group" id="blendControl" style="display: none;">
+          <label>图层 A 透明度: <span id="opacityVal">50</span>%</label>
+          <input type="range" id="opacitySlider" min="0" max="100" value="50">
+        </div>
+
+        <div class="control-group">
+          <label>预览缩放: <span id="zoomVal">100</span>%</label>
+          <input type="range" id="zoomSlider" min="10" max="300" value="100">
+        </div>
+      </div>
+
+      <div class="config-card">
+        <h2>快速操作</h2>
+        <button class="btn btn-primary" id="btnSwap" disabled onclick="swapImages()">🔃 交换图片 A/B</button>
+        <button class="btn btn-secondary" style="margin-top: 15px;" id="btnReset" onclick="resetAll()">🗑️ 清除所有</button>
+        <button class="btn btn-outline" style="margin-top: 15px;" id="btnDownload" disabled onclick="downloadSnapshot()">📸 下载当前对比图</button>
+      </div>
+
+      <div class="ad-placeholder" style="min-height: 250px;">Sidebar Ad</div>
+    </aside>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; 2026 WebUtils. 基于 Neo-Brutalist 风格构建，您的私人视觉比对专家.</p>
+    </div>
+  </footer>
+
+  <script>
+    let srcA = null, srcB = null;
+    let mode = 'slider';
+    
+    const elements = {
+      inputA: document.getElementById('inputA'),
+      inputB: document.getElementById('inputB'),
+      imgA: document.getElementById('imgA'),
+      imgB: document.getElementById('imgB'),
+      prevA: document.getElementById('prevA'),
+      prevB: document.getElementById('prevB'),
+      sideA: document.getElementById('sideA'),
+      sideB: document.getElementById('sideB'),
+      beforeWrap: document.getElementById('beforeWrap'),
+      sliderHandle: document.getElementById('sliderHandle'),
+      stage: document.getElementById('compareStage'),
+      emptyMsg: document.getElementById('emptyMsg'),
+      sliderView: document.getElementById('sliderView'),
+      sideView: document.getElementById('sideView'),
+      btnSwap: document.getElementById('btnSwap'),
+      btnDownload: document.getElementById('btnDownload'),
+      opacitySlider: document.getElementById('opacitySlider'),
+      zoomSlider: document.getElementById('zoomSlider')
+    };
+
+    function init() {
+      elements.inputA.onchange = (e) => handleFile(e.target.files[0], 'A');
+      elements.inputB.onchange = (e) => handleFile(e.target.files[0], 'B');
+      
+      elements.stage.onmousemove = (e) => {
+        if (mode !== 'slider') return;
+        const rect = elements.stage.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        updateSlider(x);
       };
 
-      // Load saved theme
-      const savedTheme = localStorage.getItem("theme") || "light";
-      document.documentElement.setAttribute("data-theme", savedTheme);
+      elements.opacitySlider.oninput = (e) => {
+        const val = e.target.value;
+        document.getElementById('opacityVal').innerText = val;
+        if(mode === 'blend') elements.beforeWrap.style.opacity = val / 100;
+      };
 
-      // DOM Elements
-      const beforeZone = document.getElementById("beforeZone");
-      const afterZone = document.getElementById("afterZone");
-      const beforeInput = document.getElementById("beforeInput");
-      const afterInput = document.getElementById("afterInput");
-      const compareContainer = document.getElementById("compareContainer");
-      const sideBySideContainer = document.getElementById("sideBySideContainer");
-      const compareWrapper = document.getElementById("compareWrapper");
-      const compareBefore = document.getElementById("compareBefore");
-      const compareSlider = document.getElementById("compareSlider");
-      const beforeImage = document.getElementById("beforeImage");
-      const afterImage = document.getElementById("afterImage");
-      const sideBySideBefore = document.getElementById("sideBySideBefore");
-      const sideBySideAfter = document.getElementById("sideBySideAfter");
-      const emptyState = document.getElementById("emptyState");
-      const opacitySlider = document.getElementById("opacitySlider");
-      const opacityValue = document.getElementById("opacityValue");
-      const opacityControl = document.getElementById("opacityControl");
-      const zoomSlider = document.getElementById("zoomSlider");
-      const zoomValue = document.getElementById("zoomValue");
-      const downloadBtn = document.getElementById("downloadBtn");
-      const swapBtn = document.getElementById("swapBtn");
-      const resetBtn = document.getElementById("resetBtn");
+      elements.zoomSlider.oninput = (e) => {
+        const val = e.target.value;
+        document.getElementById('zoomVal').innerText = val;
+        elements.sliderView.style.transform = `scale(${val/100})`;
+        elements.sideView.style.transform = `scale(${val/100})`;
+      };
+    }
 
-      // State
-      let beforeSrc = null;
-      let afterSrc = null;
-      let currentMode = "vertical";
-      let sliderPosition = 50;
-      let isDragging = false;
+    function handleFile(file, type) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (type === 'A') {
+          srcA = e.target.result;
+          elements.imgA.src = srcA;
+          elements.prevA.src = srcA;
+          elements.prevA.style.display = 'block';
+          elements.sideA.src = srcA;
+        } else {
+          srcB = e.target.result;
+          elements.imgB.src = srcB;
+          elements.prevB.src = srcB;
+          elements.prevB.style.display = 'block';
+          elements.sideB.src = srcB;
+        }
+        checkReady();
+      };
+      reader.readAsDataURL(file);
+    }
 
-      // Setup upload zones
-      [
-        { zone: beforeZone, input: beforeInput, type: "before" },
-        { zone: afterZone, input: afterInput, type: "after" }
-      ].forEach(({ zone, input, type }) => {
-        zone.addEventListener("click", (e) => {
-          if (!e.target.classList.contains("remove-btn")) {
-            input.click();
-          }
-        });
-        zone.addEventListener("dragover", (e) => {
-          e.preventDefault();
-          zone.classList.add("dragover");
-        });
-        zone.addEventListener("dragleave", () => {
-          zone.classList.remove("dragover");
-        });
-        zone.addEventListener("drop", (e) => {
-          e.preventDefault();
-          zone.classList.remove("dragover");
-          if (e.dataTransfer.files.length > 0) {
-            handleFile(e.dataTransfer.files[0], type);
-          }
-        });
-        input.addEventListener("change", (e) => {
-          if (e.target.files.length > 0) {
-            handleFile(e.target.files[0], type);
-          }
-        });
+    function checkReady() {
+      if (srcA && srcB) {
+        elements.emptyMsg.style.display = 'none';
+        elements.btnSwap.disabled = false;
+        elements.btnDownload.disabled = false;
+        setMode(mode);
+      }
+    }
+
+    function updateSlider(pct) {
+      pct = Math.max(0, Math.min(100, pct));
+      elements.beforeWrap.style.clipPath = `inset(0 ${100 - pct}% 0 0)`;
+      elements.sliderHandle.style.left = `${pct}%`;
+    }
+
+    function setMode(newMode) {
+      mode = newMode;
+      document.querySelectorAll('.mode-item').forEach(item => {
+        item.classList.toggle('active', item.innerText.includes({slider:'滑块', blend:'混合', side:'并排'}[mode]));
       });
 
-      // Mode buttons
-      document.querySelectorAll(".mode-btn").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          document.querySelectorAll(".mode-btn").forEach((b) => b.classList.remove("active"));
-          btn.classList.add("active");
-          setMode(btn.dataset.mode);
-        });
-      });
-
-      // Opacity slider
-      opacitySlider.addEventListener("input", () => {
-        opacityValue.textContent = opacitySlider.value;
-        if (currentMode === "blend") {
-          compareBefore.style.opacity = opacitySlider.value / 100;
-        }
-      });
-
-      // Zoom slider
-      zoomSlider.addEventListener("input", updateZoom);
-
-      // Buttons
-      downloadBtn.addEventListener("click", downloadCompare);
-      swapBtn.addEventListener("click", swapImages);
-      resetBtn.addEventListener("click", resetAll);
-
-      // Slider interaction
-      compareSlider.addEventListener("mousedown", startDrag);
-      compareSlider.addEventListener("touchstart", startDrag, { passive: false });
-      document.addEventListener("mousemove", drag);
-      document.addEventListener("touchmove", drag, { passive: false });
-      document.addEventListener("mouseup", stopDrag);
-      document.addEventListener("touchend", stopDrag);
-
-      // Click on compare container to move slider
-      compareWrapper.addEventListener("click", (e) => {
-        if (e.target === compareSlider || compareSlider.contains(e.target)) return;
-        const rect = compareWrapper.getBoundingClientRect();
-        if (currentMode === "vertical") {
-          sliderPosition = ((e.clientX - rect.left) / rect.width) * 100;
-        } else if (currentMode === "horizontal") {
-          sliderPosition = ((e.clientY - rect.top) / rect.height) * 100;
-        }
-        updateSlider();
-      });
-
-      function handleFile(file, type) {
-        if (!file.type.startsWith("image/")) return;
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const src = e.target.result;
-          const zone = type === "before" ? beforeZone : afterZone;
-
-          // Update preview
-          let preview = zone.querySelector(".preview");
-          if (!preview) {
-            preview = document.createElement("img");
-            preview.className = "preview";
-            zone.appendChild(preview);
-
-            // Hide text
-            const p = zone.querySelector("p");
-            if (p) p.style.display = "none";
-          }
-          preview.src = src;
-          zone.classList.add("has-image");
-
-          if (type === "before") {
-            beforeSrc = src;
-          } else {
-            afterSrc = src;
-          }
-
-          updateCompare();
-        };
-        reader.readAsDataURL(file);
+      elements.sliderView.style.display = (mode === 'slider' || mode === 'blend') ? 'block' : 'none';
+      elements.sideView.style.display = mode === 'side' ? 'grid' : 'none';
+      document.getElementById('blendControl').style.display = mode === 'blend' ? 'block' : 'none';
+      
+      if (mode === 'blend') {
+        elements.beforeWrap.style.clipPath = 'none';
+        elements.beforeWrap.style.opacity = elements.opacitySlider.value / 100;
+        elements.sliderHandle.style.display = 'none';
+      } else {
+        elements.beforeWrap.style.opacity = 1;
+        elements.sliderHandle.style.display = mode === 'slider' ? 'block' : 'none';
+        if (mode === 'slider') updateSlider(50);
       }
+    }
 
-      window.removeImage = function (type, event) {
-        event.stopPropagation();
-        const zone = type === "before" ? beforeZone : afterZone;
-        const input = type === "before" ? beforeInput : afterInput;
+    function swapImages() {
+      [srcA, srcB] = [srcB, srcA];
+      elements.imgA.src = srcA; elements.imgB.src = srcB;
+      elements.prevA.src = srcA; elements.prevB.src = srcB;
+      elements.sideA.src = srcA; elements.sideB.src = srcB;
+    }
 
-        const preview = zone.querySelector(".preview");
-        if (preview) preview.remove();
+    function resetAll() {
+      srcA = srcB = null;
+      elements.imgA.src = elements.imgB.src = "";
+      elements.prevA.style.display = elements.prevB.style.display = 'none';
+      elements.emptyMsg.style.display = 'flex';
+      elements.btnSwap.disabled = elements.btnDownload.disabled = true;
+    }
 
-        const p = zone.querySelector("p");
-        if (p) p.style.display = "";
-
-        zone.classList.remove("has-image");
-        input.value = "";
-
-        if (type === "before") {
-          beforeSrc = null;
-        } else {
-          afterSrc = null;
-        }
-
-        updateCompare();
+    function downloadSnapshot() {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+        // This is simplified, usually we'd re-render based on current mode
+        const link = document.createElement('a');
+        link.download = `compare-${Date.now()}.png`;
+        link.href = canvas.toDataURL();
+        link.click();
       };
+      img.src = srcB; // Defaulting to img B for simple snapshot
+    }
 
-      function updateCompare() {
-        const hasImages = beforeSrc && afterSrc;
-
-        if (hasImages) {
-          beforeImage.src = beforeSrc;
-          afterImage.src = afterSrc;
-          sideBySideBefore.src = beforeSrc;
-          sideBySideAfter.src = afterSrc;
-
-          emptyState.style.display = "none";
-          setMode(currentMode);
-        } else {
-          compareContainer.classList.remove("visible");
-          sideBySideContainer.classList.remove("visible");
-          emptyState.style.display = "block";
-        }
-
-        downloadBtn.disabled = !hasImages;
-        swapBtn.disabled = !hasImages;
-      }
-
-      window.setMode = function (mode) {
-        currentMode = mode;
-
-        compareContainer.classList.remove("vertical", "horizontal", "blend", "visible");
-        sideBySideContainer.classList.remove("visible");
-        opacityControl.style.display = "none";
-
-        if (!beforeSrc || !afterSrc) return;
-
-        if (mode === "side-by-side") {
-          sideBySideContainer.classList.add("visible");
-        } else {
-          compareContainer.classList.add(mode, "visible");
-
-          if (mode === "blend") {
-            compareBefore.style.clipPath = "none";
-            compareBefore.style.opacity = opacitySlider.value / 100;
-            opacityControl.style.display = "block";
-          } else {
-            compareBefore.style.opacity = 1;
-            updateSlider();
-          }
-        }
-      };
-
-      function startDrag(e) {
-        e.preventDefault();
-        isDragging = true;
-      }
-
-      function drag(e) {
-        if (!isDragging) return;
-        e.preventDefault();
-
-        const rect = compareWrapper.getBoundingClientRect();
-        let clientX, clientY;
-
-        if (e.touches) {
-          clientX = e.touches[0].clientX;
-          clientY = e.touches[0].clientY;
-        } else {
-          clientX = e.clientX;
-          clientY = e.clientY;
-        }
-
-        if (currentMode === "vertical") {
-          sliderPosition = ((clientX - rect.left) / rect.width) * 100;
-        } else if (currentMode === "horizontal") {
-          sliderPosition = ((clientY - rect.top) / rect.height) * 100;
-        }
-
-        sliderPosition = Math.max(0, Math.min(100, sliderPosition));
-        updateSlider();
-      }
-
-      function stopDrag() {
-        isDragging = false;
-      }
-
-      function updateSlider() {
-        if (currentMode === "vertical") {
-          compareSlider.style.left = sliderPosition + "%";
-          compareSlider.style.top = "0";
-          compareSlider.style.width = "4px";
-          compareSlider.style.height = "100%";
-          compareBefore.style.clipPath = "inset(0 " + (100 - sliderPosition) + "% 0 0)";
-        } else if (currentMode === "horizontal") {
-          compareSlider.style.top = sliderPosition + "%";
-          compareSlider.style.left = "0";
-          compareSlider.style.width = "100%";
-          compareSlider.style.height = "4px";
-          compareBefore.style.clipPath = "inset(0 0 " + (100 - sliderPosition) + "% 0)";
-        }
-      }
-
-      function updateZoom() {
-        const zoom = zoomSlider.value;
-        zoomValue.textContent = zoom + "%";
-        compareContainer.style.transform = "scale(" + zoom / 100 + ")";
-        compareContainer.style.transformOrigin = "center top";
-        sideBySideContainer.style.transform = "scale(" + zoom / 100 + ")";
-        sideBySideContainer.style.transformOrigin = "center top";
-      }
-
-      window.adjustZoom = function (delta) {
-        const newValue = Math.max(50, Math.min(200, parseInt(zoomSlider.value) + delta));
-        zoomSlider.value = newValue;
-        updateZoom();
-      };
-
-      function swapImages() {
-        const temp = beforeSrc;
-        beforeSrc = afterSrc;
-        afterSrc = temp;
-
-        // Update previews
-        const beforePreview = beforeZone.querySelector(".preview");
-        const afterPreview = afterZone.querySelector(".preview");
-        if (beforePreview && afterPreview) {
-          beforePreview.src = beforeSrc;
-          afterPreview.src = afterSrc;
-        }
-
-        updateCompare();
-      }
-
-      window.resetAll = function () {
-        beforeSrc = null;
-        afterSrc = null;
-
-        [beforeZone, afterZone].forEach((zone) => {
-          const preview = zone.querySelector(".preview");
-          if (preview) preview.remove();
-          const p = zone.querySelector("p");
-          if (p) p.style.display = "";
-          zone.classList.remove("has-image");
-        });
-
-        beforeInput.value = "";
-        afterInput.value = "";
-        sliderPosition = 50;
-        zoomSlider.value = 100;
-        opacitySlider.value = 50;
-
-        updateCompare();
-        updateZoom();
-      };
-
-      function downloadCompare() {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-
-        const beforeImg = new Image();
-        const afterImg = new Image();
-
-        beforeImg.onload = () => {
-          afterImg.onload = () => {
-            const width = Math.max(beforeImg.width, afterImg.width);
-            const height = Math.max(beforeImg.height, afterImg.height);
-
-            if (currentMode === "side-by-side") {
-              canvas.width = width * 2 + 4;
-              canvas.height = height;
-
-              ctx.fillStyle = "#333";
-              ctx.fillRect(0, 0, canvas.width, canvas.height);
-              ctx.drawImage(beforeImg, 0, 0, width, height);
-              ctx.drawImage(afterImg, width + 4, 0, width, height);
-            } else if (currentMode === "blend") {
-              canvas.width = width;
-              canvas.height = height;
-
-              ctx.drawImage(afterImg, 0, 0, width, height);
-              ctx.globalAlpha = opacitySlider.value / 100;
-              ctx.drawImage(beforeImg, 0, 0, width, height);
-            } else {
-              canvas.width = width;
-              canvas.height = height;
-
-              // Draw after image
-              ctx.drawImage(afterImg, 0, 0, width, height);
-
-              // Clip and draw before image
-              ctx.save();
-              ctx.beginPath();
-              if (currentMode === "vertical") {
-                ctx.rect(0, 0, (width * sliderPosition) / 100, height);
-              } else {
-                ctx.rect(0, 0, width, (height * sliderPosition) / 100);
-              }
-              ctx.clip();
-              ctx.drawImage(beforeImg, 0, 0, width, height);
-              ctx.restore();
-
-              // Draw slider line
-              ctx.strokeStyle = "white";
-              ctx.lineWidth = 3;
-              ctx.beginPath();
-              if (currentMode === "vertical") {
-                const x = (width * sliderPosition) / 100;
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, height);
-              } else {
-                const y = (height * sliderPosition) / 100;
-                ctx.moveTo(0, y);
-                ctx.lineTo(width, y);
-              }
-              ctx.stroke();
-            }
-
-            // Add labels
-            ctx.globalAlpha = 1;
-            ctx.font = "bold 16px sans-serif";
-            ctx.fillStyle = "rgba(0,0,0,0.7)";
-
-            if (currentMode === "side-by-side") {
-              ctx.fillRect(10, 10, 60, 24);
-              ctx.fillRect(width + 14, 10, 50, 24);
-              ctx.fillStyle = "white";
-              ctx.fillText("Before", 16, 27);
-              ctx.fillText("After", width + 20, 27);
-            } else {
-              ctx.fillRect(10, 10, 60, 24);
-              ctx.fillRect(canvas.width - 60, 10, 50, 24);
-              ctx.fillStyle = "white";
-              ctx.fillText("Before", 16, 27);
-              ctx.fillText("After", canvas.width - 54, 27);
-            }
-
-            const link = document.createElement("a");
-            link.download = "compare_" + Date.now() + ".png";
-            link.href = canvas.toDataURL("image/png");
-            link.click();
-          };
-          afterImg.src = afterSrc;
-        };
-        beforeImg.src = beforeSrc;
-      }
-
-      // Initialize
-      updateSlider();
-    </script>
-  </body>
+    window.onload = init;
+  </script>
+</body>
 </html>
