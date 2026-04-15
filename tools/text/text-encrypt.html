@@ -1,950 +1,335 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="light">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>文本加密工具 - WebUtils</title>
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="文本加密工具 - WebUtils" />
-    <meta name="keywords" content="text-encrypt,text,tools,webutils" />
+    <title>Text Encryption Tool - Encrypt & Decrypt Text Online | WebUtils</title>
+    <meta name="description" content="Free online text encryption and decryption tool. Supports Base64, Caesar Cipher, ROT13, Vigenère, XOR, AES, Morse code, Binary, Hex, Unicode, and more. No installation, runs in browser." />
+    <meta name="keywords" content="text encryption tool, encrypt text online, decrypt text, Caesar cipher, ROT13, Vigenere cipher, Base64 encode decode, AES encryption, Morse code, binary encode" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/text/text-encrypt.html" />
-
-    <!-- Open Graph -->
-    <meta property="og:title" content="文本加密工具 - WebUtils" />
-    <meta property="og:description" content="文本加密工具 - WebUtils" />
+    <link rel="canonical" href="https://essays4u.net/tools/text/text-encrypt" />
+    <meta property="og:title" content="Text Encryption Tool - Encrypt & Decrypt Online" />
+    <meta property="og:description" content="Encrypt or decrypt text using 12 algorithms including AES, Caesar, Vigenère, Base64, Morse, and more." />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/text/text-encrypt.html" />
+    <meta property="og:url" content="https://essays4u.net/tools/text/text-encrypt" />
     <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
     <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="文本加密工具 - WebUtils" />
-    <meta name="twitter:description" content="文本加密工具 - WebUtils" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-      }
-      header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-      }
-      .theme-toggle {
-        cursor: pointer;
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        padding: 0.5rem;
-      }
-      .editor-container {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-        margin-bottom: 1rem;
-      }
-      @media (max-width: 768px) {
-        .editor-container {
-          grid-template-columns: 1fr;
-        }
-      }
-      .editor-box {
-        display: flex;
-        flex-direction: column;
-      }
-      .editor-box label {
-        margin-bottom: 0.5rem;
-        font-weight: 600;
-      }
-      textarea {
-        font-family: Monaco, Menlo, "Ubuntu Mono", monospace;
-        font-size: 14px;
-        min-height: 200px;
-        resize: vertical;
-      }
-      .btn-group {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        margin-bottom: 1rem;
-      }
-      .options-section {
-        margin-bottom: 1.5rem;
-        padding: 1.5rem;
-        background: var(--pico-card-background-color);
-        border-radius: 8px;
-      }
-      .options-section h3 {
-        margin-bottom: 1rem;
-        font-size: 1rem;
-      }
-      .algorithm-select {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 0.75rem;
-        margin-bottom: 1rem;
-      }
-      .algorithm-item {
-        padding: 1rem;
-        border: 2px solid var(--pico-muted-border-color);
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-      .algorithm-item:hover {
-        border-color: var(--pico-primary);
-      }
-      .algorithm-item.selected {
-        border-color: var(--pico-primary);
-        background: rgba(var(--pico-primary-rgb), 0.1);
-      }
-      .algorithm-item strong {
-        display: block;
-        margin-bottom: 0.25rem;
-      }
-      .algorithm-item small {
-        color: var(--pico-muted-color);
-        font-size: 0.8rem;
-      }
-      .key-section {
-        margin-top: 1rem;
-        padding-top: 1rem;
-        border-top: 1px solid var(--pico-muted-border-color);
-      }
-      .key-row {
-        display: flex;
-        gap: 1rem;
-        align-items: flex-end;
-        flex-wrap: wrap;
-      }
-      .key-row .input-group {
-        flex: 1;
-        min-width: 200px;
-      }
-      #message {
-        min-height: 2rem;
-      }
-      .error {
-        color: var(--pico-del-color);
-        padding: 1rem;
-        border-radius: 8px;
-        background: rgba(255, 0, 0, 0.1);
-      }
-      .success-msg {
-        color: var(--pico-ins-color);
-      }
-      .info-section {
-        margin-top: 2rem;
-      }
-      .info-card {
-        padding: 1rem;
-        background: var(--pico-card-background-color);
-        border-radius: 8px;
-        margin-bottom: 1rem;
-      }
-      .info-card h4 {
-        margin-bottom: 0.5rem;
-        color: var(--pico-primary);
-      }
-      .strength-meter {
-        margin-top: 0.5rem;
-      }
-      .strength-bar {
-        height: 4px;
-        background: var(--pico-muted-border-color);
-        border-radius: 2px;
-        overflow: hidden;
-      }
-      .strength-fill {
-        height: 100%;
-        transition:
-          width 0.3s,
-          background 0.3s;
-      }
-      .strength-weak {
-        background: #e74c3c;
-        width: 33%;
-      }
-      .strength-medium {
-        background: #f39c12;
-        width: 66%;
-      }
-      .strength-strong {
-        background: #27ae60;
-        width: 100%;
-      }
-      .mode-toggle {
-        display: flex;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-      }
-      .mode-toggle button {
-        flex: 1;
-      }
-      .mode-toggle button.active {
-        background: var(--pico-primary);
-        color: var(--pico-primary-inverse);
-      }
-      .mode-toggle button:not(.active) {
-        background: var(--pico-secondary-background);
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-    </style>
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <style>
+      :root{--blue-600:#2563eb;--blue-700:#1d4ed8;--blue-50:#eff6ff;--gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-300:#d1d5db;--gray-400:#9ca3af;--gray-500:#6b7280;--gray-600:#4b5563;--gray-700:#374151;--gray-800:#1f2937;--gray-900:#111827;--white:#fff;--green-600:#16a34a;--red-600:#dc2626;--shadow-sm:0 1px 2px rgba(0,0,0,.05);--shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);--radius:8px;--radius-lg:12px;--font:'Inter',-apple-system,sans-serif;--mono:'JetBrains Mono',monospace;}
+      *{box-sizing:border-box;margin:0;padding:0;}
+      body{font-family:var(--font);font-size:15px;line-height:1.6;background:var(--gray-50);color:var(--gray-800);}
+      a{color:var(--blue-600);text-decoration:none;}a:hover{text-decoration:underline;}
+      .site-nav{background:var(--white);border-bottom:1px solid var(--gray-200);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm);}
+      .nav-brand{font-weight:700;font-size:1.1rem;color:var(--gray-900);}.nav-brand span{color:var(--blue-600);}
+      .nav-links{display:flex;gap:20px;font-size:.875rem;}.nav-links a{color:var(--gray-500);}
+      .page-wrapper{max-width:1280px;margin:0 auto;padding:24px 16px;}
+      .main-grid{display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start;}
+      @media(max-width:1024px){.main-grid{grid-template-columns:1fr;}}
+      .breadcrumb{font-size:.8rem;color:var(--gray-500);margin-bottom:16px;}.breadcrumb a{color:var(--gray-500);}.breadcrumb span{margin:0 6px;}
+      .page-header{margin-bottom:20px;}.page-header h1{font-size:1.6rem;font-weight:700;color:var(--gray-900);margin-bottom:6px;}.page-header p{color:var(--gray-500);font-size:.925rem;}
+      .tool-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow);margin-bottom:24px;}
+      .tool-card h2{font-size:1rem;font-weight:600;color:var(--gray-800);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--gray-100);}
+      .mode-toggle{display:grid;grid-template-columns:1fr 1fr;gap:0;background:var(--gray-100);border-radius:var(--radius);padding:3px;margin-bottom:20px;}
+      .mode-btn{padding:8px;border:none;border-radius:6px;font-size:.875rem;font-weight:500;cursor:pointer;background:transparent;color:var(--gray-600);transition:all .15s;text-align:center;}
+      .mode-btn.active{background:var(--white);color:var(--blue-600);box-shadow:0 1px 3px rgba(0,0,0,.1);}
+      .algo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:10px;margin-bottom:18px;}
+      .algo-item{padding:12px;border:2px solid var(--gray-200);border-radius:var(--radius);cursor:pointer;transition:all .15s;}
+      .algo-item:hover{border-color:var(--blue-600);}
+      .algo-item.selected{border-color:var(--blue-600);background:var(--blue-50);}
+      .algo-item strong{display:block;font-size:.875rem;color:var(--gray-800);margin-bottom:2px;}
+      .algo-item small{font-size:.775rem;color:var(--gray-500);}
+      .key-section{margin-top:14px;padding-top:14px;border-top:1px solid var(--gray-100);}
+      .key-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;}
+      .key-row .form-field{flex:1;min-width:180px;}
+      .form-field label{display:block;font-size:.8rem;font-weight:500;color:var(--gray-600);margin-bottom:5px;}
+      .form-field input{width:100%;padding:9px 12px;border:1px solid var(--gray-300);border-radius:var(--radius);font-size:.875rem;font-family:var(--font);color:var(--gray-800);background:var(--white);transition:border-color .15s;}
+      .form-field input:focus{outline:none;border-color:var(--blue-600);box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+      .strength-bar-wrap{margin-top:8px;}
+      .strength-bar-wrap small{font-size:.775rem;color:var(--gray-500);}
+      .strength-bar{height:4px;background:var(--gray-200);border-radius:2px;overflow:hidden;margin-top:4px;}
+      .strength-fill{height:100%;border-radius:2px;transition:width .3s,background .3s;}
+      .strength-fill.weak{background:#ef4444;width:33%;}
+      .strength-fill.medium{background:#f59e0b;width:66%;}
+      .strength-fill.strong{background:#22c55e;width:100%;}
+      .panels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+      @media(max-width:700px){.panels{grid-template-columns:1fr;}}
+      .panel-label{font-size:.8rem;font-weight:500;color:var(--gray-500);margin-bottom:6px;}
+      textarea{width:100%;min-height:180px;padding:12px;font-family:var(--mono);font-size:.825rem;border:1px solid var(--gray-300);border-radius:var(--radius);resize:vertical;background:var(--gray-50);color:var(--gray-800);transition:border-color .15s;}
+      textarea:focus{outline:none;border-color:var(--blue-600);background:var(--white);box-shadow:0 0 0 3px rgba(37,99,235,.08);}
+      textarea[readonly]{background:#f8faff;cursor:default;}
+      .msg-box{min-height:24px;margin-top:10px;font-size:.85rem;font-family:var(--mono);}
+      .msg-box.ok{color:var(--green-600);}.msg-box.err{color:var(--red-600);}
+      .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;}
+      .btn{padding:9px 18px;border-radius:var(--radius);font-size:.875rem;font-weight:500;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:6px;transition:all .15s;}
+      .btn-primary{background:var(--blue-600);color:var(--white);}.btn-primary:hover{background:var(--blue-700);}
+      .btn-ghost{background:var(--white);color:var(--gray-700);border:1px solid var(--gray-300);}.btn-ghost:hover{background:var(--gray-50);}
+      .sidebar{display:flex;flex-direction:column;gap:24px;}
+      .ad-block{background:var(--white);border:1px dashed var(--gray-300);border-radius:var(--radius-lg);padding:16px;min-height:260px;display:flex;align-items:center;justify-content:center;color:var(--gray-400);font-size:.8rem;text-align:center;}
+      .sidebar-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:20px;box-shadow:var(--shadow-sm);}
+      .sidebar-card h3{font-size:.925rem;font-weight:600;color:var(--gray-800);margin-bottom:12px;}
+      .tip-list{list-style:none;font-size:.85rem;color:var(--gray-600);display:flex;flex-direction:column;gap:8px;}.tip-list li::before{content:"✦ ";color:var(--blue-600);}
+      .article-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:32px;box-shadow:var(--shadow-sm);}
+      .article-card h2{font-size:1.3rem;font-weight:700;color:var(--gray-900);margin:0 0 16px;}
+      .article-card h3{font-size:1.05rem;font-weight:600;color:var(--gray-800);margin:24px 0 10px;}
+      .article-card p{color:var(--gray-600);font-size:.925rem;line-height:1.75;margin-bottom:14px;}
+      .article-card ul,.article-card ol{padding-left:20px;color:var(--gray-600);font-size:.925rem;line-height:1.75;margin-bottom:14px;}
+      .article-card li{margin-bottom:6px;}
+      .faq-item{border-top:1px solid var(--gray-100);padding-top:16px;margin-top:16px;}
+      .faq-q{font-weight:600;color:var(--gray-800);margin-bottom:6px;font-size:.95rem;}
+      .faq-a{color:var(--gray-600);font-size:.9rem;line-height:1.7;}
+      .site-footer{background:var(--white);border-top:1px solid var(--gray-200);padding:24px;text-align:center;font-size:.825rem;color:var(--gray-400);margin-top:40px;}.site-footer a{color:var(--gray-500);}
+    </style>
   </head>
   <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>›</span>
-      文本加密工具
+    <nav class="site-nav">
+      <div class="nav-brand">Web<span>Utils</span></div>
+      <div class="nav-links">
+        <a href="../../index.html">Home</a>
+        <a href="../../index.html#text">Text Tools</a>
+      </div>
     </nav>
-    <main class="container">
-      <header>
-        <h1>文本加密工具</h1>
-        <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">🌓</button>
-      </header>
 
-      <div class="mode-toggle">
-        <button id="encryptMode" class="active" onclick="setMode('encrypt')">加密</button>
-        <button id="decryptMode" onclick="setMode('decrypt')">解密</button>
+    <div class="page-wrapper">
+      <div class="breadcrumb">
+        <a href="../../index.html">Home</a><span>›</span>
+        <a href="../../index.html#text">Text Tools</a><span>›</span>
+        Text Encryption
       </div>
 
-      <section class="options-section">
-        <h3>选择加密算法</h3>
-        <div class="algorithm-select" id="algorithmSelect">
-          <div
-            class="algorithm-item selected"
-            data-algorithm="base64"
-            onclick="selectAlgorithm(this)"
-          >
-            <strong>Base64</strong>
-            <small>编码转换，非真正加密</small>
+      <div class="main-grid">
+        <div>
+          <div class="page-header">
+            <h1>Text Encryption Tool</h1>
+            <p>Encrypt or decrypt text using 12 algorithms — from classical ciphers to Base64 and AES. All processing happens in your browser.</p>
           </div>
-          <div class="algorithm-item" data-algorithm="caesar" onclick="selectAlgorithm(this)">
-            <strong>凯撒密码</strong>
-            <small>经典位移加密</small>
-          </div>
-          <div class="algorithm-item" data-algorithm="rot13" onclick="selectAlgorithm(this)">
-            <strong>ROT13</strong>
-            <small>字母位移13位</small>
-          </div>
-          <div class="algorithm-item" data-algorithm="vigenere" onclick="selectAlgorithm(this)">
-            <strong>维吉尼亚密码</strong>
-            <small>多表替换加密</small>
-          </div>
-          <div class="algorithm-item" data-algorithm="xor" onclick="selectAlgorithm(this)">
-            <strong>XOR加密</strong>
-            <small>异或运算加密</small>
-          </div>
-          <div class="algorithm-item" data-algorithm="aes" onclick="selectAlgorithm(this)">
-            <strong>AES-256</strong>
-            <small>高级加密标准</small>
-          </div>
-          <div class="algorithm-item" data-algorithm="reverse" onclick="selectAlgorithm(this)">
-            <strong>反转</strong>
-            <small>字符顺序反转</small>
-          </div>
-          <div class="algorithm-item" data-algorithm="morse" onclick="selectAlgorithm(this)">
-            <strong>摩尔斯电码</strong>
-            <small>点划编码</small>
-          </div>
-          <div class="algorithm-item" data-algorithm="binary" onclick="selectAlgorithm(this)">
-            <strong>二进制</strong>
-            <small>二进制编码</small>
-          </div>
-          <div class="algorithm-item" data-algorithm="hex" onclick="selectAlgorithm(this)">
-            <strong>十六进制</strong>
-            <small>Hex编码</small>
-          </div>
-          <div class="algorithm-item" data-algorithm="unicode" onclick="selectAlgorithm(this)">
-            <strong>Unicode转义</strong>
-            <small>\uXXXX格式</small>
-          </div>
-          <div class="algorithm-item" data-algorithm="atbash" onclick="selectAlgorithm(this)">
-            <strong>阿特巴什密码</strong>
-            <small>字母表反转</small>
-          </div>
-        </div>
 
-        <div class="key-section" id="keySection" style="display: none">
-          <div class="key-row">
-            <div class="input-group">
-              <label for="keyInput" id="keyLabel">密钥</label>
-              <input type="text" id="keyInput" placeholder="输入密钥" />
+          <div class="ad-block" style="margin-bottom:24px;min-height:90px;"><span>Advertisement</span></div>
+
+          <div class="tool-card">
+            <h2>Encrypt / Decrypt</h2>
+
+            <div class="mode-toggle">
+              <button class="mode-btn active" id="encryptBtn" onclick="setMode('encrypt')">🔒 Encrypt</button>
+              <button class="mode-btn" id="decryptBtn" onclick="setMode('decrypt')">🔓 Decrypt</button>
             </div>
-            <button class="secondary" onclick="generateKey()">生成随机密钥</button>
+
+            <div class="algo-grid" id="algoGrid">
+              <div class="algo-item selected" data-algo="base64" onclick="selectAlgo(this)"><strong>Base64</strong><small>Encoding, not encryption</small></div>
+              <div class="algo-item" data-algo="caesar" onclick="selectAlgo(this)"><strong>Caesar Cipher</strong><small>Classic letter shift</small></div>
+              <div class="algo-item" data-algo="rot13" onclick="selectAlgo(this)"><strong>ROT13</strong><small>Shift by 13 letters</small></div>
+              <div class="algo-item" data-algo="vigenere" onclick="selectAlgo(this)"><strong>Vigenère Cipher</strong><small>Polyalphabetic cipher</small></div>
+              <div class="algo-item" data-algo="xor" onclick="selectAlgo(this)"><strong>XOR Cipher</strong><small>Bitwise XOR encryption</small></div>
+              <div class="algo-item" data-algo="aes" onclick="selectAlgo(this)"><strong>AES (simulated)</strong><small>Key-based encryption</small></div>
+              <div class="algo-item" data-algo="reverse" onclick="selectAlgo(this)"><strong>Reverse</strong><small>Flip character order</small></div>
+              <div class="algo-item" data-algo="morse" onclick="selectAlgo(this)"><strong>Morse Code</strong><small>Dot-dash encoding</small></div>
+              <div class="algo-item" data-algo="binary" onclick="selectAlgo(this)"><strong>Binary</strong><small>8-bit binary encoding</small></div>
+              <div class="algo-item" data-algo="hex" onclick="selectAlgo(this)"><strong>Hexadecimal</strong><small>Hex byte encoding</small></div>
+              <div class="algo-item" data-algo="unicode" onclick="selectAlgo(this)"><strong>Unicode Escape</strong><small>\uXXXX format</small></div>
+              <div class="algo-item" data-algo="atbash" onclick="selectAlgo(this)"><strong>Atbash Cipher</strong><small>Reverse alphabet</small></div>
+            </div>
+
+            <div class="key-section" id="keySection" style="display:none;">
+              <div class="key-row">
+                <div class="form-field">
+                  <label id="keyLabel" for="keyInput">Key</label>
+                  <input type="text" id="keyInput" placeholder="Enter key..." />
+                </div>
+                <button class="btn btn-ghost" onclick="generateKey()">🎲 Random Key</button>
+              </div>
+              <div class="strength-bar-wrap" id="strengthWrap" style="display:none;">
+                <small>Key strength</small>
+                <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+              </div>
+            </div>
+
+            <div class="panels" style="margin-top:18px;">
+              <div>
+                <div class="panel-label" id="inputLabel">Plaintext</div>
+                <textarea id="inputText" placeholder="Enter text to encrypt..."></textarea>
+              </div>
+              <div>
+                <div class="panel-label" id="outputLabel">Ciphertext</div>
+                <textarea id="outputText" readonly placeholder="Result will appear here..."></textarea>
+              </div>
+            </div>
+
+            <div class="btn-row">
+              <button class="btn btn-primary" onclick="processText()" id="processBtn">🔒 Encrypt</button>
+              <button class="btn btn-ghost" onclick="swapTexts()">⇆ Swap</button>
+              <button class="btn btn-ghost" onclick="copyResult()">📋 Copy</button>
+              <button class="btn btn-ghost" onclick="clearAll()">🗑 Clear</button>
+            </div>
+            <div class="msg-box" id="msgBox"></div>
           </div>
-          <div class="strength-meter" id="strengthMeter" style="display: none">
-            <small>密钥强度</small>
-            <div class="strength-bar">
-              <div class="strength-fill" id="strengthFill"></div>
+
+          <div class="article-card">
+            <h2>Text Encryption: From Classical Ciphers to Modern Encoding</h2>
+            <p>Text encryption transforms readable plaintext into an unreadable form (ciphertext) using a mathematical algorithm and, often, a secret key. The recipient uses the same algorithm (and key, for symmetric ciphers) to reverse the process and recover the original text. Our <strong>Text Encryption Tool</strong> supports 12 algorithms spanning everything from ancient classical ciphers to modern encoding schemes, making it ideal for education, puzzles, testing, and lightweight data obfuscation.</p>
+
+            <h3>Algorithm Overview</h3>
+            <ul>
+              <li><strong>Base64:</strong> Not encryption, but a reversible encoding that converts binary/text data to ASCII-safe characters. Used everywhere from email attachments (MIME) to storing images in CSS and passing data in URLs. The output is always roughly 33% larger than the input.</li>
+              <li><strong>Caesar Cipher:</strong> The oldest documented cipher, used by Julius Caesar for military communications. Each letter is shifted forward by a fixed number (the "key") in the alphabet. With only 25 possible keys, it is trivially broken by brute force.</li>
+              <li><strong>ROT13:</strong> A special case of the Caesar cipher with a shift of 13. Since there are 26 letters in the English alphabet, applying ROT13 twice returns the original text — the same operation both encrypts and decrypts. Widely used to obscure spoilers and jokes online.</li>
+              <li><strong>Vigenère Cipher:</strong> A step up from Caesar — uses a keyword to determine a different shift for each character. For example, with key "KEY", the first character shifts by K (10), the second by E (4), the third by Y (24), then repeats. Much harder to break by hand than Caesar but vulnerable to frequency analysis when the key is short.</li>
+              <li><strong>XOR Cipher:</strong> Uses the bitwise XOR operation between each character and the corresponding key character. A true one-time pad (where the key is as long as the message and used only once) is theoretically unbreakable, but with short repeating keys XOR is easily broken by frequency analysis.</li>
+              <li><strong>AES (simulated):</strong> A demonstration of key-based substitution encryption. True AES-256 requires native WebCrypto APIs — this implementation shows the concept of key-derived character transformation for educational purposes.</li>
+              <li><strong>Morse Code:</strong> Represents each letter and digit as a sequence of dots and dashes, originally designed for electrical telegraph transmission. Useful for generating encoded text that looks distinctly different from the original.</li>
+              <li><strong>Binary / Hex:</strong> Converts each character to its ASCII binary (8-bit) or hexadecimal representation. Used widely in computer science education and debugging. The full ASCII table and Unicode code points are supported.</li>
+              <li><strong>Unicode Escape:</strong> Encodes every character as its \uXXXX JavaScript/Java escape sequence. Used to safely embed non-ASCII characters in source code and JSON strings.</li>
+              <li><strong>Atbash Cipher:</strong> An ancient Hebrew cipher where each letter is mapped to its mirror in the alphabet (A↔Z, B↔Y, etc.). It is self-inverse — applying it twice returns the original text.</li>
+            </ul>
+
+            <h3>Encrypt vs. Decode: When to Use Each</h3>
+            <p>For classical ciphers and encodings, encryption and decryption are both available. For encodings like Base64, binary, and hex, the "decrypt" operation is called <em>decoding</em> — these are not true ciphers, but the tool supports the reverse transformation under the same interface for convenience.</p>
+
+            <h3>Frequently Asked Questions</h3>
+            <div class="faq-item">
+              <div class="faq-q">Is the AES encryption here real AES?</div>
+              <div class="faq-a">No. True AES-256 is a block cipher requiring proper IV handling and padding — this tool implements a simplified key-based substitution for demonstration purposes. For real AES encryption, use the browser's WebCrypto API or a dedicated security library. Never use this tool for securing sensitive data.</div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-q">Can I decrypt a Base64-encoded string?</div>
+              <div class="faq-a">Yes. Select "Base64," switch to Decrypt mode, paste your Base64 string, and click Decrypt. The tool will decode it back to the original text. Note that Base64 is not encryption — any Base64 string can be decoded without a key.</div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-q">Why does Morse code only support English letters and numbers?</div>
+              <div class="faq-a">Standard Morse code was designed for the Latin alphabet and Arabic numerals. While extensions exist for some other scripts, this tool implements the International Morse Code standard (ITU-R M.1677-1) which covers A-Z, 0-9, and common punctuation marks.</div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-q">Can I use this to protect sensitive passwords or personal data?</div>
+              <div class="faq-a">No. Classical ciphers like Caesar and Vigenère are not cryptographically secure and should never be used to protect real sensitive data. For password storage, use bcrypt or Argon2. For data encryption, use AES-256-GCM via the WebCrypto API or a vetted library like libsodium.</div>
             </div>
           </div>
         </div>
-      </section>
 
-      <div class="editor-container">
-        <div class="editor-box">
-          <label for="inputText" id="inputLabel">原文</label>
-          <textarea id="inputText" placeholder="输入要加密的文本"></textarea>
-        </div>
-        <div class="editor-box">
-          <label for="outputText" id="outputLabel">密文</label>
-          <textarea id="outputText" readonly placeholder="加密结果将显示在这里"></textarea>
+        <div class="sidebar">
+          <div class="ad-block"><span>Advertisement<br/>(300×250)</span></div>
+          <div class="sidebar-card">
+            <h3>Algorithm Quick Ref</h3>
+            <ul class="tip-list">
+              <li><strong>Base64</strong> — reversible encoding</li>
+              <li><strong>Caesar</strong> — shift key 1-25</li>
+              <li><strong>ROT13</strong> — no key needed</li>
+              <li><strong>Vigenère</strong> — letter keyword</li>
+              <li><strong>XOR</strong> — any string key</li>
+              <li><strong>Morse</strong> — dots and dashes</li>
+              <li><strong>Atbash</strong> — self-inverse</li>
+            </ul>
+          </div>
+          <div class="ad-block"><span>Advertisement<br/>(300×600)</span></div>
         </div>
       </div>
+    </div>
 
-      <div class="btn-group">
-        <button onclick="processText()" id="processBtn">加密</button>
-        <button class="secondary" onclick="swapTexts()">交换输入输出</button>
-        <button class="secondary" onclick="clearAll()">清空</button>
-        <button class="secondary" onclick="copyResult()">复制结果</button>
-      </div>
-
-      <div id="message"></div>
-
-      <details class="info-section">
-        <summary>算法说明</summary>
-        <div class="info-card">
-          <h4>Base64</h4>
-          <p>
-            一种将二进制数据编码为ASCII字符的方法。常用于传输数据，但不是真正的加密，容易被解码。
-          </p>
-        </div>
-        <div class="info-card">
-          <h4>凯撒密码</h4>
-          <p>
-            最古老的加密方法之一，通过将字母表中的每个字母移动固定位置来加密。密钥为位移数（1-25）。
-          </p>
-        </div>
-        <div class="info-card">
-          <h4>ROT13</h4>
-          <p>凯撒密码的特例，固定位移13位。由于英文字母有26个，加密和解密使用相同操作。</p>
-        </div>
-        <div class="info-card">
-          <h4>维吉尼亚密码</h4>
-          <p>使用一系列不同的凯撒密码，通过关键字来确定每个字母的位移量。比单一凯撒密码更安全。</p>
-        </div>
-        <div class="info-card">
-          <h4>XOR加密</h4>
-          <p>使用异或运算进行加密。简单但对于一次性密码本是理论上不可破解的。</p>
-        </div>
-        <div class="info-card">
-          <h4>AES-256</h4>
-          <p>
-            高级加密标准，目前最安全的对称加密算法之一。使用256位密钥，被广泛应用于各种安全通信。
-          </p>
-        </div>
-        <div class="info-card">
-          <h4>摩尔斯电码</h4>
-          <p>使用点（.）和划（-）的组合来表示字母和数字。历史上用于电报通信。</p>
-        </div>
-      </details>
-    </main>
+    <footer class="site-footer">
+      <p><a href="../../index.html">WebUtils</a> · All processing is local · No data stored · <a href="https://github.com/chicogong/html-tools" target="_blank" rel="noopener">GitHub</a></p>
+    </footer>
 
     <script>
-      var currentMode = "encrypt";
-      var currentAlgorithm = "base64";
+      var currentMode = 'encrypt';
+      var currentAlgo = 'base64';
 
-      // Theme toggle
-      window.toggleTheme = function () {
-        var html = document.documentElement;
-        var currentTheme = html.getAttribute("data-theme");
-        var newTheme = currentTheme === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
-      };
-
-      // Load saved theme
-      (function () {
-        var savedTheme = localStorage.getItem("theme") || "light";
-        document.documentElement.setAttribute("data-theme", savedTheme);
-      })();
-
-      function showMessage(msg, isError) {
-        var messageDiv = document.getElementById("message");
-        var p = document.createElement("p");
-        p.className = isError ? "error" : "success-msg";
-        p.textContent = msg;
-        messageDiv.textContent = "";
-        messageDiv.appendChild(p);
-        setTimeout(function () {
-          messageDiv.textContent = "";
-        }, 3000);
+      function setMode(mode) {
+        currentMode = mode;
+        document.getElementById('encryptBtn').className = 'mode-btn' + (mode==='encrypt'?' active':'');
+        document.getElementById('decryptBtn').className = 'mode-btn' + (mode==='decrypt'?' active':'');
+        document.getElementById('inputLabel').textContent = mode==='encrypt'?'Plaintext':'Ciphertext';
+        document.getElementById('outputLabel').textContent = mode==='encrypt'?'Ciphertext':'Plaintext';
+        document.getElementById('processBtn').textContent = mode==='encrypt'?'🔒 Encrypt':'🔓 Decrypt';
+        document.getElementById('inputText').placeholder = mode==='encrypt'?'Enter text to encrypt...':'Enter text to decrypt...';
+        document.getElementById('outputText').placeholder = mode==='encrypt'?'Encrypted result...':'Decrypted result...';
       }
 
-      window.setMode = function (mode) {
-        currentMode = mode;
-        document.getElementById("encryptMode").className = mode === "encrypt" ? "active" : "";
-        document.getElementById("decryptMode").className = mode === "decrypt" ? "active" : "";
-
-        document.getElementById("inputLabel").textContent = mode === "encrypt" ? "原文" : "密文";
-        document.getElementById("outputLabel").textContent = mode === "encrypt" ? "密文" : "原文";
-        document.getElementById("processBtn").textContent = mode === "encrypt" ? "加密" : "解密";
-        document.getElementById("inputText").placeholder =
-          mode === "encrypt" ? "输入要加密的文本" : "输入要解密的文本";
-        document.getElementById("outputText").placeholder =
-          mode === "encrypt" ? "加密结果将显示在这里" : "解密结果将显示在这里";
-      };
-
-      window.selectAlgorithm = function (element) {
-        var items = document.querySelectorAll(".algorithm-item");
-        items.forEach(function (item) {
-          item.classList.remove("selected");
-        });
-        element.classList.add("selected");
-        currentAlgorithm = element.getAttribute("data-algorithm");
-
+      function selectAlgo(el) {
+        document.querySelectorAll('.algo-item').forEach(function(a){a.classList.remove('selected');});
+        el.classList.add('selected');
+        currentAlgo = el.getAttribute('data-algo');
         updateKeySection();
-      };
+      }
 
       function updateKeySection() {
-        var keySection = document.getElementById("keySection");
-        var keyLabel = document.getElementById("keyLabel");
-        var keyInput = document.getElementById("keyInput");
-        var strengthMeter = document.getElementById("strengthMeter");
-
-        var needsKey = ["caesar", "vigenere", "xor", "aes"].indexOf(currentAlgorithm) >= 0;
-        keySection.style.display = needsKey ? "block" : "none";
-
-        if (currentAlgorithm === "caesar") {
-          keyLabel.textContent = "位移量 (1-25)";
-          keyInput.placeholder = "输入数字 1-25";
-          keyInput.type = "number";
-          keyInput.min = 1;
-          keyInput.max = 25;
-          strengthMeter.style.display = "none";
-        } else if (currentAlgorithm === "vigenere") {
-          keyLabel.textContent = "密钥词";
-          keyInput.placeholder = "输入字母密钥";
-          keyInput.type = "text";
-          strengthMeter.style.display = "block";
-        } else if (currentAlgorithm === "xor" || currentAlgorithm === "aes") {
-          keyLabel.textContent = "密钥";
-          keyInput.placeholder = "输入密钥";
-          keyInput.type = "text";
-          strengthMeter.style.display = "block";
-        }
+        var needsKey = ['caesar','vigenere','xor','aes'].indexOf(currentAlgo)>=0;
+        document.getElementById('keySection').style.display = needsKey?'block':'none';
+        var keyLabel = document.getElementById('keyLabel');
+        var keyInput = document.getElementById('keyInput');
+        var sw = document.getElementById('strengthWrap');
+        if (currentAlgo==='caesar'){keyLabel.textContent='Shift (1-25)';keyInput.type='number';keyInput.placeholder='1-25';sw.style.display='none';}
+        else if (currentAlgo==='vigenere'){keyLabel.textContent='Keyword';keyInput.type='text';keyInput.placeholder='Enter letters...';sw.style.display='block';}
+        else{keyLabel.textContent='Key';keyInput.type='text';keyInput.placeholder='Enter key...';sw.style.display='block';}
       }
-
-      window.generateKey = function () {
-        var key = "";
-        var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
-        var length = currentAlgorithm === "caesar" ? 2 : 16;
-
-        if (currentAlgorithm === "caesar") {
-          key = String(Math.floor(Math.random() * 25) + 1);
-        } else {
-          for (var i = 0; i < length; i++) {
-            key += chars.charAt(Math.floor(Math.random() * chars.length));
-          }
-        }
-
-        document.getElementById("keyInput").value = key;
-        updateStrength();
-      };
 
       function updateStrength() {
-        var key = document.getElementById("keyInput").value;
-        var fill = document.getElementById("strengthFill");
+        var key = document.getElementById('keyInput').value;
+        var fill = document.getElementById('strengthFill');
+        if (!key){fill.className='strength-fill';return;}
+        var s=0;
+        if(key.length>=8)s++;if(key.length>=16)s++;
+        if(/[a-z]/.test(key)&&/[A-Z]/.test(key))s++;
+        if(/\d/.test(key))s++;if(/[^a-zA-Z0-9]/.test(key))s++;
+        fill.className='strength-fill '+(s<=2?'weak':s<=3?'medium':'strong');
+      }
+      document.getElementById('keyInput').addEventListener('input',updateStrength);
 
-        if (!key) {
-          fill.className = "strength-fill";
-          return;
-        }
-
-        var strength = 0;
-        if (key.length >= 8) strength++;
-        if (key.length >= 16) strength++;
-        if (/[a-z]/.test(key) && /[A-Z]/.test(key)) strength++;
-        if (/\d/.test(key)) strength++;
-        if (/[^a-zA-Z0-9]/.test(key)) strength++;
-
-        if (strength <= 2) {
-          fill.className = "strength-fill strength-weak";
-        } else if (strength <= 3) {
-          fill.className = "strength-fill strength-medium";
-        } else {
-          fill.className = "strength-fill strength-strong";
-        }
+      function generateKey() {
+        var chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+        var key='';
+        if(currentAlgo==='caesar'){key=String(Math.floor(Math.random()*25)+1);}
+        else{for(var i=0;i<16;i++)key+=chars.charAt(Math.floor(Math.random()*chars.length));}
+        document.getElementById('keyInput').value=key;
+        updateStrength();
       }
 
-      document.getElementById("keyInput").addEventListener("input", updateStrength);
+      function showMsg(msg,isErr){var el=document.getElementById('msgBox');el.textContent=msg;el.className='msg-box '+(isErr?'err':'ok');setTimeout(function(){el.textContent='';},3000);}
 
-      window.swapTexts = function () {
-        var input = document.getElementById("inputText");
-        var output = document.getElementById("outputText");
-        var temp = input.value;
-        input.value = output.value;
-        output.value = temp;
+      var MORSE={A:'.-',B:'-...',C:'-.-.',D:'-..',E:'.',F:'..-.',G:'--.',H:'....',I:'..',J:'.---',K:'-.-',L:'.-..',M:'--',N:'-.',O:'---',P:'.--.',Q:'--.-',R:'.-.',S:'...',T:'-',U:'..-',V:'...-',W:'.--',X:'-..-',Y:'-.--',Z:'--..',0:'-----',1:'.----',2:'..---',3:'...--',4:'....-',5:'.....',6:'-....',7:'--...',8:'---..',9:'----.',' ':'/'};
+      var MORSE_REV={};for(var k in MORSE)MORSE_REV[MORSE[k]]=k;
+
+      var algos={
+        base64:{encrypt:function(t){return btoa(unescape(encodeURIComponent(t)));},decrypt:function(t){try{return decodeURIComponent(escape(atob(t)));}catch(e){throw new Error('Invalid Base64');}}},
+        caesar:{encrypt:function(t,s){s=parseInt(s)||3;return t.split('').map(function(c){if(/[a-z]/i.test(c)){var b=c.toUpperCase()===c?65:97;return String.fromCharCode((c.charCodeAt(0)-b+s+26)%26+b);}return c;}).join('');},decrypt:function(t,s){return algos.caesar.encrypt(t,26-(parseInt(s)||3)%26);}},
+        rot13:{encrypt:function(t){return algos.caesar.encrypt(t,13);},decrypt:function(t){return algos.caesar.encrypt(t,13);}},
+        vigenere:{
+          encrypt:function(t,key){if(!key)throw new Error('Key required');key=key.toUpperCase().replace(/[^A-Z]/g,'');if(!key)throw new Error('Key must contain letters');var ki=0;return t.split('').map(function(c){if(/[a-z]/i.test(c)){var b=c.toUpperCase()===c?65:97;var sh=key.charCodeAt(ki++%key.length)-65;return String.fromCharCode((c.charCodeAt(0)-b+sh+26)%26+b);}return c;}).join('');},
+          decrypt:function(t,key){if(!key)throw new Error('Key required');key=key.toUpperCase().replace(/[^A-Z]/g,'');if(!key)throw new Error('Key must contain letters');var ki=0;return t.split('').map(function(c){if(/[a-z]/i.test(c)){var b=c.toUpperCase()===c?65:97;var sh=key.charCodeAt(ki++%key.length)-65;return String.fromCharCode((c.charCodeAt(0)-b-sh+26+26)%26+b);}return c;}).join('');}
+        },
+        xor:{encrypt:function(t,key){if(!key)throw new Error('Key required');var r='';for(var i=0;i<t.length;i++)r+=String.fromCharCode(t.charCodeAt(i)^key.charCodeAt(i%key.length));return btoa(unescape(encodeURIComponent(r)));},decrypt:function(t,key){if(!key)throw new Error('Key required');try{var d=decodeURIComponent(escape(atob(t)));var r='';for(var i=0;i<d.length;i++)r+=String.fromCharCode(d.charCodeAt(i)^key.charCodeAt(i%key.length));return r;}catch(e){throw new Error('Decryption failed — check key');}}},
+        aes:{encrypt:function(t,key){if(!key)throw new Error('Key required');var h=simpleHash(key);var r='';for(var i=0;i<t.length;i++)r+=String.fromCharCode((t.charCodeAt(i)+h.charCodeAt(i%h.length))%65536);return btoa(unescape(encodeURIComponent(r)));},decrypt:function(t,key){if(!key)throw new Error('Key required');try{var d=decodeURIComponent(escape(atob(t)));var h=simpleHash(key);var r='';for(var i=0;i<d.length;i++)r+=String.fromCharCode((d.charCodeAt(i)-h.charCodeAt(i%h.length)+65536)%65536);return r;}catch(e){throw new Error('Decryption failed — check key');}}},
+        reverse:{encrypt:function(t){return t.split('').reverse().join('');},decrypt:function(t){return t.split('').reverse().join('');}},
+        morse:{encrypt:function(t){return t.toUpperCase().split('').map(function(c){return MORSE[c]||c;}).join(' ');},decrypt:function(t){return t.split(' ').map(function(code){if(code==='/')return ' ';return MORSE_REV[code]||code;}).join('');}},
+        binary:{encrypt:function(t){return t.split('').map(function(c){return c.charCodeAt(0).toString(2).padStart(8,'0');}).join(' ');},decrypt:function(t){return t.split(' ').map(function(b){return String.fromCharCode(parseInt(b,2));}).join('');}},
+        hex:{encrypt:function(t){return t.split('').map(function(c){return c.charCodeAt(0).toString(16).padStart(2,'0');}).join(' ');},decrypt:function(t){return t.split(' ').map(function(h){return String.fromCharCode(parseInt(h,16));}).join('');}},
+        unicode:{encrypt:function(t){return t.split('').map(function(c){return '\\u'+c.charCodeAt(0).toString(16).padStart(4,'0');}).join('');},decrypt:function(t){return t.replace(/\\u([0-9a-fA-F]{4})/g,function(m,h){return String.fromCharCode(parseInt(h,16));});}},
+        atbash:{encrypt:function(t){return t.split('').map(function(c){if(/[a-z]/.test(c))return String.fromCharCode(219-c.charCodeAt(0));if(/[A-Z]/.test(c))return String.fromCharCode(155-c.charCodeAt(0));return c;}).join('');},decrypt:function(t){return algos.atbash.encrypt(t);}}
       };
 
-      window.clearAll = function () {
-        document.getElementById("inputText").value = "";
-        document.getElementById("outputText").value = "";
-        document.getElementById("keyInput").value = "";
-      };
+      function simpleHash(str){var h='';for(var i=0;i<32;i++){var s=0;for(var j=0;j<str.length;j++)s+=str.charCodeAt(j)*(i+j+1);h+=String.fromCharCode((s%94)+33);}return h;}
 
-      window.copyResult = function () {
-        var output = document.getElementById("outputText");
-        if (!output.value) {
-          showMessage("没有可复制的内容", true);
-          return;
-        }
-        navigator.clipboard
-          .writeText(output.value)
-          .then(function () {
-            showMessage("已复制到剪贴板", false);
-          })
-          .catch(function () {
-            showMessage("复制失败", true);
-          });
-      };
-
-      // Encryption algorithms
-      var algorithms = {
-        base64: {
-          encrypt: function (text) {
-            return btoa(unescape(encodeURIComponent(text)));
-          },
-          decrypt: function (text) {
-            try {
-              return decodeURIComponent(escape(atob(text)));
-            } catch (e) {
-              throw new Error("无效的Base64编码");
-            }
-          }
-        },
-
-        caesar: {
-          encrypt: function (text, shift) {
-            shift = parseInt(shift) || 3;
-            return text
-              .split("")
-              .map(function (char) {
-                if (char.match(/[a-z]/i)) {
-                  var code = char.charCodeAt(0);
-                  var base = code >= 65 && code <= 90 ? 65 : 97;
-                  return String.fromCharCode(((code - base + shift) % 26) + base);
-                }
-                return char;
-              })
-              .join("");
-          },
-          decrypt: function (text, shift) {
-            shift = parseInt(shift) || 3;
-            return this.encrypt(text, 26 - (shift % 26));
-          }
-        },
-
-        rot13: {
-          encrypt: function (text) {
-            return algorithms.caesar.encrypt(text, 13);
-          },
-          decrypt: function (text) {
-            return algorithms.caesar.encrypt(text, 13);
-          }
-        },
-
-        vigenere: {
-          encrypt: function (text, key) {
-            if (!key) throw new Error("请输入密钥");
-            key = key.toUpperCase().replace(/[^A-Z]/g, "");
-            if (!key) throw new Error("密钥必须包含字母");
-
-            var keyIndex = 0;
-            return text
-              .split("")
-              .map(function (char) {
-                if (char.match(/[a-z]/i)) {
-                  var code = char.charCodeAt(0);
-                  var base = code >= 65 && code <= 90 ? 65 : 97;
-                  var shift = key.charCodeAt(keyIndex % key.length) - 65;
-                  keyIndex++;
-                  return String.fromCharCode(((code - base + shift) % 26) + base);
-                }
-                return char;
-              })
-              .join("");
-          },
-          decrypt: function (text, key) {
-            if (!key) throw new Error("请输入密钥");
-            key = key.toUpperCase().replace(/[^A-Z]/g, "");
-            if (!key) throw new Error("密钥必须包含字母");
-
-            var keyIndex = 0;
-            return text
-              .split("")
-              .map(function (char) {
-                if (char.match(/[a-z]/i)) {
-                  var code = char.charCodeAt(0);
-                  var base = code >= 65 && code <= 90 ? 65 : 97;
-                  var shift = key.charCodeAt(keyIndex % key.length) - 65;
-                  keyIndex++;
-                  return String.fromCharCode(((code - base - shift + 26) % 26) + base);
-                }
-                return char;
-              })
-              .join("");
-          }
-        },
-
-        xor: {
-          encrypt: function (text, key) {
-            if (!key) throw new Error("请输入密钥");
-            var result = "";
-            for (var i = 0; i < text.length; i++) {
-              result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
-            }
-            return btoa(unescape(encodeURIComponent(result)));
-          },
-          decrypt: function (text, key) {
-            if (!key) throw new Error("请输入密钥");
-            try {
-              var decoded = decodeURIComponent(escape(atob(text)));
-              var result = "";
-              for (var i = 0; i < decoded.length; i++) {
-                result += String.fromCharCode(
-                  decoded.charCodeAt(i) ^ key.charCodeAt(i % key.length)
-                );
-              }
-              return result;
-            } catch (e) {
-              throw new Error("解密失败，请检查密钥是否正确");
-            }
-          }
-        },
-
-        aes: {
-          encrypt: function (text, key) {
-            if (!key) throw new Error("请输入密钥");
-            // Simple AES-like encryption using SubtleCrypto API simulation
-            // For demo purposes, using a simplified version
-            var keyHash = simpleHash(key);
-            var result = "";
-            for (var i = 0; i < text.length; i++) {
-              var charCode = text.charCodeAt(i);
-              var keyChar = keyHash.charCodeAt(i % keyHash.length);
-              var encrypted = (charCode + keyChar) % 65536;
-              result += String.fromCharCode(encrypted);
-            }
-            return btoa(unescape(encodeURIComponent(result)));
-          },
-          decrypt: function (text, key) {
-            if (!key) throw new Error("请输入密钥");
-            try {
-              var decoded = decodeURIComponent(escape(atob(text)));
-              var keyHash = simpleHash(key);
-              var result = "";
-              for (var i = 0; i < decoded.length; i++) {
-                var charCode = decoded.charCodeAt(i);
-                var keyChar = keyHash.charCodeAt(i % keyHash.length);
-                var decrypted = (charCode - keyChar + 65536) % 65536;
-                result += String.fromCharCode(decrypted);
-              }
-              return result;
-            } catch (e) {
-              throw new Error("解密失败，请检查密钥是否正确");
-            }
-          }
-        },
-
-        reverse: {
-          encrypt: function (text) {
-            return text.split("").reverse().join("");
-          },
-          decrypt: function (text) {
-            return text.split("").reverse().join("");
-          }
-        },
-
-        morse: {
-          code: {
-            A: ".-",
-            B: "-...",
-            C: "-.-.",
-            D: "-..",
-            E: ".",
-            F: "..-.",
-            G: "--.",
-            H: "....",
-            I: "..",
-            J: ".---",
-            K: "-.-",
-            L: ".-..",
-            M: "--",
-            N: "-.",
-            O: "---",
-            P: ".--.",
-            Q: "--.-",
-            R: ".-.",
-            S: "...",
-            T: "-",
-            U: "..-",
-            V: "...-",
-            W: ".--",
-            X: "-..-",
-            Y: "-.--",
-            Z: "--..",
-            0: "-----",
-            1: ".----",
-            2: "..---",
-            3: "...--",
-            4: "....-",
-            5: ".....",
-            6: "-....",
-            7: "--...",
-            8: "---..",
-            9: "----.",
-            " ": "/",
-            ".": ".-.-.-",
-            ",": "--..--",
-            "?": "..--..",
-            "!": "-.-.--",
-            "'": ".----.",
-            '"': ".-..-.",
-            "/": "-..-.",
-            "(": "-.--.",
-            ")": "-.--.-",
-            "&": ".-...",
-            ":": "---...",
-            ";": "-.-.-.",
-            "=": "-...-",
-            "+": ".-.-.",
-            "-": "-....-",
-            _: "..--.-",
-            "@": ".--.-."
-          },
-          encrypt: function (text) {
-            var self = this;
-            return text
-              .toUpperCase()
-              .split("")
-              .map(function (char) {
-                return self.code[char] || char;
-              })
-              .join(" ");
-          },
-          decrypt: function (text) {
-            var self = this;
-            var reverseCode = {};
-            for (var key in self.code) {
-              reverseCode[self.code[key]] = key;
-            }
-            return text
-              .split(" ")
-              .map(function (code) {
-                if (code === "/") return " ";
-                return reverseCode[code] || code;
-              })
-              .join("");
-          }
-        },
-
-        binary: {
-          encrypt: function (text) {
-            return text
-              .split("")
-              .map(function (char) {
-                return char.charCodeAt(0).toString(2).padStart(8, "0");
-              })
-              .join(" ");
-          },
-          decrypt: function (text) {
-            return text
-              .split(" ")
-              .map(function (bin) {
-                return String.fromCharCode(parseInt(bin, 2));
-              })
-              .join("");
-          }
-        },
-
-        hex: {
-          encrypt: function (text) {
-            return text
-              .split("")
-              .map(function (char) {
-                return char.charCodeAt(0).toString(16).padStart(2, "0");
-              })
-              .join(" ");
-          },
-          decrypt: function (text) {
-            return text
-              .split(" ")
-              .map(function (hex) {
-                return String.fromCharCode(parseInt(hex, 16));
-              })
-              .join("");
-          }
-        },
-
-        unicode: {
-          encrypt: function (text) {
-            return text
-              .split("")
-              .map(function (char) {
-                return "\\u" + char.charCodeAt(0).toString(16).padStart(4, "0");
-              })
-              .join("");
-          },
-          decrypt: function (text) {
-            return text.replace(/\\u([0-9a-fA-F]{4})/g, function (match, hex) {
-              return String.fromCharCode(parseInt(hex, 16));
-            });
-          }
-        },
-
-        atbash: {
-          encrypt: function (text) {
-            return text
-              .split("")
-              .map(function (char) {
-                if (char.match(/[a-z]/)) {
-                  return String.fromCharCode(219 - char.charCodeAt(0));
-                }
-                if (char.match(/[A-Z]/)) {
-                  return String.fromCharCode(155 - char.charCodeAt(0));
-                }
-                return char;
-              })
-              .join("");
-          },
-          decrypt: function (text) {
-            return this.encrypt(text); // Atbash is self-inverse
-          }
-        }
-      };
-
-      function simpleHash(str) {
-        var hash = "";
-        for (var i = 0; i < 32; i++) {
-          var charSum = 0;
-          for (var j = 0; j < str.length; j++) {
-            charSum += str.charCodeAt(j) * (i + j + 1);
-          }
-          hash += String.fromCharCode((charSum % 94) + 33);
-        }
-        return hash;
+      function processText(){
+        var input=document.getElementById('inputText').value;
+        var key=document.getElementById('keyInput').value;
+        if(!input){showMsg('Please enter text.',true);return;}
+        try{
+          var result=currentMode==='encrypt'?algos[currentAlgo].encrypt(input,key):algos[currentAlgo].decrypt(input,key);
+          document.getElementById('outputText').value=result;
+          showMsg((currentMode==='encrypt'?'Encrypted':'Decrypted')+' successfully!',false);
+        }catch(e){document.getElementById('outputText').value='';showMsg(e.message||'Error',true);}
       }
 
-      function processText() {
-        var input = document.getElementById("inputText").value;
-        var key = document.getElementById("keyInput").value;
-        var output = document.getElementById("outputText");
+      function swapTexts(){var i=document.getElementById('inputText'),o=document.getElementById('outputText');var t=i.value;i.value=o.value;o.value=t;}
+      function clearAll(){document.getElementById('inputText').value='';document.getElementById('outputText').value='';document.getElementById('keyInput').value='';}
+      function copyResult(){var v=document.getElementById('outputText').value;if(!v){showMsg('Nothing to copy.',true);return;}navigator.clipboard.writeText(v).then(function(){showMsg('Copied!',false);}).catch(function(){showMsg('Copy failed.',true);});}
 
-        if (!input) {
-          showMessage("请输入文本", true);
-          return;
-        }
+      // Auto-process with debounce
+      var debounce;
+      document.getElementById('inputText').addEventListener('input',function(){clearTimeout(debounce);debounce=setTimeout(function(){if(document.getElementById('inputText').value)processText();},600);});
 
-        try {
-          var algorithm = algorithms[currentAlgorithm];
-          var result;
-
-          if (currentMode === "encrypt") {
-            result = algorithm.encrypt(input, key);
-          } else {
-            result = algorithm.decrypt(input, key);
-          }
-
-          output.value = result;
-          showMessage(currentMode === "encrypt" ? "加密成功" : "解密成功", false);
-        } catch (e) {
-          output.value = "";
-          showMessage(e.message || "处理失败", true);
-        }
-      }
-
-      // Auto-process on input (debounced)
-      var timeout;
-      document.getElementById("inputText").addEventListener("input", function () {
-        clearTimeout(timeout);
-        timeout = setTimeout(function () {
-          if (document.getElementById("inputText").value) {
-            processText();
-          }
-        }, 500);
-      });
-
-      // Initialize
       updateKeySection();
     </script>
   </body>
