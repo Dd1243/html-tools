@@ -1,926 +1,560 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="light">
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>视频缩略图提取器 - WebUtils</title>
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="视频缩略图提取器 - WebUtils" />
-    <meta name="keywords" content="video-thumbnail,media,tools,webutils" />
+    <title>免费在线视频缩略图提取工具 - 批量截取视频帧 | WebUtils</title>
+    <meta name="description" content="免费在线视频缩略图提取工具，支持MP4、WebM等视频格式，可按时间间隔、数量均分或场景变化检测批量提取截图，支持PNG/JPEG/WebP输出，JSZip打包下载。" />
+    <meta name="keywords" content="视频缩略图,视频截图,视频帧提取,批量截取,场景变化检测,视频截帧工具" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/media/video-thumbnail.html" />
-
-    <!-- Open Graph -->
-    <meta property="og:title" content="视频缩略图提取器 - WebUtils" />
-    <meta property="og:description" content="视频缩略图提取器 - WebUtils" />
+    <meta property="og:title" content="免费在线视频缩略图提取工具" />
+    <meta property="og:description" content="批量提取视频帧截图，支持场景变化检测，JSZip打包下载。" />
     <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/media/video-thumbnail.html"
-    />
+    <meta property="og:url" content="https://essays4u.net/tools/media/video-thumbnail.html" />
     <meta property="og:site_name" content="WebUtils" />
     <meta property="og:locale" content="zh_CN" />
     <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="视频缩略图提取器 - WebUtils" />
-    <meta name="twitter:description" content="视频缩略图提取器 - WebUtils" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="免费在线视频缩略图提取工具" />
+    <meta name="twitter:description" content="批量提取视频帧截图，支持场景变化检测。" />
     <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--color-bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
-
-      :root {
-        --video-bg: #000;
-        --thumbnail-border: #3498db;
-      }
-      .container {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 20px;
-      }
-      header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-        flex-wrap: wrap;
-        gap: 1rem;
-      }
-      .drop-zone {
-        border: 2px dashed var(--muted-color);
-        border-radius: 8px;
-        padding: 3rem;
-        text-align: center;
-        transition:
-          border-color 0.3s,
-          background 0.3s;
-        margin-bottom: 2rem;
-      }
-      .drop-zone.dragover {
-        border-color: var(--accent-cyan);
-        background: var(--primary-focus);
-      }
-      .main-layout {
-        display: grid;
-        grid-template-columns: 1fr 350px;
-        gap: 2rem;
-      }
-      @media (max-width: 1000px) {
-        .main-layout {
-          grid-template-columns: 1fr;
-        }
-      }
-      .video-container {
-        background: var(--video-bg);
-        border-radius: 8px;
-        overflow: hidden;
-        display: none;
-      }
-      #videoPlayer {
-        width: 100%;
-        max-height: 500px;
-        display: block;
-      }
-      .video-controls {
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-        padding: 1rem;
-        background: var(--card-background-color);
-        flex-wrap: wrap;
-      }
-      .video-controls button {
-        margin: 0;
-        padding: 0.5rem 1rem;
-      }
-      .timeline {
-        flex: 1;
-        min-width: 200px;
-      }
-      .timeline input {
-        width: 100%;
-        margin: 0;
-      }
-      .time-display {
-        font-family: var(--font-mono);
-        white-space: nowrap;
-      }
-      .sidebar {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-      }
-      .capture-options {
-        background: var(--card-background-color);
-        border-radius: 8px;
-        padding: 1rem;
-      }
-      .capture-options h4 {
-        margin-top: 0;
-      }
-      .option-group {
-        margin-bottom: 1rem;
-      }
-      .option-group label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: bold;
-      }
-      .option-group input,
-      .option-group select {
-        width: 100%;
-        margin: 0;
-      }
-      .size-inputs {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-      }
-      .size-inputs input {
-        width: 80px;
-      }
-      .batch-options {
-        background: var(--card-background-color);
-        border-radius: 8px;
-        padding: 1rem;
-      }
-      .batch-options h4 {
-        margin-top: 0;
-      }
-      .thumbnails-container {
-        margin-top: 2rem;
-        display: none;
-      }
-      .thumbnails-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-      }
-      .thumbnails-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 1rem;
-      }
-      .thumbnail-item {
-        background: var(--card-background-color);
-        border-radius: 8px;
-        overflow: hidden;
-        position: relative;
-      }
-      .thumbnail-item img {
-        width: 100%;
-        aspect-ratio: 16/9;
-        object-fit: cover;
-        display: block;
-        cursor: pointer;
-        transition: transform 0.2s;
-      }
-      .thumbnail-item img:hover {
-        transform: scale(1.02);
-      }
-      .thumbnail-item.selected {
-        outline: 3px solid var(--thumbnail-border);
-      }
-      .thumbnail-info {
-        padding: 0.5rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 0.85rem;
-      }
-      .thumbnail-time {
-        font-family: var(--font-mono);
-      }
-      .thumbnail-actions button {
-        padding: 0.2rem 0.5rem;
-        font-size: 0.8rem;
-        margin: 0;
-      }
-      .progress-container {
-        margin: 1rem 0;
-        display: none;
-      }
-      .progress-bar {
-        width: 100%;
-        height: 8px;
-        background: var(--muted-border-color);
-        border-radius: 4px;
-        overflow: hidden;
-      }
-      .progress-fill {
-        height: 100%;
-        background: var(--accent-cyan);
-        transition: width 0.2s;
-      }
-      .progress-text {
-        text-align: center;
-        margin-top: 0.5rem;
-        font-size: 0.9rem;
-      }
-      .video-info {
-        background: var(--card-background-color);
-        border-radius: 8px;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        display: none;
-      }
-      .info-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-        gap: 1rem;
-      }
-      .info-item {
-        text-align: center;
-      }
-      .info-value {
-        font-weight: bold;
-        color: var(--accent-cyan);
-      }
-      .info-label {
-        font-size: 0.8rem;
-        color: var(--muted-color);
-      }
-      .hidden {
-        display: none !important;
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-      .visually-hidden {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        margin: -1px;
-        padding: 0;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0;
-      }
-    </style>
-    <!-- Google Fonts -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "视频缩略图提取工具",
+      "url": "https://essays4u.net/tools/media/video-thumbnail.html",
+      "description": "批量提取视频帧截图，支持场景变化检测，完全本地处理",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Any",
+      "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}
+    }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --primary-color: #007acc;
+        --primary-hover: #005fa3;
+        --primary-light: #e8f4fd;
+        --bg-color: #f9f9f9;
+        --card-bg: #ffffff;
+        --text-color: #333333;
+        --text-muted: #666666;
+        --border-color: #e0e0e0;
+        --shadow: 0 2px 10px rgba(0,0,0,0.08);
+        --radius: 6px;
+        --success-color: #28a745;
+        --error-color: #dc3545;
+        --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font); background: var(--bg-color); color: var(--text-color); min-height: 100vh; font-size: 15px; line-height: 1.6; }
+      a { color: var(--primary-color); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+
+      .site-header { background: var(--card-bg); border-bottom: 1px solid var(--border-color); padding: 12px 24px; display: flex; align-items: center; gap: 16px; }
+      .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--text-muted); font-size: 14px; }
+      .back-link:hover { color: var(--primary-color); text-decoration: none; }
+
+      .page-wrapper { max-width: 1200px; margin: 0 auto; padding: 24px 16px; }
+      .page-title-area { margin-bottom: 24px; }
+      .page-title-area h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 6px; }
+      .page-title-area p { color: var(--text-muted); font-size: 0.95rem; }
+
+      .ad-banner { background: var(--card-bg); border: 1px dashed var(--border-color); border-radius: var(--radius); padding: 12px; text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 24px; min-height: 90px; display: flex; align-items: center; justify-content: center; }
+
+      .content-layout { display: flex; gap: 24px; align-items: flex-start; }
+      .tool-area { flex: 3; min-width: 0; }
+      .sidebar { flex: 1; min-width: 260px; }
+      @media (max-width: 900px) { .content-layout { flex-direction: column; } .sidebar { width: 100%; } }
+
+      .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); margin-bottom: 16px; }
+      .card-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
+
+      .drop-zone {
+        border: 2px dashed var(--border-color);
+        border-radius: var(--radius);
+        padding: 40px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        background: var(--bg-color);
+      }
+      .drop-zone:hover, .drop-zone.dragover {
+        border-color: var(--primary-color);
+        background: var(--primary-light);
+      }
+      .drop-zone p { color: var(--text-muted); font-size: 14px; margin-bottom: 8px; }
+
+      .video-info-bar {
+        display: none;
+        background: var(--primary-light);
+        border: 1px solid var(--primary-color);
+        border-radius: var(--radius);
+        padding: 12px 16px;
+        margin-bottom: 16px;
+      }
+      .video-info-bar.show { display: block; }
+      .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 12px; }
+      .info-item { text-align: center; }
+      .info-value { font-weight: 600; color: var(--primary-color); font-size: 0.95rem; }
+      .info-label { font-size: 12px; color: var(--text-muted); }
+
+      video { width: 100%; max-height: 400px; border-radius: var(--radius); background: #000; display: block; }
+
+      .video-controls {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        padding: 12px 0;
+        flex-wrap: wrap;
+      }
+      .time-display { font-family: var(--font-mono); font-size: 13px; color: var(--text-muted); white-space: nowrap; }
+
+      .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+      @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
+
+      .option-group { margin-bottom: 14px; }
+      .option-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+      select, input[type="number"] {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        font-size: 14px;
+        background: var(--card-bg);
+        color: var(--text-color);
+        font-family: var(--font);
+        transition: border-color 0.2s;
+      }
+      select:focus, input[type="number"]:focus { outline: none; border-color: var(--primary-color); }
+      input[type="range"] { width: 100%; height: 4px; border-radius: 2px; background: var(--border-color); outline: none; -webkit-appearance: none; cursor: pointer; }
+      input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--primary-color); cursor: pointer; }
+
+      .size-inputs { display: flex; gap: 8px; align-items: center; }
+      .size-inputs input { width: 80px; }
+
+      .btn { padding: 9px 20px; border: none; border-radius: var(--radius); font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; font-family: var(--font); }
+      .btn-primary { background: var(--primary-color); color: white; }
+      .btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
+      .btn-secondary { background: var(--card-bg); color: var(--text-color); border: 1px solid var(--border-color); }
+      .btn-secondary:hover:not(:disabled) { border-color: var(--primary-color); color: var(--primary-color); }
+      .btn-sm { padding: 5px 12px; font-size: 13px; }
+      .btn-full { width: 100%; justify-content: center; }
+      .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+      .progress-bar { width: 100%; height: 6px; background: var(--border-color); border-radius: 3px; overflow: hidden; display: none; margin: 10px 0; }
+      .progress-bar.show { display: block; }
+      .progress-fill { height: 100%; background: var(--primary-color); border-radius: 3px; transition: width 0.2s; }
+      .progress-text { text-align: center; font-size: 13px; color: var(--text-muted); }
+
+      .thumbnails-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+      .thumbnails-header h3 { font-size: 0.95rem; font-weight: 600; }
+      .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+
+      .thumbnails-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+      .thumbnail-item { background: var(--card-bg); border: 2px solid var(--border-color); border-radius: var(--radius); overflow: hidden; transition: border-color 0.2s; }
+      .thumbnail-item.selected { border-color: var(--primary-color); }
+      .thumbnail-item img { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; cursor: pointer; transition: transform 0.15s; }
+      .thumbnail-item img:hover { transform: scale(1.02); }
+      .thumbnail-info { padding: 6px 8px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+      .thumbnail-time { font-family: var(--font-mono); color: var(--text-muted); }
+      .thumb-actions { display: flex; gap: 4px; }
+
+      .hidden { display: none !important; }
+
+      .ad-sidebar { background: var(--card-bg); border: 1px dashed var(--border-color); border-radius: var(--radius); padding: 12px; text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 16px; min-height: 250px; display: flex; align-items: center; justify-content: center; }
+      .article-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+      .article-card h2 { font-size: 1rem; font-weight: 700; margin-bottom: 12px; color: var(--primary-color); }
+      .article-card h3 { font-size: 0.9rem; font-weight: 600; margin: 14px 0 6px; }
+      .article-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 8px; }
+      .article-card ul { padding-left: 18px; margin-bottom: 10px; }
+      .article-card li { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px; line-height: 1.6; }
+      .faq-item { margin-bottom: 12px; }
+      .faq-q { font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; }
+      .faq-a { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; }
+      .ad-inline { background: var(--bg-color); border: 1px dashed var(--border-color); border-radius: var(--radius); padding: 10px; text-align: center; color: var(--text-muted); font-size: 12px; margin: 14px 0; min-height: 60px; display: flex; align-items: center; justify-content: center; }
+      .site-footer { text-align: center; padding: 24px; font-size: 13px; color: var(--text-muted); border-top: 1px solid var(--border-color); margin-top: 40px; }
+    </style>
   </head>
   <body>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
-      <span id="theme-icon">🌙</span>
-    </button>
+    <header class="site-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <span style="color:var(--border-color)">/</span>
+      <span style="font-size:14px;color:var(--text-muted)">视频缩略图提取</span>
+    </header>
 
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>›</span>
-      视频缩略图提取器
-    </nav>
-    <main class="container">
-      <header>
+    <div class="page-wrapper">
+      <div class="page-title-area">
         <h1>🎬 视频缩略图提取器</h1>
-        <button id="themeToggle" class="outline">🌙 暗色模式</button>
-      </header>
-
-      <div class="drop-zone" id="dropZone">
-        <p>拖拽视频文件到此处，或点击选择文件</p>
-        <p style="color: var(--muted-color); font-size: 0.9rem">
-          支持 MP4、WebM、OGV 等浏览器支持的视频格式
-        </p>
-        <input type="file" id="fileInput" accept="video/*" style="display: none" />
-        <button onclick="document.getElementById('fileInput').click()" aria-label="选择视频">
-          选择视频
-        </button>
+        <p>从视频文件中批量提取帧截图，支持场景变化检测，完全在浏览器本地处理</p>
       </div>
 
-      <div class="video-info" id="videoInfo">
-        <div class="info-grid">
-          <div class="info-item">
-            <div class="info-value" id="videoName">-</div>
-            <div class="info-label">文件名</div>
-          </div>
-          <div class="info-item">
-            <div class="info-value" id="videoDuration">00:00</div>
-            <div class="info-label">时长</div>
-          </div>
-          <div class="info-item">
-            <div class="info-value" id="videoResolution">-</div>
-            <div class="info-label">分辨率</div>
-          </div>
-          <div class="info-item">
-            <div class="info-value" id="videoSize">-</div>
-            <div class="info-label">文件大小</div>
-          </div>
-        </div>
+      <!-- AdSense 顶部广告位 -->
+      <div class="ad-banner">
+        <!-- Google AdSense 广告代码 -->
+        广告位 (728×90)
       </div>
 
-      <div class="main-layout">
-        <div>
-          <div class="video-container" id="videoContainer">
+      <div class="content-layout">
+        <div class="tool-area">
+          <!-- 上传区 -->
+          <div class="card">
+            <div class="drop-zone" id="dropZone">
+              <p style="font-size:2rem;margin-bottom:8px;">🎥</p>
+              <p>拖拽视频文件到此处，或点击选择</p>
+              <p style="font-size:12px;margin-top:4px;">支持 MP4、WebM、OGV 等浏览器支持的格式</p>
+              <input type="file" id="fileInput" accept="video/*" style="display:none" />
+            </div>
+          </div>
+
+          <!-- 视频信息 -->
+          <div class="video-info-bar" id="videoInfo">
+            <div class="info-grid">
+              <div class="info-item"><div class="info-value" id="videoName">-</div><div class="info-label">文件名</div></div>
+              <div class="info-item"><div class="info-value" id="videoDuration">00:00</div><div class="info-label">时长</div></div>
+              <div class="info-item"><div class="info-value" id="videoResolution">-</div><div class="info-label">分辨率</div></div>
+              <div class="info-item"><div class="info-value" id="videoSize">-</div><div class="info-label">文件大小</div></div>
+            </div>
+          </div>
+
+          <!-- 视频播放器 -->
+          <div class="card" id="videoContainer" style="display:none">
             <video id="videoPlayer" controls></video>
             <div class="video-controls">
-              <button onclick="captureFrame()" aria-label="📷 截取当前帧">📷 截取当前帧</button>
-              <button onclick="stepBackward()" class="secondary outline" aria-label="⏪ -1帧">
-                ⏪ -1帧
-              </button>
-              <button onclick="stepForward()" class="secondary outline" aria-label="⏩ +1帧">
-                ⏩ +1帧
-              </button>
-              <div class="time-display">
-                <span id="currentTime">00:00.000</span>
-                /
-                <span id="totalTime">00:00.000</span>
-              </div>
+              <button class="btn btn-primary btn-sm" onclick="captureFrame()">📷 截取当前帧</button>
+              <button class="btn btn-secondary btn-sm" onclick="stepBackward()">⏪ -1帧</button>
+              <button class="btn btn-secondary btn-sm" onclick="stepForward()">⏩ +1帧</button>
+              <div class="time-display"><span id="currentTime">00:00.000</span> / <span id="totalTime">00:00.000</span></div>
             </div>
           </div>
 
-          <div class="progress-container" id="progressContainer">
-            <div class="progress-bar">
+          <!-- 设置 & 批量提取 -->
+          <div class="card" id="settingsCard" style="display:none">
+            <div class="card-title">截取设置</div>
+            <div class="two-col">
+              <div>
+                <div class="option-group">
+                  <label>输出尺寸</label>
+                  <select id="sizeMode">
+                    <option value="original">原始尺寸</option>
+                    <option value="custom">自定义尺寸</option>
+                    <option value="720p">720p (1280×720)</option>
+                    <option value="1080p">1080p (1920×1080)</option>
+                    <option value="480p">480p (854×480)</option>
+                  </select>
+                </div>
+                <div class="option-group hidden" id="customSizeGroup">
+                  <label>自定义尺寸</label>
+                  <div class="size-inputs">
+                    <input type="number" id="customWidth" value="1280" min="1" placeholder="宽" />
+                    <span>×</span>
+                    <input type="number" id="customHeight" value="720" min="1" placeholder="高" />
+                  </div>
+                  <label style="margin-top:8px;display:flex;align-items:center;gap:6px;font-weight:normal;">
+                    <input type="checkbox" id="keepAspectRatio" checked /> 保持宽高比
+                  </label>
+                </div>
+                <div class="option-group">
+                  <label>输出格式</label>
+                  <select id="outputFormat">
+                    <option value="png">PNG (无损)</option>
+                    <option value="jpeg">JPEG</option>
+                    <option value="webp">WebP</option>
+                  </select>
+                </div>
+                <div class="option-group" id="qualityGroup">
+                  <label>质量: <span id="qualityValue">90%</span></label>
+                  <input type="range" id="quality" min="1" max="100" value="90" />
+                </div>
+              </div>
+              <div>
+                <div class="option-group">
+                  <label>批量提取模式</label>
+                  <select id="batchMode">
+                    <option value="interval">按时间间隔</option>
+                    <option value="count">按数量均分</option>
+                    <option value="keyframes">场景变化检测</option>
+                  </select>
+                </div>
+                <div class="option-group" id="intervalGroup">
+                  <label>时间间隔 (秒)</label>
+                  <input type="number" id="interval" value="5" min="0.1" step="0.1" />
+                </div>
+                <div class="option-group hidden" id="countGroup">
+                  <label>提取数量</label>
+                  <input type="number" id="count" value="10" min="1" max="100" />
+                </div>
+                <button class="btn btn-primary btn-full" onclick="batchExtract()" id="batchBtn" disabled>
+                  🚀 开始批量提取
+                </button>
+              </div>
+            </div>
+
+            <div class="progress-bar" id="progressContainer">
               <div class="progress-fill" id="progressFill"></div>
             </div>
-            <div class="progress-text" id="progressText">准备中...</div>
+            <div class="progress-text" id="progressText" style="display:none"></div>
           </div>
-        </div>
 
-        <div class="sidebar">
-          <div class="capture-options">
-            <h4>⚙️ 截图设置</h4>
-
-            <div class="option-group">
-              <label>输出尺寸</label>
-              <select id="sizeMode">
-                <option value="original">原始尺寸</option>
-                <option value="custom">自定义尺寸</option>
-                <option value="720p">720p (1280×720)</option>
-                <option value="1080p">1080p (1920×1080)</option>
-                <option value="480p">480p (854×480)</option>
-              </select>
-            </div>
-
-            <div class="option-group hidden" id="customSizeGroup">
-              <label>自定义尺寸</label>
-              <div class="size-inputs">
-                <input
-                  type="number"
-                  id="customWidth"
-                  value="1280"
-                  min="1"
-                  aria-label="数字输入框"
-                  placeholder="请输入数字输入框"
-                />
-                <span>×</span>
-                <input
-                  type="number"
-                  id="customHeight"
-                  value="720"
-                  min="1"
-                  aria-label="数字输入框"
-                  placeholder="请输入数字输入框"
-                />
+          <!-- 缩略图列表 -->
+          <div class="card" id="thumbnailsContainer" style="display:none">
+            <div class="thumbnails-header">
+              <h3>📸 已提取缩略图 (<span id="thumbnailCount">0</span>)</h3>
+              <div class="btn-group">
+                <button class="btn btn-secondary btn-sm" onclick="downloadSelected()" id="downloadSelectedBtn" disabled>💾 下载选中</button>
+                <button class="btn btn-primary btn-sm" onclick="downloadAll()" id="downloadAllBtn" disabled>📦 全部下载</button>
+                <button class="btn btn-secondary btn-sm" onclick="clearThumbnails()">🗑️ 清空</button>
               </div>
-              <label style="margin-top: 0.5rem">
-                <input type="checkbox" id="keepAspectRatio" checked />
-                保持宽高比
-              </label>
             </div>
-
-            <div class="option-group">
-              <label>输出格式</label>
-              <select id="outputFormat">
-                <option value="png">PNG (无损)</option>
-                <option value="jpeg">JPEG</option>
-                <option value="webp">WebP</option>
-              </select>
-            </div>
-
-            <div class="option-group" id="qualityGroup">
-              <label>
-                质量:
-                <span id="qualityValue">90%</span>
-              </label>
-              <input type="range" id="quality" min="1" max="100" value="90" />
-            </div>
-          </div>
-
-          <div class="batch-options">
-            <h4>📦 批量提取</h4>
-
-            <div class="option-group">
-              <label>提取模式</label>
-              <select id="batchMode">
-                <option value="interval">按时间间隔</option>
-                <option value="count">按数量均分</option>
-                <option value="keyframes">场景变化检测</option>
-              </select>
-            </div>
-
-            <div class="option-group" id="intervalGroup">
-              <label for="input---------">时间间隔 (秒)</label>
-              <input
-                type="number"
-                id="interval"
-                value="5"
-                min="0.1"
-                step="0.1"
-                aria-label="数字输入框"
-                placeholder="请输入数字输入框"
-              />
-            </div>
-
-            <div class="option-group hidden" id="countGroup">
-              <label for="input-----">提取数量</label>
-              <input
-                type="number"
-                id="count"
-                value="10"
-                min="1"
-                max="100"
-                aria-label="数字输入框"
-                placeholder="请输入数字输入框"
-              />
-            </div>
-
-            <button onclick="batchExtract()" id="batchBtn" disabled style="width: 100%">
-              🚀 开始批量提取
-            </button>
+            <div class="thumbnails-grid" id="thumbnailsGrid"></div>
           </div>
         </div>
-      </div>
 
-      <div class="thumbnails-container" id="thumbnailsContainer">
-        <div class="thumbnails-header">
-          <h3>
-            📸 已提取的缩略图 (
-            <span id="thumbnailCount">0</span>
-            )
-          </h3>
-          <div>
-            <button onclick="downloadSelected()" class="outline" id="downloadSelectedBtn" disabled>
-              💾 下载选中
-            </button>
-            <button onclick="downloadAll()" class="contrast" id="downloadAllBtn" disabled>
-              📦 全部下载
-            </button>
-            <button onclick="clearThumbnails()" class="secondary outline" aria-label="🗑️ 清空">
-              🗑️ 清空
-            </button>
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+          <div class="ad-sidebar">
+            <!-- Google AdSense 侧边栏广告代码 -->
+            广告位 (300×250)
           </div>
-        </div>
-        <div class="thumbnails-grid" id="thumbnailsGrid"></div>
+          <div class="article-card">
+            <h2>视频缩略图提取使用指南</h2>
+            <h3>什么是视频缩略图提取?</h3>
+            <p>视频缩略图提取是指从视频文件的特定时间点截取静态图片帧的过程。本工具使用 HTML5 Canvas API 和 Video 元素，完全在浏览器本地处理，无需上传视频到服务器，保护您的隐私。</p>
+            <h3>三种批量提取模式</h3>
+            <ul>
+              <li><strong>按时间间隔</strong>：每隔 N 秒提取一帧，适合均匀采样长视频</li>
+              <li><strong>按数量均分</strong>：将视频等分为 N 段，各取一帧，适合快速预览</li>
+              <li><strong>场景变化检测</strong>：自动识别画面突变点，智能提取关键帧</li>
+            </ul>
+            <div class="ad-inline">广告位 (文章中)</div>
+            <h3>常见使用场景</h3>
+            <ul>
+              <li>为视频制作封面或预览图</li>
+              <li>提取视频关键帧用于 PPT 演示</li>
+              <li>整理视频内容的静态图片资料</li>
+              <li>教学视频的步骤截图</li>
+            </ul>
+            <h3>使用技巧</h3>
+            <p>点击已提取的缩略图可以切换选中状态，选中多张后可以批量下载为 ZIP 文件。点击时间标签可跳转到视频对应时间点。</p>
+            <div class="faq-item">
+              <div class="faq-q">Q: 支持哪些视频格式?</div>
+              <div class="faq-a">A: 支持浏览器能播放的所有格式，包括 MP4 (H.264)、WebM、OGV 等，具体取决于您的浏览器。</div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-q">Q: 视频文件大小有限制吗?</div>
+              <div class="faq-a">A: 无服务器限制，但受限于浏览器内存，建议单文件不超过 2GB。</div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-q">Q: 场景检测算法是如何工作的?</div>
+              <div class="faq-a">A: 工具每 0.5 秒采样一次，将相邻帧缩小至 64×36 像素后计算像素差异值，超过阈值则判定为场景变化。</div>
+            </div>
+          </div>
+        </aside>
       </div>
-    </main>
+    </div>
+
+    <footer class="site-footer">
+      <p>WebUtils - 免费在线工具集 | <a href="../../index.html">返回首页</a> | <a href="https://github.com/chicogong/html-tools" target="_blank" rel="noopener">GitHub</a></p>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
     <script>
-      // Theme toggle
-      const themeToggle = document.getElementById("themeToggle");
-      const html = document.documentElement;
-
-      function setTheme(dark) {
-        html.setAttribute("data-theme", dark ? "dark" : "light");
-        themeToggle.textContent = dark ? "☀️ 亮色模式" : "🌙 暗色模式";
-        localStorage.setItem("theme", dark ? "dark" : "light");
-      }
-
-      themeToggle.addEventListener("click", () => {
-        setTheme(html.getAttribute("data-theme") !== "dark");
-      });
-
-      const savedTheme = localStorage.getItem("theme");
-      if (savedTheme) {
-        setTheme(savedTheme === "dark");
-      } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        setTheme(true);
-      }
-
-      // Variables
       let videoFile = null;
       let thumbnails = [];
-      const video = document.getElementById("videoPlayer");
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
+      const video = document.getElementById('videoPlayer');
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
 
-      // Elements
-      const fileInput = document.getElementById("fileInput");
-      const dropZone = document.getElementById("dropZone");
-      const sizeMode = document.getElementById("sizeMode");
-      const batchMode = document.getElementById("batchMode");
-      const qualitySlider = document.getElementById("quality");
-      const outputFormat = document.getElementById("outputFormat");
+      const fileInput = document.getElementById('fileInput');
+      const dropZone = document.getElementById('dropZone');
+      const sizeMode = document.getElementById('sizeMode');
+      const batchMode = document.getElementById('batchMode');
+      const qualitySlider = document.getElementById('quality');
+      const outputFormat = document.getElementById('outputFormat');
 
-      // Event listeners
-      qualitySlider.addEventListener("input", () => {
-        document.getElementById("qualityValue").textContent = qualitySlider.value + "%";
+      qualitySlider.addEventListener('input', () => { document.getElementById('qualityValue').textContent = qualitySlider.value + '%'; });
+      sizeMode.addEventListener('change', () => { document.getElementById('customSizeGroup').classList.toggle('hidden', sizeMode.value !== 'custom'); });
+      batchMode.addEventListener('change', () => {
+        document.getElementById('intervalGroup').classList.toggle('hidden', batchMode.value !== 'interval');
+        document.getElementById('countGroup').classList.toggle('hidden', batchMode.value !== 'count');
       });
+      outputFormat.addEventListener('change', () => { document.getElementById('qualityGroup').classList.toggle('hidden', outputFormat.value === 'png'); });
 
-      sizeMode.addEventListener("change", () => {
-        document
-          .getElementById("customSizeGroup")
-          .classList.toggle("hidden", sizeMode.value !== "custom");
-      });
-
-      batchMode.addEventListener("change", () => {
-        document
-          .getElementById("intervalGroup")
-          .classList.toggle("hidden", batchMode.value !== "interval");
-        document
-          .getElementById("countGroup")
-          .classList.toggle("hidden", batchMode.value !== "count");
-      });
-
-      outputFormat.addEventListener("change", () => {
-        document
-          .getElementById("qualityGroup")
-          .classList.toggle("hidden", outputFormat.value === "png");
-      });
-
-      // File handling
-      fileInput.addEventListener("change", (e) => {
-        if (e.target.files[0]) loadVideo(e.target.files[0]);
-      });
-
-      dropZone.addEventListener("click", () => fileInput.click());
-      dropZone.addEventListener("dragover", (e) => {
-        e.preventDefault();
-        dropZone.classList.add("dragover");
-      });
-      dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragover"));
-      dropZone.addEventListener("drop", (e) => {
-        e.preventDefault();
-        dropZone.classList.remove("dragover");
-        if (e.dataTransfer.files[0]) loadVideo(e.dataTransfer.files[0]);
-      });
+      fileInput.addEventListener('change', (e) => { if (e.target.files[0]) loadVideo(e.target.files[0]); });
+      dropZone.addEventListener('click', () => fileInput.click());
+      dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+      dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+      dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); if (e.dataTransfer.files[0]) loadVideo(e.dataTransfer.files[0]); });
 
       function loadVideo(file) {
         videoFile = file;
         const url = URL.createObjectURL(file);
         video.src = url;
-
         video.onloadedmetadata = () => {
-          document.getElementById("videoContainer").style.display = "block";
-          document.getElementById("videoInfo").style.display = "block";
-          document.getElementById("batchBtn").disabled = false;
-
-          document.getElementById("videoName").textContent = file.name;
-          document.getElementById("videoDuration").textContent = formatTime(video.duration);
-          document.getElementById("videoResolution").textContent =
-            video.videoWidth + "×" + video.videoHeight;
-          document.getElementById("videoSize").textContent = formatFileSize(file.size);
-          document.getElementById("totalTime").textContent = formatTimeMs(video.duration);
-
-          // Set custom size defaults
-          document.getElementById("customWidth").value = video.videoWidth;
-          document.getElementById("customHeight").value = video.videoHeight;
+          document.getElementById('videoContainer').style.display = 'block';
+          document.getElementById('settingsCard').style.display = 'block';
+          document.getElementById('videoInfo').classList.add('show');
+          document.getElementById('batchBtn').disabled = false;
+          document.getElementById('videoName').textContent = file.name.length > 20 ? file.name.substring(0,20) + '...' : file.name;
+          document.getElementById('videoDuration').textContent = formatTime(video.duration);
+          document.getElementById('videoResolution').textContent = video.videoWidth + '×' + video.videoHeight;
+          document.getElementById('videoSize').textContent = formatFileSize(file.size);
+          document.getElementById('totalTime').textContent = formatTimeMs(video.duration);
+          document.getElementById('customWidth').value = video.videoWidth;
+          document.getElementById('customHeight').value = video.videoHeight;
         };
-
-        video.ontimeupdate = () => {
-          document.getElementById("currentTime").textContent = formatTimeMs(video.currentTime);
-        };
+        video.ontimeupdate = () => { document.getElementById('currentTime').textContent = formatTimeMs(video.currentTime); };
       }
 
-      function stepForward() {
-        video.currentTime = Math.min(video.duration, video.currentTime + 1 / 30);
-      }
-
-      function stepBackward() {
-        video.currentTime = Math.max(0, video.currentTime - 1 / 30);
-      }
+      function stepForward() { video.currentTime = Math.min(video.duration, video.currentTime + 1/30); }
+      function stepBackward() { video.currentTime = Math.max(0, video.currentTime - 1/30); }
 
       function getOutputDimensions() {
         const mode = sizeMode.value;
         let width, height;
-
-        switch (mode) {
-          case "original":
-            width = video.videoWidth;
-            height = video.videoHeight;
+        switch(mode) {
+          case 'original': width = video.videoWidth; height = video.videoHeight; break;
+          case 'custom':
+            width = parseInt(document.getElementById('customWidth').value);
+            height = parseInt(document.getElementById('customHeight').value);
+            if (document.getElementById('keepAspectRatio').checked) { height = Math.round(width / (video.videoWidth / video.videoHeight)); }
             break;
-          case "custom":
-            width = parseInt(document.getElementById("customWidth").value);
-            height = parseInt(document.getElementById("customHeight").value);
-            if (document.getElementById("keepAspectRatio").checked) {
-              const ratio = video.videoWidth / video.videoHeight;
-              height = Math.round(width / ratio);
-            }
-            break;
-          case "720p":
-            width = 1280;
-            height = 720;
-            break;
-          case "1080p":
-            width = 1920;
-            height = 1080;
-            break;
-          case "480p":
-            width = 854;
-            height = 480;
-            break;
+          case '720p': width = 1280; height = 720; break;
+          case '1080p': width = 1920; height = 1080; break;
+          case '480p': width = 854; height = 480; break;
         }
-
         return { width, height };
       }
 
       function captureFrame() {
         if (video.readyState < 2) return;
-
         const dims = getOutputDimensions();
-        canvas.width = dims.width;
-        canvas.height = dims.height;
-
+        canvas.width = dims.width; canvas.height = dims.height;
         ctx.drawImage(video, 0, 0, dims.width, dims.height);
-
         const format = outputFormat.value;
         const quality = qualitySlider.value / 100;
-        const mimeType = "image/" + format;
-        const dataUrl = canvas.toDataURL(mimeType, quality);
-
+        const dataUrl = canvas.toDataURL('image/' + format, quality);
         addThumbnail(dataUrl, video.currentTime);
       }
 
       function addThumbnail(dataUrl, time) {
-        const thumbnail = {
-          id: Date.now() + Math.random(),
-          dataUrl: dataUrl,
-          time: time,
-          selected: false
-        };
-
-        thumbnails.push(thumbnail);
+        thumbnails.push({ id: Date.now() + Math.random(), dataUrl, time, selected: false });
         renderThumbnails();
-
-        document.getElementById("thumbnailsContainer").style.display = "block";
+        document.getElementById('thumbnailsContainer').style.display = 'block';
       }
 
       function renderThumbnails() {
-        const grid = document.getElementById("thumbnailsGrid");
+        const grid = document.getElementById('thumbnailsGrid');
         grid.replaceChildren();
-
         thumbnails.forEach((thumb, index) => {
-          const item = document.createElement("div");
-          item.className = "thumbnail-item" + (thumb.selected ? " selected" : "");
-
-          const img = document.createElement("img");
+          const item = document.createElement('div');
+          item.className = 'thumbnail-item' + (thumb.selected ? ' selected' : '');
+          const img = document.createElement('img');
           img.src = thumb.dataUrl;
-          img.alt = "Thumbnail at " + formatTimeMs(thumb.time);
-          img.addEventListener("click", () => toggleSelect(index));
-
-          const info = document.createElement("div");
-          info.className = "thumbnail-info";
-
-          const timeSpan = document.createElement("span");
-          timeSpan.className = "thumbnail-time";
+          img.alt = 'Thumbnail at ' + formatTimeMs(thumb.time);
+          img.addEventListener('click', () => toggleSelect(index));
+          const info = document.createElement('div');
+          info.className = 'thumbnail-info';
+          const timeSpan = document.createElement('span');
+          timeSpan.className = 'thumbnail-time';
           timeSpan.textContent = formatTimeMs(thumb.time);
-
-          const actions = document.createElement("div");
-          actions.className = "thumbnail-actions";
-
-          const downloadBtn = document.createElement("button");
-          downloadBtn.className = "outline";
-          downloadBtn.textContent = "💾";
-          downloadBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            downloadThumbnail(index);
-          });
-
-          const deleteBtn = document.createElement("button");
-          deleteBtn.className = "secondary outline";
-          deleteBtn.textContent = "✕";
-          deleteBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            deleteThumbnail(index);
-          });
-
-          const seekBtn = document.createElement("button");
-          seekBtn.className = "outline";
-          seekBtn.textContent = "🎯";
-          seekBtn.title = "跳转到此时间";
-          seekBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            video.currentTime = thumb.time;
-          });
-
-          actions.appendChild(seekBtn);
-          actions.appendChild(downloadBtn);
-          actions.appendChild(deleteBtn);
-
-          info.appendChild(timeSpan);
-          info.appendChild(actions);
-
-          item.appendChild(img);
-          item.appendChild(info);
+          const actions = document.createElement('div');
+          actions.className = 'thumb-actions';
+          const seekBtn = document.createElement('button');
+          seekBtn.className = 'btn btn-secondary btn-sm'; seekBtn.textContent = '🎯'; seekBtn.title = '跳转到此时间';
+          seekBtn.addEventListener('click', (e) => { e.stopPropagation(); video.currentTime = thumb.time; });
+          const dlBtn = document.createElement('button');
+          dlBtn.className = 'btn btn-secondary btn-sm'; dlBtn.textContent = '💾';
+          dlBtn.addEventListener('click', (e) => { e.stopPropagation(); downloadThumbnail(index); });
+          const delBtn = document.createElement('button');
+          delBtn.className = 'btn btn-secondary btn-sm'; delBtn.textContent = '✕';
+          delBtn.addEventListener('click', (e) => { e.stopPropagation(); deleteThumbnail(index); });
+          actions.append(seekBtn, dlBtn, delBtn);
+          info.append(timeSpan, actions);
+          item.append(img, info);
           grid.appendChild(item);
         });
-
-        document.getElementById("thumbnailCount").textContent = thumbnails.length;
-        document.getElementById("downloadAllBtn").disabled = thumbnails.length === 0;
-
-        const selectedCount = thumbnails.filter((t) => t.selected).length;
-        document.getElementById("downloadSelectedBtn").disabled = selectedCount === 0;
+        document.getElementById('thumbnailCount').textContent = thumbnails.length;
+        document.getElementById('downloadAllBtn').disabled = thumbnails.length === 0;
+        document.getElementById('downloadSelectedBtn').disabled = thumbnails.filter(t => t.selected).length === 0;
       }
 
-      function toggleSelect(index) {
-        thumbnails[index].selected = !thumbnails[index].selected;
-        renderThumbnails();
-      }
-
-      function deleteThumbnail(index) {
-        thumbnails.splice(index, 1);
-        renderThumbnails();
-      }
+      function toggleSelect(index) { thumbnails[index].selected = !thumbnails[index].selected; renderThumbnails(); }
+      function deleteThumbnail(index) { thumbnails.splice(index, 1); renderThumbnails(); }
 
       function downloadThumbnail(index) {
         const thumb = thumbnails[index];
         const format = outputFormat.value;
-        const link = document.createElement("a");
-        link.download =
-          "thumbnail_" + formatTimeMs(thumb.time).replace(/[:.]/g, "-") + "." + format;
-        link.href = thumb.dataUrl;
-        link.click();
+        const link = document.createElement('a');
+        link.download = 'thumbnail_' + formatTimeMs(thumb.time).replace(/[:.]/g, '-') + '.' + format;
+        link.href = thumb.dataUrl; link.click();
       }
 
-      window.downloadSelected = async function () {
-        const selected = thumbnails.filter((t) => t.selected);
+      window.downloadSelected = async function() {
+        const selected = thumbnails.filter(t => t.selected);
         if (selected.length === 0) return;
-
-        if (selected.length === 1) {
-          const index = thumbnails.indexOf(selected[0]);
-          downloadThumbnail(index);
-        } else {
-          await downloadAsZip(selected);
-        }
+        if (selected.length === 1) { downloadThumbnail(thumbnails.indexOf(selected[0])); } else { await downloadAsZip(selected); }
       };
 
-      window.downloadAll = async function () {
+      window.downloadAll = async function() {
         if (thumbnails.length === 0) return;
-
-        if (thumbnails.length === 1) {
-          downloadThumbnail(0);
-        } else {
-          await downloadAsZip(thumbnails);
-        }
+        if (thumbnails.length === 1) { downloadThumbnail(0); } else { await downloadAsZip(thumbnails); }
       };
 
       async function downloadAsZip(items) {
         const zip = new JSZip();
         const format = outputFormat.value;
-
         items.forEach((thumb, i) => {
-          const filename =
-            "thumbnail_" +
-            (i + 1).toString().padStart(3, "0") +
-            "_" +
-            formatTimeMs(thumb.time).replace(/[:.]/g, "-") +
-            "." +
-            format;
-          const base64 = thumb.dataUrl.split(",")[1];
-          zip.file(filename, base64, { base64: true });
+          const filename = 'thumbnail_' + (i+1).toString().padStart(3,'0') + '_' + formatTimeMs(thumb.time).replace(/[:.]/g, '-') + '.' + format;
+          zip.file(filename, thumb.dataUrl.split(',')[1], { base64: true });
         });
-
-        const blob = await zip.generateAsync({ type: "blob" });
-        const link = document.createElement("a");
-        link.download = "thumbnails.zip";
-        link.href = URL.createObjectURL(blob);
-        link.click();
+        const blob = await zip.generateAsync({ type: 'blob' });
+        const link = document.createElement('a');
+        link.download = 'thumbnails.zip'; link.href = URL.createObjectURL(blob); link.click();
         URL.revokeObjectURL(link.href);
       }
 
-      function clearThumbnails() {
-        thumbnails = [];
-        renderThumbnails();
-      }
+      function clearThumbnails() { thumbnails = []; renderThumbnails(); }
 
-      window.batchExtract = async function () {
+      window.batchExtract = async function() {
         if (!video.duration) return;
-
         const mode = batchMode.value;
-        const progressContainer = document.getElementById("progressContainer");
-        const progressFill = document.getElementById("progressFill");
-        const progressText = document.getElementById("progressText");
-
-        progressContainer.style.display = "block";
-
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        progressContainer.classList.add('show');
+        progressText.style.display = 'block';
         let times = [];
-
-        if (mode === "interval") {
-          const interval = parseFloat(document.getElementById("interval").value);
-          for (let t = 0; t < video.duration; t += interval) {
-            times.push(t);
-          }
-        } else if (mode === "count") {
-          const count = parseInt(document.getElementById("count").value);
+        if (mode === 'interval') {
+          const interval = parseFloat(document.getElementById('interval').value);
+          for (let t = 0; t < video.duration; t += interval) { times.push(t); }
+        } else if (mode === 'count') {
+          const count = parseInt(document.getElementById('count').value);
           const interval = video.duration / (count + 1);
-          for (let i = 1; i <= count; i++) {
-            times.push(i * interval);
-          }
-        } else if (mode === "keyframes") {
-          // Simple scene change detection
+          for (let i = 1; i <= count; i++) { times.push(i * interval); }
+        } else if (mode === 'keyframes') {
           times = await detectSceneChanges();
         }
-
         for (let i = 0; i < times.length; i++) {
-          progressFill.style.width = ((i + 1) / times.length) * 100 + "%";
-          progressText.textContent = "提取中... " + (i + 1) + " / " + times.length;
-
+          progressFill.style.width = ((i+1) / times.length) * 100 + '%';
+          progressText.textContent = '提取中... ' + (i+1) + ' / ' + times.length;
           await seekAndCapture(times[i]);
         }
-
-        progressContainer.style.display = "none";
+        progressContainer.classList.remove('show');
+        progressText.style.display = 'none';
+        progressFill.style.width = '0%';
       };
 
       function seekAndCapture(time) {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
           video.currentTime = time;
-          video.onseeked = () => {
-            captureFrame();
-            setTimeout(resolve, 50);
-          };
+          video.onseeked = () => { captureFrame(); setTimeout(resolve, 50); };
         });
       }
 
@@ -928,83 +562,52 @@
         const times = [0];
         const sampleInterval = 0.5;
         const threshold = 30;
-
         let prevImageData = null;
-        const smallCanvas = document.createElement("canvas");
-        smallCanvas.width = 64;
-        smallCanvas.height = 36;
-        const smallCtx = smallCanvas.getContext("2d");
-
+        const smallCanvas = document.createElement('canvas');
+        smallCanvas.width = 64; smallCanvas.height = 36;
+        const smallCtx = smallCanvas.getContext('2d');
         for (let t = 0; t < video.duration; t += sampleInterval) {
-          await new Promise((resolve) => {
+          await new Promise(resolve => {
             video.currentTime = t;
             video.onseeked = () => {
               smallCtx.drawImage(video, 0, 0, 64, 36);
               const imageData = smallCtx.getImageData(0, 0, 64, 36);
-
               if (prevImageData) {
                 const diff = calculateDifference(prevImageData.data, imageData.data);
-                if (diff > threshold) {
-                  times.push(t);
-                }
+                if (diff > threshold) { times.push(t); }
               }
-
               prevImageData = imageData;
               resolve();
             };
           });
         }
-
-        return times.slice(0, 50); // Limit to 50 frames
+        return times.slice(0, 50);
       }
 
       function calculateDifference(data1, data2) {
         let diff = 0;
         const len = Math.min(data1.length, data2.length);
-
         for (let i = 0; i < len; i += 4) {
-          diff += Math.abs(data1[i] - data2[i]); // R
-          diff += Math.abs(data1[i + 1] - data2[i + 1]); // G
-          diff += Math.abs(data1[i + 2] - data2[i + 2]); // B
+          diff += Math.abs(data1[i] - data2[i]) + Math.abs(data1[i+1] - data2[i+1]) + Math.abs(data1[i+2] - data2[i+2]);
         }
-
         return diff / (len / 4) / 3;
       }
 
-      // Utility functions
       function formatTime(seconds) {
         const mins = Math.floor(seconds / 60);
         const secs = Math.floor(seconds % 60);
-        return mins.toString().padStart(2, "0") + ":" + secs.toString().padStart(2, "0");
+        return mins.toString().padStart(2,'0') + ':' + secs.toString().padStart(2,'0');
       }
-
       function formatTimeMs(seconds) {
         const mins = Math.floor(seconds / 60);
         const secs = Math.floor(seconds % 60);
         const ms = Math.floor((seconds % 1) * 1000);
-        return (
-          mins.toString().padStart(2, "0") +
-          ":" +
-          secs.toString().padStart(2, "0") +
-          "." +
-          ms.toString().padStart(3, "0")
-        );
+        return mins.toString().padStart(2,'0') + ':' + secs.toString().padStart(2,'0') + '.' + ms.toString().padStart(3,'0');
       }
-
-      window.formatFileSize = function (bytes) {
-        if (bytes < 1024) return bytes + " B";
-        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
-        return (bytes / (1024 * 1024)).toFixed(2) + " MB";
-      };
-
-      // Theme toggle
-      function toggleTheme() {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute("data-theme");
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        document.getElementById("theme-icon").textContent = newTheme === "light" ? "☀️" : "🌙";
-        localStorage.setItem("theme", newTheme);
+      function formatFileSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+        return (bytes/(1024*1024)).toFixed(2) + ' MB';
       }
     </script>
   </body>

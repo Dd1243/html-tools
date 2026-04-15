@@ -1,656 +1,459 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="light">
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>图片取色器 - WebUtils</title>
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="图片取色器 - WebUtils" />
-    <meta name="keywords" content="color-picker-image,media,tools,webutils" />
+    <title>图片取色器 - 免费在线从图片中提取颜色，获取HEX/RGB/HSL色值 | WebUtils</title>
+    <meta name="description" content="免费在线图片取色器，上传图片后点击任意位置即可获取该像素的HEX、RGB、HSL颜色值，支持放大镜功能、缩放图片、历史记录，一键复制色值，完全在浏览器本地处理。" />
+    <meta name="keywords" content="图片取色器,图片颜色提取,取色工具,颜色吸管,HEX颜色,RGB颜色,HSL颜色,在线取色,颜色识别" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
-    <link
-      rel="canonical"
-      href="https://essays4u.net/tools/media/color-picker-image.html"
-    />
-
-    <!-- Open Graph -->
-    <meta property="og:title" content="图片取色器 - WebUtils" />
-    <meta property="og:description" content="图片取色器 - WebUtils" />
+    <link rel="canonical" href="https://essays4u.net/tools/media/color-picker-image.html" />
+    <meta property="og:title" content="图片取色器 - 从图片中提取颜色，获取HEX/RGB/HSL色值" />
+    <meta property="og:description" content="点击图片任意位置获取颜色值，支持放大镜、历史记录，一键复制HEX/RGB/HSL。" />
     <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/media/color-picker-image.html"
-    />
+    <meta property="og:url" content="https://essays4u.net/tools/media/color-picker-image.html" />
     <meta property="og:site_name" content="WebUtils" />
     <meta property="og:locale" content="zh_CN" />
     <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="图片取色器 - WebUtils" />
-    <meta name="twitter:description" content="图片取色器 - WebUtils" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="图片取色器 - 在线从图片提取颜色" />
+    <meta name="twitter:description" content="点击图片获取HEX/RGB/HSL颜色值，支持放大镜和历史记录。" />
     <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--color-bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
-
-      :root {
-        --canvas-bg: #f0f0f0;
-      }
-
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-      }
-      header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-      }
-      .canvas-container {
-        position: relative;
-        background: var(--canvas-bg);
-        border-radius: 8px;
-        overflow: hidden;
-        margin-bottom: 1rem;
-        min-height: 300px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      #imageCanvas {
-        max-width: 100%;
-        cursor: crosshair;
-        display: none;
-      }
-      .placeholder {
-        text-align: center;
-        color: var(--muted-color);
-        padding: 2rem;
-      }
-      .color-preview {
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-        flex-wrap: wrap;
-      }
-      .color-box {
-        width: 100px;
-        height: 100px;
-        border-radius: 8px;
-        border: 3px solid var(--contrast);
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-      }
-      .color-info {
-        flex: 1;
-        min-width: 200px;
-      }
-      .color-value {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 0.5rem;
-      }
-      .color-value input {
-        margin: 0;
-        font-family: var(--font-mono);
-      }
-      .color-value button {
-        padding: 0.5rem 1rem;
-        margin: 0;
-      }
-      .history-title {
-        margin-top: 2rem;
-        margin-bottom: 1rem;
-      }
-      .color-history {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-      }
-      .history-color {
-        width: 50px;
-        height: 50px;
-        border-radius: 4px;
-        cursor: pointer;
-        border: 2px solid transparent;
-        transition:
-          border-color 0.2s,
-          transform 0.2s;
-      }
-      .history-color:hover {
-        border-color: var(--accent-cyan);
-        transform: scale(1.1);
-      }
-      .zoom-controls {
-        display: flex;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-      }
-      .zoom-controls button {
-        padding: 0.5rem 1rem;
-      }
-      .magnifier {
-        position: fixed;
-        width: 150px;
-        height: 150px;
-        border: 3px solid var(--accent-cyan);
-        border-radius: 50%;
-        pointer-events: none;
-        display: none;
-        overflow: hidden;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        z-index: 1000;
-      }
-      .magnifier canvas {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-      }
-      .magnifier-crosshair {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 20px;
-        height: 20px;
-        border: 2px solid red;
-        border-radius: 50%;
-      }
-      .drop-zone {
-        border: 2px dashed var(--muted-color);
-        border-radius: 8px;
-        padding: 2rem;
-        text-align: center;
-        transition:
-          border-color 0.3s,
-          background 0.3s;
-      }
-      .drop-zone.dragover {
-        border-color: var(--accent-cyan);
-        background: var(--primary-focus);
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-      .visually-hidden {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        margin: -1px;
-        padding: 0;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0;
-      }
-    </style>
-    <!-- Google Fonts -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "图片取色器",
+      "url": "https://essays4u.net/tools/media/color-picker-image.html",
+      "description": "免费在线图片取色器，从图片中提取颜色，获取HEX/RGB/HSL色值",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Any",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      :root {
+        --primary-color: #007acc;
+        --primary-hover: #005fa3;
+        --primary-light: #e8f4fd;
+        --bg-color: #f9f9f9;
+        --card-bg: #ffffff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #555555;
+        --text-muted: #888888;
+        --border-color: #e0e0e0;
+        --shadow: 0 2px 10px rgba(0,0,0,0.08);
+        --shadow-hover: 0 4px 16px rgba(0,122,204,0.15);
+        --radius: 6px;
+        --success: #28a745;
+        --danger: #dc3545;
+        --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        --font-mono: 'Courier New', monospace;
+      }
+      body { font-family: var(--font); background: var(--bg-color); color: var(--text-primary); font-size: 15px; line-height: 1.6; }
+      a { color: var(--primary-color); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+
+      .ad-banner-top { background: #f0f0f0; border-bottom: 1px solid var(--border-color); text-align: center; padding: 8px; font-size: 12px; color: var(--text-muted); min-height: 60px; display: flex; align-items: center; justify-content: center; }
+      .site-header { background: var(--card-bg); border-bottom: 1px solid var(--border-color); padding: 12px 24px; display: flex; align-items: center; gap: 16px; }
+      .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--text-muted); font-size: 14px; }
+      .back-link:hover { color: var(--primary-color); text-decoration: none; }
+
+      .page-wrapper { max-width: 1200px; margin: 0 auto; padding: 24px 16px; }
+      .page-header { margin-bottom: 24px; }
+      .page-header h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 6px; }
+      .page-header p { color: var(--text-secondary); font-size: 1rem; }
+
+      .ad-banner { background: var(--card-bg); border: 1px dashed var(--border-color); border-radius: var(--radius); padding: 12px; text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 24px; min-height: 90px; display: flex; align-items: center; justify-content: center; }
+
+      .content-layout { display: flex; gap: 28px; align-items: flex-start; }
+      .tool-area { flex: 3; min-width: 0; }
+      .sidebar { flex: 1; min-width: 260px; }
+      @media (max-width: 860px) { .content-layout { flex-direction: column; } .sidebar { width: 100%; } }
+
+      .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; margin-bottom: 16px; }
+      .card-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
+
+      /* Drop Zone */
+      .drop-zone { border: 2px dashed var(--border-color); border-radius: var(--radius); padding: 36px 20px; text-align: center; cursor: pointer; transition: all 0.2s; background: #fafafa; }
+      .drop-zone:hover, .drop-zone.dragover { border-color: var(--primary-color); background: var(--primary-light); }
+      .drop-zone .dz-icon { font-size: 2.5rem; margin-bottom: 10px; }
+      .drop-zone p { color: var(--text-muted); font-size: 14px; margin-bottom: 8px; }
+
+      /* Canvas area */
+      .canvas-wrap { position: relative; background: #e0e0e0; border-radius: var(--radius); overflow: auto; min-height: 200px; max-height: 500px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+      #imageCanvas { max-width: 100%; cursor: crosshair; display: none; }
+      .canvas-placeholder { text-align: center; color: var(--text-muted); padding: 40px; }
+
+      /* Zoom controls */
+      .zoom-bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+      .zoom-bar label { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--text-secondary); cursor: pointer; }
+
+      /* Color display */
+      .color-display { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+      .color-swatch { width: 100px; height: 100px; border-radius: var(--radius); border: 2px solid var(--border-color); box-shadow: var(--shadow); flex-shrink: 0; transition: background 0.1s; }
+      .color-values { flex: 1; min-width: 220px; }
+      .cv-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+      .cv-label { font-size: 13px; font-weight: 500; min-width: 32px; color: var(--text-secondary); }
+      .cv-input { flex: 1; padding: 7px 10px; border: 1px solid var(--border-color); border-radius: var(--radius); font-family: var(--font-mono); font-size: 13px; background: #fafafa; color: var(--text-primary); min-width: 0; }
+      .cv-copy { padding: 7px 14px; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--card-bg); color: var(--text-secondary); cursor: pointer; font-size: 13px; white-space: nowrap; font-family: var(--font); transition: all 0.2s; }
+      .cv-copy:hover { border-color: var(--primary-color); color: var(--primary-color); }
+      .cv-copy.copied { background: var(--success); color: #fff; border-color: var(--success); }
+
+      /* History */
+      .history-row { display: flex; flex-wrap: wrap; gap: 8px; }
+      .hc-item { width: 44px; height: 44px; border-radius: var(--radius); border: 2px solid transparent; cursor: pointer; transition: all 0.15s; box-shadow: var(--shadow); }
+      .hc-item:hover { border-color: var(--primary-color); transform: scale(1.08); }
+
+      /* Buttons */
+      .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 16px; font-family: var(--font); font-size: 13px; font-weight: 500; border: 1px solid var(--border-color); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; background: var(--card-bg); color: var(--text-secondary); }
+      .btn:hover { border-color: var(--primary-color); color: var(--primary-color); }
+      .btn-primary { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
+      .btn-primary:hover { background: var(--primary-hover); }
+      .btn-danger { border-color: var(--danger); color: var(--danger); }
+      .btn-danger:hover { background: var(--danger); color: #fff; }
+
+      /* Magnifier */
+      .magnifier { position: fixed; width: 160px; height: 160px; border: 3px solid var(--primary-color); border-radius: 50%; pointer-events: none; display: none; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 1000; }
+      .magnifier canvas { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); }
+      .magnifier-crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 16px; height: 16px; border: 2px solid rgba(255,0,0,0.8); border-radius: 50%; pointer-events: none; }
+
+      /* Toast */
+      .toast { position: fixed; bottom: 24px; right: 24px; background: var(--text-primary); color: #fff; border-radius: var(--radius); padding: 10px 18px; display: flex; align-items: center; gap: 8px; z-index: 1001; transform: translateY(80px); opacity: 0; transition: all 0.25s; font-size: 13px; }
+      .toast.show { transform: translateY(0); opacity: 1; }
+      .toast.success { background: var(--success); }
+
+      /* Sidebar */
+      .ad-sidebar { background: #f0f0f0; border: 1px dashed var(--border-color); border-radius: var(--radius); min-height: 250px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.85rem; text-align: center; margin-bottom: 20px; }
+      .article-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; }
+      .article-card h2 { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 12px; line-height: 1.4; }
+      .article-card h3 { font-size: 0.95rem; font-weight: 600; color: var(--primary-color); margin: 16px 0 8px; }
+      .article-card p { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 10px; }
+      .article-card ul { font-size: 0.88rem; color: var(--text-secondary); padding-left: 18px; margin-bottom: 10px; line-height: 1.8; }
+      .faq-item { margin-bottom: 14px; }
+      .faq-q { font-size: 0.88rem; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+      .faq-a { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; }
+      .ad-inline { background: #f0f0f0; border: 1px dashed var(--border-color); border-radius: var(--radius); min-height: 90px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem; text-align: center; margin: 16px 0; }
+      .site-footer { text-align: center; padding: 24px; font-size: 13px; color: var(--text-muted); border-top: 1px solid var(--border-color); margin-top: 40px; }
+    </style>
   </head>
   <body>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
-      <span id="theme-icon">🌙</span>
-    </button>
+    <div class="ad-banner-top">
+      <!-- <ins class="adsbygoogle" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-XXXXXXX" data-ad-slot="XXXXXXX"></ins> -->
+      广告位 - 顶部横幅 728×90
+    </div>
 
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>›</span>
-      图片取色器
-    </nav>
-    <main class="container">
-      <header>
+    <header class="site-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <span style="color:var(--border-color)">/</span>
+      <span style="font-size:14px;color:var(--text-muted)">图片取色器</span>
+    </header>
+
+    <div class="page-wrapper">
+      <div class="page-header">
         <h1>🎨 图片取色器</h1>
-        <button id="themeToggle" class="outline">🌙 暗色模式</button>
-      </header>
-
-      <div class="drop-zone" id="dropZone">
-        <p>拖拽图片到此处，或点击选择文件</p>
-        <input type="file" id="fileInput" accept="image/*" style="display: none" />
-        <button onclick="document.getElementById('fileInput').click()" aria-label="选择图片">
-          选择图片
-        </button>
+        <p>上传图片，点击任意位置即可获取该像素的颜色值，支持HEX、RGB、HSL格式，一键复制</p>
       </div>
 
-      <div class="zoom-controls" style="display: none" id="zoomControls">
-        <button onclick="zoomCanvas(1.2)" aria-label="🔍 放大">🔍 放大</button>
-        <button onclick="zoomCanvas(0.8)" aria-label="🔍 缩小">🔍 缩小</button>
-        <button onclick="zoomCanvas(1, true)" aria-label="↺ 重置">↺ 重置</button>
-        <label style="display: flex; align-items: center; gap: 0.5rem">
-          <input type="checkbox" id="magnifierToggle" checked />
-          放大镜
-        </label>
+      <div class="ad-banner">
+        <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXX" data-ad-slot="XXXXXXX" data-ad-format="horizontal"></ins> -->
+        广告位 (728×90)
       </div>
 
-      <div class="canvas-container" id="canvasContainer">
-        <canvas id="imageCanvas"></canvas>
-        <div class="placeholder" id="placeholder">请上传图片开始取色</div>
-      </div>
-
-      <div class="color-preview">
-        <div class="color-box" id="colorBox" style="background: #fff"></div>
-        <div class="color-info">
-          <div class="color-value">
-            <label for="input-hex-">HEX:</label>
-            <input
-              type="text"
-              id="hexValue"
-              value="#FFFFFF"
-              readonly
-              aria-label="文本输入框"
-              placeholder="请输入文本输入框"
-            />
-            <button onclick="copyColor('hex')" aria-label="复制">复制</button>
+      <div class="content-layout">
+        <div class="tool-area">
+          <!-- 上传区 -->
+          <div class="card">
+            <div class="drop-zone" id="dropZone">
+              <div class="dz-icon">🖼️</div>
+              <p>拖拽图片到此处，或点击选择文件</p>
+              <p style="font-size:12px">支持 JPG、PNG、GIF、WebP 等格式</p>
+              <input type="file" id="fileInput" accept="image/*" style="display:none" />
+            </div>
           </div>
-          <div class="color-value">
-            <label for="input-rgb-">RGB:</label>
-            <input
-              type="text"
-              id="rgbValue"
-              value="rgb(255, 255, 255)"
-              readonly
-              aria-label="文本输入框"
-              placeholder="请输入文本输入框"
-            />
-            <button onclick="copyColor('rgb')" aria-label="复制">复制</button>
+
+          <!-- 图片操作区 -->
+          <div class="card" id="imageCard" style="display:none">
+            <div class="zoom-bar">
+              <button class="btn" onclick="zoomCanvas(1.25)">🔍 放大</button>
+              <button class="btn" onclick="zoomCanvas(0.8)">🔍 缩小</button>
+              <button class="btn" onclick="zoomCanvas(1, true)">↺ 重置</button>
+              <label><input type="checkbox" id="magnifierToggle" checked /> 放大镜</label>
+            </div>
+            <div class="canvas-wrap" id="canvasWrap">
+              <canvas id="imageCanvas"></canvas>
+              <div class="canvas-placeholder" id="placeholder">请上传图片</div>
+            </div>
+            <p style="font-size:12px;color:var(--text-muted);text-align:center;">点击图片任意位置取色</p>
           </div>
-          <div class="color-value">
-            <label for="input-hsl-">HSL:</label>
-            <input
-              type="text"
-              id="hslValue"
-              value="hsl(0, 0%, 100%)"
-              readonly
-              aria-label="文本输入框"
-              placeholder="请输入文本输入框"
-            />
-            <button onclick="copyColor('hsl')" aria-label="复制">复制</button>
+
+          <!-- 颜色显示 -->
+          <div class="card">
+            <div class="card-title">当前颜色</div>
+            <div class="color-display">
+              <div class="color-swatch" id="colorSwatch" style="background:#f0f0f0"></div>
+              <div class="color-values">
+                <div class="cv-row">
+                  <span class="cv-label">HEX</span>
+                  <input class="cv-input" id="hexValue" value="#F0F0F0" readonly />
+                  <button class="cv-copy" onclick="copyColor('hex')">复制</button>
+                </div>
+                <div class="cv-row">
+                  <span class="cv-label">RGB</span>
+                  <input class="cv-input" id="rgbValue" value="rgb(240, 240, 240)" readonly />
+                  <button class="cv-copy" onclick="copyColor('rgb')">复制</button>
+                </div>
+                <div class="cv-row">
+                  <span class="cv-label">HSL</span>
+                  <input class="cv-input" id="hslValue" value="hsl(0, 0%, 94%)" readonly />
+                  <button class="cv-copy" onclick="copyColor('hsl')">复制</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 取色历史 -->
+          <div class="card">
+            <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;">
+              <span>取色历史（最近20个）</span>
+              <button class="btn btn-danger" onclick="clearHistory()" style="padding:4px 12px;font-size:12px;">清空历史</button>
+            </div>
+            <div class="history-row" id="colorHistory">
+              <span style="font-size:13px;color:var(--text-muted)">暂无历史记录，请先上传图片并点击取色</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+          <div class="ad-sidebar">
+            <!-- <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-XXXXXXX" data-ad-slot="XXXXXXX"></ins> -->
+            广告位 - 侧边栏 300×250
+          </div>
+
+          <div class="article-card">
+            <h2>图片取色器使用指南：快速提取任意图片颜色值</h2>
+            <p>在网页设计、UI设计、品牌设计工作中，我们经常需要从参考图片中提取特定颜色的精确色值。本工具提供了便捷的图片取色功能，无需安装任何软件，打开网页即可使用。</p>
+
+            <h3>🎯 如何使用图片取色器</h3>
+            <ul>
+              <li>第一步：点击上传区域或拖拽图片到页面</li>
+              <li>第二步：图片加载完成后，将鼠标移动到想要取色的位置</li>
+              <li>第三步：使用放大镜功能精确定位像素</li>
+              <li>第四步：点击该位置，颜色值即会显示在下方面板</li>
+              <li>第五步：点击"复制"按钮将色值复制到剪贴板</li>
+            </ul>
+
+            <h3>🔢 三种颜色格式说明</h3>
+            <ul>
+              <li><strong>HEX（十六进制）</strong>：如 #FF6B35，网页CSS中最常用的格式，由6位十六进制数字组成</li>
+              <li><strong>RGB</strong>：如 rgb(255, 107, 53)，描述红绿蓝三种原色的混合比例，每个值范围0-255</li>
+              <li><strong>HSL</strong>：如 hsl(18, 100%, 60%)，通过色相、饱和度、明度来描述颜色，更符合人类视觉认知</li>
+            </ul>
+
+            <div class="ad-inline">
+              <!-- <ins class="adsbygoogle" data-ad-client="ca-pub-XXXXXXX" data-ad-slot="XXXXXXX" data-ad-format="fluid" data-ad-layout="in-article"></ins> -->
+              广告位 - 文章中内联广告
+            </div>
+
+            <h3>🔍 放大镜功能说明</h3>
+            <p>勾选"放大镜"选项后，鼠标移动到图片上时会显示一个圆形放大镜，以8倍的缩放比例显示鼠标周围的像素区域，方便精确定位到目标像素，特别适合颜色边界处的精准取色。</p>
+
+            <h3>💡 实际应用场景</h3>
+            <ul>
+              <li>提取品牌Logo的官方颜色用于网页设计</li>
+              <li>从UI设计稿中获取精确色值用于前端开发</li>
+              <li>分析竞品产品的配色方案</li>
+              <li>从照片中提取灵感配色用于创意设计</li>
+              <li>制作色卡时精确记录颜色信息</li>
+            </ul>
+
+            <h3>❓ 常见问题</h3>
+            <div class="faq-item">
+              <div class="faq-q">Q: 取色结果不准确怎么办？</div>
+              <div class="faq-a">A: 开启放大镜功能后精确定位目标像素再点击。图片经过压缩可能有颜色损失，建议使用原始尺寸的高质量图片。</div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-q">Q: 支持哪些图片格式？</div>
+              <div class="faq-a">A: 支持所有浏览器能显示的图片格式，包括 JPG、PNG、GIF、WebP、BMP、SVG 等。</div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-q">Q: 历史记录会丢失吗？</div>
+              <div class="faq-a">A: 取色历史保存在浏览器的 localStorage 中，关闭页面后再次打开仍然存在。清除浏览器数据时历史会被清除。</div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-q">Q: 图片会上传到服务器吗？</div>
+              <div class="faq-a">A: 不会。图片处理完全在您的浏览器本地进行，不会上传到任何服务器，请放心使用。</div>
+            </div>
           </div>
         </div>
       </div>
+    </div>
 
-      <h3 class="history-title">📋 取色历史</h3>
-      <div class="color-history" id="colorHistory"></div>
-      <button onclick="clearHistory()" class="secondary outline" style="margin-top: 1rem">
-        清空历史
-      </button>
+    <!-- 放大镜 -->
+    <div class="magnifier" id="magnifier">
+      <canvas id="magnifierCanvas" width="160" height="160"></canvas>
+      <div class="magnifier-crosshair"></div>
+    </div>
 
-      <div class="magnifier" id="magnifier">
-        <canvas id="magnifierCanvas" width="150" height="150"></canvas>
-        <div class="magnifier-crosshair"></div>
-      </div>
-    </main>
+    <div class="toast" id="toast"><span id="toastMsg"></span></div>
+
+    <footer class="site-footer">
+      <p>WebUtils - 免费在线工具集 | <a href="../../index.html">返回首页</a> | <a href="https://github.com/chicogong/html-tools" target="_blank" rel="noopener">GitHub</a></p>
+    </footer>
 
     <script>
-      // Theme toggle
-      const themeToggle = document.getElementById("themeToggle");
-      const html = document.documentElement;
-
-      function setTheme(dark) {
-        html.setAttribute("data-theme", dark ? "dark" : "light");
-        themeToggle.textContent = dark ? "☀️ 亮色模式" : "🌙 暗色模式";
-        localStorage.setItem("theme", dark ? "dark" : "light");
-      }
-
-      themeToggle.addEventListener("click", () => {
-        setTheme(html.getAttribute("data-theme") !== "dark");
-      });
-
-      // Initialize theme
-      const savedTheme = localStorage.getItem("theme");
-      if (savedTheme) {
-        setTheme(savedTheme === "dark");
-      } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        setTheme(true);
-      }
-
-      // Canvas and image handling
-      const canvas = document.getElementById("imageCanvas");
-      const ctx = canvas.getContext("2d", { willReadFrequently: true });
-      const fileInput = document.getElementById("fileInput");
-      const dropZone = document.getElementById("dropZone");
-      const placeholder = document.getElementById("placeholder");
-      const zoomControls = document.getElementById("zoomControls");
-      const magnifier = document.getElementById("magnifier");
-      const magnifierCanvas = document.getElementById("magnifierCanvas");
-      const magnifierCtx = magnifierCanvas.getContext("2d");
+      const canvas   = document.getElementById('imageCanvas');
+      const ctx      = canvas.getContext('2d', { willReadFrequently: true });
+      const fileInput = document.getElementById('fileInput');
+      const dropZone  = document.getElementById('dropZone');
+      const magnifier = document.getElementById('magnifier');
+      const magCtx    = document.getElementById('magnifierCanvas').getContext('2d');
 
       let originalImage = null;
       let scale = 1;
-      let colorHistory = JSON.parse(localStorage.getItem("colorHistory") || "[]");
+      let colorHistory = JSON.parse(localStorage.getItem('cpImageHistory') || '[]');
 
-      // File input
-      fileInput.addEventListener("change", (e) => {
-        if (e.target.files[0]) loadImage(e.target.files[0]);
-      });
+      // Upload
+      fileInput.addEventListener('change', e => { if (e.target.files[0]) loadImage(e.target.files[0]); });
+      dropZone.addEventListener('click', () => fileInput.click());
+      dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+      dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+      dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragover'); if (e.dataTransfer.files[0]) loadImage(e.dataTransfer.files[0]); });
+      document.addEventListener('dragover', e => e.preventDefault());
+      document.addEventListener('drop', e => e.preventDefault());
 
-      // Drag and drop
-      dropZone.addEventListener("click", () => fileInput.click());
-      dropZone.addEventListener("dragover", (e) => {
-        e.preventDefault();
-        dropZone.classList.add("dragover");
-      });
-      dropZone.addEventListener("dragleave", () => {
-        dropZone.classList.remove("dragover");
-      });
-      dropZone.addEventListener("drop", (e) => {
-        e.preventDefault();
-        dropZone.classList.remove("dragover");
-        if (e.dataTransfer.files[0]) loadImage(e.dataTransfer.files[0]);
-      });
-
-      window.loadImage = function (file) {
+      function loadImage(file) {
+        if (!file.type.startsWith('image/')) { showToast('请上传图片文件'); return; }
         const reader = new FileReader();
-        reader.onload = (e) => {
+        reader.onload = e => {
           const img = new Image();
           img.onload = () => {
-            originalImage = img;
-            scale = 1;
+            originalImage = img; scale = 1;
             drawImage();
-            canvas.style.display = "block";
-            placeholder.style.display = "none";
-            zoomControls.style.display = "flex";
+            canvas.style.display = 'block';
+            document.getElementById('imageCard').style.display = 'block';
+            document.getElementById('placeholder').style.display = 'none';
           };
           img.src = e.target.result;
         };
         reader.readAsDataURL(file);
-      };
+      }
 
       function drawImage() {
         if (!originalImage) return;
-        const maxWidth = document.getElementById("canvasContainer").clientWidth - 20;
-        const maxHeight = 600;
-
-        let width = originalImage.width * scale;
-        let height = originalImage.height * scale;
-
-        if (width > maxWidth) {
-          const ratio = maxWidth / width;
-          width = maxWidth;
-          height = height * ratio;
-        }
-        if (height > maxHeight) {
-          const ratio = maxHeight / height;
-          height = maxHeight;
-          width = width * ratio;
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-        ctx.drawImage(originalImage, 0, 0, width, height);
+        const wrap = document.getElementById('canvasWrap');
+        const maxW = wrap.clientWidth - 4;
+        const maxH = 480;
+        let w = originalImage.width * scale, h = originalImage.height * scale;
+        if (w > maxW) { const r = maxW / w; w = maxW; h = h * r; }
+        if (h > maxH) { const r = maxH / h; h = maxH; w = w * r; }
+        canvas.width = w; canvas.height = h;
+        ctx.drawImage(originalImage, 0, 0, w, h);
       }
 
-      window.zoomCanvas = function (factor, reset = false) {
-        if (reset) {
-          scale = 1;
-        } else {
-          scale *= factor;
-          scale = Math.max(0.1, Math.min(5, scale));
-        }
+      window.zoomCanvas = function(factor, reset=false) {
+        scale = reset ? 1 : Math.max(0.1, Math.min(8, scale * factor));
         drawImage();
       };
 
-      // Color picking
-      canvas.addEventListener("click", (e) => {
+      // Pick color on click
+      canvas.addEventListener('click', e => {
         const rect = canvas.getBoundingClientRect();
         const x = Math.floor((e.clientX - rect.left) * (canvas.width / rect.width));
         const y = Math.floor((e.clientY - rect.top) * (canvas.height / rect.height));
-
-        const pixel = ctx.getImageData(x, y, 1, 1).data;
-        const color = {
-          r: pixel[0],
-          g: pixel[1],
-          b: pixel[2]
-        };
-
-        updateColorDisplay(color);
-        addToHistory(color);
+        const [r, g, b] = ctx.getImageData(x, y, 1, 1).data;
+        displayColor(r, g, b);
+        addHistory(r, g, b);
       });
 
-      // Magnifier
-      canvas.addEventListener("mousemove", (e) => {
-        if (!document.getElementById("magnifierToggle").checked) {
-          magnifier.style.display = "none";
-          return;
-        }
-
-        magnifier.style.display = "block";
-        magnifier.style.left = e.clientX + 20 + "px";
-        magnifier.style.top = e.clientY - 75 + "px";
-
+      // Magnifier on mousemove
+      canvas.addEventListener('mousemove', e => {
+        if (!document.getElementById('magnifierToggle').checked) { magnifier.style.display = 'none'; return; }
+        magnifier.style.display = 'block';
+        magnifier.style.left = (e.clientX + 20) + 'px';
+        magnifier.style.top = (e.clientY - 80) + 'px';
         const rect = canvas.getBoundingClientRect();
         const x = Math.floor((e.clientX - rect.left) * (canvas.width / rect.width));
         const y = Math.floor((e.clientY - rect.top) * (canvas.height / rect.height));
-
-        // Draw magnified area
-        const zoomFactor = 8;
-        const sourceSize = Math.floor(150 / zoomFactor);
-
-        magnifierCtx.imageSmoothingEnabled = false;
-        magnifierCtx.clearRect(0, 0, 150, 150);
-        magnifierCtx.drawImage(
-          canvas,
-          x - sourceSize / 2,
-          y - sourceSize / 2,
-          sourceSize,
-          sourceSize,
-          0,
-          0,
-          150,
-          150
-        );
+        const zoom = 8, srcSize = Math.floor(160 / zoom);
+        magCtx.imageSmoothingEnabled = false;
+        magCtx.clearRect(0, 0, 160, 160);
+        magCtx.drawImage(canvas, x - srcSize/2, y - srcSize/2, srcSize, srcSize, 0, 0, 160, 160);
       });
+      canvas.addEventListener('mouseleave', () => { magnifier.style.display = 'none'; });
 
-      canvas.addEventListener("mouseleave", () => {
-        magnifier.style.display = "none";
-      });
-
-      function updateColorDisplay(color) {
-        const hex = rgbToHex(color.r, color.g, color.b);
-        const hsl = rgbToHsl(color.r, color.g, color.b);
-
-        document.getElementById("colorBox").style.background = hex;
-        document.getElementById("hexValue").value = hex;
-        document.getElementById("rgbValue").value =
-          "rgb(" + color.r + ", " + color.g + ", " + color.b + ")";
-        document.getElementById("hslValue").value =
-          "hsl(" + hsl.h + ", " + hsl.s + "%, " + hsl.l + "%)";
+      function displayColor(r, g, b) {
+        const hex = rgbToHex(r, g, b);
+        const hsl = rgbToHsl(r, g, b);
+        document.getElementById('colorSwatch').style.background = hex;
+        document.getElementById('hexValue').value = hex;
+        document.getElementById('rgbValue').value = `rgb(${r}, ${g}, ${b})`;
+        document.getElementById('hslValue').value = `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
       }
 
-      function rgbToHex(r, g, b) {
-        return (
-          "#" +
-          [r, g, b]
-            .map((x) => x.toString(16).padStart(2, "0"))
-            .join("")
-            .toUpperCase()
-        );
-      }
-
-      function rgbToHsl(r, g, b) {
-        r /= 255;
-        g /= 255;
-        b /= 255;
-        const max = Math.max(r, g, b),
-          min = Math.min(r, g, b);
-        let h,
-          s,
-          l = (max + min) / 2;
-
-        if (max === min) {
-          h = s = 0;
-        } else {
-          const d = max - min;
-          s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-          switch (max) {
-            case r:
-              h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
-              break;
-            case g:
-              h = ((b - r) / d + 2) / 6;
-              break;
-            case b:
-              h = ((r - g) / d + 4) / 6;
-              break;
-          }
-        }
-
-        return {
-          h: Math.round(h * 360),
-          s: Math.round(s * 100),
-          l: Math.round(l * 100)
-        };
-      }
-
-      window.copyColor = function (type) {
-        const input = document.getElementById(type + "Value");
-        navigator.clipboard.writeText(input.value).then(() => {
-          const btn = input.nextElementSibling;
-          const original = btn.textContent;
-          btn.textContent = "已复制!";
-          setTimeout(() => (btn.textContent = original), 1000);
-        });
+      window.copyColor = function(type) {
+        const val = document.getElementById(type + 'Value').value;
+        navigator.clipboard.writeText(val).then(() => {
+          const btn = document.querySelector(`[onclick="copyColor('${type}')"]`);
+          const orig = btn.textContent; btn.textContent = '已复制!'; btn.classList.add('copied');
+          setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1200);
+        }).catch(() => showToast('复制失败'));
       };
 
-      function addToHistory(color) {
-        const hex = rgbToHex(color.r, color.g, color.b);
-        // Remove duplicate
-        colorHistory = colorHistory.filter((c) => c !== hex);
+      function addHistory(r, g, b) {
+        const hex = rgbToHex(r, g, b);
+        colorHistory = colorHistory.filter(c => c !== hex);
         colorHistory.unshift(hex);
-        // Keep only last 20 colors
         colorHistory = colorHistory.slice(0, 20);
-        localStorage.setItem("colorHistory", JSON.stringify(colorHistory));
+        localStorage.setItem('cpImageHistory', JSON.stringify(colorHistory));
         renderHistory();
       }
 
       function renderHistory() {
-        const container = document.getElementById("colorHistory");
+        const container = document.getElementById('colorHistory');
+        if (!colorHistory.length) { container.innerHTML = '<span style="font-size:13px;color:var(--text-muted)">暂无历史记录</span>'; return; }
         container.replaceChildren();
-        colorHistory.forEach((hex) => {
-          const div = document.createElement("div");
-          div.className = "history-color";
-          div.style.background = hex;
-          div.title = hex;
-          div.addEventListener("click", () => selectHistoryColor(hex));
-          container.appendChild(div);
+        colorHistory.forEach(hex => {
+          const d = document.createElement('div');
+          d.className = 'hc-item'; d.style.background = hex; d.title = hex;
+          d.addEventListener('click', () => {
+            const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+            displayColor(r, g, b);
+          });
+          container.appendChild(d);
         });
       }
 
-      window.selectHistoryColor = function (hex) {
-        const r = parseInt(hex.slice(1, 3), 16);
-        const g = parseInt(hex.slice(3, 5), 16);
-        const b = parseInt(hex.slice(5, 7), 16);
-        updateColorDisplay({ r, g, b });
+      window.clearHistory = function() {
+        colorHistory = []; localStorage.removeItem('cpImageHistory'); renderHistory();
+        showToast('历史已清空');
       };
 
-      window.clearHistory = function () {
-        colorHistory = [];
-        localStorage.removeItem("colorHistory");
-        renderHistory();
-      };
-
-      // Initialize
-      renderHistory();
-
-      // Theme toggle
-      function toggleTheme() {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute("data-theme");
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        document.getElementById("theme-icon").textContent = newTheme === "light" ? "☀️" : "🌙";
-        localStorage.setItem("theme", newTheme);
+      function rgbToHex(r, g, b) { return '#' + [r,g,b].map(x => x.toString(16).padStart(2,'0')).join('').toUpperCase(); }
+      function rgbToHsl(r, g, b) {
+        r/=255; g/=255; b/=255;
+        const max=Math.max(r,g,b), min=Math.min(r,g,b);
+        let h, s, l=(max+min)/2;
+        if (max===min) { h=s=0; } else {
+          const d=max-min; s=l>0.5?d/(2-max-min):d/(max+min);
+          switch(max) { case r: h=((g-b)/d+(g<b?6:0))/6; break; case g: h=((b-r)/d+2)/6; break; case b: h=((r-g)/d+4)/6; break; }
+        }
+        return { h:Math.round(h*360), s:Math.round(s*100), l:Math.round(l*100) };
       }
+
+      function showToast(msg) {
+        const t = document.getElementById('toast');
+        document.getElementById('toastMsg').textContent = msg;
+        t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000);
+      }
+
+      renderHistory();
     </script>
   </body>
 </html>
