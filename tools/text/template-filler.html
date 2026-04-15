@@ -1,586 +1,475 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>文本模板填充器 - WebUtils</title>
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="文本模板填充器 - WebUtils" />
-    <meta name="keywords" content="template-filler,text,tools,webutils" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/text/template-filler.html" />
-
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线文本模板填充器 - 批量替换与文本生成工具 - WebUtils</title>
+    <meta name="description" content="一个强大的在线文本模板填充工具。支持使用 {{变量}} 占位符自定义模板，提供 CSV 批量填充功能，适用于批量邮件、SQL 语句生成、通知消息等场景。">
+    <meta name="keywords" content="文本模板, 模板填充, 批量替换, 变量替换, 文本生成, CSV 批量处理, 自动化办公">
+    
     <!-- Open Graph -->
-    <meta property="og:title" content="文本模板填充器 - WebUtils" />
-    <meta property="og:description" content="文本模板填充器 - WebUtils" />
-    <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/text/template-filler.html"
-    />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
+    <meta property="og:title" content="在线文本模板填充器 - 高效批量文本处理">
+    <meta property="og:description" content="快速定义模板并通过变量实时填充。支持 CSV 数据一键生成成百上千条格式化文本。">
+    <meta property="og:type" content="website">
+    <link rel="canonical" href="https://essays4u.net/tools/text/template-filler.html">
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="文本模板填充器 - WebUtils" />
-    <meta name="twitter:description" content="文本模板填充器 - WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--color-bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
-
-      :root {
-        --primary: #06b6d4;
-      }
-      body {
-        padding: 1rem;
-      }
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-      header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-      }
-      h1 {
-        margin: 0;
-        font-size: 1.5rem;
-      }
-      .main-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-      }
-      @media (max-width: 900px) {
-        .main-grid {
-          grid-template-columns: 1fr;
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius: 8px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
-      }
-      .panel {
-        background: var(--pico-card-background-color);
-        border-radius: 8px;
-        padding: 1rem;
-      }
-      .panel-title {
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .panel-title small {
-        font-weight: normal;
-        color: var(--pico-muted-color);
-      }
-      textarea {
-        width: 100%;
-        min-height: 200px;
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-      }
-      .variables {
-        margin-top: 1rem;
-      }
-      .var-item {
-        display: grid;
-        grid-template-columns: 120px 1fr auto;
-        gap: 0.5rem;
-        margin-bottom: 0.5rem;
-        align-items: center;
-      }
-      .var-item input {
-        font-size: 0.9rem;
-        padding: 0.4rem 0.6rem;
-      }
-      .var-item .var-name {
-        font-family: var(--font-mono);
-        color: var(--accent-cyan);
-        font-size: 0.85rem;
-      }
-      .var-item button {
-        padding: 0.4rem 0.6rem;
-      }
-      .btn-row {
-        display: flex;
-        gap: 0.5rem;
-        margin-top: 1rem;
-        flex-wrap: wrap;
-      }
-      .templates {
-        margin-bottom: 1rem;
-      }
-      .template-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-      }
-      .template-btn {
-        padding: 0.3rem 0.75rem;
-        font-size: 0.85rem;
-        background: var(--pico-muted-border-color);
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-      }
-      .template-btn:hover {
-        background: var(--accent-cyan);
-        color: white;
-      }
-      .output-section {
-        margin-top: 1rem;
-      }
-      .output-section textarea {
-        min-height: 150px;
-      }
-      .batch-section {
-        margin-top: 1rem;
-        padding-top: 1rem;
-        border-top: 1px solid var(--pico-muted-border-color);
-      }
-      .batch-data {
-        width: 100%;
-        min-height: 100px;
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-      }
-      .batch-output {
-        max-height: 300px;
-        overflow-y: auto;
-      }
-      .batch-item {
-        padding: 0.5rem;
-        border-bottom: 1px solid var(--pico-muted-border-color);
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        white-space: pre-wrap;
-      }
-      .help-text {
-        font-size: 0.8rem;
-        color: var(--pico-muted-color);
-        margin-top: 0.25rem;
-      }
 
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
+        [data-theme="dark"] {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg-main); color: var(--text-main); line-height: 1.6; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        
+        /* Header */
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .logo { font-size: 24px; font-weight: 700; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+        .nav-links { display: flex; gap: 20px; align-items: center; }
+        .nav-links a { text-decoration: none; color: var(--text-muted); font-size: 14px; font-weight: 500; }
+        .theme-toggle { background: none; border: 1px solid var(--border); padding: 8px; border-radius: 50%; cursor: pointer; color: var(--text-main); }
+
+        /* Main Layout */
+        .layout { display: grid; grid-template-columns: 1fr 320px; gap: 24px; }
+        @media (max-width: 1024px) { .layout { grid-template-columns: 1fr; } }
+
+        /* Tool Card */
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); margin-bottom: 24px; }
+        .tool-header { margin-bottom: 24px; }
+        .tool-header h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: var(--primary); }
+        .tool-header p { color: var(--text-muted); font-size: 15px; }
+
+        .template-presets { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+        .preset-btn { padding: 6px 12px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg-main); font-size: 13px; cursor: pointer; transition: all 0.2s; color: var(--text-muted); }
+        .preset-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+        .form-section { margin-bottom: 24px; }
+        .form-section label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--text-main); }
+        textarea { width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-main); color: var(--text-main); font-size: 14px; font-family: 'JetBrains Mono', monospace; transition: border-color 0.2s; min-height: 150px; }
+        textarea:focus { outline: none; border-color: var(--primary); }
+
+        .variables-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; margin-bottom: 20px; padding: 16px; background: var(--bg-main); border-radius: 6px; border: 1px solid var(--border); }
+        .var-item { display: flex; align-items: center; gap: 8px; }
+        .var-item span { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--primary); min-width: 80px; text-overflow: ellipsis; overflow: hidden; }
+        .var-item input { flex: 1; padding: 8px 12px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg-card); font-size: 13px; }
+
+        .btn-group { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+        button.btn { padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-secondary { background: var(--bg-main); color: var(--text-main); border: 1px solid var(--border); }
+        .btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
+
+        .batch-results { margin-top: 20px; max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; }
+        .batch-item { padding: 12px 16px; border-bottom: 1px solid var(--border); font-family: 'JetBrains Mono', monospace; font-size: 13px; white-space: pre-wrap; position: relative; }
+        .batch-item:nth-child(even) { background: var(--bg-main); }
+        .batch-item strong { color: var(--primary); margin-right: 8px; }
+
+        /* Sidebar */
+        .sidebar-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
+        .sidebar-section h3 { font-size: 16px; font-weight: 700; margin-bottom: 12px; border-left: 4px solid var(--primary); padding-left: 10px; }
+        .sidebar-section ul { list-style: none; }
+        .sidebar-section li { margin-bottom: 8px; font-size: 14px; color: var(--text-muted); }
+        .sidebar-section a { color: var(--primary); text-decoration: none; }
+        .sidebar-section a:hover { text-decoration: underline; }
+
+        .ad-placeholder { background: #f1f5f9; border: 2px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 12px; margin: 20px 0; min-height: 250px; border-radius: var(--radius); }
+
+        /* Article */
+        .article { margin-top: 40px; }
+        .article section { margin-bottom: 30px; }
+        .article h2 { font-size: 22px; font-weight: 700; margin-bottom: 16px; color: var(--primary); }
+        .article p { margin-bottom: 12px; color: var(--text-muted); font-size: 16px; }
+        .article ul { margin-left: 20px; margin-bottom: 12px; color: var(--text-muted); }
+        
+        .faq-item { margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+        .faq-item h4 { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: var(--text-main); }
+        
+        footer { border-top: 1px solid var(--border); margin-top: 60px; padding: 40px 0; text-align: center; color: var(--text-muted); font-size: 14px; }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
-      <span id="theme-icon">🌙</span>
-    </button>
+</head>
+<body>
 
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>›</span>
-      文本模板填充器
-    </nav>
-    <div class="container">
-      <header>
-        <h1>📋 文本模板填充器</h1>
-        <button id="themeToggle" class="outline">🌙</button>
-      </header>
-
-      <div class="templates">
-        <div class="template-list">
-          <button class="template-btn" data-template="email">邮件模板</button>
-          <button class="template-btn" data-template="sql">SQL 语句</button>
-          <button class="template-btn" data-template="code">代码模板</button>
-          <button class="template-btn" data-template="message">通知消息</button>
-          <button class="template-btn" data-template="url">URL 构建</button>
+<div class="container">
+    <header>
+        <a href="../../index.html" class="logo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            WebUtils
+        </a>
+        <div class="nav-links">
+            <a href="../../index.html">全部工具</a>
+            <a href="https://github.com/chicogong/html-tools" target="_blank">GitHub</a>
+            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
         </div>
-      </div>
+    </header>
 
-      <div class="main-grid">
-        <div class="panel">
-          <div class="panel-title">
-            模板
-            <small>使用 {{变量名}} 定义变量</small>
-          </div>
-          <textarea id="templateInput" placeholder="输入模板，使用 {{变量名}} 作为占位符...">
-尊敬的 {{name}}：
+    <div class="layout">
+        <main>
+            <div class="card">
+                <div class="tool-header">
+                    <h1>文本模板填充器</h1>
+                    <p>通过 {{变量名}} 定义模板，快速填充并生成结构化文本。支持 CSV 数据批量生成。</p>
+                </div>
 
-您好！感谢您使用我们的服务。
+                <div class="template-presets">
+                    <button class="preset-btn" data-preset="email">邮件模板</button>
+                    <button class="preset-btn" data-preset="sql">SQL 语句</button>
+                    <button class="preset-btn" data-preset="code">代码注释</button>
+                    <button class="preset-btn" data-preset="sms">通知短信</button>
+                    <button class="preset-btn" data-preset="url">URL 构建</button>
+                </div>
 
-您的订单号：{{orderNo}}
-订单金额：¥{{amount}}
-下单时间：{{datetime}}
+                <div class="form-section">
+                    <label>定义模板</label>
+                    <textarea id="templateInput" placeholder="输入模板内容，使用 {{变量名}} 作为占位符..."></textarea>
+                </div>
 
-如有问题，请联系客服。
+                <label>变量赋值 (实时预览)</label>
+                <div id="variablesContainer" class="variables-grid">
+                    <p style="color:var(--text-muted); font-size:13px;">在模板中输入 {{变量名}} 后，这里将显示对应的输入框。</p>
+                </div>
 
-祝好！
-{{company}}</textarea
-          >
+                <div class="form-section">
+                    <label>输出预览</label>
+                    <textarea id="outputPreview" readonly placeholder="填充后的结果将在这里实时显示..."></textarea>
+                </div>
 
-          <div class="variables" id="variables">
-            <div class="panel-title">变量值</div>
-          </div>
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="copyResult('outputPreview')">复制结果</button>
+                    <button class="btn btn-secondary" onclick="downloadResult('outputPreview', 'template_filled.txt')">保存为文件</button>
+                    <button class="btn btn-secondary" onclick="clearAll()">清空全部</button>
+                </div>
 
-          <div class="btn-row">
-            <button onclick="fillTemplate()">填充模板</button>
-            <button onclick="clearVars()" class="outline">清空变量</button>
-          </div>
-        </div>
+                <hr style="margin: 30px 0; border: none; border-top: 1px solid var(--border);">
 
-        <div class="panel">
-          <div class="panel-title">输出结果</div>
-          <textarea id="output" readonly placeholder="填充后的文本将显示在这里..."></textarea>
+                <div class="form-section">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <label style="margin:0;">批量填充 (CSV 格式)</label>
+                        <span style="font-size:12px; color:var(--text-muted);">首行为变量名，逗号分隔</span>
+                    </div>
+                    <textarea id="batchData" placeholder="name,amount,date
+张三,99.00,2024-05-01
+李四,199.00,2024-05-02" style="min-height: 100px;"></textarea>
+                </div>
 
-          <div class="btn-row">
-            <button onclick="copyOutput()">📋 复制</button>
-            <button onclick="downloadOutput()" class="outline">💾 下载</button>
-          </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="executeBatch()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        批量生成
+                    </button>
+                    <button class="btn btn-secondary" id="copyAllBtn" style="display:none;" onclick="copyBatchResults()">复制全部结果</button>
+                    <button class="btn btn-secondary" id="saveAllBtn" style="display:none;" onclick="downloadBatchResults()">导出 TXT</button>
+                </div>
 
-          <div class="batch-section">
-            <div class="panel-title">
-              批量填充
-              <small>CSV 格式，首行为变量名</small>
+                <div id="batchOutput" class="batch-results" style="display:none;"></div>
             </div>
-            <textarea
-              class="batch-data"
-              id="batchData"
-              placeholder="name,orderNo,amount,datetime,company
-张三,ORD001,99.00,2024-01-15,示例公司
-李四,ORD002,199.00,2024-01-16,示例公司"
-            ></textarea>
-            <div class="btn-row">
-              <button onclick="batchFill()">批量生成</button>
-              <button onclick="copyBatch()" class="outline">📋 复制全部</button>
-              <button onclick="downloadBatch()" class="outline">💾 下载</button>
+
+            <!-- SEO Content -->
+            <article class="article">
+                <section>
+                    <h2>什么是文本模板填充？</h2>
+                    <p>文本模板填充是一种通过将动态数据（变量）注入到预先定义的静态结构（模板）中，快速生成多份格式统一但内容各异的文本的技术。它通过“占位符”（如本项目使用的 `{{变量名}}`）来标记需要替换的部分。</p>
+                    <p>这种技术被广泛应用于自动化办公、软件开发和客户关系管理中。它可以将原本繁琐的重复劳动——如逐个修改邮件称呼或手动构建数千行 SQL 插入语句——缩短到几秒钟内完成。</p>
+                </section>
+
+                <section>
+                    <h2>本工具的核心优势</h2>
+                    <ul>
+                        <li><strong>直观易用:</strong> 采用双花括号 `{{ }}` 标准语法，所见即所得，变量输入即时预览。</li>
+                        <li><strong>批量处理:</strong> 深度集成了 CSV 数据导入功能。只需粘贴 CSV 格式的表格数据，即可瞬间生成成百上千条记录。</li>
+                        <li><strong>预设丰富:</strong> 内置了常用的办公和开发模板，包括商务邮件、SQL 操作、代码 Docstring 等，方便快速调用。</li>
+                        <li><strong>完全本地化:</strong> 所有数据处理均在您的浏览器内存中完成，数据不会发送到任何服务器。这对于处理包含客户姓名、订单号等敏感信息的文本至关重要。</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>典型应用场景</h2>
+                    <ul>
+                        <li><strong>人力资源与行政:</strong> 批量生成入职通知书、工资条说明、节假日放假通知。</li>
+                        <li><strong>开发人员:</strong> 根据数据库字段批量生成 `INSERT` 语句，或者根据配置生成重复的代码片段。</li>
+                        <li><strong>市场营销:</strong> 编写个性化的 EDM 邮件模板，将 CSV 导出的潜在客户列表一键转换为发送内容。</li>
+                        <li><strong>财务管理:</strong> 批量填充账单明细或费用报销说明。</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>如何使用 CSV 批量生成？</h2>
+                    <p>1. 首先在“定义模板”框中编写包含变量的模板，例如：`你好 {{name}}，你的余额是 {{balance}}。`</p>
+                    <p>2. 在批量填充区域输入 CSV 数据。**第一行必须是变量名**，且必须与模板中的变量名完全一致（区分大小写）。</p>
+                    <p>3. 变量名之间用英文逗号分隔，下方每一行代表一组数据。</p>
+                    <p>4. 点击“批量生成”按钮，系统会自动循环替换，并将结果按顺序展示在下方。</p>
+                </section>
+
+                <section>
+                    <h2>常见问题 (FAQ)</h2>
+                    <div class="faq-item">
+                        <h4>Q: 变量名有什么限制吗？</h4>
+                        <p>A: 变量名建议使用英文字母、数字和下划线，不建议包含特殊符号。变量名是区分大小写的，即 `{{Name}}` 和 `{{name}}` 会被视为两个不同的变量。</p>
+                    </div>
+                    <div class="faq-item">
+                        <h4>Q: 批量处理支持多少条数据？</h4>
+                        <p>A: 取决于您的浏览器性能和内存。通常处理几千行 CSV 数据是毫无压力的。如果数据量达到万级以上，页面可能会有短暂卡顿。</p>
+                    </div>
+                    <div class="faq-item">
+                        <h4>Q: 处理结果可以导出为 Excel 吗？</h4>
+                        <p>A: 目前仅支持导出为纯文本 (.txt) 文件。如果需要导入 Excel，建议将生成的内容复制后，粘贴到 Excel 的单元格中。</p>
+                    </div>
+                </section>
+            </article>
+        </main>
+
+        <aside>
+            <div class="ad-placeholder">
+                广告占位符<br>(Google AdSense)
             </div>
-            <div class="batch-output" id="batchOutput"></div>
-          </div>
-        </div>
-      </div>
+
+            <div class="sidebar-section">
+                <h3>使用技巧</h3>
+                <ul>
+                    <li>💡 使用 `{{datetime}}` 可以手动填入当前日期。</li>
+                    <li>📋 批量生成时，确保 CSV 的列名与模板变量名 100% 匹配。</li>
+                    <li>💾 长模板建议在填充前点击“保存为文件”备份。</li>
+                    <li>✨ 支持在变量输入框中粘贴多行文本。</li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>相关工具</h3>
+                <ul>
+                    <li><a href="word-counter.html">在线字数统计</a></li>
+                    <li><a href="duplicate-remover.html">文本去重工具</a></li>
+                    <li><a href="case-converter.html">大小写转换</a></li>
+                    <li><a href="lorem-ipsum.html">Lorem Ipsum 生成</a></li>
+                </ul>
+            </div>
+
+            <div class="ad-placeholder">
+                广告占位符<br>(Google AdSense)
+            </div>
+        </aside>
     </div>
 
-    <script>
-      const presetTemplates = {
-        email: `尊敬的 {{name}}：
+    <footer>
+        <p>&copy; 2024 WebUtils. All rights reserved. | <a href="../../index.html">返回首页</a></p>
+    </footer>
+</div>
 
-您好！感谢您使用我们的服务。
+<script>
+    const templateInput = document.getElementById('templateInput');
+    const varsContainer = document.getElementById('variablesContainer');
+    const outputPreview = document.getElementById('outputPreview');
+    const batchData = document.getElementById('batchData');
+    const batchOutput = document.getElementById('batchOutput');
+    const copyAllBtn = document.getElementById('copyAllBtn');
+    const saveAllBtn = document.getElementById('saveAllBtn');
 
-您的订单号：{{orderNo}}
-订单金额：¥{{amount}}
+    const presets = {
+        email: `尊敬的 {{name}}：\n\n您好！您的订单 {{orderNo}} 已经成功发货。预计到达时间为 {{date}}。\n\n感谢您对 {{company}} 的支持！`,
+        sql: `INSERT INTO users (username, email, role) \nVALUES ('{{user}}', '{{email}}', '{{role}}');`,
+        code: `/**\n * @function {{name}}\n * @description {{desc}}\n * @param { {{type}} } {{param}}\n */`,
+        sms: `【{{brand}}】验证码：{{code}}，您正在进行{{action}}操作。请于{{min}}分钟内输入。`,
+        url: `https://{{domain}}/search?q={{query}}&lang={{lang}}&page={{num}}`
+    };
 
-如有问题，请联系客服。
+    let variableValues = {};
+    let batchResultsArray = [];
 
-祝好！
-{{company}}`,
-        sql: `INSERT INTO {{table}} ({{columns}}) VALUES ({{values}});
+    // Initialize
+    templateInput.value = presets.email;
 
-SELECT * FROM {{table}} WHERE {{condition}};
-
-UPDATE {{table}} SET {{field}} = '{{value}}' WHERE id = {{id}};`,
-        code: `/**
- * {{description}}
- * @param {{paramType}} {{paramName}} - {{paramDesc}}
- * @returns {{returnType}}
- */
-function {{functionName}}({{paramName}}) {
-    // TODO: implement
-    return {{defaultReturn}};
-}`,
-        message: "【{{appName}}】您的验证码是 {{code}}，{{minutes}} 分钟内有效，请勿泄露给他人。",
-        url: "{{protocol}}://{{domain}}/{{path}}?id={{id}}&token={{token}}&timestamp={{timestamp}}"
-      };
-
-      let variables = {};
-
-      function parseVariables(template) {
-        const regex = /\{\{(\w+)\}\}/g;
+    // Detect variables
+    function updateVariables() {
+        const template = templateInput.value;
+        const regex = /\{\{([\w\u4e00-\u9fa5]+)\}\}/g;
         const vars = new Set();
         let match;
         while ((match = regex.exec(template)) !== null) {
-          vars.add(match[1]);
+            vars.add(match[1]);
         }
-        return [...vars];
-      }
 
-      function renderVariables() {
-        const template = document.getElementById("templateInput").value;
-        const vars = parseVariables(template);
-        const container = document.getElementById("variables");
+        const varList = Array.from(vars);
+        renderVarInputs(varList);
+        refreshOutput();
+    }
 
-        // Keep existing values
-        const oldVars = { ...variables };
-        variables = {};
+    function renderVarInputs(varList) {
+        if (varList.length === 0) {
+            varsContainer.innerHTML = '<p style="color:var(--text-muted); font-size:13px;">在模板中输入 {{变量名}} 后，这里将显示对应的输入框。</p>';
+            return;
+        }
 
-        let html = '<div class="panel-title">变量值</div>';
-        vars.forEach((v) => {
-          variables[v] = oldVars[v] || "";
-          html += `
-                    <div class="var-item">
-                        <span class="var-name">{{${v}}}</span>
-                        <input type="text" data-var="${v}" value="${escapeHtml(variables[v])}" placeholder="输入值...">
-                        <button onclick="insertNow('${v}')" title="插入当前时间">⏰</button>
-                    </div>
-                `;
+        const oldValues = { ...variableValues };
+        varsContainer.innerHTML = '';
+        
+        varList.forEach(v => {
+            const div = document.createElement('div');
+            div.className = 'var-item';
+            div.innerHTML = `<span>{{${v}}}</span><input type="text" data-var="${v}" value="${oldValues[v] || ''}" placeholder="填入内容...">`;
+            varsContainer.appendChild(div);
+            
+            // Re-bind listener
+            const input = div.querySelector('input');
+            input.addEventListener('input', (e) => {
+                variableValues[v] = e.target.value;
+                refreshOutput();
+            });
+        });
+    }
+
+    function refreshOutput() {
+        let template = templateInput.value;
+        let result = template;
+        
+        for (const [key, val] of Object.entries(variableValues)) {
+            const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const re = new RegExp(`\\{\\{${escapedKey}\\}\\}`, 'g');
+            result = result.replace(re, val || `{{${key}}}`);
+        }
+        
+        outputPreview.value = result;
+    }
+
+    // Batch Process
+    function executeBatch() {
+        const template = templateInput.value;
+        const rawCsv = batchData.value.trim();
+        if (!rawCsv) return alert('请输入 CSV 数据');
+
+        const lines = rawCsv.split('\n');
+        if (lines.length < 2) return alert('数据格式不正确，至少需要标题行和一行数据');
+
+        const headers = lines[0].split(',').map(h => h.trim());
+        const dataRows = lines.slice(1);
+        
+        batchResultsArray = [];
+        dataRows.forEach(row => {
+            const values = row.split(',').map(v => v.trim());
+            let itemResult = template;
+            
+            headers.forEach((h, index) => {
+                const val = values[index] || '';
+                const escapedH = h.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const re = new RegExp(`\\{\\{${escapedH}\\}\\}`, 'g');
+                itemResult = itemResult.replace(re, val);
+            });
+            batchResultsArray.push(itemResult);
         });
 
-        if (vars.length === 0) {
-          html += '<div class="help-text">模板中未发现变量，请使用 {{变量名}} 格式定义</div>';
-        }
+        renderBatchOutput();
+    }
 
-        container.innerHTML = html;
-
-        // Add listeners
-        container.querySelectorAll("input").forEach((input) => {
-          input.addEventListener("input", (e) => {
-            variables[e.target.dataset.var] = e.target.value;
-            fillTemplate();
-          });
+    function renderBatchOutput() {
+        batchOutput.innerHTML = '';
+        batchResultsArray.forEach((text, i) => {
+            const div = document.createElement('div');
+            div.className = 'batch-item';
+            div.innerHTML = `<strong>#${i + 1}</strong>${escapeHtml(text)}`;
+            batchOutput.appendChild(div);
         });
-      }
+        
+        batchOutput.style.display = 'block';
+        copyAllBtn.style.display = 'inline-flex';
+        saveAllBtn.style.display = 'inline-flex';
+        batchOutput.scrollIntoView({ behavior: 'smooth' });
+    }
 
-      function fillTemplate() {
-        let template = document.getElementById("templateInput").value;
-        let output = template;
+    // Helpers
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
 
-        for (const [key, value] of Object.entries(variables)) {
-          output = output.replace(new RegExp(`\\{\\{${key}\\}\\}`, "g"), value);
-        }
+    function copyResult(id) {
+        const el = document.getElementById(id);
+        if (!el.value) return;
+        navigator.clipboard.writeText(el.value).then(() => alert('已复制到剪贴板'));
+    }
 
-        document.getElementById("output").value = output;
-      }
-
-      window.insertNow = function (varName) {
-        const now = new Date();
-        const formatted = now.toLocaleString("zh-CN");
-        variables[varName] = formatted;
-        document.querySelector(`input[data-var="${varName}"]`).value = formatted;
-        fillTemplate();
-      };
-
-      window.clearVars = function () {
-        for (const key in variables) {
-          variables[key] = "";
-        }
-        renderVariables();
-        fillTemplate();
-      };
-
-      window.copyOutput = function () {
-        navigator.clipboard.writeText(document.getElementById("output").value);
-        event.target.textContent = "✓ 已复制";
-        setTimeout(() => (event.target.textContent = "📋 复制"), 2000);
-      };
-
-      window.downloadOutput = function () {
-        const blob = new Blob([document.getElementById("output").value], { type: "text/plain" });
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = "output.txt";
+    function downloadResult(id, filename) {
+        const content = document.getElementById(id).value;
+        if (!content) return;
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
         a.click();
-      };
+    }
 
-      function parseCSV(csv) {
-        const lines = csv.trim().split("\n");
-        if (lines.length < 2) return [];
+    function copyBatchResults() {
+        if (batchResultsArray.length === 0) return;
+        const fullText = batchResultsArray.join('\n' + '-'.repeat(30) + '\n');
+        navigator.clipboard.writeText(fullText).then(() => alert('全部生成结果已复制'));
+    }
 
-        const headers = lines[0].split(",").map((h) => h.trim());
-        const data = [];
+    function downloadBatchResults() {
+        if (batchResultsArray.length === 0) return;
+        const fullText = batchResultsArray.join('\n' + '-'.repeat(30) + '\n');
+        const blob = new Blob([fullText], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `batch_result_${Date.now()}.txt`;
+        a.click();
+    }
 
-        for (let i = 1; i < lines.length; i++) {
-          const values = lines[i].split(",").map((v) => v.trim());
-          const row = {};
-          headers.forEach((h, j) => (row[h] = values[j] || ""));
-          data.push(row);
-        }
+    function clearAll() {
+        templateInput.value = '';
+        variableValues = {};
+        varsContainer.innerHTML = '';
+        outputPreview.value = '';
+        batchData.value = '';
+        batchOutput.style.display = 'none';
+        copyAllBtn.style.display = 'none';
+        saveAllBtn.style.display = 'none';
+    }
 
-        return data;
-      }
-
-      window.batchFill = function () {
-        const template = document.getElementById("templateInput").value;
-        const csvData = document.getElementById("batchData").value;
-        const data = parseCSV(csvData);
-
-        if (data.length === 0) {
-          document.getElementById("batchOutput").innerHTML =
-            '<div class="help-text">请输入有效的 CSV 数据</div>';
-          return;
-        }
-
-        const results = data.map((row, i) => {
-          let output = template;
-          for (const [key, value] of Object.entries(row)) {
-            output = output.replace(new RegExp(`\\{\\{${key}\\}\\}`, "g"), value);
-          }
-          return output;
+    // Listeners
+    templateInput.addEventListener('input', updateVariables);
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            templateInput.value = presets[btn.dataset.preset];
+            updateVariables();
         });
+    });
 
-        document.getElementById("batchOutput").innerHTML = results
-          .map(
-            (r, i) => `<div class="batch-item"><strong>#${i + 1}</strong>\n${escapeHtml(r)}</div>`
-          )
-          .join("");
+    // Theme Toggle
+    function toggleTheme() {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const newTheme = isDark ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        document.getElementById('themeBtn').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+        localStorage.setItem('tool_theme', newTheme);
+    }
 
-        window.batchResults = results;
-      };
-
-      window.copyBatch = function () {
-        if (window.batchResults) {
-          navigator.clipboard.writeText(window.batchResults.join("\n\n---\n\n"));
-          event.target.textContent = "✓ 已复制";
-          setTimeout(() => (event.target.textContent = "📋 复制全部"), 2000);
-        }
-      };
-
-      window.downloadBatch = function () {
-        if (window.batchResults) {
-          const blob = new Blob([window.batchResults.join("\n\n---\n\n")], { type: "text/plain" });
-          const a = document.createElement("a");
-          a.href = URL.createObjectURL(blob);
-          a.download = "batch_output.txt";
-          a.click();
-        }
-      };
-
-      window.escapeHtml = function (str) {
-        if (!str) return "";
-        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-      };
-
-      // Template presets
-      document.querySelectorAll(".template-btn").forEach((btn) => {
-        btn.onclick = () => {
-          document.getElementById("templateInput").value = presetTemplates[btn.dataset.template];
-          renderVariables();
-          fillTemplate();
-        };
-      });
-
-      // Auto parse on template change
-      document.getElementById("templateInput").addEventListener("input", () => {
-        renderVariables();
-        fillTemplate();
-      });
-
-      // Theme toggle
-      const theme = localStorage.getItem("theme") || "light";
-      document.documentElement.setAttribute("data-theme", theme);
-      document.getElementById("themeToggle").textContent = theme === "dark" ? "☀️" : "🌙";
-      document.getElementById("themeToggle").onclick = () => {
-        const next =
-          document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
-        document.documentElement.setAttribute("data-theme", next);
-        localStorage.setItem("theme", next);
-        document.getElementById("themeToggle").textContent = next === "dark" ? "☀️" : "🌙";
-      };
-
-      // Initialize
-      renderVariables();
-
-      // Theme toggle
-      function toggleTheme() {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute("data-theme");
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        document.getElementById("theme-icon").textContent = newTheme === "light" ? "☀️" : "🌙";
-        localStorage.setItem("theme", newTheme);
-      }
-
-      // Load saved theme
-      const savedTheme = localStorage.getItem("theme") || "dark";
-      if (savedTheme === "light") {
-        document.documentElement.setAttribute("data-theme", "light");
-        document.getElementById("theme-icon").textContent = "☀️";
-      }
-    </script>
-  </body>
+    // Load initial
+    const savedTheme = localStorage.getItem('tool_theme') || 'light';
+    if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.getElementById('themeBtn').textContent = '☀️';
+    }
+    updateVariables();
+</script>
+</body>
 </html>

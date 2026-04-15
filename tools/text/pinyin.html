@@ -1,701 +1,399 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>汉字转拼音 - WebUtils</title>
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="汉字转拼音 - WebUtils" />
-    <meta name="keywords" content="pinyin,text,tools" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/text/pinyin.html" />
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>汉字转拼音工具 - 在线注音、多音字识别、声调标注 | WebUtils</title>
+  <meta name="description" content="WebUtils 专业在线汉字转拼音工具。支持智能多音字识别、声调符号、数字声调、首字母提取及 HTML Ruby 注音模式。100% 本地运算，安全私密，适合汉语学习、排版校对及拼音检索。">
+  <meta name="keywords" content="汉字转拼音, 在线注音, 多音字查询, 拼音首字母, 声调标注, WebUtils, pinyin converter, 汉语拼音转换">
+  <link rel="canonical" href="https://essays4u.net/tools/text/pinyin.html">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="汉字转拼音工具 - 智能多音字识别与实时注音">
+  <meta property="og:description" content="快速将汉字转换为拼音，支持多种格式输出，专为排版与学习设计。">
+  <meta property="og:url" content="https://essays4u.net/tools/text/pinyin.html">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://essays4u.net/social-preview.png">
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="汉字转拼音 - WebUtils" />
-    <meta property="og:description" content="汉字转拼音 - WebUtils" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/text/pinyin.html" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
+  <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.26.0/dist/index.js"></script>
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="汉字转拼音 - WebUtils" />
-    <meta name="twitter:description" content="汉字转拼音 - WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+  <style>
+    :root {
+      --primary-color: #007acc;
+      --primary-hover: #005f99;
+      --bg-color: #f9f9f9;
+      --card-bg: #ffffff;
+      --text-main: #333333;
+      --text-muted: #666666;
+      --border-color: #dddddd;
+      --shadow: 0 2px 10px rgba(0,0,0,0.08);
+      --radius: 6px;
+      --accent-blue: #e8f4fd;
+      --success-color: #10b981;
+    }
 
-    <meta name="description" content="在线汉字转拼音工具，支持多音字、声调、首字母提取" />
-    <meta name="keywords" content="汉字 拼音 转换 多音字 声调 首字母 chinese pinyin" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/text/pinyin.html" />
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: "Segoe UI", system-ui, -apple-system, sans-serif; line-height: 1.6; color: var(--text-main); background: var(--bg-color); }
+    
+    .container { width: 95%; max-width: 1200px; margin: 0 auto; }
 
-    <meta property="og:title" content="汉字转拼音 - WebUtils" />
-    <meta property="og:description" content="在线汉字转拼音工具，支持多音字、声调、首字母提取" />
-    <meta property="og:type" content="website" />
+    /* 顶部导航 */
+    .site-header { background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+    .site-header .container { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
+    .logo a { font-size: 1.4rem; font-weight: 700; color: var(--primary-color); text-decoration: none; }
+    .site-nav ul { display: flex; list-style: none; gap: 20px; }
+    .site-nav a { text-decoration: none; color: var(--text-muted); font-weight: 500; font-size: 0.95rem; }
+    .site-nav a:hover { color: var(--primary-color); }
 
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-    <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.26.0/dist/index.js"></script>
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
+    /* 主体布局 */
+    main.container { display: grid; grid-template-columns: 1fr 300px; gap: 25px; padding: 30px 0; }
 
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
+    /* 工具区 */
+    .tool-section { background: var(--card-bg); padding: 30px; border-radius: var(--radius); box-shadow: var(--shadow); }
+    .tool-header { margin-bottom: 25px; border-bottom: 2px solid var(--bg-color); padding-bottom: 15px; }
+    .tool-header h1 { font-size: 1.8rem; color: #111; margin-bottom: 8px; }
+    .tool-header p { color: var(--text-muted); font-size: 0.95rem; }
 
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      body {
-        font-family: var(--font-sans);
-        background: var(--color-bg-deep);
-        color: var(--color-text-primary);
-        min-height: 100vh;
-        line-height: 1.6;
-      }
-      .bg-grid {
-        position: fixed;
-        inset: 0;
-        background-image:
-          linear-gradient(rgba(244, 114, 182, 0.03) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(244, 114, 182, 0.03) 1px, transparent 1px);
-        background-size: 50px 50px;
-        pointer-events: none;
-        z-index: 0;
-      }
-      .container {
-        position: relative;
-        z-index: 1;
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 2rem 1.5rem;
-      }
-      .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: var(--color-text-secondary);
-        text-decoration: none;
-        font-size: 0.9rem;
-        margin-bottom: 2rem;
-        padding: 0.5rem 0.75rem;
-        border-radius: var(--radius-sm);
-        transition: all 0.2s;
-      }
-      .back-link:hover {
-        color: var(--accent-pink);
-        background: var(--color-bg-card);
-      }
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--color-bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-      }
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
-      h1 {
-        font-size: 2rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        background: linear-gradient(135deg, var(--color-text-primary), var(--accent-pink));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-      .subtitle {
-        color: var(--color-text-secondary);
-        margin-bottom: 2rem;
-      }
-      .card {
-        background: var(--color-bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-lg);
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-      }
-      .card-title {
-        font-size: 1rem;
-        font-weight: 600;
-        margin-bottom: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      textarea {
-        width: 100%;
-        min-height: 120px;
-        padding: 1rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        background: var(--color-bg-surface);
-        color: var(--color-text-primary);
-        font-family: var(--font-sans);
-        font-size: 1rem;
-        resize: vertical;
-        transition: all 0.2s;
-      }
-      textarea:focus {
-        outline: none;
-        border-color: var(--accent-pink);
-        box-shadow: 0 0 0 3px rgba(244, 114, 182, 0.1);
-      }
-      textarea::placeholder {
-        color: var(--text-muted);
-      }
+    /* 输入区 */
+    .input-group { margin-bottom: 25px; }
+    textarea { width: 100%; height: 160px; padding: 15px; border: 1px solid var(--border-color); border-radius: var(--radius); font-size: 1rem; outline: none; resize: vertical; font-family: inherit; }
+    textarea:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(0,122,204,0.1); }
 
-      /* Options */
-      .options-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 1rem;
-        margin-bottom: 1rem;
-      }
-      .option-group {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-      .option-label {
-        font-size: 0.85rem;
-        color: var(--color-text-secondary);
-      }
-      .option-select {
-        padding: 0.5rem 0.75rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        background: var(--color-bg-surface);
-        color: var(--color-text-primary);
-        font-size: 0.9rem;
-        cursor: pointer;
-      }
-      .option-select:focus {
-        outline: none;
-        border-color: var(--color-accent-cyan);
-      }
+    /* 配置区 */
+    .options-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; background: #fcfcfc; padding: 20px; border: 1px solid #eee; border-radius: var(--radius); margin-bottom: 25px; }
+    .option-item label { display: block; font-size: 0.8rem; font-weight: 700; color: #555; margin-bottom: 6px; }
+    select { width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem; outline: none; background: #fff; }
 
-      /* Output Modes */
-      .output-tabs {
-        display: flex;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-        flex-wrap: wrap;
-      }
-      .output-tab {
-        padding: 0.5rem 1rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        background: var(--color-bg-surface);
-        color: var(--color-text-secondary);
-        cursor: pointer;
-        font-size: 0.85rem;
-        transition: all 0.2s;
-      }
-      .output-tab:hover {
-        border-color: var(--color-accent-cyan);
-        color: var(--color-text-primary);
-      }
-      .output-tab.active {
-        border-color: var(--accent-pink);
-        background: rgba(244, 114, 182, 0.1);
-        color: var(--accent-pink);
-      }
+    .toolbar { display: flex; gap: 12px; margin-bottom: 30px; }
+    .btn { padding: 10px 20px; border-radius: var(--radius); border: none; cursor: pointer; font-weight: 700; font-size: 0.9rem; transition: all 0.2s; flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .btn-primary { background: var(--primary-color); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-outline { background: #fff; border: 1px solid var(--border-color); color: var(--text-muted); }
+    .btn-outline:hover { background: #f5f5f5; border-color: var(--text-muted); }
 
-      /* Output Area */
-      .output-area {
-        padding: 1rem;
-        background: var(--color-bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        min-height: 100px;
-        font-family: var(--font-mono);
-        font-size: 1rem;
-        line-height: 2;
-        white-space: pre-wrap;
-        word-break: break-all;
-      }
-      .output-area .pinyin {
-        color: var(--accent-pink);
-      }
-      .output-area .hanzi {
-        color: var(--color-text-primary);
-      }
+    /* 输出区 */
+    .output-card { border: 1px solid var(--border-color); border-radius: var(--radius); overflow: hidden; }
+    .output-tabs { display: flex; background: #f8f9fa; border-bottom: 1px solid var(--border-color); }
+    .tab-btn { padding: 10px 20px; border: none; background: transparent; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: #666; border-right: 1px solid var(--border-color); }
+    .tab-btn.active { background: #fff; color: var(--primary-color); position: relative; }
+    .tab-btn.active::after { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--primary-color); }
 
-      /* Ruby annotation style */
-      .ruby-output {
-        line-height: 2.5;
-      }
-      .ruby-output ruby {
-        display: inline-flex;
-        flex-direction: column-reverse;
-        align-items: center;
-      }
-      .ruby-output rt {
-        font-size: 0.7em;
-        color: var(--color-accent-cyan);
-        text-align: center;
-      }
+    .output-content { padding: 25px; min-height: 200px; background: #fff; word-break: break-all; white-space: pre-wrap; line-height: 2; font-size: 1.1rem; }
+    .output-content ruby { margin-right: 4px; }
+    .output-content rt { font-size: 0.65em; color: var(--primary-color); font-weight: 600; }
+    .pinyin-text { color: var(--primary-color); font-weight: 500; }
 
-      /* Actions */
-      .actions {
-        display: flex;
-        gap: 0.75rem;
-        margin-top: 1rem;
-        flex-wrap: wrap;
-      }
-      .btn {
-        padding: 0.6rem 1.2rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        background: var(--color-bg-surface);
-        color: var(--color-text-primary);
-        cursor: pointer;
-        font-size: 0.85rem;
-        transition: all 0.2s;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      .btn:hover {
-        border-color: var(--color-accent-cyan);
-        background: var(--bg-hover);
-      }
-      .btn-primary {
-        background: var(--accent-pink);
-        border-color: var(--accent-pink);
-        color: white;
-      }
-      .btn-primary:hover {
-        background: #e056a0;
-        border-color: #e056a0;
-      }
+    .stats-bar { display: flex; gap: 20px; margin-top: 15px; font-size: 0.85rem; color: #888; }
 
-      /* Stats */
-      .stats {
-        display: flex;
-        gap: 1.5rem;
-        margin-top: 1rem;
-        font-size: 0.85rem;
-        color: var(--text-muted);
-      }
-      .stat-item {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      .stat-value {
-        color: var(--color-accent-cyan);
-        font-weight: 600;
-        font-family: var(--font-mono);
-      }
+    /* 侧边栏 */
+    .sidebar { display: flex; flex-direction: column; gap: 25px; }
+    .sidebar-widget { background: #fff; padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); border-top: 3px solid var(--primary-color); }
+    .widget-title { font-size: 1rem; font-weight: 700; margin-bottom: 15px; color: #111; }
+    .sidebar-list { list-style: none; }
+    .sidebar-list li { margin-bottom: 12px; font-size: 0.9rem; }
+    .sidebar-list a { color: var(--text-muted); text-decoration: none; display: block; padding: 4px 0; border-bottom: 1px solid #f0f0f0; }
+    .sidebar-list a:hover { color: var(--primary-color); padding-left: 5px; }
 
-      /* Examples */
-      .examples {
-        margin-top: 1rem;
-      }
-      .example-btn {
-        padding: 0.4rem 0.8rem;
-        margin-right: 0.5rem;
-        margin-bottom: 0.5rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        background: transparent;
-        color: var(--color-text-secondary);
-        cursor: pointer;
-        font-size: 0.8rem;
-        transition: all 0.2s;
-      }
-      .example-btn:hover {
-        border-color: var(--accent-pink);
-        color: var(--accent-pink);
-      }
+    /* SEO 文章 */
+    .seo-section { margin-top: 50px; border-top: 1px solid #eee; padding-top: 40px; }
+    .seo-section h2 { font-size: 1.5rem; margin-bottom: 25px; color: #111; display: flex; align-items: center; gap: 10px; }
+    .seo-section h2::before { content: ""; width: 4px; height: 20px; background: var(--primary-color); border-radius: 2px; display: inline-block; }
+    .seo-article { font-size: 0.95rem; color: #444; line-height: 1.8; }
+    .seo-article h3 { margin: 25px 0 15px; color: #111; }
+    .seo-article p { margin-bottom: 15px; }
+    .seo-article ul { padding-left: 20px; margin-bottom: 20px; }
+    .seo-article li { margin-bottom: 10px; }
 
-      @media (max-width: 768px) {
-        .container {
-          padding: 1rem;
-        }
-        h1 {
-          font-size: 1.5rem;
-        }
-        .options-grid {
-          grid-template-columns: 1fr;
-        }
-      }
+    /* 广告占位 */
+    .ad-placeholder { background: #f0f2f5; border: 1px dashed #ccc; color: #999; text-align: center; padding: 15px; border-radius: var(--radius); font-size: 0.8rem; min-height: 90px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
 
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-    </style>
-  </head>
-  <body>
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>›</span>
-      汉字转拼音
-    </nav>
-    <div class="bg-grid"></div>
+    /* 页脚 */
+    .site-footer { background: #2c3e50; color: #ecf0f1; padding: 40px 0 20px; margin-top: 50px; text-align: center; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; font-size: 0.85rem; color: #95a5a6; }
+
+    @media (max-width: 992px) {
+      main.container { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
     <div class="container">
-      <a href="../../index.html" class="back-link">← 返回</a>
-      <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">🌙</button>
-      <h1>🔤 汉字转拼音</h1>
-      <p class="subtitle">支持多音字智能识别、声调标注、首字母提取</p>
+      <div class="logo"><a href="../../index.html">WebUtils</a></div>
+      <nav class="site-nav">
+        <ul>
+          <li><a href="../../index.html">首页</a></li>
+          <li><a href="pinyin.html">汉字转拼音</a></li>
+          <li><a href="chinese-converter.html">简繁体转换</a></li>
+          <li><a href="word-counter.html">字数统计</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
 
-      <!-- Input -->
-      <div class="card">
-        <div class="card-title">📝 输入汉字</div>
-        <textarea
-          id="input"
-          placeholder="请输入要转换的汉字，如：我爱北京天安门"
-          oninput="convert()"
-        ></textarea>
-        <div class="examples">
-          <span style="font-size: 0.85rem; color: var(--text-muted); margin-right: 0.5rem">
-            示例：
-          </span>
-          <button class="example-btn" onclick="setExample('我爱北京天安门')">我爱北京天安门</button>
-          <button class="example-btn" onclick="setExample('长城是中华民族的象征')">
-            长城是中华民族的象征
-          </button>
-          <button class="example-btn" onclick="setExample('重庆朝天门码头')">重庆朝天门码头</button>
-          <button class="example-btn" onclick="setExample('大夫说明天会好')">大夫说明天会好</button>
+  <main class="container">
+    <div class="content-left">
+      <div class="ad-placeholder">广告展示 (AdSense Placeholder)</div>
+      
+      <div class="tool-section">
+        <div class="tool-header">
+          <h1>汉字转拼音工具</h1>
+          <p>智能识别多音字，一键生成注音、声调标注及拼音首字母。100% 本地运算，安全高效。</p>
         </div>
-      </div>
 
-      <!-- Options -->
-      <div class="card">
-        <div class="card-title">⚙️ 转换设置</div>
-        <div class="options-grid">
-          <div class="option-group">
-            <span class="option-label">声调格式</span>
-            <select class="option-select" id="toneType" onchange="convert()">
+        <div class="input-group">
+          <textarea id="input" placeholder="请在此输入汉字内容（如：我爱北京天安门，重庆朝天门）" oninput="handleInput()"></textarea>
+          <div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
+            <span style="font-size: 0.8rem; color: #999;">示例：</span>
+            <button class="btn btn-outline" style="padding: 4px 10px; font-size: 0.75rem;" onclick="setExample('我爱北京天安门')">通用测试</button>
+            <button class="btn btn-outline" style="padding: 4px 10px; font-size: 0.75rem;" onclick="setExample('重庆朝天门码头')">多音字测试</button>
+            <button class="btn btn-outline" style="padding: 4px 10px; font-size: 0.75rem;" onclick="setExample('大夫说明天会好')">口语多音字</button>
+          </div>
+        </div>
+
+        <div class="options-bar">
+          <div class="option-item">
+            <label>声调格式</label>
+            <select id="toneType" onchange="convert()">
               <option value="symbol">音调符号 (pīn yīn)</option>
               <option value="num">数字声调 (pin1 yin1)</option>
               <option value="none">无声调 (pin yin)</option>
             </select>
           </div>
-          <div class="option-group">
-            <span class="option-label">输出类型</span>
-            <select class="option-select" id="outputType" onchange="convert()">
+          <div class="option-item">
+            <label>输出内容</label>
+            <select id="pattern" onchange="convert()">
               <option value="pinyin">完整拼音</option>
-              <option value="initial">声母</option>
-              <option value="final">韵母</option>
-              <option value="first">首字母</option>
+              <option value="initial">仅声母</option>
+              <option value="final">仅韵母</option>
+              <option value="first">首字母提取</option>
             </select>
           </div>
-          <div class="option-group">
-            <span class="option-label">分隔符</span>
-            <select class="option-select" id="separator" onchange="convert()">
+          <div class="option-item">
+            <label>多音字模式</label>
+            <select id="multiple" onchange="convert()">
+              <option value="false">智能自动选择</option>
+              <option value="true">列出所有读音</option>
+            </select>
+          </div>
+          <div class="option-item">
+            <label>分隔符</label>
+            <select id="separator" onchange="convert()">
               <option value=" ">空格</option>
-              <option value="">无分隔</option>
-              <option value="-">连字符 -</option>
-              <option value="'">单引号 '</option>
-            </select>
-          </div>
-          <div class="option-group">
-            <span class="option-label">拼音模式</span>
-            <select class="option-select" id="multiple" onchange="convert()">
-              <option value="false">智能多音字</option>
-              <option value="true">显示所有读音</option>
+              <option value="">无</option>
+              <option value="-">连字符 (-)</option>
+              <option value="'">单引号 (')</option>
             </select>
           </div>
         </div>
-      </div>
 
-      <!-- Output -->
-      <div class="card">
-        <div class="card-title">📤 转换结果</div>
-        <div class="output-tabs">
-          <button class="output-tab active" data-mode="plain">纯拼音</button>
-          <button class="output-tab" data-mode="ruby">注音模式</button>
-          <button class="output-tab" data-mode="mixed">拼音+汉字</button>
+        <div class="toolbar">
+          <button class="btn btn-primary" onclick="copyResult()">复制结果</button>
+          <button class="btn btn-outline" onclick="clearAll()">重置清空</button>
         </div>
-        <div class="output-area" id="output"></div>
-        <div class="stats">
-          <div class="stat-item">
-            汉字：
-            <span class="stat-value" id="hanziCount">0</span>
+
+        <div class="output-card">
+          <div class="output-tabs">
+            <button class="tab-btn active" data-mode="plain" onclick="setMode('plain')">纯拼音</button>
+            <button class="tab-btn" data-mode="ruby" onclick="setMode('ruby')">HTML 注音模式</button>
+            <button class="tab-btn" data-mode="mixed" onclick="setMode('mixed')">对照模式</button>
           </div>
-          <div class="stat-item">
-            拼音：
-            <span class="stat-value" id="pinyinCount">0</span>
-          </div>
-          <div class="stat-item">
-            总字符：
-            <span class="stat-value" id="totalCount">0</span>
-          </div>
+          <div id="output" class="output-content"></div>
         </div>
-        <div class="actions">
-          <button class="btn btn-primary" onclick="copyResult()">📋 复制结果</button>
-          <button class="btn" onclick="clearAll()">🗑️ 清空</button>
+        <div class="stats-bar">
+          <span>汉字: <span id="hanziCount">0</span></span>
+          <span>字符总数: <span id="totalCount">0</span></span>
         </div>
+
+        <section class="seo-section">
+          <h2>深度解析：为什么您需要汉字转拼音工具？</h2>
+          <article class="seo-article">
+            <p><strong>汉字转拼音</strong>（Pinyin Converter）不仅是汉语初学者的良师益友，更是程序员、编辑和文字工作者的重要效率工具。它能将复杂的方块字转化为标准的拉丁字母标注，解决多音字、生僻字认读难题。</p>
+            
+            <h3>1. 核心功能与应用场景</h3>
+            <ul>
+              <li><strong>拼音首字母提取：</strong> 广泛应用于数据库索引、联系人快速检索及网站 URL 别名（Slug）生成。</li>
+              <li><strong>智能多音字识别：</strong> 基于上下文语境自动判断“重庆”中的“重”读 chòng 而非 zhòng，确保注音准确无误。</li>
+              <li><strong>网页排版注音 (Ruby)：</strong> 自动生成符合 HTML5 标准的 <code>&lt;ruby&gt;</code> 标签，完美实现汉字上方悬浮注音效果。</li>
+              <li><strong>数据清洗与标准化：</strong> 在处理大规模文本数据时，将汉字转化为拼音有助于进行模糊匹配和语音相似度分析。</li>
+            </ul>
+
+            <h3>2. 我们的技术优势：pinyin-pro 驱动</h3>
+            <p>本工具基于顶级的 <strong>pinyin-pro</strong> 开源库开发，拥有超过 2 万个词条的语境词库。相比普通的字典查询方案，它能根据前后的连词、短语逻辑进行推理，极大地降低了多音字的误判率。同时，所有转换逻辑均在您的浏览器前端完成，<strong>不涉及任何服务器上传</strong>，保护您的文稿隐私。</p>
+
+            <div class="ad-placeholder">文章内嵌入广告 (AdSense Placeholder)</div>
+
+            <h3>3. 常见问题 (FAQ)</h3>
+            <div style="background: #fdfdfd; padding: 15px; border-left: 4px solid var(--primary-color); margin-bottom: 15px;">
+              <p><strong>问：支持简繁体转换后注音吗？</strong><br>答：支持。您可以直接输入繁体中文字符，我们的系统会自动识别并给出对应的普通话拼音。</p>
+            </div>
+            <div style="background: #fdfdfd; padding: 15px; border-left: 4px solid var(--primary-color);">
+              <p><strong>问：如何生成适合排版的格式？</strong><br>答：您可以点击“HTML 注音模式”选项卡，该格式可直接复制并粘贴到支持 HTML 的编辑器或网页代码中，实现垂直方向的拼音排版。</p>
+            </div>
+          </article>
+        </section>
       </div>
     </div>
 
-    <script>
-      let currentMode = "plain";
-      let lastResult = { pinyin: "", text: "" };
+    <aside class="sidebar">
+      <div class="sidebar-widget">
+        <div class="widget-title">关联工具</div>
+        <ul class="sidebar-list">
+          <li><a href="chinese-converter.html">简繁体在线转换</a></li>
+          <li><a href="word-counter.html">汉字字数统计</a></li>
+          <li><a href="duplicate-remover.html">文本内容去重</a></li>
+          <li><a href="whitespace-cleaner.html">不可见字符清理</a></li>
+          <li><a href="case-converter.html">英文大小写转换</a></li>
+        </ul>
+      </div>
 
-      function init() {
-        setupOutputTabs();
-        loadTheme();
-        // Default example
-        setExample("我爱北京天安门");
+      <div class="sidebar-widget">
+        <div class="widget-title">快捷键与技巧</div>
+        <div style="font-size: 0.85rem; color: #666; line-height: 1.6;">
+          <p style="margin-bottom: 10px;">• <b>实时同步：</b>输入框内容变化时，结果区会自动更新。</p>
+          <p style="margin-bottom: 10px;">• <b>声调学习：</b>建议将格式设为“音调符号”，这对纠正发音非常有帮助。</p>
+          <p>• <b>代码开发：</b>使用“首字母提取”功能可快速为中文文件名生成拼音前缀。</p>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p style="font-size: 0.9rem;">WebUtils - 专业高效的单页在线工具箱</p>
+      <div class="footer-bottom">
+        &copy; 2026 WebUtils. 纯本地运算，守护数据隐私。
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    let currentMode = 'plain';
+    const { pinyin } = pinyinPro;
+
+    function handleInput() {
+      convert();
+      saveToLocal();
+    }
+
+    function convert() {
+      const input = document.getElementById('input').value;
+      const output = document.getElementById('output');
+      if (!input.trim()) {
+        output.innerHTML = '<span style="color:#ccc">结果将在此显示...</span>';
+        updateStats(0, 0);
+        return;
       }
 
-      window.setExample = function (text) {
-        document.getElementById("input").value = text;
-        convert();
+      const options = {
+        toneType: document.getElementById('toneType').value,
+        pattern: document.getElementById('pattern').value,
+        multiple: document.getElementById('multiple').value === 'true',
+        separator: document.getElementById('separator').value
       };
 
-      function convert() {
-        const input = document.getElementById("input").value;
-        if (!input.trim()) {
-          document.getElementById("output").innerHTML =
-            '<span style="color:var(--text-muted)">转换结果将显示在这里...</span>';
-          updateStats(0, 0, 0);
-          return;
-        }
-
-        const toneType = document.getElementById("toneType").value;
-        const outputType = document.getElementById("outputType").value;
-        const separator = document.getElementById("separator").value;
-        const multiple = document.getElementById("multiple").value === "true";
-
-        try {
-          let pinyinResult;
-          const options = {
-            toneType: toneType,
-            separator: separator,
-            multiple: multiple
-          };
-
-          // Use pinyin-pro library
-          const { pinyin } = pinyinPro;
-
-          if (outputType === "initial") {
-            options.pattern = "initial";
-          } else if (outputType === "final") {
-            options.pattern = "final";
-          } else if (outputType === "first") {
-            options.pattern = "first";
-          }
-
-          pinyinResult = pinyin(input, options);
-
-          // Store for copy
-          lastResult = {
-            pinyin: pinyinResult,
-            text: input
-          };
-
-          // Render output based on mode
-          renderOutput(input, pinyinResult);
-
-          // Update stats
-          const hanziCount = (input.match(/[\u4e00-\u9fa5]/g) || []).length;
-          const pinyinWords = pinyinResult.split(separator || " ").filter((p) => p.trim()).length;
-          updateStats(hanziCount, pinyinWords, input.length);
-        } catch (e) {
-          console.error(e);
-          document.getElementById("output").innerHTML =
-            '<span style="color:#ef4444">转换出错，请检查输入</span>';
-        }
+      const result = pinyin(input, options);
+      
+      if (currentMode === 'plain') {
+        output.innerHTML = `<span class="pinyin-text">${escapeHtml(result)}</span>`;
+      } else if (currentMode === 'ruby') {
+        renderRuby(input, options);
+      } else {
+        output.innerHTML = `<div class="pinyin-text" style="margin-bottom:10px">${escapeHtml(result)}</div><div style="color:#666">${escapeHtml(input)}</div>`;
       }
 
-      function renderOutput(text, pinyin) {
-        const output = document.getElementById("output");
-        const separator = document.getElementById("separator").value || " ";
+      updateStats(
+        (input.match(/[\u4e00-\u9fa5]/g) || []).length,
+        input.length
+      );
+    }
 
-        if (currentMode === "plain") {
-          output.innerHTML = `<span class="pinyin">${escapeHtml(pinyin)}</span>`;
-          output.classList.remove("ruby-output");
-        } else if (currentMode === "ruby") {
-          // Ruby annotation mode
-          const chars = text.split("");
-          const pinyinArray = pinyin.split(separator);
-          let html = "";
-          let pinyinIdx = 0;
+    function renderRuby(text, options) {
+      const output = document.getElementById('output');
+      const chars = text.split('');
+      // 获取每个字符的拼音
+      const pyArr = pinyin(text, { ...options, type: 'array' });
+      let html = '';
+      let pyIdx = 0;
 
-          for (const char of chars) {
-            if (/[\u4e00-\u9fa5]/.test(char)) {
-              const py = pinyinArray[pinyinIdx++] || "";
-              html += `<ruby>${char}<rt>${py}</rt></ruby>`;
-            } else {
-              html += escapeHtml(char);
-            }
-          }
-          output.innerHTML = html;
-          output.classList.add("ruby-output");
-        } else if (currentMode === "mixed") {
-          // Mixed mode: pinyin above hanzi
-          output.innerHTML = `<span class="pinyin">${escapeHtml(pinyin)}</span>\n<span class="hanzi">${escapeHtml(text)}</span>`;
-          output.classList.remove("ruby-output");
-        }
-      }
-
-      window.escapeHtml = function (text) {
-        const div = document.createElement("div");
-        div.textContent = text;
-        return div.innerHTML;
-      };
-
-      function updateStats(hanzi, pinyin, total) {
-        document.getElementById("hanziCount").textContent = hanzi;
-        document.getElementById("pinyinCount").textContent = pinyin;
-        document.getElementById("totalCount").textContent = total;
-      }
-
-      function setupOutputTabs() {
-        document.querySelectorAll(".output-tab").forEach((tab) => {
-          tab.addEventListener("click", () => {
-            document.querySelectorAll(".output-tab").forEach((t) => t.classList.remove("active"));
-            tab.classList.add("active");
-            currentMode = tab.dataset.mode;
-            convert();
-          });
-        });
-      }
-
-      window.copyResult = function () {
-        let textToCopy;
-        if (currentMode === "plain") {
-          textToCopy = lastResult.pinyin;
-        } else if (currentMode === "ruby") {
-          textToCopy = lastResult.text + "\n" + lastResult.pinyin;
+      for (const char of chars) {
+        if (/[\u4e00-\u9fa5]/.test(char)) {
+          html += `<ruby>${char}<rt>${pyArr[pyIdx++] || ''}</rt></ruby>`;
         } else {
-          textToCopy = lastResult.pinyin + "\n" + lastResult.text;
-        }
-
-        navigator.clipboard.writeText(textToCopy).then(() => {
-          showToast("已复制到剪贴板");
-        });
-      };
-
-      window.clearAll = function () {
-        document.getElementById("input").value = "";
-        document.getElementById("output").innerHTML =
-          '<span style="color:var(--text-muted)">转换结果将显示在这里...</span>';
-        updateStats(0, 0, 0);
-      };
-
-      function showToast(msg) {
-        const toast = document.createElement("div");
-        toast.textContent = msg;
-        toast.style.cssText = `
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        padding: 0.75rem 1.5rem;
-        background: var(--accent-green);
-        color: white;
-        border-radius: 8px;
-        font-size: 0.9rem;
-        z-index: 1000;
-        animation: fadeInOut 2s ease-in-out;
-      `;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 2000);
-      }
-
-      window.toggleTheme = function () {
-        const html = document.documentElement;
-        const isDark = html.getAttribute("data-theme") !== "light";
-        html.setAttribute("data-theme", isDark ? "light" : "dark");
-        document.querySelector(".theme-toggle").textContent = isDark ? "☀️" : "🌙";
-        localStorage.setItem("theme", isDark ? "light" : "dark");
-      };
-
-      function loadTheme() {
-        const saved = localStorage.getItem("theme");
-        if (saved === "light") {
-          document.documentElement.setAttribute("data-theme", "light");
-          document.querySelector(".theme-toggle").textContent = "☀️";
+          html += escapeHtml(char);
+          if (char !== ' ' && char !== '\n') pyIdx++;
         }
       }
+      output.innerHTML = html;
+    }
 
-      // Add CSS animation
-      const style = document.createElement("style");
-      style.textContent = `
-      @keyframes fadeInOut {
-        0%, 100% { opacity: 0; transform: translateX(-50%) translateY(20px); }
-        20%, 80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    function setMode(mode) {
+      currentMode = mode;
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
+      });
+      convert();
+    }
+
+    function setExample(text) {
+      document.getElementById('input').value = text;
+      convert();
+    }
+
+    function clearAll() {
+      if(confirm('确定要清空输入内容吗？')) {
+        document.getElementById('input').value = '';
+        convert();
+        localStorage.removeItem('pinyin_storage');
       }
-    `;
-      document.head.appendChild(style);
+    }
 
-      init();
-    </script>
-  </body>
+    function copyResult() {
+      const output = document.getElementById('output');
+      const text = output.innerText;
+      if (!text || text.includes('结果将在此显示')) return;
+      
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = event.target;
+        const oldText = btn.innerHTML;
+        btn.innerHTML = '已成功复制';
+        setTimeout(() => btn.innerHTML = oldText, 2000);
+      });
+    }
+
+    function updateStats(hanzi, total) {
+      document.getElementById('hanziCount').innerText = hanzi;
+      document.getElementById('totalCount').innerText = total;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function saveToLocal() {
+      const data = {
+        input: document.getElementById('input').value,
+        tone: document.getElementById('toneType').value,
+        pattern: document.getElementById('pattern').value,
+        mode: currentMode
+      };
+      localStorage.setItem('pinyin_storage', JSON.stringify(data));
+    }
+
+    window.onload = () => {
+      const saved = localStorage.getItem('pinyin_storage');
+      if (saved) {
+        const data = JSON.parse(saved);
+        document.getElementById('input').value = data.input || '';
+        document.getElementById('toneType').value = data.tone || 'symbol';
+        document.getElementById('pattern').value = data.pattern || 'pinyin';
+        setMode(data.mode || 'plain');
+      } else {
+        setExample('我爱北京天安门');
+      }
+    };
+  </script>
+</body>
 </html>

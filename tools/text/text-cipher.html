@@ -1,756 +1,459 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>文本加密解密 - WebUtils</title>
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="多种古典加密算法：凯撒、ROT13、栅栏等" />
-    <meta name="keywords" content="加密 解密 密码 caesar rot13 cipher 编码" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/text/text-cipher.html" />
-
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线文本加密解密工具 - 凯撒、ROT13、维吉尼亚等经典密码 - WebUtils</title>
+    <meta name="description" content="一个功能强大的在线文本加密解密工具，支持凯撒密码 (Caesar)、ROT13、阿特巴希码 (Atbash)、维吉尼亚密码 (Vigenère) 以及二进制和十六进制编码。纯前端实现，保障隐私安全。">
+    <meta name="keywords" content="文本加密, 文本解密, 凯撒密码, ROT13, 维吉尼亚密码, 在线加密工具, 数据安全, 编码转换">
+    
     <!-- Open Graph -->
-    <meta property="og:title" content="文本加密/解密 - WebUtils" />
-    <meta property="og:description" content="多种古典加密算法：凯撒、ROT13、栅栏等" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/text/text-cipher.html" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:title" content="在线文本加密解密工具 - 经典密码学实现">
+    <meta property="og:description" content="多种古典加密算法在线实现，支持凯撒、维吉尼亚等。纯浏览器端处理，数据不上传服务器。">
+    <meta property="og:type" content="website">
+    <link rel="canonical" href="https://essays4u.net/tools/text/text-cipher.html">
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="文本加密/解密 - WebUtils" />
-    <meta name="twitter:description" content="多种古典加密算法：凯撒、ROT13、栅栏等" />
-    <!-- OG Image -->
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--color-bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
-
-      :root {
-        --color-bg-deep: #0a0a0f;
-        --color-bg-surface: #12121a;
-        --color-bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --color-text-primary: #e8e8ed;
-        --color-text-secondary: #8888a0;
-        --color-text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --color-accent-cyan: #00f5d4;
-        --accent-blue: #4cc9f0;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --glow-cyan: rgb(0, 245, 212, 0.15);
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-      }
-
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
-      body {
-        font-family: var(--font-sans);
-        background: var(--color-bg-deep);
-        color: var(--color-text-primary);
-        min-height: 100vh;
-        line-height: 1.6;
-      }
-
-      .bg-grid {
-        position: fixed;
-        inset: 0;
-        background-image:
-          linear-gradient(rgb(0, 245, 212, 0.02) 1px, transparent 1px),
-          linear-gradient(90deg, rgb(0, 245, 212, 0.02) 1px, transparent 1px);
-        background-size: 40px 40px;
-        pointer-events: none;
-        z-index: 0;
-      }
-
-      .container {
-        position: relative;
-        z-index: 1;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 24px;
-        min-height: 100vh;
-      }
-
-      .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        color: var(--color-text-secondary);
-        text-decoration: none;
-        padding: 8px 14px;
-        background: var(--color-bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        transition: all 0.2s ease;
-        margin-bottom: 24px;
-      }
-
-      .back-link:hover {
-        border-color: var(--color-accent-cyan);
-        color: var(--color-accent-cyan);
-      }
-
-      h1 {
-        font-family: var(--font-mono);
-        font-size: 1.5rem;
-        font-weight: 600;
-        margin-bottom: 8px;
-      }
-
-      .desc {
-        font-size: 0.9rem;
-        color: var(--color-text-secondary);
-        margin-bottom: 24px;
-      }
-
-      .card {
-        background: var(--color-bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-lg);
-        padding: 24px;
-        margin-bottom: 20px;
-      }
-
-      .options {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 16px;
-        margin-bottom: 20px;
-        align-items: center;
-      }
-
-      .option-group {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .option-group label {
-        font-family: var(--font-mono);
-        font-size: 0.8rem;
-        color: var(--color-text-secondary);
-      }
-
-      .option-group select,
-      .option-group input[type="text"],
-      .option-group input[type="number"] {
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        padding: 6px 12px;
-        background: var(--bg-input);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        color: var(--color-text-primary);
-      }
-
-      .option-group select:focus,
-      .option-group input:focus {
-        outline: none;
-        border-color: var(--color-accent-cyan);
-      }
-
-      .option-group input[type="number"] {
-        width: 60px;
-      }
-
-      .option-group input[type="text"] {
-        width: 150px;
-      }
-
-      .cipher-info {
-        font-family: var(--font-mono);
-        font-size: 0.75rem;
-        color: var(--text-muted);
-        background: var(--color-bg-surface);
-        padding: 8px 12px;
-        border-radius: var(--radius-sm);
-        margin-bottom: 20px;
-      }
-
-      .panels {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-      }
-
-      @media (max-width: 768px) {
-        .panels {
-          grid-template-columns: 1fr;
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius: 8px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
-      }
 
-      .panel {
-        display: flex;
-        flex-direction: column;
-      }
+        [data-theme="dark"] {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+        }
 
-      .panel-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 10px;
-      }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg-main); color: var(--text-main); line-height: 1.6; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        
+        /* Header */
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .logo { font-size: 24px; font-weight: 700; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+        .nav-links { display: flex; gap: 20px; align-items: center; }
+        .nav-links a { text-decoration: none; color: var(--text-muted); font-size: 14px; font-weight: 500; }
+        .theme-toggle { background: none; border: 1px solid var(--border); padding: 8px; border-radius: 50%; cursor: pointer; color: var(--text-main); }
 
-      .panel-header label {
-        font-family: var(--font-mono);
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-      }
+        /* Main Layout */
+        .layout { display: grid; grid-template-columns: 1fr 320px; gap: 24px; }
+        @media (max-width: 1024px) { .layout { grid-template-columns: 1fr; } }
 
-      textarea {
-        width: 100%;
-        min-height: 250px;
-        padding: 16px;
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-        background: var(--bg-input);
-        border: 2px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        color: var(--color-text-primary);
-        resize: vertical;
-        transition: all 0.2s;
-      }
+        /* Tool Card */
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); }
+        .tool-header { margin-bottom: 24px; }
+        .tool-header h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: var(--primary); }
+        .tool-header p { color: var(--text-muted); font-size: 15px; }
 
-      textarea:focus {
-        outline: none;
-        border-color: var(--color-accent-cyan);
-        box-shadow: 0 0 0 4px var(--glow-cyan);
-      }
+        .control-group { margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; }
+        .form-item { flex: 1; min-width: 200px; }
+        .form-item label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-muted); text-transform: uppercase; }
+        select, input, textarea { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-main); color: var(--text-main); font-size: 14px; transition: border-color 0.2s; }
+        select:focus, input:focus, textarea:focus { outline: none; border-color: var(--primary); }
+        
+        textarea { height: 200px; font-family: 'JetBrains Mono', monospace; resize: vertical; line-height: 1.5; }
+        
+        .io-container { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+        @media (max-width: 768px) { .io-container { grid-template-columns: 1fr; } }
 
-      textarea[readonly] {
-        background: var(--color-bg-surface);
-        cursor: default;
-      }
+        .btn-group { display: flex; gap: 12px; flex-wrap: wrap; }
+        button.btn { padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-secondary { background: var(--bg-main); color: var(--text-main); border: 1px solid var(--border); }
+        .btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
 
-      .actions {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        margin-top: 20px;
-      }
+        .alert { padding: 12px 16px; border-radius: 6px; font-size: 14px; margin-top: 16px; display: none; }
+        .alert-success { background: #dcfce7; color: #166534; display: block; }
+        .alert-error { background: #fee2e2; color: #991b1b; display: block; }
 
-      button {
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        padding: 10px 16px;
-        background: var(--color-bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        color: var(--color-text-secondary);
-        cursor: pointer;
-        transition: all 0.2s;
-      }
+        /* Sidebar */
+        .sidebar-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
+        .sidebar-section h3 { font-size: 16px; font-weight: 700; margin-bottom: 12px; border-left: 4px solid var(--primary); padding-left: 10px; }
+        .sidebar-section ul { list-style: none; }
+        .sidebar-section li { margin-bottom: 8px; font-size: 14px; color: var(--text-muted); }
+        .sidebar-section a { color: var(--primary); text-decoration: none; }
+        .sidebar-section a:hover { text-decoration: underline; }
 
-      button:hover {
-        border-color: var(--color-accent-cyan);
-        color: var(--color-accent-cyan);
-      }
+        /* Ad Placeholder */
+        .ad-placeholder { background: #f1f5f9; border: 2px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 12px; margin: 20px 0; min-height: 250px; border-radius: var(--radius); }
 
-      button.primary {
-        background: var(--color-accent-cyan);
-        border-color: var(--color-accent-cyan);
-        color: var(--color-bg-deep);
-        font-weight: 600;
-      }
-
-      button.primary:hover {
-        background: var(--accent-blue);
-        border-color: var(--accent-blue);
-      }
-
-      .status {
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        color: var(--text-muted);
-        margin-top: 16px;
-      }
-
-      .status.success {
-        color: var(--accent-green);
-      }
-      .status.success::before {
-        content: "// ";
-      }
-      .status.error {
-        color: var(--accent-red);
-      }
-      .status.error::before {
-        content: "// ";
-      }
-
-      footer {
-        text-align: center;
-        margin-top: 32px;
-        padding-top: 16px;
-        border-top: 1px solid var(--border-subtle);
-        font-family: var(--font-mono);
-        font-size: 0.8rem;
-        color: var(--text-muted);
-      }
-
-      footer a {
-        color: var(--color-accent-cyan);
-        text-decoration: none;
-      }
-
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
+        /* Content Article */
+        .article { margin-top: 40px; }
+        .article section { margin-bottom: 30px; }
+        .article h2 { font-size: 22px; font-weight: 700; margin-bottom: 16px; color: var(--primary); }
+        .article p { margin-bottom: 12px; color: var(--text-muted); font-size: 16px; }
+        .article ul { margin-left: 20px; margin-bottom: 12px; color: var(--text-muted); }
+        
+        .faq-item { margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+        .faq-item h4 { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: var(--text-main); }
+        
+        footer { border-top: 1px solid var(--border); margin-top: 60px; padding: 40px 0; text-align: center; color: var(--text-muted); font-size: 14px; }
     </style>
-  </head>
-  <body>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
-      <span id="theme-icon">🌙</span>
-    </button>
+</head>
+<body>
 
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>›</span>
-      文本加密/解密
-    </nav>
-    <div class="bg-grid"></div>
-
-    <div class="container">
-      <a href="../../index.html" class="back-link">← 返回</a>
-
-      <h1>文本加密 / 解密</h1>
-      <p class="desc">支持多种经典加密算法，仅供学习娱乐使用</p>
-
-      <div class="card">
-        <div class="options">
-          <div class="option-group">
-            <label>加密算法</label>
-            <select id="cipher">
-              <option value="caesar">凯撒密码 (Caesar)</option>
-              <option value="rot13">ROT13</option>
-              <option value="atbash">阿特巴希码 (Atbash)</option>
-              <option value="vigenere">维吉尼亚密码 (Vigenère)</option>
-              <option value="reverse">反转字符串</option>
-              <option value="binary">二进制编码</option>
-              <option value="hex">十六进制编码</option>
-            </select>
-          </div>
-          <div class="option-group" id="shiftGroup">
-            <label>偏移量</label>
-            <input type="number" id="shift" value="3" min="1" max="25" />
-          </div>
-          <div class="option-group" id="keyGroup" style="display: none">
-            <label>密钥</label>
-            <input type="text" id="key" placeholder="输入密钥..." />
-          </div>
+<div class="container">
+    <header>
+        <a href="../../index.html" class="logo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3L15.5 7.5z"></path></svg>
+            WebUtils
+        </a>
+        <div class="nav-links">
+            <a href="../../index.html">全部工具</a>
+            <a href="https://github.com/chicogong/html-tools" target="_blank">GitHub</a>
+            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
         </div>
+    </header>
 
-        <div class="cipher-info" id="cipherInfo">
-          凯撒密码：将每个字母按字母表移动固定位数。偏移量3时，A→D, B→E...
-        </div>
+    <div class="layout">
+        <main>
+            <div class="card">
+                <div class="tool-header">
+                    <h1>文本加密与解密工具</h1>
+                    <p>支持凯撒、维吉尼亚、ROT13 等多种经典加密算法，纯前端处理，安全可靠。</p>
+                </div>
 
-        <div class="panels">
-          <div class="panel">
-            <div class="panel-header">
-              <label>明文 / 密文</label>
+                <div class="control-group">
+                    <div class="form-item">
+                        <label>选择加密算法</label>
+                        <select id="cipherSelect">
+                            <option value="caesar">凯撒密码 (Caesar)</option>
+                            <option value="rot13">ROT13 编码</option>
+                            <option value="atbash">阿特巴希码 (Atbash)</option>
+                            <option value="vigenere">维吉尼亚密码 (Vigenère)</option>
+                            <option value="reverse">字符串反转</option>
+                            <option value="binary">二进制编码</option>
+                            <option value="hex">十六进制编码</option>
+                        </select>
+                    </div>
+                    <div class="form-item" id="shiftContainer">
+                        <label>位移值 (Shift)</label>
+                        <input type="number" id="shiftInput" value="3" min="1" max="25">
+                    </div>
+                    <div class="form-item" id="keyContainer" style="display:none">
+                        <label>密钥 (Key)</label>
+                        <input type="text" id="keyInput" placeholder="请输入字母密钥">
+                    </div>
+                </div>
+
+                <div class="io-container">
+                    <div class="form-item">
+                        <label>输入内容</label>
+                        <textarea id="inputText" placeholder="在这里输入要处理的原始文本或密文..."></textarea>
+                    </div>
+                    <div class="form-item">
+                        <label>输出结果</label>
+                        <textarea id="outputText" readonly placeholder="处理结果将在这里显示..."></textarea>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="encryptBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        执行加密
+                    </button>
+                    <button class="btn btn-primary" id="decryptBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>
+                        执行解密
+                    </button>
+                    <button class="btn btn-secondary" id="copyBtn">复制结果</button>
+                    <button class="btn btn-secondary" id="swapBtn">↔ 交换内容</button>
+                    <button class="btn btn-secondary" id="clearBtn">清空全部</button>
+                </div>
+
+                <div id="statusAlert" class="alert"></div>
             </div>
-            <textarea
-              id="input"
-              placeholder="输入要加密或解密的文本..."
-              spellcheck="false"
-            ></textarea>
-          </div>
 
-          <div class="panel">
-            <div class="panel-header">
-              <label>结果</label>
+            <!-- SEO Content Section -->
+            <article class="article">
+                <section>
+                    <h2>什么是文本加密与解密？</h2>
+                    <p>文本加密（Encryption）是将可理解的信息（明文）转换为不可理解的形式（密文）的过程，目的是防止未经授权的人员阅读敏感数据。解密（Decryption）则是其逆过程。在计算机科学和密码学中，这些技术是保障信息安全的基础。</p>
+                    <p>本工具提供了一系列经典的古典密码算法实现。古典密码通常基于替换或移位操作，虽然在现代计算机面前安全性较低，但在理解加密原理、学习密码学历史以及简单的隐写沟通中仍具有重要价值。</p>
+                </section>
+
+                <section>
+                    <h2>支持的加密算法详解</h2>
+                    <ul>
+                        <li><strong>凯撒密码 (Caesar Cipher):</strong> 最著名的移位密码。它将字母表中的每个字母移动固定的位置。例如，当偏移量为 3 时，A 将变为 D。</li>
+                        <li><strong>ROT13:</strong> 凯撒密码的一个特例，偏移量固定为 13 位。由于英语字母表有 26 个字母，再次应用 ROT13 即可还原原始文本。</li>
+                        <li><strong>维吉尼亚密码 (Vigenère Cipher):</strong> 一种多表替换密码，通过使用一个关键词来决定每个字母的移位量，比单一替换密码更难破解。</li>
+                        <li><strong>阿特巴希码 (Atbash Cipher):</strong> 一种古老的替换密码。它将字母表翻转，即 A 对应 Z，B 对应 Y。</li>
+                        <li><strong>二进制与十六进制:</strong> 虽然严格来说是编码（Encoding）而非加密，但它们常用于将文本转换为计算机友好的底层格式，从而改变外观。</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>常见应用场景</h2>
+                    <p>文本加密工具在日常生活中有很多有趣的用途：</p>
+                    <ul>
+                        <li><strong>隐私保护:</strong> 在公开场合或非安全频道（如社交媒体私信）发送不希望被他人随意窥探的笔记、链接或小段文字。</li>
+                        <li><strong>教育与学习:</strong> 学习基础算法、离散数学和计算机科学中的数据转换逻辑。</li>
+                        <li><strong>解密游戏:</strong> 创建和解决密室逃脱、地理寻宝（Geocaching）中的谜题。</li>
+                        <li><strong>内容隐藏:</strong> 防止在发布 spoilers（剧透）时被他人无意中看到。</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>安全警告：请勿用于金融或高度敏感数据</h2>
+                    <p>请注意，本工具提供的算法（如凯撒或维吉尼亚）属于古典密码范畴。在现代计算能力面前，这些算法非常容易被暴力破解或频率分析法破解。**严禁将此工具用于加密支付密码、银行信息、商业机密或任何关系到生命财产安全的极高价值数据。**对于此类数据，请使用标准的现代加密库（如 AES-256 或 RSA）。</p>
+                </section>
+
+                <section>
+                    <h2>常见问题 (FAQ)</h2>
+                    <div class="faq-item">
+                        <h4>Q: 你们会存储我的加密内容吗？</h4>
+                        <p>A: 绝对不会。本工具完全运行在您的浏览器本地，不涉及任何服务器端上传。您可以断开网络使用，所有计算都在您的设备上完成。</p>
+                    </div>
+                    <div class="faq-item">
+                        <h4>Q: 维吉尼亚密码解密失败了怎么办？</h4>
+                        <p>A: 请确保您输入的密钥（Key）与加密时完全一致。该算法对密钥非常敏感，即使一个字母的差异也会导致解密结果完全乱码。</p>
+                    </div>
+                    <div class="faq-item">
+                        <h4>Q: 为什么中文加密后看起来没有变化？</h4>
+                        <p>A: 凯撒和维吉尼亚等古典密码最初是为拉丁字母设计的。对于非英文字符（如中文、日语或特殊符号），这些算法通常会保持原样。如果需要处理非英文字符，建议使用二进制或十六进制编码模式。</p>
+                    </div>
+                </section>
+            </article>
+        </main>
+
+        <aside>
+            <div class="ad-placeholder">
+                广告占位符<br>(Google AdSense)
             </div>
-            <textarea id="output" readonly placeholder="结果将显示在这里..."></textarea>
-          </div>
-        </div>
 
-        <div class="actions">
-          <button class="primary" id="btnEncrypt">加密</button>
-          <button class="primary" id="btnDecrypt">解密</button>
-          <button id="btnCopy">复制结果</button>
-          <button id="btnSwap">↔ 交换</button>
-          <button id="btnClear">清空</button>
-        </div>
+            <div class="sidebar-section">
+                <h3>加密技巧</h3>
+                <ul>
+                    <li>💡 维吉尼亚密码的安全性取决于密钥的长度和复杂度。</li>
+                    <li>🔒 所有的加密逻辑都在本地运行，保障隐私。</li>
+                    <li>🔄 使用“交换”按钮可以快速进行加密和解密的循环测试。</li>
+                    <li>📋 加密后点击“复制结果”可直接粘贴到邮件或文档中。</li>
+                </ul>
+            </div>
 
-        <div id="status" class="status"></div>
-      </div>
+            <div class="sidebar-section">
+                <h3>相关工具</h3>
+                <ul>
+                    <li><a href="word-counter.html">在线字数统计</a></li>
+                    <li><a href="case-converter.html">文本大小写转换</a></li>
+                    <li><a href="duplicate-remover.html">文本去重工具</a></li>
+                    <li><a href="string-escape.html">字符串转义工具</a></li>
+                </ul>
+            </div>
 
-      <footer>
-        <a href="https://github.com/chicogong/html-tools" target="_blank">GitHub</a>
-        · 纯前端 · 无服务器 ·
-        <a href="../../index.html">WebUtils</a>
-      </footer>
+            <div class="ad-placeholder">
+                广告占位符<br>(Google AdSense)
+            </div>
+        </aside>
     </div>
 
-    <script>
-      const inputEl = document.getElementById("input");
-      const outputEl = document.getElementById("output");
-      const statusEl = document.getElementById("status");
-      const cipherEl = document.getElementById("cipher");
-      const shiftEl = document.getElementById("shift");
-      const keyEl = document.getElementById("key");
-      const shiftGroup = document.getElementById("shiftGroup");
-      const keyGroup = document.getElementById("keyGroup");
-      const cipherInfoEl = document.getElementById("cipherInfo");
-      const LS_KEY = "text_cipher_v1";
+    <footer>
+        <p>&copy; 2024 WebUtils. All rights reserved. | <a href="../../index.html">返回首页</a></p>
+    </footer>
+</div>
 
-      const cipherInfos = {
-        caesar: "凯撒密码：将每个字母按字母表移动固定位数。偏移量3时，A→D, B→E...",
-        rot13: "ROT13：凯撒密码的特例，固定偏移13位。加密和解密使用相同操作。",
-        atbash: "阿特巴希码：字母表首尾互换。A↔Z, B↔Y, C↔X...",
-        vigenere: "维吉尼亚密码：使用密钥字符串，每个字母按密钥对应字母的位置偏移。",
-        reverse: "反转字符串：将文本按字符顺序颠倒。",
-        binary: "二进制编码：将每个字符转换为8位二进制表示。",
-        hex: "十六进制编码：将每个字符转换为两位十六进制表示。"
-      };
+<script>
+    // Constants and Elements
+    const cipherSelect = document.getElementById('cipherSelect');
+    const shiftContainer = document.getElementById('shiftContainer');
+    const keyContainer = document.getElementById('keyContainer');
+    const shiftInput = document.getElementById('shiftInput');
+    const keyInput = document.getElementById('keyInput');
+    const inputText = document.getElementById('inputText');
+    const outputText = document.getElementById('outputText');
+    const statusAlert = document.getElementById('statusAlert');
+    const encryptBtn = document.getElementById('encryptBtn');
+    const decryptBtn = document.getElementById('decryptBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const swapBtn = document.getElementById('swapBtn');
 
-      window.updateUI = function () {
-        const cipher = cipherEl.value;
+    // UI State Management
+    cipherSelect.addEventListener('change', () => {
+        const val = cipherSelect.value;
+        shiftContainer.style.display = val === 'caesar' ? 'block' : 'none';
+        keyContainer.style.display = val === 'vigenere' ? 'block' : 'none';
+    });
 
-        // Show/hide options
-        shiftGroup.style.display = cipher === "caesar" ? "flex" : "none";
-        keyGroup.style.display = cipher === "vigenere" ? "flex" : "none";
+    // Core Algorithms
+    const Algorithms = {
+        caesar: (text, shift, decrypt = false) => {
+            if (decrypt) shift = 26 - (shift % 26);
+            return text.replace(/[a-zA-Z]/g, (char) => {
+                const base = char <= "Z" ? 65 : 97;
+                return String.fromCharCode(((char.charCodeAt(0) - base + shift) % 26) + base);
+            });
+        },
+        rot13: (text) => {
+            return Algorithms.caesar(text, 13);
+        },
+        atbash: (text) => {
+            return text.replace(/[a-zA-Z]/g, (char) => {
+                const base = char <= "Z" ? 65 : 97;
+                return String.fromCharCode(base + 25 - (char.charCodeAt(0) - base));
+            });
+        },
+        vigenere: (text, key, decrypt = false) => {
+            if (!key) return text;
+            key = key.toLowerCase().replace(/[^a-z]/g, "");
+            if (!key) return text;
 
-        // Update info
-        cipherInfoEl.textContent = cipherInfos[cipher];
-      };
+            let keyIndex = 0;
+            return text.replace(/[a-zA-Z]/g, (char) => {
+                const base = char <= "Z" ? 65 : 97;
+                const charCode = char.charCodeAt(0) - base;
+                const keyCode = key.charCodeAt(keyIndex % key.length) - 97;
+                keyIndex++;
 
-      // Caesar cipher
-      function caesar(text, shift, decrypt) {
-        if (decrypt) shift = 26 - shift;
-        return text.replace(/[a-zA-Z]/g, function (char) {
-          const base = char <= "Z" ? 65 : 97;
-          return String.fromCharCode(((char.charCodeAt(0) - base + shift) % 26) + base);
-        });
-      }
-
-      // ROT13 (Caesar with shift 13)
-      function rot13(text) {
-        return caesar(text, 13, false);
-      }
-
-      // Atbash cipher
-      function atbash(text) {
-        return text.replace(/[a-zA-Z]/g, function (char) {
-          const base = char <= "Z" ? 65 : 97;
-          return String.fromCharCode(base + 25 - (char.charCodeAt(0) - base));
-        });
-      }
-
-      // Vigenère cipher
-      function vigenere(text, key, decrypt) {
-        if (!key) return text;
-        key = key.toLowerCase().replace(/[^a-z]/g, "");
-        if (!key) return text;
-
-        let keyIndex = 0;
-        return text.replace(/[a-zA-Z]/g, function (char) {
-          const base = char <= "Z" ? 65 : 97;
-          const charCode = char.charCodeAt(0) - base;
-          const keyCode = key.charCodeAt(keyIndex % key.length) - 97;
-          keyIndex++;
-
-          let newCode;
-          if (decrypt) {
-            newCode = (charCode - keyCode + 26) % 26;
-          } else {
-            newCode = (charCode + keyCode) % 26;
-          }
-          return String.fromCharCode(newCode + base);
-        });
-      }
-
-      // Reverse string
-      function reverseStr(text) {
-        return text.split("").reverse().join("");
-      }
-
-      // Binary encoding
-      function toBinary(text) {
-        return text
-          .split("")
-          .map(function (char) {
-            return char.charCodeAt(0).toString(2).padStart(8, "0");
-          })
-          .join(" ");
-      }
-
-      function fromBinary(text) {
-        return text
-          .split(/\s+/)
-          .map(function (bin) {
-            const code = parseInt(bin, 2);
-            return isNaN(code) ? "" : String.fromCharCode(code);
-          })
-          .join("");
-      }
-
-      // Hex encoding
-      function toHex(text) {
-        return text
-          .split("")
-          .map(function (char) {
-            return char.charCodeAt(0).toString(16).padStart(2, "0");
-          })
-          .join(" ");
-      }
-
-      function fromHex(text) {
-        return text
-          .split(/\s+/)
-          .map(function (hex) {
-            const code = parseInt(hex, 16);
-            return isNaN(code) ? "" : String.fromCharCode(code);
-          })
-          .join("");
-      }
-
-      function process(encrypt) {
-        const text = inputEl.value;
-        if (!text) {
-          showStatus("请输入文本", "error");
-          return;
+                let newCode = decrypt 
+                    ? (charCode - keyCode + 26) % 26 
+                    : (charCode + keyCode) % 26;
+                return String.fromCharCode(newCode + base);
+            });
+        },
+        reverse: (text) => text.split("").reverse().join(""),
+        binary: {
+            encode: (text) => text.split("").map(c => c.charCodeAt(0).toString(2).padStart(8, '0')).join(" "),
+            decode: (text) => text.split(/\s+/).map(bin => {
+                const code = parseInt(bin, 2);
+                return isNaN(code) ? "" : String.fromCharCode(code);
+            }).join("")
+        },
+        hex: {
+            encode: (text) => text.split("").map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join(" "),
+            decode: (text) => text.split(/\s+/).map(hex => {
+                const code = parseInt(hex, 16);
+                return isNaN(code) ? "" : String.fromCharCode(code);
+            }).join("")
         }
+    };
 
-        const cipher = cipherEl.value;
-        let result;
+    // Main Actions
+    function showAlert(msg, type = 'success') {
+        statusAlert.textContent = msg;
+        statusAlert.className = `alert alert-${type}`;
+        setTimeout(() => { statusAlert.style.display = 'none'; }, 3000);
+    }
+
+    function process(decrypt = false) {
+        const text = inputText.value;
+        if (!text) return showAlert('请输入需要处理的内容', 'error');
+
+        const algorithm = cipherSelect.value;
+        let result = "";
 
         try {
-          switch (cipher) {
-            case "caesar":
-              const shift = parseInt(shiftEl.value) || 3;
-              result = caesar(text, shift, !encrypt);
-              break;
-            case "rot13":
-              result = rot13(text);
-              break;
-            case "atbash":
-              result = atbash(text);
-              break;
-            case "vigenere":
-              const key = keyEl.value;
-              if (!key) {
-                showStatus("请输入密钥", "error");
-                return;
-              }
-              result = vigenere(text, key, !encrypt);
-              break;
-            case "reverse":
-              result = reverseStr(text);
-              break;
-            case "binary":
-              result = encrypt ? toBinary(text) : fromBinary(text);
-              break;
-            case "hex":
-              result = encrypt ? toHex(text) : fromHex(text);
-              break;
-            default:
-              result = text;
-          }
-
-          outputEl.value = result;
-          saveToStorage();
-          showStatus((encrypt ? "加密" : "解密") + "完成", "success");
+            switch (algorithm) {
+                case 'caesar':
+                    result = Algorithms.caesar(text, parseInt(shiftInput.value) || 0, decrypt);
+                    break;
+                case 'rot13':
+                    result = Algorithms.rot13(text);
+                    break;
+                case 'atbash':
+                    result = Algorithms.atbash(text);
+                    break;
+                case 'vigenere':
+                    const key = keyInput.value;
+                    if (!key) return showAlert('维吉尼亚密码需要输入密钥', 'error');
+                    result = Algorithms.vigenere(text, key, decrypt);
+                    break;
+                case 'reverse':
+                    result = Algorithms.reverse(text);
+                    break;
+                case 'binary':
+                    result = decrypt ? Algorithms.binary.decode(text) : Algorithms.binary.encode(text);
+                    break;
+                case 'hex':
+                    result = decrypt ? Algorithms.hex.decode(text) : Algorithms.hex.encode(text);
+                    break;
+            }
+            outputText.value = result;
+            showAlert(`${decrypt ? '解密' : '加密'}处理成功！`);
+            saveState();
         } catch (e) {
-          showStatus("处理失败: " + e.message, "error");
+            showAlert('处理过程中出现错误，请检查输入格式', 'error');
         }
-      }
+    }
 
-      function showStatus(msg, type) {
-        statusEl.textContent = msg;
-        statusEl.className = "status " + (type || "");
-      }
+    encryptBtn.addEventListener('click', () => process(false));
+    decryptBtn.addEventListener('click', () => process(true));
 
-      function saveToStorage() {
-        const data = {
-          input: inputEl.value,
-          cipher: cipherEl.value,
-          shift: shiftEl.value,
-          key: keyEl.value
+    clearBtn.addEventListener('click', () => {
+        inputText.value = "";
+        outputText.value = "";
+        localStorage.removeItem('tool_cipher_state');
+    });
+
+    copyBtn.addEventListener('click', () => {
+        if (!outputText.value) return;
+        navigator.clipboard.writeText(outputText.value).then(() => {
+            showAlert('已成功复制到剪贴板');
+        });
+    });
+
+    swapBtn.addEventListener('click', () => {
+        const temp = inputText.value;
+        inputText.value = outputText.value;
+        outputText.value = temp;
+        saveState();
+    });
+
+    // Theme Toggle
+    function toggleTheme() {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const newTheme = isDark ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        document.getElementById('themeBtn').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+        localStorage.setItem('tool_theme', newTheme);
+    }
+
+    // Persistence
+    function saveState() {
+        const state = {
+            input: inputText.value,
+            cipher: cipherSelect.value,
+            shift: shiftInput.value,
+            key: keyInput.value
         };
-        localStorage.setItem(LS_KEY, JSON.stringify(data));
-      }
+        localStorage.setItem('tool_cipher_state', JSON.stringify(state));
+    }
 
-      function loadFromStorage() {
-        try {
-          const saved = localStorage.getItem(LS_KEY);
-          if (saved) {
-            const data = JSON.parse(saved);
-            inputEl.value = data.input || "";
-            cipherEl.value = data.cipher || "caesar";
-            shiftEl.value = data.shift || "3";
-            keyEl.value = data.key || "";
-            updateUI();
-          }
-        } catch (e) {
-          // Ignore parse errors
+    function loadState() {
+        const saved = localStorage.getItem('tool_cipher_state');
+        if (saved) {
+            const state = JSON.parse(saved);
+            inputText.value = state.input || "";
+            cipherSelect.value = state.cipher || "caesar";
+            shiftInput.value = state.shift || "3";
+            keyInput.value = state.key || "";
+            cipherSelect.dispatchEvent(new Event('change'));
         }
-      }
 
-      document.getElementById("btnEncrypt").onclick = function () {
-        process(true);
-      };
-      document.getElementById("btnDecrypt").onclick = function () {
-        process(false);
-      };
-
-      document.getElementById("btnCopy").onclick = async function () {
-        if (!outputEl.value) {
-          showStatus("没有内容可复制", "error");
-          return;
+        const theme = localStorage.getItem('tool_theme') || 'light';
+        if (theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            document.getElementById('themeBtn').textContent = '☀️';
         }
-        try {
-          await navigator.clipboard.writeText(outputEl.value);
-          showStatus("已复制到剪贴板", "success");
-        } catch (e) {
-          showStatus("复制失败", "error");
-        }
-      };
+    }
 
-      document.getElementById("btnSwap").onclick = function () {
-        const temp = inputEl.value;
-        inputEl.value = outputEl.value;
-        outputEl.value = temp;
-        saveToStorage();
-      };
-
-      document.getElementById("btnClear").onclick = function () {
-        inputEl.value = "";
-        outputEl.value = "";
-        statusEl.textContent = "";
-        localStorage.removeItem(LS_KEY);
-      };
-
-      cipherEl.addEventListener("change", function () {
-        updateUI();
-        saveToStorage();
-      });
-
-      inputEl.addEventListener("input", saveToStorage);
-      shiftEl.addEventListener("input", saveToStorage);
-      keyEl.addEventListener("input", saveToStorage);
-
-      loadFromStorage();
-      updateUI();
-
-      // Theme toggle
-      function toggleTheme() {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute("data-theme");
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        document.getElementById("theme-icon").textContent = newTheme === "light" ? "☀️" : "🌙";
-        localStorage.setItem("theme", newTheme);
-      }
-
-      // Load saved theme
-      const savedTheme = localStorage.getItem("theme") || "dark";
-      if (savedTheme === "light") {
-        document.documentElement.setAttribute("data-theme", "light");
-        document.getElementById("theme-icon").textContent = "☀️";
-      }
-    </script>
-  </body>
+    loadState();
+</script>
+</body>
 </html>
