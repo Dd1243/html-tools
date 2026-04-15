@@ -1,944 +1,684 @@
-<!doctype html>
-<html lang="zh-CN" data-theme="light">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>音频剪辑器 - WebUtils</title>
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="音频剪辑器 - WebUtils" />
-    <meta name="keywords" content="audio-cutter,media,tools,webutils" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/media/audio-cutter.html" />
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>在线音频剪辑工具 - 免费剪切 MP3/WAV/铃声制作 | WebUtils</title>
+  <meta name="description" content="WebUtils 免费在线音频剪辑工具。支持可视化波形编辑，精确剪切音频片段。一键制作手机铃声，支持 MP3, WAV 导出。100% 浏览器本地处理，隐私安全，无需上传。">
+  <meta name="keywords" content="音频剪辑,在线切歌,MP3剪切器,铃声制作工具,音频修剪,在线音频处理,WAV剪辑,Web音频编辑">
+  <link rel="canonical" href="https://essays4u.net/tools/media/audio-cutter.html">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="在线音频剪辑工具 - 极速制作你的专属铃声">
+  <meta property="og:description" content="可视化波形，毫秒级定位，支持多种音频格式。无需下载软件，本地极速处理。">
+  <meta property="og:url" content="https://essays4u.net/tools/media/audio-cutter.html">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://essays4u.net/social-preview.png">
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="音频剪辑器 - WebUtils" />
-    <meta property="og:description" content="音频剪辑器 - WebUtils" />
-    <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/media/audio-cutter.html"
-    />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "在线音频剪辑工具",
+    "description": "基于浏览器的可视化音频剪辑工具，支持波形编辑和多种格式导出。",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "Any",
+    "offers": {
+      "@type": "Offer",
+      "price": "0"
+    }
+  }
+  </script>
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="音频剪辑器 - WebUtils" />
-    <meta name="twitter:description" content="音频剪辑器 - WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+  <style>
+    :root {
+      --bg-color: #fafafa;
+      --card-bg: #ffffff;
+      --text-main: #000000;
+      --text-muted: #555555;
+      --accent-primary: #00f5d4; /* Cyan */
+      --accent-secondary: #f72585; /* Pink */
+      --border-width: 4px;
+      --shadow-offset: 10px;
+      --font-ui: 'Space Grotesk', system-ui, sans-serif;
+      --font-code: 'JetBrains Mono', monospace;
+    }
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: var(--font-ui); 
+      line-height: 1.5; 
+      color: var(--text-main); 
+      background: var(--bg-color);
+      background-image: repeating-linear-gradient(45deg, #eee 0, #eee 1px, transparent 0, transparent 50%);
+      background-size: 15px 15px;
+      padding-bottom: 50px;
+    }
+    
+    .container { width: 95%; max-width: 1200px; margin: 0 auto; }
 
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
+    /* Header */
+    .site-header { 
+      background: #fff; 
+      border-bottom: var(--border-width) solid #000; 
+      position: sticky; 
+      top: 0; 
+      z-index: 100; 
+    }
+    .site-header .container { 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      padding: 15px 0; 
+    }
+    .logo a { 
+      font-size: 1.8rem; 
+      font-weight: 900; 
+      color: #000; 
+      text-decoration: none; 
+      text-transform: uppercase;
+      letter-spacing: -2px;
+    }
+    .site-nav a { 
+      text-decoration: none; 
+      color: #000; 
+      font-weight: 800; 
+      background: var(--accent-primary);
+      padding: 5px 12px;
+      border: 3px solid #000;
+      box-shadow: 3px 3px 0 #000;
+    }
 
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--color-bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
+    /* Main Content */
+    main.container { 
+      display: flex; 
+      flex-direction: column; 
+      gap: 35px; 
+      padding: 50px 0; 
+    }
 
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
+    /* Tool Card */
+    .tool-section { 
+      background: var(--card-bg); 
+      padding: 40px; 
+      border: var(--border-width) solid #000;
+      box-shadow: var(--shadow-offset) var(--shadow-offset) 0 #000;
+    }
+    .tool-header h1 { font-size: 3rem; font-weight: 900; margin-bottom: 10px; line-height: 1; }
 
-      :root {
-        --waveform-bg: #f0f0f0;
-        --waveform-color: #3498db;
-        --selection-color: rgba(52, 152, 219, 0.3);
-        --playhead-color: #e74c3c;
-      }
+    /* Upload Area */
+    .upload-box {
+      border: var(--border-width) dashed #000;
+      padding: 60px;
+      text-align: center;
+      cursor: pointer;
+      background: #fff;
+      margin-bottom: 30px;
+    }
+    .upload-box:hover { background: #e0f2fe; }
+    .upload-icon { font-size: 4rem; margin-bottom: 20px; }
 
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-      }
-      header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-        flex-wrap: wrap;
-        gap: 1rem;
-      }
-      .drop-zone {
-        border: 2px dashed var(--muted-color);
-        border-radius: 8px;
-        padding: 3rem;
-        text-align: center;
-        transition:
-          border-color 0.3s,
-          background 0.3s;
-        margin-bottom: 2rem;
-      }
-      .drop-zone.dragover {
-        border-color: var(--accent-cyan);
-        background: var(--primary-focus);
-      }
-      .waveform-container {
-        background: var(--waveform-bg);
-        border-radius: 8px;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        position: relative;
-        display: none;
-      }
-      #waveformCanvas {
-        width: 100%;
-        height: 150px;
-        cursor: crosshair;
-      }
-      .selection-overlay {
-        position: absolute;
-        top: 1rem;
-        height: 150px;
-        background: var(--selection-color);
-        pointer-events: none;
-        border-left: 2px solid var(--accent-cyan);
-        border-right: 2px solid var(--accent-cyan);
-      }
-      .playhead {
-        position: absolute;
-        top: 1rem;
-        height: 150px;
-        width: 2px;
-        background: var(--playhead-color);
-        pointer-events: none;
-        display: none;
-      }
-      .time-display {
-        display: flex;
-        justify-content: space-between;
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-        margin-top: 0.5rem;
-      }
-      .controls {
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-        align-items: center;
-        margin-bottom: 1rem;
-      }
-      .controls button {
-        margin: 0;
-      }
-      .time-inputs {
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-        flex-wrap: wrap;
-      }
-      .time-input-group {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      .time-input-group input {
-        width: 100px;
-        margin: 0;
-        font-family: var(--font-mono);
-      }
-      .info-panel {
-        background: var(--card-background-color);
-        border-radius: 8px;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        display: none;
-      }
-      .info-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 1rem;
-      }
-      .info-item {
-        text-align: center;
-      }
-      .info-value {
-        font-size: 1.2rem;
-        font-weight: bold;
-        color: var(--accent-cyan);
-      }
-      .info-label {
-        font-size: 0.85rem;
-        color: var(--muted-color);
-      }
-      .export-options {
-        background: var(--card-background-color);
-        border-radius: 8px;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        display: none;
-      }
-      .export-options h4 {
-        margin-top: 0;
-      }
-      .format-options {
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-        margin-bottom: 1rem;
-      }
-      .format-options label {
-        display: flex;
-        align-items: center;
-        gap: 0.3rem;
-        cursor: pointer;
-      }
-      .volume-control {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      .volume-control input {
-        width: 100px;
-        margin: 0;
-      }
-      .zoom-controls {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-      }
-      .zoom-controls button {
-        padding: 0.3rem 0.6rem;
-      }
-      .hidden {
-        display: none !important;
-      }
+    /* Info Strip */
+    .info-strip {
+      display: none;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #000;
+      color: #fff;
+      border: var(--border-width) solid #000;
+    }
+    .info-item label { font-size: 0.7rem; text-transform: uppercase; color: var(--accent-primary); display: block; margin-bottom: 5px; }
+    .info-item span { font-weight: 800; font-size: 1.1rem; font-family: var(--font-code); }
 
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
-    </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
-      <span id="theme-icon">🌙</span>
-    </button>
+    /* Waveform Container */
+    .waveform-panel {
+      display: none;
+      border: var(--border-width) solid #000;
+      background: #111;
+      padding: 20px;
+      position: relative;
+      margin-bottom: 30px;
+    }
+    .waveform-panel.active { display: block; }
+    #waveformCanvas {
+      width: 100%;
+      height: 200px;
+      display: block;
+      cursor: crosshair;
+    }
+    .selection-overlay {
+      position: absolute;
+      top: 20px; height: 200px;
+      background: rgba(0, 245, 212, 0.2);
+      border-left: 3px solid var(--accent-primary);
+      border-right: 3px solid var(--accent-primary);
+      pointer-events: none;
+    }
+    .playhead {
+      position: absolute;
+      top: 20px; height: 200px; width: 2px;
+      background: var(--accent-secondary);
+      box-shadow: 0 0 10px var(--accent-secondary);
+      pointer-events: none;
+      display: none;
+    }
+    .time-labels {
+      display: flex;
+      justify-content: space-between;
+      color: #aaa;
+      font-family: var(--font-code);
+      font-size: 0.8rem;
+      margin-top: 10px;
+    }
 
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>›</span>
-      音频剪辑器
-    </nav>
-    <main class="container">
-      <header>
-        <h1>✂️ 音频剪辑器</h1>
-        <button id="themeToggle" class="outline">🌙 暗色模式</button>
-      </header>
+    /* Controls Group */
+    .controls-grid {
+      display: none;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+    @media (max-width: 900px) { .controls-grid { grid-template-columns: 1fr; } }
+    .controls-grid.active { display: grid; }
 
-      <div class="drop-zone" id="dropZone">
-        <p>拖拽音频文件到此处，或点击选择文件</p>
-        <p style="color: var(--muted-color); font-size: 0.9rem">支持 MP3、WAV、OGG、M4A 等格式</p>
-        <input type="file" id="fileInput" accept="audio/*" style="display: none" />
-        <button onclick="document.getElementById('fileInput').click()">选择音频</button>
+    .control-block {
+      border: var(--border-width) solid #000;
+      padding: 25px;
+      background: #fff;
+      box-shadow: 6px 6px 0 #000;
+    }
+    .control-block h3 { font-size: 1.1rem; font-weight: 900; text-transform: uppercase; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
+
+    .btn-group { display: flex; flex-wrap: wrap; gap: 12px; }
+    .btn {
+      padding: 12px 24px;
+      font-weight: 900;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: 3px solid #000;
+      transition: all 0.1s;
+      display: inline-flex;
+      align-items: center; gap: 8px;
+    }
+    .btn-main { background: var(--accent-primary); box-shadow: 4px 4px 0 #000; }
+    .btn-main:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 #000; }
+    .btn-sub { background: #fff; box-shadow: 4px 4px 0 #000; }
+    .btn:active { transform: translate(0,0); box-shadow: 1px 1px 0 #000; }
+
+    .time-input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+    .input-field {
+      width: 100%; padding: 12px; border: 3px solid #000; font-family: var(--font-code); font-weight: 800; font-size: 1rem;
+    }
+
+    /* Article */
+    .article-section { margin-top: 60px; border-top: var(--border-width) solid #000; padding-top: 50px; }
+    .article-section h2 { font-size: 2.5rem; font-weight: 900; margin-bottom: 30px; }
+    .article-content { font-size: 1.15rem; line-height: 1.8; color: #222; }
+    .article-content h3 { font-size: 1.6rem; font-weight: 900; margin: 40px 0 20px; }
+    .article-content p { margin-bottom: 25px; }
+
+    /* Footer */
+    .site-footer { background: #000; color: #fff; padding: 80px 0 40px; margin-top: 80px; }
+    .footer-bottom { border-top: 1px solid #333; padding-top: 40px; text-align: center; font-size: 0.9rem; color: #666; }
+
+    /* Loading Overlay */
+    #loadingOverlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8);
+      display: none; align-items: center; justify-content: center; z-index: 1000; color: var(--accent-primary);
+      flex-direction: column; gap: 20px; font-weight: 900; font-size: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <div class="logo"><a href="../../index.html">WebUtils</a></div>
+      <nav class="site-nav">
+        <a href="../../index.html">返回首页</a>
+      </nav>
+    </div>
+  </header>
+
+  <div id="loadingOverlay">
+    <div style="font-size: 4rem;">⚡</div>
+    <div>正在解析音频，请稍候...</div>
+  </div>
+
+  <main class="container">
+    <div class="tool-section">
+      <div style="background: #eee; border: 2px dashed #999; padding: 15px; text-align: center; margin-bottom: 30px; font-size: 0.8rem; font-weight: 700;">
+        广告位 - 顶部通栏 (AdSense Placeholder)
       </div>
 
-      <div class="info-panel" id="infoPanel">
-        <div class="info-grid">
-          <div class="info-item">
-            <div class="info-value" id="fileName">-</div>
-            <div class="info-label">文件名</div>
-          </div>
-          <div class="info-item">
-            <div class="info-value" id="duration">00:00</div>
-            <div class="info-label">总时长</div>
-          </div>
-          <div class="info-item">
-            <div class="info-value" id="fileSize">0 KB</div>
-            <div class="info-label">文件大小</div>
-          </div>
-          <div class="info-item">
-            <div class="info-value" id="sampleRate">-</div>
-            <div class="info-label">采样率</div>
-          </div>
-        </div>
+      <div class="tool-header">
+        <h1>音频剪辑大师</h1>
+        <p style="font-size: 1.2rem; color: var(--text-muted); margin-top: 10px;">
+          毫秒级精确剪辑。无论制作手机铃声、截取播客片段还是提取背景音乐，只需三步。
+        </p>
       </div>
 
-      <div class="waveform-container" id="waveformContainer">
+      <div class="upload-box" id="dropZone">
+        <div class="upload-icon">🎧</div>
+        <div style="font-size: 1.5rem; font-weight: 900;">点击上传 或 拖拽音频文件</div>
+        <p style="margin-top: 10px; color: var(--text-muted);">支持 MP3, WAV, OGG, M4A 等主流格式</p>
+        <input type="file" id="fileInput" accept="audio/*" style="display: none;">
+      </div>
+
+      <div class="info-strip" id="infoStrip">
+        <div class="info-item"><label>文件名</label><span id="fn">-</span></div>
+        <div class="info-item"><label>时长</label><span id="dur">-</span></div>
+        <div class="info-item"><label>文件大小</label><span id="fs">-</span></div>
+        <div class="info-item"><label>采样率</label><span id="sr">-</span></div>
+      </div>
+
+      <div class="waveform-panel" id="waveformPanel">
         <canvas id="waveformCanvas"></canvas>
-        <div class="selection-overlay" id="selectionOverlay"></div>
+        <div class="selection-overlay" id="selOverlay"></div>
         <div class="playhead" id="playhead"></div>
-        <div class="time-display">
-          <span id="startTime">00:00.000</span>
-          <span id="currentTime">00:00.000</span>
-          <span id="endTime">00:00.000</span>
+        <div class="time-labels">
+          <span id="labelStart">00:00.0</span>
+          <span id="labelCurrent" style="color: var(--accent-secondary); font-weight: 900;">00:00.0</span>
+          <span id="labelEnd">00:00.0</span>
         </div>
       </div>
 
-      <div class="controls" id="mainControls" style="display: none">
-        <button onclick="togglePlay()" id="playBtn">▶️ 播放</button>
-        <button onclick="playSelection()" id="playSelectionBtn">🔊 播放选区</button>
-        <button onclick="stopAudio()">⏹️ 停止</button>
-
-        <div class="volume-control">
-          <span>🔈</span>
-          <input type="range" id="volume" min="0" max="100" value="100" />
-          <span id="volumeValue">100%</span>
-        </div>
-
-        <div class="zoom-controls">
-          <button onclick="zoomWaveform(1.5)">🔍+</button>
-          <button onclick="zoomWaveform(0.67)">🔍-</button>
-          <button onclick="zoomWaveform(1, true)">↺</button>
-        </div>
-      </div>
-
-      <div class="controls" id="selectionControls" style="display: none">
-        <div class="time-inputs">
-          <div class="time-input-group">
-            <label>开始:</label>
-            <input type="text" id="selectionStart" value="00:00.000" placeholder="00:00.000" />
+      <div class="controls-grid" id="controlsGrid">
+        <div class="control-block">
+          <h3>🎵 播放控制</h3>
+          <div class="btn-group">
+            <button class="btn btn-main" id="btnPlay"><span>▶️</span> 播放/暂停</button>
+            <button class="btn btn-sub" id="btnPlaySel"><span>🔊</span> 播放选区</button>
+            <button class="btn btn-sub" id="btnStop"><span>⏹️</span> 停止</button>
           </div>
-          <div class="time-input-group">
-            <label>结束:</label>
-            <input type="text" id="selectionEnd" value="00:00.000" placeholder="00:00.000" />
-          </div>
-          <div class="time-input-group">
-            <label>时长:</label>
-            <span id="selectionDuration" style="font-family: monospace">00:00.000</span>
+          <div style="margin-top: 25px; display: flex; align-items: center; gap: 15px;">
+            <span style="font-weight: 800;">音量</span>
+            <input type="range" id="volSlider" min="0" max="100" value="100" style="flex: 1; accent-color: #000;">
+            <span id="volVal" style="font-family: var(--font-code); width: 45px;">100%</span>
           </div>
         </div>
-        <button onclick="selectAll()">全选</button>
+
+        <div class="control-block">
+          <h3>⏱️ 时间微调</h3>
+          <div class="time-input-row">
+            <div>
+              <label style="font-size: 0.8rem; font-weight: 800;">开始 (s)</label>
+              <input type="text" id="inStart" class="input-field" value="0.00">
+            </div>
+            <div>
+              <label style="font-size: 0.8rem; font-weight: 800;">结束 (s)</label>
+              <input type="text" id="inEnd" class="input-field" value="0.00">
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-weight: 800;">选区长度: <span id="selLen" style="color: var(--accent-secondary);">0.00</span>s</span>
+            <button class="btn btn-sub" style="padding: 5px 15px;" onclick="selectAll()">全选</button>
+          </div>
+        </div>
+
+        <div class="control-block" style="grid-column: 1 / -1;">
+          <h3>💾 导出设置</h3>
+          <div style="display: flex; align-items: center; gap: 30px; flex-wrap: wrap;">
+            <div style="display: flex; gap: 20px;">
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: 800; cursor: pointer;">
+                <input type="radio" name="fmt" value="wav" checked style="width: 20px; height: 20px;"> WAV (无损)
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: 800; cursor: pointer;">
+                <input type="radio" name="fmt" value="mp3" style="width: 20px; height: 20px;"> MP3 (128kbps)
+              </label>
+            </div>
+            <button class="btn btn-main" style="background: #000; color: #fff;" id="btnExport">
+               🚀 导出选中音频
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div class="export-options" id="exportOptions">
-        <h4>📤 导出设置</h4>
-        <div class="format-options">
-          <label>
-            <input type="radio" name="format" value="wav" checked />
-            WAV (无损)
-          </label>
-          <label>
-            <input type="radio" name="format" value="mp3" />
-            MP3
-          </label>
-          <label>
-            <input type="radio" name="format" value="ogg" />
-            OGG
-          </label>
+      <!-- SEO Content -->
+      <section class="article-section">
+        <h2>深度指南：如何使用 Web 浏览器高效编辑音频？</h2>
+        <article class="article-content">
+          <p>在多媒体创作领域，<strong>音频剪辑</strong>（Audio Cutting）曾是专业工作站的专属功能。然而，随着 Web Audio API 的成熟，如今我们可以在无需安装任何插件的情况下，直接在浏览器中实现精确到毫秒的音频处理。WebUtils 音频剪辑器正是基于这一技术，为您提供极速、私密的剪辑体验。</p>
+
+          <h3>1. 为什么选择在线可视化剪辑？</h3>
+          <p>传统的“盲剪”（仅凭听觉）极易产生误差。<strong>可视化波形（Waveform）</strong> 就像是声音的“地图”，通过波峰和波谷，您可以直观地识别出歌曲的副歌起始、人像说话的停顿点或是噪音出现的瞬间。我们的工具采用高性能 Canvas 渲染，即使是数十分钟的长音频也能流畅展示全局细节。</p>
+
+          <div style="background: #eee; border: 2px dashed #999; padding: 30px; text-align: center; margin: 40px 0; font-size: 0.9rem; font-weight: 700;">
+            广告位 - 文章中部内嵌 (AdSense Placeholder)
+          </div>
+
+          <h3>2. 铃声制作与格式转换：WAV vs MP3</h3>
+          <p>不同场景对音频格式的要求各异：
+            <ul>
+              <li><strong>WAV (无损)：</strong> 适合作为原始素材进行二次创作，或者用于高保真播放场景。缺点是体积较大。</li>
+              <li><strong>MP3 (有损)：</strong> 兼顾音质与体积，是手机铃声和在线分享的最佳选择。我们的工具内置了 <strong>lamejs</strong> 编码库，可在您的本地浏览器中直接生成标准的 MP3 文件。</li>
+            </ul>
+          </p>
+
+          <h3>3. 隐私与性能：边缘计算的魅力</h3>
+          <p>涉及个人录音或未发布的作品时，隐私至关重要。大多数在线剪辑工具会先将您的文件上传到云端服务器，这不仅泄露隐私，更在网络状况不佳时让人抓狂。WebUtils 采用<strong>边缘计算模式</strong>，所有解码、波形分析、剪切和编码过程均在您的本地设备（手机或电脑）内存中完成。这意味着：
+            <ul>
+              <li><strong>秒级响应：</strong> 上传瞬间完成（仅是读取到内存）。</li>
+              <li><strong>离线可用：</strong> 页面加载后，断网依然可以完成剪辑。</li>
+              <li><strong>100% 安全：</strong> 数据永远不会离开您的浏览器。</li>
+            </ul>
+          </p>
+
+          <h3>4. 小贴士：如何获得最完美的剪辑点？</h3>
+          <p>在剪辑音乐时，建议寻找音量最小（接近直线）的<strong>“零过点”</strong>作为起始或结束位置。这可以有效避免剪辑后出现的刺耳“喀哒”声。利用我们的“精确微调”输入框，您可以反复调整直到获得最自然的过渡效果。</p>
+        </article>
+      </section>
+    </div>
+
+    <aside style="margin-top: 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+       <div style="border: 3px solid #000; padding: 20px; background: #fff; box-shadow: 6px 6px 0 #000;">
+         <h2 style="font-size: 1.2rem; font-weight: 900; text-transform: uppercase; margin-bottom: 15px;">快捷键与技巧</h2>
+         <ul style="padding-left: 20px; font-weight: 700;">
+           <li>空格键：快速播放/暂停。</li>
+           <li>鼠标拖拽：在波形图上直接选择范围。</li>
+           <li>直接输入：在时间框中精确输入秒数。</li>
+         </ul>
+       </div>
+       <div style="border: 3px solid #000; padding: 20px; background: #fff; box-shadow: 6px 6px 0 #000;">
+          <h2 style="font-size: 1.2rem; font-weight: 900; text-transform: uppercase; margin-bottom: 15px;">相关工具推荐</h2>
+          <ul style="list-style: none; padding: 0;">
+            <li style="margin-bottom: 10px;"><a href="image-resizer.html" style="color: #000; text-decoration: underline;">🖼️ 批量图片缩放</a></li>
+            <li style="margin-bottom: 10px;"><a href="image-to-base64.html" style="color: #000; text-decoration: underline;">🔗 图片转 Base64</a></li>
+            <li><a href="../text/markdown-preview.html" style="color: #000; text-decoration: underline;">📝 MD 在线预览</a></li>
+          </ul>
+       </div>
+    </aside>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; margin-bottom: 40px;">
+        <div>
+          <h3 style="color: var(--accent-primary); margin-bottom: 15px;">关于 WebUtils</h3>
+          <p style="color: #ccc; font-size: 0.9rem;">我们坚持“本地优先”的原则，打造一系列无需安装、极速响应、绝对隐私的开发者与创作者工具。</p>
         </div>
-        <div class="controls">
-          <button onclick="exportAudio()" class="contrast">💾 导出选区</button>
-          <button onclick="exportAudio(true)" class="secondary">💾 导出全部</button>
+        <div>
+          <h3 style="color: var(--accent-primary); margin-bottom: 15px;">源码库</h3>
+          <a href="https://github.com/chicogong/html-tools" target="_blank" style="color: #fff; text-decoration: none;">GitHub @ Chicogong</a>
         </div>
       </div>
-    </main>
+      <div class="footer-bottom">
+        &copy; 2024 WebUtils - 让创作更简单，让工具更纯粹。
+      </div>
+    </div>
+  </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
-    <script>
-      // Theme toggle
-      const themeToggle = document.getElementById("themeToggle");
-      const html = document.documentElement;
+  <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
+  <script>
+    let audioCtx, audioBuffer, sourceNode, gainNode;
+    let isPlaying = false;
+    let startTime = 0, pausedAt = 0;
+    let selStart = 0, selEnd = 0;
+    let animId;
 
-      function setTheme(dark) {
-        html.setAttribute("data-theme", dark ? "dark" : "light");
-        themeToggle.textContent = dark ? "☀️ 亮色模式" : "🌙 暗色模式";
-        localStorage.setItem("theme", dark ? "dark" : "light");
-      }
+    const fileInput = document.getElementById('fileInput');
+    const dropZone = document.getElementById('dropZone');
+    const loader = document.getElementById('loadingOverlay');
+    const canvas = document.getElementById('waveformCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    // UI Elements
+    const playBtn = document.getElementById('btnPlay');
+    const volSlider = document.getElementById('volSlider');
+    const inStart = document.getElementById('inStart');
+    const inEnd = document.getElementById('inEnd');
+    const selLen = document.getElementById('selLen');
+    const playhead = document.getElementById('playhead');
+    const selOverlay = document.getElementById('selOverlay');
 
-      themeToggle.addEventListener("click", () => {
-        setTheme(html.getAttribute("data-theme") !== "dark");
-      });
+    // Init Audio Context
+    function initCtx() {
+      if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
 
-      const savedTheme = localStorage.getItem("theme");
-      if (savedTheme) {
-        setTheme(savedTheme === "dark");
-      } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        setTheme(true);
-      }
+    dropZone.onclick = () => fileInput.click();
+    fileInput.onchange = (e) => handleFile(e.target.files[0]);
+    dropZone.ondragover = (e) => { e.preventDefault(); dropZone.style.background = '#e0f2fe'; };
+    dropZone.ondragleave = () => { dropZone.style.background = '#fff'; };
+    dropZone.ondrop = (e) => {
+      e.preventDefault(); dropZone.style.background = '#fff';
+      handleFile(e.dataTransfer.files[0]);
+    };
 
-      // Audio context and variables
-      let audioContext = null;
-      let audioBuffer = null;
-      let sourceNode = null;
-      let gainNode = null;
-      let isPlaying = false;
-      let playStartTime = 0;
-      let playOffset = 0;
-      let animationFrame = null;
-
-      let selectionStart = 0;
-      let selectionEnd = 0;
-      let isSelecting = false;
-      let zoomLevel = 1;
-      let scrollOffset = 0;
-
-      // Elements
-      const fileInput = document.getElementById("fileInput");
-      const dropZone = document.getElementById("dropZone");
-      const waveformContainer = document.getElementById("waveformContainer");
-      const canvas = document.getElementById("waveformCanvas");
-      const ctx = canvas.getContext("2d");
-      const selectionOverlay = document.getElementById("selectionOverlay");
-      const playhead = document.getElementById("playhead");
-      const volumeSlider = document.getElementById("volume");
-
-      // Volume control
-      volumeSlider.addEventListener("input", () => {
-        document.getElementById("volumeValue").textContent = volumeSlider.value + "%";
-        if (gainNode) {
-          gainNode.gain.value = volumeSlider.value / 100;
-        }
-      });
-
-      // Time input handlers
-      document.getElementById("selectionStart").addEventListener("change", (e) => {
-        selectionStart = parseTime(e.target.value);
-        updateSelectionDisplay();
+    async function handleFile(file) {
+      if(!file || !file.type.startsWith('audio/')) return;
+      initCtx();
+      loader.style.display = 'flex';
+      
+      try {
+        const arrBuf = await file.arrayBuffer();
+        audioBuffer = await audioCtx.decodeAudioData(arrBuf);
+        
+        // Show info
+        document.getElementById('infoStrip').style.display = 'grid';
+        document.getElementById('fn').textContent = file.name;
+        document.getElementById('dur').textContent = formatTime(audioBuffer.duration);
+        document.getElementById('fs').textContent = (file.size / (1024*1024)).toFixed(2) + ' MB';
+        document.getElementById('sr').textContent = audioBuffer.sampleRate + ' Hz';
+        
+        document.getElementById('waveformPanel').classList.add('active');
+        document.getElementById('controlsGrid').classList.add('active');
+        
+        selStart = 0; selEnd = audioBuffer.duration;
+        inStart.value = "0.00"; inEnd.value = audioBuffer.duration.toFixed(2);
+        selLen.textContent = audioBuffer.duration.toFixed(2);
+        
+        setupCanvas();
         drawWaveform();
-      });
+      } catch(e) {
+        alert('解析失败: ' + e.message);
+      } finally {
+        loader.style.display = 'none';
+      }
+    }
 
-      document.getElementById("selectionEnd").addEventListener("change", (e) => {
-        selectionEnd = parseTime(e.target.value);
-        updateSelectionDisplay();
-        drawWaveform();
-      });
+    function setupCanvas() {
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = 200 * dpr;
+      ctx.scale(dpr, dpr);
+    }
 
-      // File handling
-      fileInput.addEventListener("change", (e) => {
-        if (e.target.files[0]) loadAudio(e.target.files[0]);
-      });
+    function drawWaveform() {
+      const w = canvas.width / (window.devicePixelRatio || 1);
+      const h = 200;
+      const data = audioBuffer.getChannelData(0);
+      const step = Math.ceil(data.length / w);
+      
+      ctx.fillStyle = '#111';
+      ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = '#00f5d4';
 
-      dropZone.addEventListener("click", () => fileInput.click());
-      dropZone.addEventListener("dragover", (e) => {
-        e.preventDefault();
-        dropZone.classList.add("dragover");
-      });
-      dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragover"));
-      dropZone.addEventListener("drop", (e) => {
-        e.preventDefault();
-        dropZone.classList.remove("dragover");
-        if (e.dataTransfer.files[0]) loadAudio(e.dataTransfer.files[0]);
-      });
-
-      async function loadAudio(file) {
-        if (!audioContext) {
-          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      for(let i=0; i<w; i++) {
+        let min = 1, max = -1;
+        for(let j=0; j<step; j++) {
+          const dat = data[i*step + j];
+          if(dat < min) min = dat;
+          if(dat > max) max = dat;
         }
+        ctx.fillRect(i, (1+min)*h/2, 1, Math.max(1, (max-min)*h/2));
+      }
+      updateSelectionUI();
+    }
 
-        try {
-          const arrayBuffer = await file.arrayBuffer();
-          audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+    function updateSelectionUI() {
+      const w = canvas.getBoundingClientRect().width;
+      const x1 = (selStart / audioBuffer.duration) * w;
+      const x2 = (selEnd / audioBuffer.duration) * w;
+      selOverlay.style.left = (x1 + 20) + 'px';
+      selOverlay.style.width = (x2 - x1) + 'px';
+      selLen.textContent = (selEnd - selStart).toFixed(2);
+    }
 
-          // Update info
-          document.getElementById("fileName").textContent = file.name;
-          document.getElementById("duration").textContent = formatTime(audioBuffer.duration);
-          document.getElementById("fileSize").textContent = formatFileSize(file.size);
-          document.getElementById("sampleRate").textContent = audioBuffer.sampleRate + " Hz";
+    // Interaction
+    let isDragging = false;
+    canvas.onmousedown = (e) => {
+      isDragging = true;
+      const x = e.offsetX;
+      selStart = (x / canvas.getBoundingClientRect().width) * audioBuffer.duration;
+      selEnd = selStart;
+      updateSelectionUI();
+    };
+    window.onmousemove = (e) => {
+      if(!isDragging) return;
+      const rect = canvas.getBoundingClientRect();
+      let x = e.clientX - rect.left;
+      x = Math.max(0, Math.min(x, rect.width));
+      const time = (x / rect.width) * audioBuffer.duration;
+      if(time < selStart) {
+        selEnd = selStart; selStart = time;
+      } else {
+        selEnd = time;
+      }
+      inStart.value = selStart.toFixed(2);
+      inEnd.value = selEnd.toFixed(2);
+      updateSelectionUI();
+    };
+    window.onmouseup = () => isDragging = false;
 
-          // Reset selection
-          selectionStart = 0;
-          selectionEnd = audioBuffer.duration;
-          zoomLevel = 1;
-          scrollOffset = 0;
+    inStart.onchange = () => { selStart = parseFloat(inStart.value) || 0; updateSelectionUI(); };
+    inEnd.onchange = () => { selEnd = parseFloat(inEnd.value) || audioBuffer.duration; updateSelectionUI(); };
 
-          // Show UI
-          document.getElementById("infoPanel").style.display = "block";
-          waveformContainer.style.display = "block";
-          document.getElementById("mainControls").style.display = "flex";
-          document.getElementById("selectionControls").style.display = "flex";
-          document.getElementById("exportOptions").style.display = "block";
+    function selectAll() {
+      selStart = 0; selEnd = audioBuffer.duration;
+      inStart.value = "0.00"; inEnd.value = selEnd.toFixed(2);
+      updateSelectionUI();
+    }
 
-          // Setup canvas
-          setupCanvas();
-          drawWaveform();
-          updateSelectionDisplay();
-        } catch (error) {
-          alert("无法加载音频文件: " + error.message);
+    // Playback
+    playBtn.onclick = togglePlay;
+    document.getElementById('btnPlaySel').onclick = () => playRange(selStart, selEnd);
+    document.getElementById('btnStop').onclick = stop;
+
+    function togglePlay() {
+      if(isPlaying) stop();
+      else playRange(pausedAt, audioBuffer.duration);
+    }
+
+    function playRange(start, end) {
+      stop();
+      initCtx();
+      sourceNode = audioCtx.createBufferSource();
+      gainNode = audioCtx.createGain();
+      sourceNode.buffer = audioBuffer;
+      sourceNode.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      gainNode.gain.value = volSlider.value / 100;
+      
+      const duration = end - start;
+      sourceNode.start(0, start, duration);
+      isPlaying = true;
+      startTime = audioCtx.currentTime - start;
+      playhead.style.display = 'block';
+      playBtn.innerHTML = '<span>⏸️</span> 暂停';
+      
+      sourceNode.onended = stop;
+      updatePlayhead();
+    }
+
+    function stop() {
+      if(sourceNode) {
+        sourceNode.stop();
+        sourceNode = null;
+      }
+      isPlaying = false;
+      pausedAt = 0;
+      playhead.style.display = 'none';
+      playBtn.innerHTML = '<span>▶️</span> 播放';
+      cancelAnimationFrame(animId);
+    }
+
+    function updatePlayhead() {
+      if(!isPlaying) return;
+      const curr = audioCtx.currentTime - startTime;
+      const w = canvas.getBoundingClientRect().width;
+      playhead.style.left = ((curr / audioBuffer.duration) * w + 20) + 'px';
+      document.getElementById('labelCurrent').textContent = formatTime(curr);
+      animId = requestAnimationFrame(updatePlayhead);
+    }
+
+    // Volume
+    volSlider.oninput = () => {
+      document.getElementById('volVal').textContent = volSlider.value + '%';
+      if(gainNode) gainNode.gain.value = volSlider.value / 100;
+    };
+
+    // Export
+    document.getElementById('btnExport').onclick = async () => {
+      const fmt = document.querySelector('input[name="fmt"]:checked').value;
+      const startS = Math.floor(selStart * audioBuffer.sampleRate);
+      const endS = Math.floor(selEnd * audioBuffer.sampleRate);
+      const len = endS - startS;
+      
+      const offCtx = new OfflineAudioContext(audioBuffer.numberOfChannels, len, audioBuffer.sampleRate);
+      const b = offCtx.createBuffer(audioBuffer.numberOfChannels, len, audioBuffer.sampleRate);
+      for(let i=0; i<audioBuffer.numberOfChannels; i++) {
+        b.copyToChannel(audioBuffer.getChannelData(i).subarray(startS, endS), i);
+      }
+      
+      let blob;
+      if(fmt === 'wav') blob = bufferToWav(b);
+      else blob = await bufferToMp3(b);
+      
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `webutils-cut.${fmt}`;
+      a.click();
+    };
+
+    function bufferToWav(buffer) {
+      const n = buffer.numberOfChannels, len = buffer.length * n * 2 + 44;
+      const arr = new ArrayBuffer(len), view = new DataView(arr);
+      const set = (o, s) => { for(let i=0; i<s.length; i++) view.setUint8(o+i, s.charCodeAt(i)); };
+      set(0, 'RIFF'); view.setUint32(4, len - 8, true); set(8, 'WAVE'); set(12, 'fmt ');
+      view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, n, true);
+      view.setUint32(24, buffer.sampleRate, true); view.setUint32(28, buffer.sampleRate*n*2, true);
+      view.setUint16(32, n*2, true); view.setUint16(34, 16, true); set(36, 'data');
+      view.setUint32(40, len - 44, true);
+      
+      const chs = []; for(let i=0; i<n; i++) chs.push(buffer.getChannelData(i));
+      let offset = 44;
+      for(let i=0; i<buffer.length; i++) {
+        for(let ch=0; ch<n; ch++) {
+          let s = Math.max(-1, Math.min(1, chs[ch][i]));
+          view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true); offset += 2;
         }
       }
+      return new Blob([arr], {type:'audio/wav'});
+    }
 
-      function setupCanvas() {
-        const dpr = window.devicePixelRatio || 1;
-        const rect = canvas.getBoundingClientRect();
-        canvas.width = rect.width * dpr;
-        canvas.height = rect.height * dpr;
-        ctx.scale(dpr, dpr);
+    async function bufferToMp3(buffer) {
+      const n = buffer.numberOfChannels, rate = buffer.sampleRate;
+      const enc = new lamejs.Mp3Encoder(n, rate, 128);
+      const data = [], l = buffer.getChannelData(0), r = n>1 ? buffer.getChannelData(1) : l;
+      const li = new Int16Array(l.length), ri = new Int16Array(r.length);
+      for(let i=0; i<l.length; i++) {
+        li[i] = l[i] < 0 ? l[i]*0x8000 : l[i]*0x7FFF;
+        ri[i] = r[i] < 0 ? r[i]*0x8000 : r[i]*0x7FFF;
       }
-
-      function drawWaveform() {
-        if (!audioBuffer) return;
-
-        const width = canvas.getBoundingClientRect().width;
-        const height = canvas.getBoundingClientRect().height;
-        const data = audioBuffer.getChannelData(0);
-
-        // Clear canvas
-        const isDark = html.getAttribute("data-theme") === "dark";
-        ctx.fillStyle = isDark ? "#2a2a2a" : "#f0f0f0";
-        ctx.fillRect(0, 0, width, height);
-
-        // Calculate visible range based on zoom
-        const visibleDuration = audioBuffer.duration / zoomLevel;
-        const startSample = Math.floor((scrollOffset / audioBuffer.duration) * data.length);
-        const samplesPerPixel = Math.floor(
-          ((visibleDuration / audioBuffer.duration) * data.length) / width
-        );
-
-        // Draw waveform
-        ctx.fillStyle = isDark ? "#5dade2" : "#3498db";
-        const centerY = height / 2;
-
-        for (let x = 0; x < width; x++) {
-          const startIdx = startSample + x * samplesPerPixel;
-          const endIdx = Math.min(startIdx + samplesPerPixel, data.length);
-
-          let min = 1;
-          let max = -1;
-
-          for (let i = startIdx; i < endIdx; i++) {
-            if (data[i] < min) min = data[i];
-            if (data[i] > max) max = data[i];
-          }
-
-          const y1 = centerY + min * centerY * 0.9;
-          const y2 = centerY + max * centerY * 0.9;
-
-          ctx.fillRect(x, y1, 1, y2 - y1);
-        }
-
-        // Draw selection overlay
-        const selStartX = timeToX(selectionStart, width, visibleDuration);
-        const selEndX = timeToX(selectionEnd, width, visibleDuration);
-
-        selectionOverlay.style.left = selStartX + 16 + "px";
-        selectionOverlay.style.width = selEndX - selStartX + "px";
-
-        // Update time display
-        document.getElementById("startTime").textContent = formatTimeMs(scrollOffset);
-        document.getElementById("endTime").textContent = formatTimeMs(
-          scrollOffset + visibleDuration
-        );
+      for(let i=0; i<li.length; i+=1152) {
+        const buf = enc.encodeBuffer(li.subarray(i, i+1152), ri.subarray(i, i+1152));
+        if(buf.length > 0) data.push(buf);
       }
+      const end = enc.flush(); if(end.length > 0) data.push(end);
+      return new Blob(data, {type:'audio/mp3'});
+    }
 
-      function timeToX(time, width, visibleDuration) {
-        return ((time - scrollOffset) / visibleDuration) * width;
-      }
+    function formatTime(s) {
+      const m = Math.floor(s / 60);
+      const sec = (s % 60).toFixed(1);
+      return m.toString().padStart(2,'0') + ':' + sec.toString().padStart(4, '0');
+    }
 
-      function xToTime(x, width, visibleDuration) {
-        return scrollOffset + (x / width) * visibleDuration;
-      }
-
-      // Canvas interaction
-      canvas.addEventListener("mousedown", (e) => {
-        if (!audioBuffer) return;
-        isSelecting = true;
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const visibleDuration = audioBuffer.duration / zoomLevel;
-        selectionStart = xToTime(x, rect.width, visibleDuration);
-        selectionEnd = selectionStart;
-      });
-
-      canvas.addEventListener("mousemove", (e) => {
-        if (!isSelecting || !audioBuffer) return;
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const visibleDuration = audioBuffer.duration / zoomLevel;
-        selectionEnd = Math.max(
-          0,
-          Math.min(audioBuffer.duration, xToTime(x, rect.width, visibleDuration))
-        );
-
-        if (selectionEnd < selectionStart) {
-          const temp = selectionStart;
-          selectionStart = selectionEnd;
-          selectionEnd = temp;
-        }
-
-        updateSelectionDisplay();
-        drawWaveform();
-      });
-
-      canvas.addEventListener("mouseup", () => {
-        isSelecting = false;
-      });
-
-      canvas.addEventListener("mouseleave", () => {
-        isSelecting = false;
-      });
-
-      function updateSelectionDisplay() {
-        document.getElementById("selectionStart").value = formatTimeMs(selectionStart);
-        document.getElementById("selectionEnd").value = formatTimeMs(selectionEnd);
-        document.getElementById("selectionDuration").textContent = formatTimeMs(
-          selectionEnd - selectionStart
-        );
-      }
-
-      window.selectAll = function () {
-        if (!audioBuffer) return;
-        selectionStart = 0;
-        selectionEnd = audioBuffer.duration;
-        updateSelectionDisplay();
-        drawWaveform();
-      };
-
-      window.zoomWaveform = function (factor, reset = false) {
-        if (reset) {
-          zoomLevel = 1;
-          scrollOffset = 0;
-        } else {
-          zoomLevel = Math.max(1, Math.min(100, zoomLevel * factor));
-        }
-        drawWaveform();
-      };
-
-      // Playback
-      window.togglePlay = function () {
-        if (isPlaying) {
-          stopAudio();
-        } else {
-          playAudio(0, audioBuffer.duration);
-        }
-      };
-
-      window.playSelection = function () {
-        if (selectionEnd > selectionStart) {
-          playAudio(selectionStart, selectionEnd);
-        }
-      };
-
-      function playAudio(start, end) {
-        if (!audioBuffer || isPlaying) {
-          stopAudio();
-        }
-
-        sourceNode = audioContext.createBufferSource();
-        gainNode = audioContext.createGain();
-
-        sourceNode.buffer = audioBuffer;
-        sourceNode.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        gainNode.gain.value = volumeSlider.value / 100;
-
-        const duration = end - start;
-        sourceNode.start(0, start, duration);
-
-        isPlaying = true;
-        playStartTime = audioContext.currentTime;
-        playOffset = start;
-
-        document.getElementById("playBtn").textContent = "⏸️ 暂停";
-        playhead.style.display = "block";
-
-        sourceNode.onended = () => {
-          if (isPlaying) stopAudio();
-        };
-
-        updatePlayhead();
-      }
-
-      function stopAudio() {
-        if (sourceNode) {
-          try {
-            sourceNode.stop();
-          } catch (e) {}
-          sourceNode = null;
-        }
-        isPlaying = false;
-        document.getElementById("playBtn").textContent = "▶️ 播放";
-        playhead.style.display = "none";
-
-        if (animationFrame) {
-          cancelAnimationFrame(animationFrame);
-        }
-      }
-
-      function updatePlayhead() {
-        if (!isPlaying) return;
-
-        const currentTime = playOffset + (audioContext.currentTime - playStartTime);
-        document.getElementById("currentTime").textContent = formatTimeMs(currentTime);
-
-        const rect = canvas.getBoundingClientRect();
-        const visibleDuration = audioBuffer.duration / zoomLevel;
-        const x = timeToX(currentTime, rect.width, visibleDuration);
-
-        playhead.style.left = x + 16 + "px";
-
-        animationFrame = requestAnimationFrame(updatePlayhead);
-      }
-
-      // Export
-      window.exportAudio = async function (exportAll = false) {
-        if (!audioBuffer) return;
-
-        const start = exportAll ? 0 : selectionStart;
-        const end = exportAll ? audioBuffer.duration : selectionEnd;
-        const format = document.querySelector('input[name="format"]:checked').value;
-
-        const startSample = Math.floor(start * audioBuffer.sampleRate);
-        const endSample = Math.floor(end * audioBuffer.sampleRate);
-        const length = endSample - startSample;
-
-        // Create new buffer with selection
-        const offlineContext = new OfflineAudioContext(
-          audioBuffer.numberOfChannels,
-          length,
-          audioBuffer.sampleRate
-        );
-
-        const newBuffer = offlineContext.createBuffer(
-          audioBuffer.numberOfChannels,
-          length,
-          audioBuffer.sampleRate
-        );
-
-        for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
-          const sourceData = audioBuffer.getChannelData(channel);
-          const destData = newBuffer.getChannelData(channel);
-          for (let i = 0; i < length; i++) {
-            destData[i] = sourceData[startSample + i];
-          }
-        }
-
-        let blob;
-        let extension;
-
-        if (format === "wav") {
-          blob = audioBufferToWav(newBuffer);
-          extension = "wav";
-        } else if (format === "mp3") {
-          blob = await audioBufferToMp3(newBuffer);
-          extension = "mp3";
-        } else {
-          // OGG - fallback to WAV since browser encoding is complex
-          blob = audioBufferToWav(newBuffer);
-          extension = "wav";
-        }
-
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.download = "audio_cut." + extension;
-        link.href = url;
-        link.click();
-        URL.revokeObjectURL(url);
-      };
-
-      function audioBufferToWav(buffer) {
-        const numChannels = buffer.numberOfChannels;
-        const sampleRate = buffer.sampleRate;
-        const format = 1; // PCM
-        const bitDepth = 16;
-
-        const bytesPerSample = bitDepth / 8;
-        const blockAlign = numChannels * bytesPerSample;
-
-        const dataLength = buffer.length * blockAlign;
-        const bufferLength = 44 + dataLength;
-
-        const arrayBuffer = new ArrayBuffer(bufferLength);
-        const view = new DataView(arrayBuffer);
-
-        // WAV header
-        writeString(view, 0, "RIFF");
-        view.setUint32(4, bufferLength - 8, true);
-        writeString(view, 8, "WAVE");
-        writeString(view, 12, "fmt ");
-        view.setUint32(16, 16, true);
-        view.setUint16(20, format, true);
-        view.setUint16(22, numChannels, true);
-        view.setUint32(24, sampleRate, true);
-        view.setUint32(28, sampleRate * blockAlign, true);
-        view.setUint16(32, blockAlign, true);
-        view.setUint16(34, bitDepth, true);
-        writeString(view, 36, "data");
-        view.setUint32(40, dataLength, true);
-
-        // Write audio data
-        const channels = [];
-        for (let i = 0; i < numChannels; i++) {
-          channels.push(buffer.getChannelData(i));
-        }
-
-        let offset = 44;
-        for (let i = 0; i < buffer.length; i++) {
-          for (let ch = 0; ch < numChannels; ch++) {
-            const sample = Math.max(-1, Math.min(1, channels[ch][i]));
-            view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7fff, true);
-            offset += 2;
-          }
-        }
-
-        return new Blob([arrayBuffer], { type: "audio/wav" });
-      }
-
-      function writeString(view, offset, string) {
-        for (let i = 0; i < string.length; i++) {
-          view.setUint8(offset + i, string.charCodeAt(i));
-        }
-      }
-
-      async function audioBufferToMp3(buffer) {
-        const channels = buffer.numberOfChannels;
-        const sampleRate = buffer.sampleRate;
-        const samples = buffer.length;
-
-        const mp3encoder = new lamejs.Mp3Encoder(channels, sampleRate, 128);
-        const mp3Data = [];
-
-        const left = buffer.getChannelData(0);
-        const right = channels > 1 ? buffer.getChannelData(1) : left;
-
-        const leftInt = new Int16Array(samples);
-        const rightInt = new Int16Array(samples);
-
-        for (let i = 0; i < samples; i++) {
-          leftInt[i] = left[i] < 0 ? left[i] * 0x8000 : left[i] * 0x7fff;
-          rightInt[i] = right[i] < 0 ? right[i] * 0x8000 : right[i] * 0x7fff;
-        }
-
-        const blockSize = 1152;
-        for (let i = 0; i < samples; i += blockSize) {
-          const leftChunk = leftInt.subarray(i, i + blockSize);
-          const rightChunk = rightInt.subarray(i, i + blockSize);
-          const mp3buf = mp3encoder.encodeBuffer(leftChunk, rightChunk);
-          if (mp3buf.length > 0) {
-            mp3Data.push(mp3buf);
-          }
-        }
-
-        const mp3buf = mp3encoder.flush();
-        if (mp3buf.length > 0) {
-          mp3Data.push(mp3buf);
-        }
-
-        return new Blob(mp3Data, { type: "audio/mp3" });
-      }
-
-      // Utility functions
-      function formatTime(seconds) {
-        const mins = Math.floor(seconds / 60);
-        const secs = Math.floor(seconds % 60);
-        return mins.toString().padStart(2, "0") + ":" + secs.toString().padStart(2, "0");
-      }
-
-      function formatTimeMs(seconds) {
-        const mins = Math.floor(seconds / 60);
-        const secs = Math.floor(seconds % 60);
-        const ms = Math.floor((seconds % 1) * 1000);
-        return (
-          mins.toString().padStart(2, "0") +
-          ":" +
-          secs.toString().padStart(2, "0") +
-          "." +
-          ms.toString().padStart(3, "0")
-        );
-      }
-
-      function parseTime(str) {
-        const parts = str.split(":");
-        if (parts.length !== 2) return 0;
-        const mins = parseInt(parts[0]) || 0;
-        const secParts = parts[1].split(".");
-        const secs = parseInt(secParts[0]) || 0;
-        const ms = parseInt(secParts[1]) || 0;
-        return mins * 60 + secs + ms / 1000;
-      }
-
-      window.formatFileSize = function (bytes) {
-        if (bytes < 1024) return bytes + " B";
-        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
-        return (bytes / (1024 * 1024)).toFixed(2) + " MB";
-      };
-
-      // Handle window resize
-      window.addEventListener("resize", () => {
-        if (audioBuffer) {
-          setupCanvas();
-          drawWaveform();
-        }
-      });
-
-      // Theme toggle
-      function toggleTheme() {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute("data-theme");
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        document.getElementById("theme-icon").textContent = newTheme === "light" ? "☀️" : "🌙";
-        localStorage.setItem("theme", newTheme);
-      }
-    </script>
-  </body>
+    window.onkeydown = (e) => { if(e.code === 'Space') { e.preventDefault(); togglePlay(); } };
+  </script>
+</body>
 </html>
