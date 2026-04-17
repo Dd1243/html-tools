@@ -1,890 +1,1337 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>文本词频分析工具 - 在线统计单词出现频率 | WebUtils</title>
-  <meta name="description" content="免费在线文本词频分析工具，支持中英文混合文本，统计单字、词语、句子出现频率，生成词云图表，一键导出CSV。纯客户端处理，数据不上传服务器。" />
-  <meta name="keywords" content="词频分析,文本分析,词云,单词统计,词频统计,text frequency,word count,word cloud,文本工具" />
-  <meta name="author" content="WebUtils" />
-  <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://essays4u.net/tools/text/text-frequency" />
-
-  <!-- Open Graph -->
-  <meta property="og:title" content="文本词频分析工具 - 在线统计单词出现频率" />
-  <meta property="og:description" content="免费在线文本词频分析工具，支持中英文混合文本，统计词频，生成词云，导出CSV，纯客户端处理。" />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://essays4u.net/tools/text/text-frequency" />
-  <meta property="og:site_name" content="WebUtils" />
-  <meta property="og:locale" content="zh_CN" />
-  <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="文本词频分析工具 - 在线统计单词出现频率" />
-  <meta name="twitter:description" content="免费在线文本词频分析，支持词云生成和CSV导出，纯客户端处理。" />
-  <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-
-  <!-- JSON-LD Structured Data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "文本词频分析工具",
-    "description": "在线文本词频分析工具，支持中英文混合文本词频统计、词云生成、CSV导出",
-    "url": "https://essays4u.net/tools/text/text-frequency",
-    "applicationCategory": "UtilitiesApplication",
-    "operatingSystem": "Any",
-    "browserRequirements": "Requires JavaScript",
-    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
-  }
-  </script>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --blue-50: #eff6ff;
-      --blue-100: #dbeafe;
-      --blue-200: #bfdbfe;
-      --blue-500: #3b82f6;
-      --blue-600: #2563eb;
-      --blue-700: #1d4ed8;
-      --gray-50: #f9fafb;
-      --gray-100: #f3f4f6;
-      --gray-200: #e5e7eb;
-      --gray-300: #d1d5db;
-      --gray-400: #9ca3af;
-      --gray-500: #6b7280;
-      --gray-600: #4b5563;
-      --gray-700: #374151;
-      --gray-800: #1f2937;
-      --gray-900: #111827;
-      --green-500: #22c55e;
-      --green-100: #dcfce7;
-      --red-500: #ef4444;
-      --red-100: #fee2e2;
-      --yellow-500: #eab308;
-      --yellow-100: #fef9c3;
-      --purple-500: #a855f7;
-      --purple-100: #f3e8ff;
-      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      --font-mono: 'JetBrains Mono', 'Courier New', monospace;
-      --radius: 8px;
-      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-      --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
-      --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
-    }
-
-    body {
-      font-family: var(--font-sans);
-      background: var(--gray-50);
-      color: var(--gray-800);
-      line-height: 1.6;
-      font-size: 15px;
-    }
-
-    /* ── Top nav ── */
-    .site-nav {
-      background: #fff;
-      border-bottom: 1px solid var(--gray-200);
-      padding: 0 24px;
-      height: 56px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 14px;
-      color: var(--gray-500);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .site-nav a { color: var(--blue-600); text-decoration: none; font-weight: 500; }
-    .site-nav a:hover { text-decoration: underline; }
-    .site-nav .sep { color: var(--gray-300); }
-
-    /* ── Page header ── */
-    .page-header {
-      background: linear-gradient(135deg, var(--blue-600) 0%, var(--blue-700) 100%);
-      color: #fff;
-      padding: 40px 24px 36px;
-      text-align: center;
-    }
-    .page-header h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 700; margin-bottom: 10px; }
-    .page-header p { font-size: 1rem; opacity: .88; max-width: 560px; margin: 0 auto; }
-
-    /* ── Ad banner ── */
-    .ad-block {
-      background: #fff;
-      border: 1px dashed var(--gray-300);
-      border-radius: var(--radius);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--gray-400);
-      font-size: 13px;
-      letter-spacing: .02em;
-    }
-    .ad-top { min-height: 90px; margin: 16px 24px; }
-
-    /* ── Main layout ── */
-    .main-wrap {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 24px 24px 48px;
-      display: grid;
-      grid-template-columns: 1fr 340px;
-      gap: 24px;
-      align-items: start;
-    }
-    @media (max-width: 1024px) {
-      .main-wrap { grid-template-columns: 1fr; }
-      .sidebar { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    }
-    @media (max-width: 640px) {
-      .sidebar { grid-template-columns: 1fr; }
-      .ad-top { margin: 12px; }
-    }
-
-    /* ── Cards ── */
-    .card {
-      background: #fff;
-      border: 1px solid var(--gray-200);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-sm);
-      overflow: hidden;
-    }
-    .card-header {
-      padding: 14px 18px;
-      border-bottom: 1px solid var(--gray-100);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-    .card-header h2 { font-size: 1rem; font-weight: 600; color: var(--gray-800); }
-    .card-body { padding: 18px; }
-
-    /* ── Textarea ── */
-    textarea {
-      width: 100%;
-      font-family: var(--font-mono);
-      font-size: 13.5px;
-      padding: 12px;
-      border: 1px solid var(--gray-300);
-      border-radius: var(--radius);
-      resize: vertical;
-      min-height: 180px;
-      background: var(--gray-50);
-      color: var(--gray-800);
-      line-height: 1.55;
-      transition: border-color .15s;
-    }
-    textarea:focus { outline: none; border-color: var(--blue-500); background: #fff; box-shadow: 0 0 0 3px var(--blue-100); }
-    .textarea-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 6px;
-      font-size: 12px;
-      color: var(--gray-400);
-    }
-
-    /* ── Options bar ── */
-    .options-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: center;
-      padding: 12px 18px;
-      background: var(--gray-50);
-      border-bottom: 1px solid var(--gray-100);
-    }
-    .opt-label {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      color: var(--gray-700);
-      cursor: pointer;
-      user-select: none;
-    }
-    .opt-label input[type=checkbox] { width: 15px; height: 15px; accent-color: var(--blue-600); cursor: pointer; }
-    .opt-select {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      color: var(--gray-700);
-    }
-    .opt-select select {
-      padding: 4px 8px;
-      border: 1px solid var(--gray-300);
-      border-radius: 6px;
-      font-size: 13px;
-      background: #fff;
-      color: var(--gray-700);
-      cursor: pointer;
-    }
-
-    /* ── Buttons ── */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 16px;
-      border-radius: var(--radius);
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all .15s;
-      border: 1px solid transparent;
-      font-family: var(--font-sans);
-    }
-    .btn-primary { background: var(--blue-600); color: #fff; border-color: var(--blue-600); }
-    .btn-primary:hover { background: var(--blue-700); border-color: var(--blue-700); }
-    .btn-outline { background: #fff; color: var(--gray-700); border-color: var(--gray-300); }
-    .btn-outline:hover { background: var(--gray-50); border-color: var(--gray-400); }
-    .btn-sm { padding: 5px 11px; font-size: 12px; }
-    .btn-group { display: flex; gap: 8px; flex-wrap: wrap; padding: 12px 18px; }
-
-    /* ── Stats grid ── */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1px;
-      background: var(--gray-200);
-      border-radius: var(--radius);
-      overflow: hidden;
-      margin-bottom: 16px;
-    }
-    @media (max-width: 600px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
-    .stat-cell {
-      background: #fff;
-      padding: 14px 12px;
-      text-align: center;
-    }
-    .stat-cell .val {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--blue-600);
-      font-variant-numeric: tabular-nums;
-    }
-    .stat-cell .lbl { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
-
-    /* ── Results layout ── */
-    .results-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-top: 16px;
-    }
-    @media (max-width: 700px) { .results-grid { grid-template-columns: 1fr; } }
-
-    /* ── Frequency list ── */
-    .freq-list {
-      max-height: 380px;
-      overflow-y: auto;
-    }
-    .freq-item {
-      display: grid;
-      grid-template-columns: 28px 1fr 50px 80px;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 4px;
-      border-bottom: 1px solid var(--gray-100);
-      font-size: 13px;
-    }
-    .freq-item:last-child { border-bottom: none; }
-    .freq-rank {
-      color: var(--gray-400);
-      font-size: 11px;
-      text-align: center;
-    }
-    .freq-rank.top { color: var(--blue-600); font-weight: 700; }
-    .freq-word { font-weight: 500; color: var(--gray-800); word-break: break-all; }
-    .freq-count { color: var(--gray-500); text-align: right; font-variant-numeric: tabular-nums; }
-    .freq-bar { height: 6px; background: var(--gray-100); border-radius: 3px; overflow: hidden; }
-    .freq-bar-fill { height: 100%; background: var(--blue-500); border-radius: 3px; transition: width .3s; }
-
-    /* ── Word cloud ── */
-    .cloud-wrap {
-      min-height: 220px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-      gap: 8px 12px;
-      padding: 16px;
-      background: var(--gray-50);
-      border-radius: var(--radius);
-      border: 1px solid var(--gray-200);
-    }
-    .cloud-word {
-      cursor: default;
-      transition: transform .15s, opacity .15s;
-      font-weight: 500;
-      line-height: 1.3;
-    }
-    .cloud-word:hover { transform: scale(1.15); opacity: .85; }
-
-    /* ── Placeholder ── */
-    .placeholder-msg {
-      text-align: center;
-      color: var(--gray-400);
-      font-size: 13px;
-      padding: 32px 0;
-    }
-
-    /* ── Toast ── */
-    #toast {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: var(--gray-800);
-      color: #fff;
-      padding: 10px 18px;
-      border-radius: var(--radius);
-      font-size: 13px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .25s;
-      z-index: 9999;
-    }
-    #toast.show { opacity: 1; }
-
-    /* ── Sidebar ── */
-    .sidebar-section { margin-bottom: 16px; }
-    .ad-sidebar-top { height: 250px; }
-    .ad-sidebar-bot { height: 600px; }
-
-    /* ── Article / SEO content ── */
-    .article-content { padding: 24px; color: var(--gray-700); font-size: 14.5px; line-height: 1.75; }
-    .article-content h2 { font-size: 1.2rem; font-weight: 700; color: var(--gray-900); margin: 28px 0 12px; padding-bottom: 6px; border-bottom: 2px solid var(--blue-100); }
-    .article-content h3 { font-size: 1rem; font-weight: 600; color: var(--gray-800); margin: 20px 0 8px; }
-    .article-content p { margin-bottom: 12px; }
-    .article-content ul, .article-content ol { padding-left: 20px; margin-bottom: 12px; }
-    .article-content li { margin-bottom: 6px; }
-    .article-content code { background: var(--gray-100); padding: 2px 6px; border-radius: 4px; font-family: var(--font-mono); font-size: 12.5px; color: var(--blue-700); }
-    .article-content strong { color: var(--gray-900); }
-
-    .faq-item { margin-bottom: 16px; border: 1px solid var(--gray-200); border-radius: var(--radius); overflow: hidden; }
-    .faq-q { padding: 12px 16px; background: var(--gray-50); font-weight: 600; font-size: 14px; color: var(--gray-800); cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-    .faq-q::after { content: '+'; font-size: 18px; color: var(--gray-400); transition: transform .2s; }
-    .faq-q.open::after { transform: rotate(45deg); }
-    .faq-a { padding: 12px 16px; font-size: 13.5px; color: var(--gray-600); border-top: 1px solid var(--gray-200); display: none; }
-    .faq-a.open { display: block; }
-
-    /* ── Footer ── */
-    .site-footer {
-      background: var(--gray-800);
-      color: var(--gray-400);
-      text-align: center;
-      padding: 24px;
-      font-size: 13px;
-      margin-top: 48px;
-    }
-    .site-footer a { color: var(--gray-300); text-decoration: none; }
-    .site-footer a:hover { color: #fff; }
-  </style>
-</head>
-<body>
-
-<!-- Nav breadcrumb -->
-<nav class="site-nav">
-  <a href="../../index.html">WebUtils</a>
-  <span class="sep">›</span>
-  <a href="../../index.html#text">文本工具</a>
-  <span class="sep">›</span>
-  <span>词频分析</span>
-</nav>
-
-<!-- Page header -->
-<div class="page-header">
-  <h1>文本词频分析工具</h1>
-  <p>统计文本中单字/词语/句子出现频率，生成词云，支持导出 CSV，中英文混合处理</p>
-</div>
-
-<!-- Top ad -->
-<div class="ad-block ad-top">
-  <!-- Google AdSense: 728×90 横幅广告 -->
-  <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXX" data-ad-slot="XXXXXX" data-ad-format="auto"></ins> -->
-  广告位 · 728×90
-</div>
-
-<!-- Main layout -->
-<div class="main-wrap">
-
-  <!-- ── Main column ── -->
-  <div class="main-col">
-
-    <!-- Input card -->
-    <div class="card" style="margin-bottom:20px">
-      <div class="card-header">
-        <h2>输入文本</h2>
-        <button class="btn btn-outline btn-sm" onclick="pasteInput()">粘贴</button>
-      </div>
-
-      <div class="options-row">
-        <label class="opt-label">
-          <input type="checkbox" id="ignoreCase" checked />忽略大小写
-        </label>
-        <label class="opt-label">
-          <input type="checkbox" id="ignorePunct" checked />忽略标点
-        </label>
-        <label class="opt-label">
-          <input type="checkbox" id="ignoreNumbers" />忽略数字
-        </label>
-        <label class="opt-label">
-          <input type="checkbox" id="ignoreStopWords" />过滤停用词
-        </label>
-        <div class="opt-select">
-          <span>分析模式:</span>
-          <select id="analyzeMode">
-            <option value="word" selected>词语分析</option>
-            <option value="char">单字分析</option>
-            <option value="sentence">句子分析</option>
-          </select>
-        </div>
-        <div class="opt-select">
-          <span>显示:</span>
-          <select id="displayCount">
-            <option value="20">前20</option>
-            <option value="50" selected>前50</option>
-            <option value="100">前100</option>
-            <option value="all">全部</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="card-body">
-        <textarea id="inputText" placeholder="请输入或粘贴要分析的文本内容...&#10;&#10;支持中文、英文、中英混合文本，也可粘贴文章、日志等任意格式内容。"></textarea>
-        <div class="textarea-meta">
-          <span>字符数: <strong id="charCount">0</strong></span>
-          <button class="btn btn-outline btn-sm" onclick="clearInput()">清空</button>
-        </div>
-      </div>
-
-      <div class="btn-group">
-        <button class="btn btn-primary" onclick="analyze()">开始分析</button>
-        <button class="btn btn-outline" onclick="exportCSV()">导出 CSV</button>
-        <button class="btn btn-outline" onclick="copyFreqList()">复制排行</button>
-      </div>
-    </div>
-
-    <!-- Stats grid -->
-    <div class="stats-grid" id="statsGrid">
-      <div class="stat-cell"><div class="val" id="statTotalChars">—</div><div class="lbl">总字符数</div></div>
-      <div class="stat-cell"><div class="val" id="statTotalWords">—</div><div class="lbl">总词数</div></div>
-      <div class="stat-cell"><div class="val" id="statUniqueWords">—</div><div class="lbl">不重复词</div></div>
-      <div class="stat-cell"><div class="val" id="statAvgLen">—</div><div class="lbl">平均词长</div></div>
-      <div class="stat-cell"><div class="val" id="statChinese">—</div><div class="lbl">中文字符</div></div>
-      <div class="stat-cell"><div class="val" id="statEnglish">—</div><div class="lbl">英文词数</div></div>
-    </div>
-
-    <!-- Results -->
-    <div class="results-grid">
-      <!-- Freq list -->
-      <div class="card">
-        <div class="card-header">
-          <h2>词频排行</h2>
-        </div>
-        <div class="card-body" style="padding:12px">
-          <div class="freq-list" id="freqList">
-            <div class="placeholder-msg">分析结果将显示在这里</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Word cloud -->
-      <div class="card">
-        <div class="card-header">
-          <h2>词云展示</h2>
-        </div>
-        <div class="card-body" style="padding:12px">
-          <div class="cloud-wrap" id="wordCloud">
-            <div class="placeholder-msg">词云将在分析后显示</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- SEO article -->
-    <div class="card" style="margin-top:24px">
-      <div class="article-content">
-        <h2>什么是文本词频分析？</h2>
-        <p>
-          文本词频分析（Word Frequency Analysis）是自然语言处理（NLP）中最基础也最重要的技术之一。
-          它通过统计一段文本中每个词或字出现的次数，帮助我们快速了解文本的核心主题、关键信息和语言特征。
-          从内容创作到学术研究，从SEO优化到数据挖掘，词频分析都扮演着不可或缺的角色。
-        </p>
-        <p>
-          本工具完全在浏览器端运行，无需上传数据到服务器，保护您的隐私安全。支持中文、英文和中英混合文本，
-          提供单字分析、词语分析和句子分析三种模式，并可生成直观的词云图表，一键导出 CSV 格式结果。
-        </p>
-
-        <h2>词频分析的核心应用场景</h2>
-
-        <h3>1. SEO 内容优化</h3>
-        <p>
-          搜索引擎优化（SEO）工作中，词频分析是关键词密度检测的基础工具。
-          通过分析竞争对手的页面文本，可以发现哪些关键词被频繁使用，从而优化自己的内容策略。
-          一般建议目标关键词的密度控制在 1%–3% 之间，过高会被搜索引擎判定为关键词堆砌。
-        </p>
-
-        <h3>2. 学术论文与文献研究</h3>
-        <p>
-          在文学研究中，词频分析可以揭示作者的写作风格和语言偏好。
-          例如分析某位作家的多部作品，统计其最常用词汇，可以量化地研究其写作特点。
-          在社会科学领域，对大量新闻报道或社交媒体内容进行词频分析，
-          可以追踪社会热点话题的演变趋势。
-        </p>
-
-        <h3>3. 用户反馈与评论分析</h3>
-        <p>
-          将大量用户评论、客服记录或问卷回复输入词频工具，可以快速发现用户最关心的问题点。
-          频繁出现的负面词汇（如"慢"、"崩溃"、"退款"）往往直接指向产品的改进方向，
-          远比人工逐条阅读更高效。
-        </p>
-
-        <h3>4. 文本摘要与关键词提取</h3>
-        <p>
-          词频结合 TF-IDF（词频-逆文档频率）算法，是自动摘要和关键词提取的核心方法。
-          将长文章中高频且重要的词语提取出来，可以快速生成文章标签，
-          帮助内容管理系统对文章进行自动分类。
-        </p>
-
-        <h3>5. 语言学习与词汇扩展</h3>
-        <p>
-          外语学习者可以将目标语言的文章输入本工具，找出自己不熟悉的高频词汇，
-          优先背诵这些词能够最快提升阅读理解能力。研究表明，掌握目标语言的前 3000 个高频词，
-          可以覆盖日常书面语言约 95% 的词汇覆盖率。
-        </p>
-
-        <h2>分析模式详解</h2>
-
-        <h3>词语分析模式（推荐）</h3>
-        <p>
-          对中文文本，工具采用简化的2字滑动窗口分词策略，兼顾速度和准确性。
-          对英文文本，按空格和标点自动切分单词。该模式适合分析文章的核心词汇构成，
-          是日常使用最常选择的模式。
-        </p>
-
-        <h3>单字分析模式</h3>
-        <p>
-          将文本拆分为单个字符进行统计。对中文文本尤其有用，可以发现最常用的汉字，
-          辅助汉字书法练习选字或评估文本的汉字难度分布。
-        </p>
-
-        <h3>句子分析模式</h3>
-        <p>
-          以句号、问号、感叹号为分隔符，统计每个句子出现的频率。
-          适合发现文本中被反复强调的核心论点，或检测内容是否存在大量重复句。
-        </p>
-
-        <h2>过滤选项说明</h2>
-        <ul>
-          <li><strong>忽略大小写</strong>：将英文文本统一转为小写后再统计，避免 "Apple" 和 "apple" 被计为不同词</li>
-          <li><strong>忽略标点</strong>：去除逗号、句号等标点符号，避免它们干扰词频统计</li>
-          <li><strong>忽略数字</strong>：过滤掉所有阿拉伯数字，适合不关注数量信息的文本分析</li>
-          <li><strong>过滤停用词</strong>：去除"的、了、是、in、the、a"等无实义的高频词，让结果更聚焦于实质内容词汇</li>
-        </ul>
-
-        <h2>词云图的意义</h2>
-        <p>
-          词云（Word Cloud）是词频数据的可视化表现形式，词语的字体大小与其出现频率成正比。
-          通过一眼扫视词云，即可直觉性地感知文本的主题分布，比表格更直观易读。
-          本工具使用 10 种不同颜色区分词语，字体大小范围为 12px 到 38px，
-          最多展示前 50 个高频词。将鼠标悬停在词语上可查看精确的出现次数。
-        </p>
-
-        <h2>如何使用本工具</h2>
-        <ol>
-          <li>将要分析的文本粘贴或输入到文本框中</li>
-          <li>根据需要勾选过滤选项（推荐默认设置：忽略大小写、忽略标点）</li>
-          <li>选择分析模式（推荐：词语分析）和显示数量</li>
-          <li>点击"开始分析"按钮，右侧会显示词频排行和词云</li>
-          <li>点击"导出 CSV"可将完整结果下载为 Excel 可打开的表格</li>
-          <li>点击"复制排行"可将排行榜文本复制到剪贴板</li>
-        </ol>
-
-        <h2>常见问题（FAQ）</h2>
-        <div class="faq-item">
-          <div class="faq-q" onclick="toggleFaq(this)">我的文本会被上传到服务器吗？</div>
-          <div class="faq-a">不会。本工具完全在您的浏览器中运行，所有分析过程都在本地完成，没有任何数据会被发送到网络上，可以放心分析敏感文本。</div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q" onclick="toggleFaq(this)">中文分词准确吗？</div>
-          <div class="faq-a">本工具采用简化的滑动窗口分词方法，对连续中文文本按2字进行切分，不能达到专业NLP库（如jieba）的准确度，适合快速分析和粗略统计。对精确中文分词有需求的用户，建议结合专业工具使用。</div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q" onclick="toggleFaq(this)">最多可以分析多长的文本？</div>
-          <div class="faq-a">理论上受限于浏览器内存，对于几十万字以内的文本都能正常运行。超大文本（百万字以上）建议分段处理以避免页面卡顿。</div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q" onclick="toggleFaq(this)">导出的 CSV 文件如何用 Excel 打开？</div>
-          <div class="faq-a">CSV文件已添加UTF-8 BOM签名，在 Excel 中直接双击打开即可正确显示中文。如遇乱码，请在 Excel 中通过"数据→从文本/CSV导入"并选择 UTF-8 编码进行导入。</div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q" onclick="toggleFaq(this)">停用词列表可以自定义吗？</div>
-          <div class="faq-a">当前版本内置了常用中英文停用词列表，涵盖约100个高频虚词。自定义停用词功能在后续版本中计划支持，届时用户可以上传或输入自己的停用词表。</div>
-        </div>
-      </div>
-    </div>
-
-  </div><!-- /main-col -->
-
-  <!-- ── Sidebar ── -->
-  <aside class="sidebar">
-    <div class="sidebar-section">
-      <div class="ad-block ad-sidebar-top">
-        <!-- Google AdSense: 300×250 -->
-        <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXX" data-ad-slot="XXXXXX" data-ad-format="auto"></ins> -->
-        广告位 · 300×250
-      </div>
-    </div>
-    <div class="sidebar-section">
-      <div class="card">
-        <div class="card-header"><h2>相关工具</h2></div>
-        <div class="card-body" style="padding:12px">
-          <ul style="list-style:none;font-size:13.5px;line-height:2">
-            <li><a href="text-diff.html" style="color:var(--blue-600);text-decoration:none">→ 文本差异对比</a></li>
-            <li><a href="text-compare.html" style="color:var(--blue-600);text-decoration:none">→ 文本相似度比较</a></li>
-            <li><a href="text-dedup.html" style="color:var(--blue-600);text-decoration:none">→ 文本去重工具</a></li>
-            <li><a href="text-columns.html" style="color:var(--blue-600);text-decoration:none">→ 列文本处理</a></li>
-            <li><a href="text-merge.html" style="color:var(--blue-600);text-decoration:none">→ 多文本合并</a></li>
-            <li><a href="../dev/json-formatter.html" style="color:var(--blue-600);text-decoration:none">→ JSON 格式化</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    <div class="sidebar-section">
-      <div class="ad-block ad-sidebar-bot">
-        <!-- Google AdSense: 300×600 -->
-        <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXX" data-ad-slot="XXXXXX" data-ad-format="auto"></ins> -->
-        广告位 · 300×600
-      </div>
-    </div>
-  </aside>
-
-</div><!-- /main-wrap -->
-
-<!-- Toast -->
-<div id="toast"></div>
-
-<!-- Footer -->
-<footer class="site-footer">
-  <p>© 2024 <a href="../../index.html">WebUtils</a> · 开源工具集 ·
-    <a href="https://github.com/chicogong/html-tools" target="_blank" rel="noopener">GitHub</a>
-  </p>
-  <p style="margin-top:6px">所有处理在浏览器本地完成，数据不会上传服务器</p>
-</footer>
-
-<script>
-  // ── State ──────────────────────────────────────────────
-  let analysisResult = [];
-
-  // Common stop words (Chinese + English)
-  const STOP_WORDS = new Set([
-    '的','了','是','在','我','有','和','就','不','人','都','一','一个','上','也',
-    '很','到','说','要','去','你','会','着','没有','看','好','自己','这','那',
-    '里','他','她','它','们','与','及','或','但','而','因','为','以','之','其',
-    '所','对','中','后','被','如','将','可','由','从','并','则','虽','已','过',
-    'the','a','an','is','are','was','were','be','been','being','have','has',
-    'had','do','does','did','will','would','could','should','may','might',
-    'must','can','this','that','these','those','i','you','he','she','it','we',
-    'they','and','or','but','if','because','as','of','at','by','for','with',
-    'about','to','from','in','on','not','no','so','what','which','who','when',
-    'where','how','than','then','there','their','they','some','any','all','each'
-  ]);
-
-  // ── Utility ────────────────────────────────────────────
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2000);
-  }
-
-  async function pasteInput() {
-    try {
-      const text = await navigator.clipboard.readText();
-      document.getElementById('inputText').value = text;
-      updateCharCount();
-    } catch { showToast('无法读取剪贴板，请手动粘贴'); }
-  }
-
-  function updateCharCount() {
-    document.getElementById('charCount').textContent =
-      document.getElementById('inputText').value.length;
-  }
-
-  document.getElementById('inputText').addEventListener('input', updateCharCount);
-
-  // ── Segmentation ───────────────────────────────────────
-  function segmentText(text, mode) {
-    const ignoreCase   = document.getElementById('ignoreCase').checked;
-    const ignorePunct  = document.getElementById('ignorePunct').checked;
-    const ignoreNums   = document.getElementById('ignoreNumbers').checked;
-    const filterStop   = document.getElementById('ignoreStopWords').checked;
-
-    if (ignoreCase) text = text.toLowerCase();
-
-    if (ignorePunct) {
-      text = text.replace(/[，。！？、；：""''（）【】《》\.\,\!\?\;\:\"\'\(\)\[\]\<\>\-\_\+\=\*\/\\@#$%^&~`|]/g, ' ');
-    }
-    if (ignoreNums) text = text.replace(/[0-9０-９]/g, '');
-
-    let words = [];
-
-    if (mode === 'char') {
-      words = text.split('').filter(c => c.trim() && c !== ' ');
-    } else if (mode === 'sentence') {
-      words = text.split(/[。！？\.\!\?]+/).map(s => s.trim()).filter(Boolean);
-    } else {
-      // word mode: English by space, Chinese by 2-char sliding window
-      const englishWords = text.match(/[a-zA-Z']+/g) || [];
-      const chineseSegs  = text.match(/[\u4e00-\u9fff]+/g) || [];
-      const chineseWords = [];
-      chineseSegs.forEach(seg => {
-        for (let i = 0; i < seg.length; i++) {
-          if (i + 1 < seg.length) {
-            chineseWords.push(seg.substring(i, i + 2));
-            i++;
-          } else {
-            chineseWords.push(seg[i]);
-          }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>文本词频分析工具 - 在线统计单词出现频率 | WebUtils</title>
+    <meta
+      name="description"
+      content="免费在线文本词频分析工具，支持中英文混合文本，统计单字、词语、句子出现频率，生成词云图表，一键导出CSV。纯客户端处理，数据不上传服务器。"
+    />
+    <meta
+      name="keywords"
+      content="词频分析,文本分析,词云,单词统计,词频统计,text frequency,word count,word cloud,文本工具"
+    />
+    <meta name="author" content="WebUtils" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://essays4u.net/tools/text/text-frequency" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="文本词频分析工具 - 在线统计单词出现频率" />
+    <meta
+      property="og:description"
+      content="免费在线文本词频分析工具，支持中英文混合文本，统计词频，生成词云，导出CSV，纯客户端处理。"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://essays4u.net/tools/text/text-frequency" />
+    <meta property="og:site_name" content="WebUtils" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="文本词频分析工具 - 在线统计单词出现频率" />
+    <meta
+      name="twitter:description"
+      content="免费在线文本词频分析，支持词云生成和CSV导出，纯客户端处理。"
+    />
+    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "文本词频分析工具",
+        "description": "在线文本词频分析工具，支持中英文混合文本词频统计、词云生成、CSV导出",
+        "url": "https://essays4u.net/tools/text/text-frequency",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires JavaScript",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+      }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --blue-50: #eff6ff;
+        --blue-100: #dbeafe;
+        --blue-200: #bfdbfe;
+        --blue-500: #3b82f6;
+        --blue-600: #2563eb;
+        --blue-700: #1d4ed8;
+        --gray-50: #f9fafb;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
+        --gray-400: #9ca3af;
+        --gray-500: #6b7280;
+        --gray-600: #4b5563;
+        --gray-700: #374151;
+        --gray-800: #1f2937;
+        --gray-900: #111827;
+        --green-500: #22c55e;
+        --green-100: #dcfce7;
+        --red-500: #ef4444;
+        --red-100: #fee2e2;
+        --yellow-500: #eab308;
+        --yellow-100: #fef9c3;
+        --purple-500: #a855f7;
+        --purple-100: #f3e8ff;
+        --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        --font-mono: "JetBrains Mono", "Courier New", monospace;
+        --radius: 8px;
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+      }
+
+      body {
+        font-family: var(--font-sans);
+        background: var(--gray-50);
+        color: var(--gray-800);
+        line-height: 1.6;
+        font-size: 15px;
+      }
+
+      /* ── Top nav ── */
+      .site-nav {
+        background: #fff;
+        border-bottom: 1px solid var(--gray-200);
+        padding: 0 24px;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        color: var(--gray-500);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .site-nav a {
+        color: var(--blue-600);
+        text-decoration: none;
+        font-weight: 500;
+      }
+      .site-nav a:hover {
+        text-decoration: underline;
+      }
+      .site-nav .sep {
+        color: var(--gray-300);
+      }
+
+      /* ── Page header ── */
+      .page-header {
+        background: linear-gradient(135deg, var(--blue-600) 0%, var(--blue-700) 100%);
+        color: #fff;
+        padding: 40px 24px 36px;
+        text-align: center;
+      }
+      .page-header h1 {
+        font-size: clamp(1.6rem, 4vw, 2.2rem);
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+      .page-header p {
+        font-size: 1rem;
+        opacity: 0.88;
+        max-width: 560px;
+        margin: 0 auto;
+      }
+
+      /* ── Ad banner ── */
+      .ad-block {
+        background: #fff;
+        border: 1px dashed var(--gray-300);
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--gray-400);
+        font-size: 13px;
+        letter-spacing: 0.02em;
+      }
+      .ad-top {
+        min-height: 90px;
+        margin: 16px 24px;
+      }
+
+      /* ── Main layout ── */
+      .main-wrap {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 24px 24px 48px;
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 24px;
+        align-items: start;
+      }
+      @media (max-width: 1024px) {
+        .main-wrap {
+          grid-template-columns: 1fr;
         }
-      });
-      words = [...englishWords, ...chineseWords];
-    }
+        .sidebar {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+        }
+      }
+      @media (max-width: 640px) {
+        .sidebar {
+          grid-template-columns: 1fr;
+        }
+        .ad-top {
+          margin: 12px;
+        }
+      }
 
-    words = words.filter(w => w && w.trim());
-    if (filterStop) words = words.filter(w => !STOP_WORDS.has(w.toLowerCase()));
-    return words;
-  }
+      /* ── Cards ── */
+      .card {
+        background: #fff;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+      }
+      .card-header {
+        padding: 14px 18px;
+        border-bottom: 1px solid var(--gray-100);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .card-header h2 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--gray-800);
+      }
+      .card-body {
+        padding: 18px;
+      }
 
-  // ── Analyze ────────────────────────────────────────────
-  window.analyze = function() {
-    const text = document.getElementById('inputText').value;
-    if (!text.trim()) { showToast('请先输入文本'); return; }
+      /* ── Textarea ── */
+      textarea {
+        width: 100%;
+        font-family: var(--font-mono);
+        font-size: 13.5px;
+        padding: 12px;
+        border: 1px solid var(--gray-300);
+        border-radius: var(--radius);
+        resize: vertical;
+        min-height: 180px;
+        background: var(--gray-50);
+        color: var(--gray-800);
+        line-height: 1.55;
+        transition: border-color 0.15s;
+      }
+      textarea:focus {
+        outline: none;
+        border-color: var(--blue-500);
+        background: #fff;
+        box-shadow: 0 0 0 3px var(--blue-100);
+      }
+      .textarea-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 6px;
+        font-size: 12px;
+        color: var(--gray-400);
+      }
 
-    const mode = document.getElementById('analyzeMode').value;
-    const displayCount = document.getElementById('displayCount').value;
+      /* ── Options bar ── */
+      .options-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        padding: 12px 18px;
+        background: var(--gray-50);
+        border-bottom: 1px solid var(--gray-100);
+      }
+      .opt-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        color: var(--gray-700);
+        cursor: pointer;
+        user-select: none;
+      }
+      .opt-label input[type="checkbox"] {
+        width: 15px;
+        height: 15px;
+        accent-color: var(--blue-600);
+        cursor: pointer;
+      }
+      .opt-select {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        color: var(--gray-700);
+      }
+      .opt-select select {
+        padding: 4px 8px;
+        border: 1px solid var(--gray-300);
+        border-radius: 6px;
+        font-size: 13px;
+        background: #fff;
+        color: var(--gray-700);
+        cursor: pointer;
+      }
 
-    const words = segmentText(text, mode);
-    const freqMap = new Map();
-    words.forEach(w => freqMap.set(w, (freqMap.get(w) || 0) + 1));
-    analysisResult = [...freqMap.entries()].sort((a, b) => b[1] - a[1]);
+      /* ── Buttons ── */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border-radius: var(--radius);
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s;
+        border: 1px solid transparent;
+        font-family: var(--font-sans);
+      }
+      .btn-primary {
+        background: var(--blue-600);
+        color: #fff;
+        border-color: var(--blue-600);
+      }
+      .btn-primary:hover {
+        background: var(--blue-700);
+        border-color: var(--blue-700);
+      }
+      .btn-outline {
+        background: #fff;
+        color: var(--gray-700);
+        border-color: var(--gray-300);
+      }
+      .btn-outline:hover {
+        background: var(--gray-50);
+        border-color: var(--gray-400);
+      }
+      .btn-sm {
+        padding: 5px 11px;
+        font-size: 12px;
+      }
+      .btn-group {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        padding: 12px 18px;
+      }
 
-    // Stats
-    const totalChars   = text.length;
-    const totalWords   = words.length;
-    const uniqueWords  = analysisResult.length;
-    const avgLen       = totalWords > 0 ? (words.join('').length / totalWords).toFixed(1) : 0;
-    const chineseChars = (text.match(/[\u4e00-\u9fff]/g) || []).length;
-    const englishWords = (text.match(/[a-zA-Z]+/g) || []).length;
+      /* ── Stats grid ── */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1px;
+        background: var(--gray-200);
+        border-radius: var(--radius);
+        overflow: hidden;
+        margin-bottom: 16px;
+      }
+      @media (max-width: 600px) {
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      .stat-cell {
+        background: #fff;
+        padding: 14px 12px;
+        text-align: center;
+      }
+      .stat-cell .val {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--blue-600);
+        font-variant-numeric: tabular-nums;
+      }
+      .stat-cell .lbl {
+        font-size: 11px;
+        color: var(--gray-500);
+        margin-top: 2px;
+      }
 
-    document.getElementById('statTotalChars').textContent  = totalChars.toLocaleString();
-    document.getElementById('statTotalWords').textContent  = totalWords.toLocaleString();
-    document.getElementById('statUniqueWords').textContent = uniqueWords.toLocaleString();
-    document.getElementById('statAvgLen').textContent      = avgLen;
-    document.getElementById('statChinese').textContent     = chineseChars.toLocaleString();
-    document.getElementById('statEnglish').textContent     = englishWords.toLocaleString();
+      /* ── Results layout ── */
+      .results-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-top: 16px;
+      }
+      @media (max-width: 700px) {
+        .results-grid {
+          grid-template-columns: 1fr;
+        }
+      }
 
-    const limit = displayCount === 'all' ? analysisResult.length : parseInt(displayCount);
-    renderFreqList(analysisResult.slice(0, limit));
-    renderWordCloud(analysisResult.slice(0, 50));
-    showToast('分析完成，共 ' + uniqueWords + ' 个不重复词');
-  };
+      /* ── Frequency list ── */
+      .freq-list {
+        max-height: 380px;
+        overflow-y: auto;
+      }
+      .freq-item {
+        display: grid;
+        grid-template-columns: 28px 1fr 50px 80px;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 4px;
+        border-bottom: 1px solid var(--gray-100);
+        font-size: 13px;
+      }
+      .freq-item:last-child {
+        border-bottom: none;
+      }
+      .freq-rank {
+        color: var(--gray-400);
+        font-size: 11px;
+        text-align: center;
+      }
+      .freq-rank.top {
+        color: var(--blue-600);
+        font-weight: 700;
+      }
+      .freq-word {
+        font-weight: 500;
+        color: var(--gray-800);
+        word-break: break-all;
+      }
+      .freq-count {
+        color: var(--gray-500);
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      .freq-bar {
+        height: 6px;
+        background: var(--gray-100);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      .freq-bar-fill {
+        height: 100%;
+        background: var(--blue-500);
+        border-radius: 3px;
+        transition: width 0.3s;
+      }
 
-  // ── Render freq list ───────────────────────────────────
-  function renderFreqList(data) {
-    const el = document.getElementById('freqList');
-    if (!data.length) {
-      el.innerHTML = '<div class="placeholder-msg">没有分析结果</div>';
-      return;
-    }
-    const maxCount = data[0][1];
-    el.innerHTML = data.map(([word, count], i) => `
+      /* ── Word cloud ── */
+      .cloud-wrap {
+        min-height: 220px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 8px 12px;
+        padding: 16px;
+        background: var(--gray-50);
+        border-radius: var(--radius);
+        border: 1px solid var(--gray-200);
+      }
+      .cloud-word {
+        cursor: default;
+        transition:
+          transform 0.15s,
+          opacity 0.15s;
+        font-weight: 500;
+        line-height: 1.3;
+      }
+      .cloud-word:hover {
+        transform: scale(1.15);
+        opacity: 0.85;
+      }
+
+      /* ── Placeholder ── */
+      .placeholder-msg {
+        text-align: center;
+        color: var(--gray-400);
+        font-size: 13px;
+        padding: 32px 0;
+      }
+
+      /* ── Toast ── */
+      #toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: var(--gray-800);
+        color: #fff;
+        padding: 10px 18px;
+        border-radius: var(--radius);
+        font-size: 13px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s;
+        z-index: 9999;
+      }
+      #toast.show {
+        opacity: 1;
+      }
+
+      /* ── Sidebar ── */
+      .sidebar-section {
+        margin-bottom: 16px;
+      }
+      .ad-sidebar-top {
+        height: 250px;
+      }
+      .ad-sidebar-bot {
+        height: 600px;
+      }
+
+      /* ── Article / SEO content ── */
+      .article-content {
+        padding: 24px;
+        color: var(--gray-700);
+        font-size: 14.5px;
+        line-height: 1.75;
+      }
+      .article-content h2 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--gray-900);
+        margin: 28px 0 12px;
+        padding-bottom: 6px;
+        border-bottom: 2px solid var(--blue-100);
+      }
+      .article-content h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--gray-800);
+        margin: 20px 0 8px;
+      }
+      .article-content p {
+        margin-bottom: 12px;
+      }
+      .article-content ul,
+      .article-content ol {
+        padding-left: 20px;
+        margin-bottom: 12px;
+      }
+      .article-content li {
+        margin-bottom: 6px;
+      }
+      .article-content code {
+        background: var(--gray-100);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: var(--font-mono);
+        font-size: 12.5px;
+        color: var(--blue-700);
+      }
+      .article-content strong {
+        color: var(--gray-900);
+      }
+
+      .faq-item {
+        margin-bottom: 16px;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      .faq-q {
+        padding: 12px 16px;
+        background: var(--gray-50);
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--gray-800);
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .faq-q::after {
+        content: "+";
+        font-size: 18px;
+        color: var(--gray-400);
+        transition: transform 0.2s;
+      }
+      .faq-q.open::after {
+        transform: rotate(45deg);
+      }
+      .faq-a {
+        padding: 12px 16px;
+        font-size: 13.5px;
+        color: var(--gray-600);
+        border-top: 1px solid var(--gray-200);
+        display: none;
+      }
+      .faq-a.open {
+        display: block;
+      }
+
+      /* ── Footer ── */
+      .site-footer {
+        background: var(--gray-800);
+        color: var(--gray-400);
+        text-align: center;
+        padding: 24px;
+        font-size: 13px;
+        margin-top: 48px;
+      }
+      .site-footer a {
+        color: var(--gray-300);
+        text-decoration: none;
+      }
+      .site-footer a:hover {
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Nav breadcrumb -->
+    <nav class="site-nav">
+      <a href="../../index.html">WebUtils</a>
+      <span class="sep">›</span>
+      <a href="../../index.html#text">文本工具</a>
+      <span class="sep">›</span>
+      <span>词频分析</span>
+    </nav>
+
+    <!-- Page header -->
+    <div class="page-header">
+      <h1>文本词频分析工具</h1>
+      <p>统计文本中单字/词语/句子出现频率，生成词云，支持导出 CSV，中英文混合处理</p>
+    </div>
+
+    <!-- Top ad -->
+    <div class="ad-block ad-top">
+      <!-- Google AdSense: 728×90 横幅广告 -->
+      <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXX" data-ad-slot="XXXXXX" data-ad-format="auto"></ins> -->
+      广告位 · 728×90
+    </div>
+
+    <!-- Main layout -->
+    <div class="main-wrap">
+      <!-- ── Main column ── -->
+      <div class="main-col">
+        <!-- Input card -->
+        <div class="card" style="margin-bottom: 20px">
+          <div class="card-header">
+            <h2>输入文本</h2>
+            <button class="btn btn-outline btn-sm" onclick="pasteInput()">粘贴</button>
+          </div>
+
+          <div class="options-row">
+            <label class="opt-label">
+              <input type="checkbox" id="ignoreCase" checked />
+              忽略大小写
+            </label>
+            <label class="opt-label">
+              <input type="checkbox" id="ignorePunct" checked />
+              忽略标点
+            </label>
+            <label class="opt-label">
+              <input type="checkbox" id="ignoreNumbers" />
+              忽略数字
+            </label>
+            <label class="opt-label">
+              <input type="checkbox" id="ignoreStopWords" />
+              过滤停用词
+            </label>
+            <div class="opt-select">
+              <span>分析模式:</span>
+              <select id="analyzeMode">
+                <option value="word" selected>词语分析</option>
+                <option value="char">单字分析</option>
+                <option value="sentence">句子分析</option>
+              </select>
+            </div>
+            <div class="opt-select">
+              <span>显示:</span>
+              <select id="displayCount">
+                <option value="20">前20</option>
+                <option value="50" selected>前50</option>
+                <option value="100">前100</option>
+                <option value="all">全部</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <textarea
+              id="inputText"
+              placeholder="请输入或粘贴要分析的文本内容...&#10;&#10;支持中文、英文、中英混合文本，也可粘贴文章、日志等任意格式内容。"
+            ></textarea>
+            <div class="textarea-meta">
+              <span>
+                字符数:
+                <strong id="charCount">0</strong>
+              </span>
+              <button class="btn btn-outline btn-sm" onclick="clearInput()">清空</button>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="analyze()">开始分析</button>
+            <button class="btn btn-outline" onclick="exportCSV()">导出 CSV</button>
+            <button class="btn btn-outline" onclick="copyFreqList()">复制排行</button>
+          </div>
+        </div>
+
+        <!-- Stats grid -->
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat-cell">
+            <div class="val" id="statTotalChars">—</div>
+            <div class="lbl">总字符数</div>
+          </div>
+          <div class="stat-cell">
+            <div class="val" id="statTotalWords">—</div>
+            <div class="lbl">总词数</div>
+          </div>
+          <div class="stat-cell">
+            <div class="val" id="statUniqueWords">—</div>
+            <div class="lbl">不重复词</div>
+          </div>
+          <div class="stat-cell">
+            <div class="val" id="statAvgLen">—</div>
+            <div class="lbl">平均词长</div>
+          </div>
+          <div class="stat-cell">
+            <div class="val" id="statChinese">—</div>
+            <div class="lbl">中文字符</div>
+          </div>
+          <div class="stat-cell">
+            <div class="val" id="statEnglish">—</div>
+            <div class="lbl">英文词数</div>
+          </div>
+        </div>
+
+        <!-- Results -->
+        <div class="results-grid">
+          <!-- Freq list -->
+          <div class="card">
+            <div class="card-header">
+              <h2>词频排行</h2>
+            </div>
+            <div class="card-body" style="padding: 12px">
+              <div class="freq-list" id="freqList">
+                <div class="placeholder-msg">分析结果将显示在这里</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Word cloud -->
+          <div class="card">
+            <div class="card-header">
+              <h2>词云展示</h2>
+            </div>
+            <div class="card-body" style="padding: 12px">
+              <div class="cloud-wrap" id="wordCloud">
+                <div class="placeholder-msg">词云将在分析后显示</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SEO article -->
+        <div class="card" style="margin-top: 24px">
+          <div class="article-content">
+            <h2>什么是文本词频分析？</h2>
+            <p>
+              文本词频分析（Word Frequency
+              Analysis）是自然语言处理（NLP）中最基础也最重要的技术之一。
+              它通过统计一段文本中每个词或字出现的次数，帮助我们快速了解文本的核心主题、关键信息和语言特征。
+              从内容创作到学术研究，从SEO优化到数据挖掘，词频分析都扮演着不可或缺的角色。
+            </p>
+            <p>
+              本工具完全在浏览器端运行，无需上传数据到服务器，保护您的隐私安全。支持中文、英文和中英混合文本，
+              提供单字分析、词语分析和句子分析三种模式，并可生成直观的词云图表，一键导出 CSV
+              格式结果。
+            </p>
+
+            <h2>词频分析的核心应用场景</h2>
+
+            <h3>1. SEO 内容优化</h3>
+            <p>
+              搜索引擎优化（SEO）工作中，词频分析是关键词密度检测的基础工具。
+              通过分析竞争对手的页面文本，可以发现哪些关键词被频繁使用，从而优化自己的内容策略。
+              一般建议目标关键词的密度控制在 1%–3% 之间，过高会被搜索引擎判定为关键词堆砌。
+            </p>
+
+            <h3>2. 学术论文与文献研究</h3>
+            <p>
+              在文学研究中，词频分析可以揭示作者的写作风格和语言偏好。
+              例如分析某位作家的多部作品，统计其最常用词汇，可以量化地研究其写作特点。
+              在社会科学领域，对大量新闻报道或社交媒体内容进行词频分析，
+              可以追踪社会热点话题的演变趋势。
+            </p>
+
+            <h3>3. 用户反馈与评论分析</h3>
+            <p>
+              将大量用户评论、客服记录或问卷回复输入词频工具，可以快速发现用户最关心的问题点。
+              频繁出现的负面词汇（如"慢"、"崩溃"、"退款"）往往直接指向产品的改进方向，
+              远比人工逐条阅读更高效。
+            </p>
+
+            <h3>4. 文本摘要与关键词提取</h3>
+            <p>
+              词频结合 TF-IDF（词频-逆文档频率）算法，是自动摘要和关键词提取的核心方法。
+              将长文章中高频且重要的词语提取出来，可以快速生成文章标签，
+              帮助内容管理系统对文章进行自动分类。
+            </p>
+
+            <h3>5. 语言学习与词汇扩展</h3>
+            <p>
+              外语学习者可以将目标语言的文章输入本工具，找出自己不熟悉的高频词汇，
+              优先背诵这些词能够最快提升阅读理解能力。研究表明，掌握目标语言的前 3000 个高频词，
+              可以覆盖日常书面语言约 95% 的词汇覆盖率。
+            </p>
+
+            <h2>分析模式详解</h2>
+
+            <h3>词语分析模式（推荐）</h3>
+            <p>
+              对中文文本，工具采用简化的2字滑动窗口分词策略，兼顾速度和准确性。
+              对英文文本，按空格和标点自动切分单词。该模式适合分析文章的核心词汇构成，
+              是日常使用最常选择的模式。
+            </p>
+
+            <h3>单字分析模式</h3>
+            <p>
+              将文本拆分为单个字符进行统计。对中文文本尤其有用，可以发现最常用的汉字，
+              辅助汉字书法练习选字或评估文本的汉字难度分布。
+            </p>
+
+            <h3>句子分析模式</h3>
+            <p>
+              以句号、问号、感叹号为分隔符，统计每个句子出现的频率。
+              适合发现文本中被反复强调的核心论点，或检测内容是否存在大量重复句。
+            </p>
+
+            <h2>过滤选项说明</h2>
+            <ul>
+              <li>
+                <strong>忽略大小写</strong>
+                ：将英文文本统一转为小写后再统计，避免 "Apple" 和 "apple" 被计为不同词
+              </li>
+              <li>
+                <strong>忽略标点</strong>
+                ：去除逗号、句号等标点符号，避免它们干扰词频统计
+              </li>
+              <li>
+                <strong>忽略数字</strong>
+                ：过滤掉所有阿拉伯数字，适合不关注数量信息的文本分析
+              </li>
+              <li>
+                <strong>过滤停用词</strong>
+                ：去除"的、了、是、in、the、a"等无实义的高频词，让结果更聚焦于实质内容词汇
+              </li>
+            </ul>
+
+            <h2>词云图的意义</h2>
+            <p>
+              词云（Word Cloud）是词频数据的可视化表现形式，词语的字体大小与其出现频率成正比。
+              通过一眼扫视词云，即可直觉性地感知文本的主题分布，比表格更直观易读。 本工具使用 10
+              种不同颜色区分词语，字体大小范围为 12px 到 38px， 最多展示前 50
+              个高频词。将鼠标悬停在词语上可查看精确的出现次数。
+            </p>
+
+            <h2>如何使用本工具</h2>
+            <ol>
+              <li>将要分析的文本粘贴或输入到文本框中</li>
+              <li>根据需要勾选过滤选项（推荐默认设置：忽略大小写、忽略标点）</li>
+              <li>选择分析模式（推荐：词语分析）和显示数量</li>
+              <li>点击"开始分析"按钮，右侧会显示词频排行和词云</li>
+              <li>点击"导出 CSV"可将完整结果下载为 Excel 可打开的表格</li>
+              <li>点击"复制排行"可将排行榜文本复制到剪贴板</li>
+            </ol>
+
+            <h2>常见问题（FAQ）</h2>
+            <div class="faq-item">
+              <div class="faq-q" onclick="toggleFaq(this)">我的文本会被上传到服务器吗？</div>
+              <div class="faq-a">
+                不会。本工具完全在您的浏览器中运行，所有分析过程都在本地完成，没有任何数据会被发送到网络上，可以放心分析敏感文本。
+              </div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-q" onclick="toggleFaq(this)">中文分词准确吗？</div>
+              <div class="faq-a">
+                本工具采用简化的滑动窗口分词方法，对连续中文文本按2字进行切分，不能达到专业NLP库（如jieba）的准确度，适合快速分析和粗略统计。对精确中文分词有需求的用户，建议结合专业工具使用。
+              </div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-q" onclick="toggleFaq(this)">最多可以分析多长的文本？</div>
+              <div class="faq-a">
+                理论上受限于浏览器内存，对于几十万字以内的文本都能正常运行。超大文本（百万字以上）建议分段处理以避免页面卡顿。
+              </div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-q" onclick="toggleFaq(this)">导出的 CSV 文件如何用 Excel 打开？</div>
+              <div class="faq-a">
+                CSV文件已添加UTF-8 BOM签名，在 Excel 中直接双击打开即可正确显示中文。如遇乱码，请在
+                Excel 中通过"数据→从文本/CSV导入"并选择 UTF-8 编码进行导入。
+              </div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-q" onclick="toggleFaq(this)">停用词列表可以自定义吗？</div>
+              <div class="faq-a">
+                当前版本内置了常用中英文停用词列表，涵盖约100个高频虚词。自定义停用词功能在后续版本中计划支持，届时用户可以上传或输入自己的停用词表。
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /main-col -->
+
+      <!-- ── Sidebar ── -->
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <div class="ad-block ad-sidebar-top">
+            <!-- Google AdSense: 300×250 -->
+            <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXX" data-ad-slot="XXXXXX" data-ad-format="auto"></ins> -->
+            广告位 · 300×250
+          </div>
+        </div>
+        <div class="sidebar-section">
+          <div class="card">
+            <div class="card-header"><h2>相关工具</h2></div>
+            <div class="card-body" style="padding: 12px">
+              <ul style="list-style: none; font-size: 13.5px; line-height: 2">
+                <li>
+                  <a href="text-diff.html" style="color: var(--blue-600); text-decoration: none">
+                    → 文本差异对比
+                  </a>
+                </li>
+                <li>
+                  <a href="text-compare.html" style="color: var(--blue-600); text-decoration: none">
+                    → 文本相似度比较
+                  </a>
+                </li>
+                <li>
+                  <a href="text-dedup.html" style="color: var(--blue-600); text-decoration: none">
+                    → 文本去重工具
+                  </a>
+                </li>
+                <li>
+                  <a href="text-columns.html" style="color: var(--blue-600); text-decoration: none">
+                    → 列文本处理
+                  </a>
+                </li>
+                <li>
+                  <a href="text-merge.html" style="color: var(--blue-600); text-decoration: none">
+                    → 多文本合并
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="../dev/json-formatter.html"
+                    style="color: var(--blue-600); text-decoration: none"
+                  >
+                    → JSON 格式化
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="sidebar-section">
+          <div class="ad-block ad-sidebar-bot">
+            <!-- Google AdSense: 300×600 -->
+            <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXX" data-ad-slot="XXXXXX" data-ad-format="auto"></ins> -->
+            广告位 · 300×600
+          </div>
+        </div>
+      </aside>
+    </div>
+    <!-- /main-wrap -->
+
+    <!-- Toast -->
+    <div id="toast"></div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <p>
+        © 2024
+        <a href="../../index.html">WebUtils</a>
+        · 开源工具集 ·
+        <a href="https://github.com/chicogong/html-tools" target="_blank" rel="noopener">GitHub</a>
+      </p>
+      <p style="margin-top: 6px">所有处理在浏览器本地完成，数据不会上传服务器</p>
+    </footer>
+
+    <script>
+      // ── State ──────────────────────────────────────────────
+      let analysisResult = [];
+
+      // Common stop words (Chinese + English)
+      const STOP_WORDS = new Set([
+        "的",
+        "了",
+        "是",
+        "在",
+        "我",
+        "有",
+        "和",
+        "就",
+        "不",
+        "人",
+        "都",
+        "一",
+        "一个",
+        "上",
+        "也",
+        "很",
+        "到",
+        "说",
+        "要",
+        "去",
+        "你",
+        "会",
+        "着",
+        "没有",
+        "看",
+        "好",
+        "自己",
+        "这",
+        "那",
+        "里",
+        "他",
+        "她",
+        "它",
+        "们",
+        "与",
+        "及",
+        "或",
+        "但",
+        "而",
+        "因",
+        "为",
+        "以",
+        "之",
+        "其",
+        "所",
+        "对",
+        "中",
+        "后",
+        "被",
+        "如",
+        "将",
+        "可",
+        "由",
+        "从",
+        "并",
+        "则",
+        "虽",
+        "已",
+        "过",
+        "the",
+        "a",
+        "an",
+        "is",
+        "are",
+        "was",
+        "were",
+        "be",
+        "been",
+        "being",
+        "have",
+        "has",
+        "had",
+        "do",
+        "does",
+        "did",
+        "will",
+        "would",
+        "could",
+        "should",
+        "may",
+        "might",
+        "must",
+        "can",
+        "this",
+        "that",
+        "these",
+        "those",
+        "i",
+        "you",
+        "he",
+        "she",
+        "it",
+        "we",
+        "they",
+        "and",
+        "or",
+        "but",
+        "if",
+        "because",
+        "as",
+        "of",
+        "at",
+        "by",
+        "for",
+        "with",
+        "about",
+        "to",
+        "from",
+        "in",
+        "on",
+        "not",
+        "no",
+        "so",
+        "what",
+        "which",
+        "who",
+        "when",
+        "where",
+        "how",
+        "than",
+        "then",
+        "there",
+        "their",
+        "they",
+        "some",
+        "any",
+        "all",
+        "each"
+      ]);
+
+      // ── Utility ────────────────────────────────────────────
+      function showToast(msg) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 2000);
+      }
+
+      async function pasteInput() {
+        try {
+          const text = await navigator.clipboard.readText();
+          document.getElementById("inputText").value = text;
+          updateCharCount();
+        } catch {
+          showToast("无法读取剪贴板，请手动粘贴");
+        }
+      }
+
+      function updateCharCount() {
+        document.getElementById("charCount").textContent =
+          document.getElementById("inputText").value.length;
+      }
+
+      document.getElementById("inputText").addEventListener("input", updateCharCount);
+
+      // ── Segmentation ───────────────────────────────────────
+      function segmentText(text, mode) {
+        const ignoreCase = document.getElementById("ignoreCase").checked;
+        const ignorePunct = document.getElementById("ignorePunct").checked;
+        const ignoreNums = document.getElementById("ignoreNumbers").checked;
+        const filterStop = document.getElementById("ignoreStopWords").checked;
+
+        if (ignoreCase) text = text.toLowerCase();
+
+        if (ignorePunct) {
+          text = text.replace(
+            /[，。！？、；：""''（）【】《》\.\,\!\?\;\:\"\'\(\)\[\]\<\>\-\_\+\=\*\/\\@#$%^&~`|]/g,
+            " "
+          );
+        }
+        if (ignoreNums) text = text.replace(/[0-9０-９]/g, "");
+
+        let words = [];
+
+        if (mode === "char") {
+          words = text.split("").filter((c) => c.trim() && c !== " ");
+        } else if (mode === "sentence") {
+          words = text
+            .split(/[。！？\.\!\?]+/)
+            .map((s) => s.trim())
+            .filter(Boolean);
+        } else {
+          // word mode: English by space, Chinese by 2-char sliding window
+          const englishWords = text.match(/[a-zA-Z']+/g) || [];
+          const chineseSegs = text.match(/[\u4e00-\u9fff]+/g) || [];
+          const chineseWords = [];
+          chineseSegs.forEach((seg) => {
+            for (let i = 0; i < seg.length; i++) {
+              if (i + 1 < seg.length) {
+                chineseWords.push(seg.substring(i, i + 2));
+                i++;
+              } else {
+                chineseWords.push(seg[i]);
+              }
+            }
+          });
+          words = [...englishWords, ...chineseWords];
+        }
+
+        words = words.filter((w) => w && w.trim());
+        if (filterStop) words = words.filter((w) => !STOP_WORDS.has(w.toLowerCase()));
+        return words;
+      }
+
+      // ── Analyze ────────────────────────────────────────────
+      window.analyze = function () {
+        const text = document.getElementById("inputText").value;
+        if (!text.trim()) {
+          showToast("请先输入文本");
+          return;
+        }
+
+        const mode = document.getElementById("analyzeMode").value;
+        const displayCount = document.getElementById("displayCount").value;
+
+        const words = segmentText(text, mode);
+        const freqMap = new Map();
+        words.forEach((w) => freqMap.set(w, (freqMap.get(w) || 0) + 1));
+        analysisResult = [...freqMap.entries()].sort((a, b) => b[1] - a[1]);
+
+        // Stats
+        const totalChars = text.length;
+        const totalWords = words.length;
+        const uniqueWords = analysisResult.length;
+        const avgLen = totalWords > 0 ? (words.join("").length / totalWords).toFixed(1) : 0;
+        const chineseChars = (text.match(/[\u4e00-\u9fff]/g) || []).length;
+        const englishWords = (text.match(/[a-zA-Z]+/g) || []).length;
+
+        document.getElementById("statTotalChars").textContent = totalChars.toLocaleString();
+        document.getElementById("statTotalWords").textContent = totalWords.toLocaleString();
+        document.getElementById("statUniqueWords").textContent = uniqueWords.toLocaleString();
+        document.getElementById("statAvgLen").textContent = avgLen;
+        document.getElementById("statChinese").textContent = chineseChars.toLocaleString();
+        document.getElementById("statEnglish").textContent = englishWords.toLocaleString();
+
+        const limit = displayCount === "all" ? analysisResult.length : parseInt(displayCount);
+        renderFreqList(analysisResult.slice(0, limit));
+        renderWordCloud(analysisResult.slice(0, 50));
+        showToast("分析完成，共 " + uniqueWords + " 个不重复词");
+      };
+
+      // ── Render freq list ───────────────────────────────────
+      function renderFreqList(data) {
+        const el = document.getElementById("freqList");
+        if (!data.length) {
+          el.innerHTML = '<div class="placeholder-msg">没有分析结果</div>';
+          return;
+        }
+        const maxCount = data[0][1];
+        el.innerHTML = data
+          .map(
+            ([word, count], i) => `
       <div class="freq-item">
-        <span class="freq-rank ${i < 3 ? 'top' : ''}">${i + 1}</span>
+        <span class="freq-rank ${i < 3 ? "top" : ""}">${i + 1}</span>
         <span class="freq-word">${escHtml(word)}</span>
         <span class="freq-count">${count}</span>
-        <div class="freq-bar"><div class="freq-bar-fill" style="width:${(count/maxCount*100).toFixed(1)}%"></div></div>
-      </div>`).join('');
-  }
+        <div class="freq-bar"><div class="freq-bar-fill" style="width:${((count / maxCount) * 100).toFixed(1)}%"></div></div>
+      </div>`
+          )
+          .join("");
+      }
 
-  // ── Render word cloud ──────────────────────────────────
-  function renderWordCloud(data) {
-    const el = document.getElementById('wordCloud');
-    if (!data.length) {
-      el.innerHTML = '<div class="placeholder-msg">词云将在分析后显示</div>';
-      return;
-    }
-    const colors = ['#2563eb','#7c3aed','#059669','#d97706','#dc2626',
-                    '#0891b2','#9333ea','#16a34a','#ca8a04','#e11d48'];
-    const maxCount = data[0][1];
-    const minSize = 12, maxSize = 38;
-    el.innerHTML = data.map(([word, count], i) => {
-      const ratio = count / maxCount;
-      const size  = (minSize + (maxSize - minSize) * Math.sqrt(ratio)).toFixed(1);
-      return `<span class="cloud-word" style="font-size:${size}px;color:${colors[i % colors.length]}" title="${escHtml(word)}: ${count}次">${escHtml(word)}</span>`;
-    }).join('');
-  }
+      // ── Render word cloud ──────────────────────────────────
+      function renderWordCloud(data) {
+        const el = document.getElementById("wordCloud");
+        if (!data.length) {
+          el.innerHTML = '<div class="placeholder-msg">词云将在分析后显示</div>';
+          return;
+        }
+        const colors = [
+          "#2563eb",
+          "#7c3aed",
+          "#059669",
+          "#d97706",
+          "#dc2626",
+          "#0891b2",
+          "#9333ea",
+          "#16a34a",
+          "#ca8a04",
+          "#e11d48"
+        ];
+        const maxCount = data[0][1];
+        const minSize = 12,
+          maxSize = 38;
+        el.innerHTML = data
+          .map(([word, count], i) => {
+            const ratio = count / maxCount;
+            const size = (minSize + (maxSize - minSize) * Math.sqrt(ratio)).toFixed(1);
+            return `<span class="cloud-word" style="font-size:${size}px;color:${colors[i % colors.length]}" title="${escHtml(word)}: ${count}次">${escHtml(word)}</span>`;
+          })
+          .join("");
+      }
 
-  // ── Export CSV ─────────────────────────────────────────
-  window.exportCSV = function() {
-    if (!analysisResult.length) { showToast('请先进行分析'); return; }
-    let csv = '\uFEFF排名,词语,频次\n';
-    analysisResult.forEach(([w, c], i) => {
-      csv += `${i+1},"${w.replace(/"/g,'""')}",${c}\n`;
-    });
-    const a = Object.assign(document.createElement('a'), {
-      href: URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8'})),
-      download: 'word-frequency.csv'
-    });
-    a.click();
-    URL.revokeObjectURL(a.href);
-    showToast('CSV 已下载');
-  };
+      // ── Export CSV ─────────────────────────────────────────
+      window.exportCSV = function () {
+        if (!analysisResult.length) {
+          showToast("请先进行分析");
+          return;
+        }
+        let csv = "\uFEFF排名,词语,频次\n";
+        analysisResult.forEach(([w, c], i) => {
+          csv += `${i + 1},"${w.replace(/"/g, '""')}",${c}\n`;
+        });
+        const a = Object.assign(document.createElement("a"), {
+          href: URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" })),
+          download: "word-frequency.csv"
+        });
+        a.click();
+        URL.revokeObjectURL(a.href);
+        showToast("CSV 已下载");
+      };
 
-  // ── Copy freq list ─────────────────────────────────────
-  window.copyFreqList = function() {
-    if (!analysisResult.length) { showToast('请先进行分析'); return; }
-    const limit = document.getElementById('displayCount').value;
-    const data  = limit === 'all' ? analysisResult : analysisResult.slice(0, parseInt(limit));
-    const text  = '排名\t词语\t频次\n' + data.map(([w,c],i) => `${i+1}\t${w}\t${c}`).join('\n');
-    navigator.clipboard.writeText(text).then(() => showToast('已复制到剪贴板'));
-  };
+      // ── Copy freq list ─────────────────────────────────────
+      window.copyFreqList = function () {
+        if (!analysisResult.length) {
+          showToast("请先进行分析");
+          return;
+        }
+        const limit = document.getElementById("displayCount").value;
+        const data = limit === "all" ? analysisResult : analysisResult.slice(0, parseInt(limit));
+        const text =
+          "排名\t词语\t频次\n" + data.map(([w, c], i) => `${i + 1}\t${w}\t${c}`).join("\n");
+        navigator.clipboard.writeText(text).then(() => showToast("已复制到剪贴板"));
+      };
 
-  // ── Clear ──────────────────────────────────────────────
-  window.clearInput = function() {
-    document.getElementById('inputText').value = '';
-    document.getElementById('charCount').textContent = '0';
-    analysisResult = [];
-    ['statTotalChars','statTotalWords','statUniqueWords','statAvgLen','statChinese','statEnglish']
-      .forEach(id => document.getElementById(id).textContent = '—');
-    document.getElementById('freqList').innerHTML  = '<div class="placeholder-msg">分析结果将显示在这里</div>';
-    document.getElementById('wordCloud').innerHTML = '<div class="placeholder-msg">词云将在分析后显示</div>';
-  };
+      // ── Clear ──────────────────────────────────────────────
+      window.clearInput = function () {
+        document.getElementById("inputText").value = "";
+        document.getElementById("charCount").textContent = "0";
+        analysisResult = [];
+        [
+          "statTotalChars",
+          "statTotalWords",
+          "statUniqueWords",
+          "statAvgLen",
+          "statChinese",
+          "statEnglish"
+        ].forEach((id) => (document.getElementById(id).textContent = "—"));
+        document.getElementById("freqList").innerHTML =
+          '<div class="placeholder-msg">分析结果将显示在这里</div>';
+        document.getElementById("wordCloud").innerHTML =
+          '<div class="placeholder-msg">词云将在分析后显示</div>';
+      };
 
-  // ── FAQ toggle ─────────────────────────────────────────
-  window.toggleFaq = function(el) {
-    el.classList.toggle('open');
-    el.nextElementSibling.classList.toggle('open');
-  };
+      // ── FAQ toggle ─────────────────────────────────────────
+      window.toggleFaq = function (el) {
+        el.classList.toggle("open");
+        el.nextElementSibling.classList.toggle("open");
+      };
 
-  // ── Helper ─────────────────────────────────────────────
-  function escHtml(s) {
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  }
-</script>
-</body>
+      // ── Helper ─────────────────────────────────────────────
+      function escHtml(s) {
+        return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      }
+    </script>
+  </body>
 </html>
