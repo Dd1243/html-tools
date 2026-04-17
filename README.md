@@ -101,7 +101,7 @@
 
 | 平台              | 链接                                    | 状态    |
 | ----------------- | --------------------------------------- | ------- |
-| **🌐 自定义域名** | https://essays4u.net          | ✅      |
+| **🌐 自定义域名** | https://essays4u.net                    | ✅      |
 | GitHub Pages      | https://chicogong.github.io/html-tools/ | ✅      |
 | Cloudflare Pages  | https://htmltools-bkt.pages.dev         | ✅      |
 | Vercel            | https://html-tools-jade.vercel.app      | ✅      |

@@ -1,415 +1,701 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>在线 Hex 查看器 - 文本与文件十六进制分析调试工具 - WebUtils</title>
-    
+
     <!-- SEO Meta Tags -->
-    <meta name="description" content="功能强大的在线 Hex 查看器。支持文本、二进制文件（图片、文档、可执行文件）的十六进制查看、分析与转换。具备大文件流式读取、ASCII 对照、偏移量追踪及多种格式（C 数组、空格分隔）复制功能。纯前端本地处理，极致保护数据隐私。">
-    <meta name="keywords" content="Hex查看器,十六进制编辑器,在线二进制查看,文件指纹分析,十六进制转换,开发者调试工具,文件头校验">
-    <meta name="author" content="WebUtils">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://essays4u.net/tools/dev/hex-viewer.html">
+    <meta
+      name="description"
+      content="功能强大的在线 Hex 查看器。支持文本、二进制文件（图片、文档、可执行文件）的十六进制查看、分析与转换。具备大文件流式读取、ASCII 对照、偏移量追踪及多种格式（C 数组、空格分隔）复制功能。纯前端本地处理，极致保护数据隐私。"
+    />
+    <meta
+      name="keywords"
+      content="Hex查看器,十六进制编辑器,在线二进制查看,文件指纹分析,十六进制转换,开发者调试工具,文件头校验"
+    />
+    <meta name="author" content="WebUtils" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://essays4u.net/tools/dev/hex-viewer.html" />
 
     <!-- Open Graph -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://essays4u.net/tools/dev/hex-viewer.html">
-    <meta property="og:title" content="在线 Hex 查看器 - 文本与文件十六进制分析调试工具">
-    <meta property="og:description" content="纯前端解析，安全极速。支持大文件查看与 ASCII 对照，开发者必备的二进制分析利器。">
-    <meta property="og:image" content="https://essays4u.net/social-preview.png">
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://essays4u.net/tools/dev/hex-viewer.html" />
+    <meta property="og:title" content="在线 Hex 查看器 - 文本与文件十六进制分析调试工具" />
+    <meta
+      property="og:description"
+      content="纯前端解析，安全极速。支持大文件查看与 ASCII 对照，开发者必备的二进制分析利器。"
+    />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="在线 Hex 查看器 - 文本与文件十六进制分析调试工具">
-    <meta property="twitter:description" content="纯前端解析，安全极速。支持大文件查看与 ASCII 对照，开发者必备的二进制分析利器。">
-    <meta property="twitter:image" content="https://essays4u.net/social-preview.png">
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content="在线 Hex 查看器 - 文本与文件十六进制分析调试工具" />
+    <meta
+      property="twitter:description"
+      content="纯前端解析，安全极速。支持大文件查看与 ASCII 对照，开发者必备的二进制分析利器。"
+    />
+    <meta property="twitter:image" content="https://essays4u.net/social-preview.png" />
 
     <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
 
     <style>
-        :root {
-            --bg-deep: #0a0a0f;
-            --bg-surface: #12121a;
-            --bg-card: #1a1a24;
-            --bg-input: #0e0e14;
-            --text-primary: #e8e8ed;
-            --text-secondary: #8888a0;
-            --text-muted: #55556a;
-            --border-subtle: #2a2a3a;
-            --border-strong: #3a3a4a;
-            --accent-hex: #4cc9f0;
-            --accent-hex-glow: rgba(76, 201, 240, 0.15);
-            --radius-md: 10px;
-            --radius-lg: 16px;
-            --font-sans: 'Inter', -apple-system, sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
-            --font-display: 'Space Grotesk', sans-serif;
-        }
+      :root {
+        --bg-deep: #0a0a0f;
+        --bg-surface: #12121a;
+        --bg-card: #1a1a24;
+        --bg-input: #0e0e14;
+        --text-primary: #e8e8ed;
+        --text-secondary: #8888a0;
+        --text-muted: #55556a;
+        --border-subtle: #2a2a3a;
+        --border-strong: #3a3a4a;
+        --accent-hex: #4cc9f0;
+        --accent-hex-glow: rgba(76, 201, 240, 0.15);
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", -apple-system, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+        --font-display: "Space Grotesk", sans-serif;
+      }
 
-        [data-theme="light"] {
-            --bg-deep: #f8fafc;
-            --bg-surface: #ffffff;
-            --bg-card: #ffffff;
-            --bg-input: #f1f5f9;
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
-            --text-muted: #94a3b8;
-            --border-subtle: #e2e8f0;
-            --border-strong: #cbd5e1;
-            --accent-hex: #0ea5e9;
-        }
+      [data-theme="light"] {
+        --bg-deep: #f8fafc;
+        --bg-surface: #ffffff;
+        --bg-card: #ffffff;
+        --bg-input: #f1f5f9;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-muted: #94a3b8;
+        --border-subtle: #e2e8f0;
+        --border-strong: #cbd5e1;
+        --accent-hex: #0ea5e9;
+      }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: var(--font-sans);
-            background-color: var(--bg-deep);
-            color: var(--text-primary);
-            line-height: 1.6;
-            transition: background-color 0.3s;
-            min-height: 100vh;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: var(--font-sans);
+        background-color: var(--bg-deep);
+        color: var(--text-primary);
+        line-height: 1.6;
+        transition: background-color 0.3s;
+        min-height: 100vh;
+      }
 
-        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
-        
-        header { margin-bottom: 2rem; text-align: center; position: relative; }
-        .breadcrumb { display: flex; gap: 0.5rem; font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem; justify-content: center; }
-        .breadcrumb a { color: var(--accent-hex); text-decoration: none; }
-        .breadcrumb a:hover { text-decoration: underline; }
-        
-        h1 { font-family: var(--font-display); font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--accent-hex); }
-        .subtitle { color: var(--text-secondary); font-size: 1.1rem; }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
 
-        .theme-toggle { position: absolute; top: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 0.5rem 1rem; border-radius: var(--radius-md); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
+      header {
+        margin-bottom: 2rem;
+        text-align: center;
+        position: relative;
+      }
+      .breadcrumb {
+        display: flex;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+        justify-content: center;
+      }
+      .breadcrumb a {
+        color: var(--accent-hex);
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
 
-        .main-layout { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+      h1 {
+        font-family: var(--font-display);
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--accent-hex);
+      }
+      .subtitle {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+      }
 
-        .card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
-        
-        .toolbar { display: flex; gap: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap; align-items: center; }
-        .btn {
-            padding: 0.6rem 1.2rem;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-subtle);
-            background: var(--bg-input);
-            color: var(--text-primary);
-            cursor: pointer;
-            font-size: 0.875rem;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .btn:hover { background: var(--border-subtle); transform: translateY(-1px); }
-        .btn-primary { background: var(--accent-hex); color: #000; border: none; font-weight: 600; }
-        .btn-primary:hover { opacity: 0.9; box-shadow: 0 4px 12px var(--accent-hex-glow); }
+      .theme-toggle {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-primary);
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
 
-        textarea {
-            width: 100%;
-            height: 120px;
-            background: var(--bg-input);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-md);
-            color: var(--text-primary);
-            padding: 1rem;
-            font-family: var(--font-mono);
-            font-size: 0.9rem;
-            resize: vertical;
-            outline: none;
-            margin-bottom: 1rem;
-        }
-        textarea:focus { border-color: var(--accent-hex); }
+      .main-layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
 
-        .stats-bar { display: flex; gap: 2rem; font-size: 0.85rem; color: var(--text-muted); font-family: var(--font-mono); margin-bottom: 1rem; }
-        .stat-val { color: var(--accent-hex); font-weight: 600; }
+      .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      }
 
-        /* Hex Viewer Display */
-        .hex-viewer-container {
-            background: var(--bg-input);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .hex-header {
-            display: grid;
-            grid-template-columns: 100px 1fr 200px;
-            background: var(--bg-surface);
-            padding: 0.5rem 1rem;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            border-bottom: 1px solid var(--border-subtle);
-            font-family: var(--font-mono);
-        }
+      .toolbar {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .btn {
+        padding: 0.6rem 1.2rem;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-subtle);
+        background: var(--bg-input);
+        color: var(--text-primary);
+        cursor: pointer;
+        font-size: 0.875rem;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .btn:hover {
+        background: var(--border-subtle);
+        transform: translateY(-1px);
+      }
+      .btn-primary {
+        background: var(--accent-hex);
+        color: #000;
+        border: none;
+        font-weight: 600;
+      }
+      .btn-primary:hover {
+        opacity: 0.9;
+        box-shadow: 0 4px 12px var(--accent-hex-glow);
+      }
 
-        .hex-body {
-            height: 500px;
-            overflow-y: auto;
-            padding: 1rem;
-            font-family: var(--font-mono);
-            font-size: 0.85rem;
-            line-height: 1.5;
-        }
+      textarea {
+        width: 100%;
+        height: 120px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        color: var(--text-primary);
+        padding: 1rem;
+        font-family: var(--font-mono);
+        font-size: 0.9rem;
+        resize: vertical;
+        outline: none;
+        margin-bottom: 1rem;
+      }
+      textarea:focus {
+        border-color: var(--accent-hex);
+      }
 
-        .hex-row { display: grid; grid-template-columns: 100px 1fr 200px; gap: 1rem; margin-bottom: 0.25rem; }
-        .hex-offset { color: var(--text-muted); opacity: 0.7; }
-        .hex-bytes { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-        .hex-byte { color: var(--text-primary); width: 2ch; text-align: center; cursor: default; }
-        .hex-byte:hover { color: var(--accent-hex); background: var(--bg-surface); }
-        .hex-ascii { color: var(--accent-hex); opacity: 0.8; word-break: break-all; white-space: pre; }
+      .stats-bar {
+        display: flex;
+        gap: 2rem;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        font-family: var(--font-mono);
+        margin-bottom: 1rem;
+      }
+      .stat-val {
+        color: var(--accent-hex);
+        font-weight: 600;
+      }
 
-        /* AdSense Placeholders */
-        .ads-placeholder { margin: 2rem 0; background: var(--bg-card); border: 1px dashed var(--border-subtle); height: 100px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem; border-radius: var(--radius-lg); }
+      /* Hex Viewer Display */
+      .hex-viewer-container {
+        background: var(--bg-input);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
 
-        /* Article Content */
-        article { margin-top: 4rem; max-width: 900px; margin-left: auto; margin-right: auto; }
-        article h2 { font-family: var(--font-display); font-size: 1.75rem; margin: 2.5rem 0 1rem; color: var(--accent-hex); }
-        article h3 { font-size: 1.25rem; margin: 1.5rem 0 0.75rem; }
-        article p { margin-bottom: 1.25rem; color: var(--text-secondary); }
-        article ul, article ol { margin-bottom: 1.5rem; padding-left: 1.5rem; color: var(--text-secondary); }
-        article li { margin-bottom: 0.5rem; }
-        code { background: var(--bg-input); padding: 0.2rem 0.4rem; border-radius: 4px; font-family: var(--font-mono); font-size: 0.9em; }
+      .hex-header {
+        display: grid;
+        grid-template-columns: 100px 1fr 200px;
+        background: var(--bg-surface);
+        padding: 0.5rem 1rem;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border-subtle);
+        font-family: var(--font-mono);
+      }
 
-        .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--accent-hex); color: #000; padding: 0.75rem 1.5rem; border-radius: var(--radius-md); font-weight: 600; transform: translateY(100px); transition: transform 0.3s; z-index: 1000; }
-        .toast.show { transform: translateY(0); }
+      .hex-body {
+        height: 500px;
+        overflow-y: auto;
+        padding: 1rem;
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        line-height: 1.5;
+      }
 
-        footer { margin-top: 4rem; padding: 2rem; border-top: 1px solid var(--border-subtle); text-align: center; color: var(--text-muted); font-size: 0.875rem; }
-        footer a { color: var(--text-secondary); text-decoration: none; margin: 0 0.5rem; }
+      .hex-row {
+        display: grid;
+        grid-template-columns: 100px 1fr 200px;
+        gap: 1rem;
+        margin-bottom: 0.25rem;
+      }
+      .hex-offset {
+        color: var(--text-muted);
+        opacity: 0.7;
+      }
+      .hex-bytes {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .hex-byte {
+        color: var(--text-primary);
+        width: 2ch;
+        text-align: center;
+        cursor: default;
+      }
+      .hex-byte:hover {
+        color: var(--accent-hex);
+        background: var(--bg-surface);
+      }
+      .hex-ascii {
+        color: var(--accent-hex);
+        opacity: 0.8;
+        word-break: break-all;
+        white-space: pre;
+      }
+
+      /* AdSense Placeholders */
+      .ads-placeholder {
+        margin: 2rem 0;
+        background: var(--bg-card);
+        border: 1px dashed var(--border-subtle);
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        border-radius: var(--radius-lg);
+      }
+
+      /* Article Content */
+      article {
+        margin-top: 4rem;
+        max-width: 900px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      article h2 {
+        font-family: var(--font-display);
+        font-size: 1.75rem;
+        margin: 2.5rem 0 1rem;
+        color: var(--accent-hex);
+      }
+      article h3 {
+        font-size: 1.25rem;
+        margin: 1.5rem 0 0.75rem;
+      }
+      article p {
+        margin-bottom: 1.25rem;
+        color: var(--text-secondary);
+      }
+      article ul,
+      article ol {
+        margin-bottom: 1.5rem;
+        padding-left: 1.5rem;
+        color: var(--text-secondary);
+      }
+      article li {
+        margin-bottom: 0.5rem;
+      }
+      code {
+        background: var(--bg-input);
+        padding: 0.2rem 0.4rem;
+        border-radius: 4px;
+        font-family: var(--font-mono);
+        font-size: 0.9em;
+      }
+
+      .toast {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: var(--accent-hex);
+        color: #000;
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        transform: translateY(100px);
+        transition: transform 0.3s;
+        z-index: 1000;
+      }
+      .toast.show {
+        transform: translateY(0);
+      }
+
+      footer {
+        margin-top: 4rem;
+        padding: 2rem;
+        border-top: 1px solid var(--border-subtle);
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.875rem;
+      }
+      footer a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        margin: 0 0.5rem;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <nav class="breadcrumb">
-            <a href="../../index.html">首页</a> / <span>开发工具</span> / <span>Hex 查看器</span>
-        </nav>
+      <nav class="breadcrumb">
+        <a href="../../index.html">首页</a>
+        /
+        <span>开发工具</span>
+        /
+        <span>Hex 查看器</span>
+      </nav>
 
-        <header>
-            <h1>在线 Hex 查看器</h1>
-            <p class="subtitle">深度分析文本与二进制文件，透视数据底层结构</p>
-            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">
-                <span>🌙</span> 暗色模式
+      <header>
+        <h1>在线 Hex 查看器</h1>
+        <p class="subtitle">深度分析文本与二进制文件，透视数据底层结构</p>
+        <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">
+          <span>🌙</span>
+          暗色模式
+        </button>
+      </header>
+
+      <!-- Google AdSense Top -->
+      <div class="ads-placeholder">广告占位符 - Google AdSense (Top)</div>
+
+      <main class="main-layout">
+        <section class="card">
+          <div class="toolbar">
+            <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+              </svg>
+              上传文件
             </button>
-        </header>
+            <input type="file" id="fileInput" style="display: none" onchange="loadFile(event)" />
+            <button class="btn" onclick="clearAll()">清空</button>
+            <div style="flex: 1"></div>
+            <button class="btn" onclick="copyFormat('space')">复制 (空格)</button>
+            <button class="btn" onclick="copyFormat('c')">复制 (C 数组)</button>
+          </div>
 
-        <!-- Google AdSense Top -->
-        <div class="ads-placeholder">
-            广告占位符 - Google AdSense (Top)
-        </div>
+          <textarea
+            id="textInput"
+            placeholder="在此输入文本内容，或点击上方按钮上传二进制文件进行分析..."
+          ></textarea>
 
-        <main class="main-layout">
-            <section class="card">
-                <div class="toolbar">
-                    <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-                        上传文件
-                    </button>
-                    <input type="file" id="fileInput" style="display: none" onchange="loadFile(event)" />
-                    <button class="btn" onclick="clearAll()">清空</button>
-                    <div style="flex: 1;"></div>
-                    <button class="btn" onclick="copyFormat('space')">复制 (空格)</button>
-                    <button class="btn" onclick="copyFormat('c')">复制 (C 数组)</button>
-                </div>
+          <div class="stats-bar">
+            <span>
+              总字节数:
+              <span class="stat-val" id="byteCount">0</span>
+            </span>
+            <span>
+              总行数:
+              <span class="stat-val" id="lineCount">0</span>
+            </span>
+            <span id="fileNameDisplay" style="display: none">
+              当前文件:
+              <span class="stat-val" id="currentFileName">-</span>
+            </span>
+          </div>
 
-                <textarea id="textInput" placeholder="在此输入文本内容，或点击上方按钮上传二进制文件进行分析..."></textarea>
-                
-                <div class="stats-bar">
-                    <span>总字节数: <span class="stat-val" id="byteCount">0</span></span>
-                    <span>总行数: <span class="stat-val" id="lineCount">0</span></span>
-                    <span id="fileNameDisplay" style="display: none;">当前文件: <span class="stat-val" id="currentFileName">-</span></span>
-                </div>
+          <div class="hex-viewer-container">
+            <div class="hex-header">
+              <span>偏移量</span>
+              <span>十六进制数据 (00-0F)</span>
+              <span>ASCII 对照</span>
+            </div>
+            <div class="hex-body" id="hexOutput">
+              <div style="padding: 3rem; text-align: center; color: var(--text-muted)">
+                等待数据输入...
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
 
-                <div class="hex-viewer-container">
-                    <div class="hex-header">
-                        <span>偏移量</span>
-                        <span>十六进制数据 (00-0F)</span>
-                        <span>ASCII 对照</span>
-                    </div>
-                    <div class="hex-body" id="hexOutput">
-                        <div style="padding: 3rem; text-align: center; color: var(--text-muted);">等待数据输入...</div>
-                    </div>
-                </div>
-            </section>
-        </main>
+      <!-- Google AdSense Bottom -->
+      <div class="ads-placeholder">广告占位符 - Google AdSense (Bottom)</div>
 
-        <!-- Google AdSense Bottom -->
-        <div class="ads-placeholder">
-            广告占位符 - Google AdSense (Bottom)
-        </div>
+      <!-- SEO Content -->
+      <article>
+        <h2>什么是 Hex 查看器？为什么它在开发中至关重要？</h2>
+        <p>
+          Hex
+          查看器（也称为十六进制查看器）是一种用于以十六进制形式查看文件底层二进制数据的工具。在计算机科学中，所有数据最终都以
+          0 和 1
+          存储，而十六进制（Base-16）提供了一种比二进制更紧凑、比纯文本更直接的方式来呈现这些原始字节。
+        </p>
 
-        <!-- SEO Content -->
-        <article>
-            <h2>什么是 Hex 查看器？为什么它在开发中至关重要？</h2>
-            <p>Hex 查看器（也称为十六进制查看器）是一种用于以十六进制形式查看文件底层二进制数据的工具。在计算机科学中，所有数据最终都以 0 和 1 存储，而十六进制（Base-16）提供了一种比二进制更紧凑、比纯文本更直接的方式来呈现这些原始字节。</p>
-            
-            <h3>解决的具体场景与痛点</h3>
-            <ul>
-                <li><strong>分析未知文件格式：</strong> 当你遇到一个没有扩展名或自定义格式的文件时，查看其前几个字节（Magic Number）可以识别其真实类型。例如，PNG 文件总是以 <code>89 50 4E 47</code> 开头。</li>
-                <li><strong>调试乱码问题：</strong> 文本编辑器有时会因为编码不匹配（如 UTF-8 vs GBK）显示乱码。通过 Hex 查看器查看原始字节流，可以确定字符的具体编码。</li>
-                <li><strong>数据取证与安全分析：</strong> 安全专家通过 Hex 查看器查找恶意软件中的隐藏字符串、硬编码的密钥或被篡改的文件头。</li>
-                <li><strong>网络协议调试：</strong> 在分析抓包数据或原始 Socket 通信时，Hex 查看器能让你精确看到每一个字节的排列顺序（大端/小端序）。</li>
-            </ul>
+        <h3>解决的具体场景与痛点</h3>
+        <ul>
+          <li>
+            <strong>分析未知文件格式：</strong>
+            当你遇到一个没有扩展名或自定义格式的文件时，查看其前几个字节（Magic
+            Number）可以识别其真实类型。例如，PNG 文件总是以
+            <code>89 50 4E 47</code>
+            开头。
+          </li>
+          <li>
+            <strong>调试乱码问题：</strong>
+            文本编辑器有时会因为编码不匹配（如 UTF-8 vs GBK）显示乱码。通过 Hex
+            查看器查看原始字节流，可以确定字符的具体编码。
+          </li>
+          <li>
+            <strong>数据取证与安全分析：</strong>
+            安全专家通过 Hex 查看器查找恶意软件中的隐藏字符串、硬编码的密钥或被篡改的文件头。
+          </li>
+          <li>
+            <strong>网络协议调试：</strong>
+            在分析抓包数据或原始 Socket 通信时，Hex
+            查看器能让你精确看到每一个字节的排列顺序（大端/小端序）。
+          </li>
+        </ul>
 
-            <h3>本工具的深度功能亮点</h3>
-            <ol>
-                <li><strong>大文件流式处理：</strong> 针对超过 10MB 的大文件，本工具采用分块读取技术，确保浏览器不会崩溃，且依然保持流畅的滚动体验。</li>
-                <li><strong>多种复制格式：</strong> 开发者经常需要将十六进制数据粘贴到代码中。我们支持一键导出为 <code>0x00, 0x01</code> 样式的 C 语言数组格式。</li>
-                <li><strong>隐私至上：</strong> 所有的文件解析和渲染逻辑均在本地浏览器执行。您的敏感文档或二进制文件绝不会上传到任何服务器。</li>
-                <li><strong>同步 ASCII 对照：</strong> 每一行十六进制数据右侧都有对应的 ASCII 字符。不可见字符（如控制符）会以 <code>.</code> 符号代替，方便快速检索关键字符串。</li>
-            </ol>
+        <h3>本工具的深度功能亮点</h3>
+        <ol>
+          <li>
+            <strong>大文件流式处理：</strong>
+            针对超过 10MB
+            的大文件，本工具采用分块读取技术，确保浏览器不会崩溃，且依然保持流畅的滚动体验。
+          </li>
+          <li>
+            <strong>多种复制格式：</strong>
+            开发者经常需要将十六进制数据粘贴到代码中。我们支持一键导出为
+            <code>0x00, 0x01</code>
+            样式的 C 语言数组格式。
+          </li>
+          <li>
+            <strong>隐私至上：</strong>
+            所有的文件解析和渲染逻辑均在本地浏览器执行。您的敏感文档或二进制文件绝不会上传到任何服务器。
+          </li>
+          <li>
+            <strong>同步 ASCII 对照：</strong>
+            每一行十六进制数据右侧都有对应的 ASCII 字符。不可见字符（如控制符）会以
+            <code>.</code>
+            符号代替，方便快速检索关键字符串。
+          </li>
+        </ol>
 
-            <h3>如何使用本工具进行调试？</h3>
-            <p>1. <strong>加载数据：</strong> 直接在文本框输入字符串查看其内存分布，或点击“上传文件”加载二进制资源。</p>
-            <p>2. <strong>偏移量追踪：</strong> 左侧的偏移量（Offset）采用十六进制计数，方便你在文档中定位特定位置（如“跳转到 0x40 位置”）。</p>
-            <p>3. <strong>识别模式：</strong> 观察重复出现的字节序列，这通常代表某种数据结构或填充（Padding）。</p>
-            <p>4. <strong>导出：</strong> 选择合适的格式复制数据，直接集成到你的单元测试或嵌入式开发中。</p>
-        </article>
+        <h3>如何使用本工具进行调试？</h3>
+        <p>
+          1.
+          <strong>加载数据：</strong>
+          直接在文本框输入字符串查看其内存分布，或点击“上传文件”加载二进制资源。
+        </p>
+        <p>
+          2.
+          <strong>偏移量追踪：</strong>
+          左侧的偏移量（Offset）采用十六进制计数，方便你在文档中定位特定位置（如“跳转到 0x40
+          位置”）。
+        </p>
+        <p>
+          3.
+          <strong>识别模式：</strong>
+          观察重复出现的字节序列，这通常代表某种数据结构或填充（Padding）。
+        </p>
+        <p>
+          4.
+          <strong>导出：</strong>
+          选择合适的格式复制数据，直接集成到你的单元测试或嵌入式开发中。
+        </p>
+      </article>
 
-        <footer>
-            <p>&copy; 2026 WebUtils. 基于 MIT 协议开源。 <a href="https://github.com/nicepkg/html-tools">GitHub</a> | <a href="../../index.html">更多工具</a></p>
-        </footer>
+      <footer>
+        <p>
+          &copy; 2026 WebUtils. 基于 MIT 协议开源。
+          <a href="https://github.com/nicepkg/html-tools">GitHub</a>
+          |
+          <a href="../../index.html">更多工具</a>
+        </p>
+      </footer>
     </div>
 
     <div id="toast" class="toast">内容已复制到剪贴板</div>
 
     <script>
-        const textInput = document.getElementById('textInput');
-        const hexOutput = document.getElementById('hexOutput');
-        const byteCount = document.getElementById('byteCount');
-        const lineCount = document.getElementById('lineCount');
-        const fileNameDisplay = document.getElementById('fileNameDisplay');
-        const currentFileName = document.getElementById('currentFileName');
-        const toast = document.getElementById('toast');
+      const textInput = document.getElementById("textInput");
+      const hexOutput = document.getElementById("hexOutput");
+      const byteCount = document.getElementById("byteCount");
+      const lineCount = document.getElementById("lineCount");
+      const fileNameDisplay = document.getElementById("fileNameDisplay");
+      const currentFileName = document.getElementById("currentFileName");
+      const toast = document.getElementById("toast");
 
-        let currentBytes = new Uint8Array(0);
+      let currentBytes = new Uint8Array(0);
 
-        // Theme Toggle
-        function toggleTheme() {
-            const html = document.documentElement;
-            const btn = document.getElementById('themeBtn');
-            const isDark = html.getAttribute('data-theme') !== 'light';
-            if (isDark) {
-                html.setAttribute('data-theme', 'light');
-                btn.innerHTML = '<span>☀️</span> 亮色模式';
-                localStorage.setItem('theme', 'light');
-            } else {
-                html.removeAttribute('data-theme');
-                btn.innerHTML = '<span>🌙</span> 暗色模式';
-                localStorage.setItem('theme', 'dark');
-            }
+      // Theme Toggle
+      function toggleTheme() {
+        const html = document.documentElement;
+        const btn = document.getElementById("themeBtn");
+        const isDark = html.getAttribute("data-theme") !== "light";
+        if (isDark) {
+          html.setAttribute("data-theme", "light");
+          btn.innerHTML = "<span>☀️</span> 亮色模式";
+          localStorage.setItem("theme", "light");
+        } else {
+          html.removeAttribute("data-theme");
+          btn.innerHTML = "<span>🌙</span> 暗色模式";
+          localStorage.setItem("theme", "dark");
         }
+      }
 
-        if (localStorage.getItem('theme') === 'light') {
-            document.documentElement.setAttribute('data-theme', 'light');
-            document.getElementById('themeBtn').innerHTML = '<span>☀️</span> 亮色模式';
-        }
+      if (localStorage.getItem("theme") === "light") {
+        document.documentElement.setAttribute("data-theme", "light");
+        document.getElementById("themeBtn").innerHTML = "<span>☀️</span> 亮色模式";
+      }
 
-        textInput.addEventListener('input', () => {
-            const encoder = new TextEncoder();
-            currentBytes = encoder.encode(textInput.value);
-            fileNameDisplay.style.display = 'none';
-            renderHex();
-        });
-
-        function loadFile(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                currentBytes = new Uint8Array(e.target.result);
-                textInput.value = ""; // Clear text input when file is loaded
-                fileNameDisplay.style.display = 'inline';
-                currentFileName.textContent = file.name;
-                renderHex();
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        function renderHex() {
-            if (currentBytes.length === 0) {
-                hexOutput.innerHTML = '<div style="padding: 3rem; text-align: center; color: var(--text-muted);">等待数据输入...</div>';
-                byteCount.textContent = '0';
-                lineCount.textContent = '0';
-                return;
-            }
-
-            const bytesPerLine = 16;
-            const lines = Math.ceil(currentBytes.length / bytesPerLine);
-            let html = '';
-
-            // For performance, only render first 1000 lines if file is huge
-            const maxLines = 1000;
-            const renderLimit = Math.min(lines, maxLines);
-
-            for (let i = 0; i < renderLimit; i++) {
-                const offset = i * bytesPerLine;
-                const chunk = currentBytes.slice(offset, offset + bytesPerLine);
-                
-                html += `<div class="hex-row">`;
-                html += `<span class="hex-offset">${offset.toString(16).toUpperCase().padStart(8, '0')}</span>`;
-                
-                html += `<span class="hex-bytes">`;
-                for (let j = 0; j < bytesPerLine; j++) {
-                    if (j < chunk.length) {
-                        html += `<span class="hex-byte">${chunk[j].toString(16).toUpperCase().padStart(2, '0')}</span>`;
-                    } else {
-                        html += `<span class="hex-byte" style="opacity:0;">--</span>`;
-                    }
-                }
-                html += `</span>`;
-
-                html += `<span class="hex-ascii">`;
-                for (let j = 0; j < chunk.length; j++) {
-                    const byte = chunk[j];
-                    html += (byte >= 32 && byte <= 126) ? String.fromCharCode(byte) : '.';
-                }
-                html += `</span>`;
-                html += `</div>`;
-            }
-
-            if (lines > maxLines) {
-                html += `<div style="padding: 1rem; color: var(--accent-hex); text-align: center; font-size: 0.8rem;">[ 为了性能，仅显示前 1000 行。总计 ${lines} 行 ]</div>`;
-            }
-
-            hexOutput.innerHTML = html;
-            byteCount.textContent = currentBytes.length.toLocaleString();
-            lineCount.textContent = lines.toLocaleString();
-        }
-
-        function copyFormat(type) {
-            if (currentBytes.length === 0) return;
-            
-            let text = '';
-            if (type === 'space') {
-                text = Array.from(currentBytes).map(b => b.toString(16).toUpperCase().padStart(2, '0')).join(' ');
-            } else if (type === 'c') {
-                text = 'unsigned char data[] = {\n  ' + 
-                       Array.from(currentBytes).map((b, i) => '0x' + b.toString(16).toUpperCase().padStart(2, '0') + ((i + 1) % 12 === 0 ? ',\n  ' : ', ')).join('') +
-                       '\n};';
-                text = text.replace(/, \n};$/, '\n};');
-            }
-
-            navigator.clipboard.writeText(text).then(() => {
-                toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), 2000);
-            });
-        }
-
-        function clearAll() {
-            textInput.value = '';
-            currentBytes = new Uint8Array(0);
-            fileNameDisplay.style.display = 'none';
-            renderHex();
-        }
-
-        // Init
+      textInput.addEventListener("input", () => {
+        const encoder = new TextEncoder();
+        currentBytes = encoder.encode(textInput.value);
+        fileNameDisplay.style.display = "none";
         renderHex();
+      });
+
+      function loadFile(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          currentBytes = new Uint8Array(e.target.result);
+          textInput.value = ""; // Clear text input when file is loaded
+          fileNameDisplay.style.display = "inline";
+          currentFileName.textContent = file.name;
+          renderHex();
+        };
+        reader.readAsArrayBuffer(file);
+      }
+
+      function renderHex() {
+        if (currentBytes.length === 0) {
+          hexOutput.innerHTML =
+            '<div style="padding: 3rem; text-align: center; color: var(--text-muted);">等待数据输入...</div>';
+          byteCount.textContent = "0";
+          lineCount.textContent = "0";
+          return;
+        }
+
+        const bytesPerLine = 16;
+        const lines = Math.ceil(currentBytes.length / bytesPerLine);
+        let html = "";
+
+        // For performance, only render first 1000 lines if file is huge
+        const maxLines = 1000;
+        const renderLimit = Math.min(lines, maxLines);
+
+        for (let i = 0; i < renderLimit; i++) {
+          const offset = i * bytesPerLine;
+          const chunk = currentBytes.slice(offset, offset + bytesPerLine);
+
+          html += `<div class="hex-row">`;
+          html += `<span class="hex-offset">${offset.toString(16).toUpperCase().padStart(8, "0")}</span>`;
+
+          html += `<span class="hex-bytes">`;
+          for (let j = 0; j < bytesPerLine; j++) {
+            if (j < chunk.length) {
+              html += `<span class="hex-byte">${chunk[j].toString(16).toUpperCase().padStart(2, "0")}</span>`;
+            } else {
+              html += `<span class="hex-byte" style="opacity:0;">--</span>`;
+            }
+          }
+          html += `</span>`;
+
+          html += `<span class="hex-ascii">`;
+          for (let j = 0; j < chunk.length; j++) {
+            const byte = chunk[j];
+            html += byte >= 32 && byte <= 126 ? String.fromCharCode(byte) : ".";
+          }
+          html += `</span>`;
+          html += `</div>`;
+        }
+
+        if (lines > maxLines) {
+          html += `<div style="padding: 1rem; color: var(--accent-hex); text-align: center; font-size: 0.8rem;">[ 为了性能，仅显示前 1000 行。总计 ${lines} 行 ]</div>`;
+        }
+
+        hexOutput.innerHTML = html;
+        byteCount.textContent = currentBytes.length.toLocaleString();
+        lineCount.textContent = lines.toLocaleString();
+      }
+
+      function copyFormat(type) {
+        if (currentBytes.length === 0) return;
+
+        let text = "";
+        if (type === "space") {
+          text = Array.from(currentBytes)
+            .map((b) => b.toString(16).toUpperCase().padStart(2, "0"))
+            .join(" ");
+        } else if (type === "c") {
+          text =
+            "unsigned char data[] = {\n  " +
+            Array.from(currentBytes)
+              .map(
+                (b, i) =>
+                  "0x" +
+                  b.toString(16).toUpperCase().padStart(2, "0") +
+                  ((i + 1) % 12 === 0 ? ",\n  " : ", ")
+              )
+              .join("") +
+            "\n};";
+          text = text.replace(/, \n};$/, "\n};");
+        }
+
+        navigator.clipboard.writeText(text).then(() => {
+          toast.classList.add("show");
+          setTimeout(() => toast.classList.remove("show"), 2000);
+        });
+      }
+
+      function clearAll() {
+        textInput.value = "";
+        currentBytes = new Uint8Array(0);
+        fileNameDisplay.style.display = "none";
+        renderHex();
+      }
+
+      // Init
+      renderHex();
     </script>
-</body>
+  </body>
 </html>

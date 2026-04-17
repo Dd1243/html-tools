@@ -1,412 +1,744 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>在线字符串转义工具 - JSON, HTML, URL, JavaScript 转义与反转义 - WebUtils</title>
-    <meta name="description" content="一个全能的在线字符串转义与反转义工具。支持 JSON 字符串、HTML 实体、URL 编码 (Percent-encoding)、JavaScript/Java 字符串、CSV 格式等的相互转换。程序员必备开发工具。">
-    <meta name="keywords" content="字符串转义, 反转义, JSON 转义, HTML 实体转换, URL 编码, JavaScript 转义, 程序员工具, XSS 防护">
-    
+    <meta
+      name="description"
+      content="一个全能的在线字符串转义与反转义工具。支持 JSON 字符串、HTML 实体、URL 编码 (Percent-encoding)、JavaScript/Java 字符串、CSV 格式等的相互转换。程序员必备开发工具。"
+    />
+    <meta
+      name="keywords"
+      content="字符串转义, 反转义, JSON 转义, HTML 实体转换, URL 编码, JavaScript 转义, 程序员工具, XSS 防护"
+    />
+
     <!-- Open Graph -->
-    <meta property="og:title" content="在线字符串转义工具 - 全能编码转换器">
-    <meta property="og:description" content="快速在多种编程环境下进行字符串转义与还原。支持 JSON, HTML, URL, JS, CSV 等。">
-    <meta property="og:type" content="website">
-    <link rel="canonical" href="https://essays4u.net/tools/text/string-escape.html">
+    <meta property="og:title" content="在线字符串转义工具 - 全能编码转换器" />
+    <meta
+      property="og:description"
+      content="快速在多种编程环境下进行字符串转义与还原。支持 JSON, HTML, URL, JS, CSV 等。"
+    />
+    <meta property="og:type" content="website" />
+    <link rel="canonical" href="https://essays4u.net/tools/text/string-escape.html" />
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        :root {
-            --primary: #3b82f6;
-            --primary-dark: #2563eb;
-            --secondary: #64748b;
-            --success: #10b981;
-            --danger: #ef4444;
-            --bg-main: #f8fafc;
-            --bg-card: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --radius: 8px;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      :root {
+        --primary: #3b82f6;
+        --primary-dark: #2563eb;
+        --secondary: #64748b;
+        --success: #10b981;
+        --danger: #ef4444;
+        --bg-main: #f8fafc;
+        --bg-card: #ffffff;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --border: #e2e8f0;
+        --radius: 8px;
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+
+      [data-theme="dark"] {
+        --bg-main: #0f172a;
+        --bg-card: #1e293b;
+        --text-main: #f1f5f9;
+        --text-muted: #94a3b8;
+        --border: #334155;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Inter", system-ui, sans-serif;
+        background: var(--bg-main);
+        color: var(--text-main);
+        line-height: 1.6;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      /* Header */
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+      }
+      .logo {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--primary);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .nav-links {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+      }
+      .nav-links a {
+        text-decoration: none;
+        color: var(--text-muted);
+        font-size: 14px;
+        font-weight: 500;
+      }
+      .theme-toggle {
+        background: none;
+        border: 1px solid var(--border);
+        padding: 8px;
+        border-radius: 50%;
+        cursor: pointer;
+        color: var(--text-main);
+      }
+
+      /* Main Layout */
+      .layout {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 24px;
+      }
+      @media (max-width: 1024px) {
+        .layout {
+          grid-template-columns: 1fr;
         }
+      }
 
-        [data-theme="dark"] {
-            --bg-main: #0f172a;
-            --bg-card: #1e293b;
-            --text-main: #f1f5f9;
-            --text-muted: #94a3b8;
-            --border: #334155;
-        }
+      /* Tool Card */
+      .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px;
+        box-shadow: var(--shadow);
+      }
+      .tool-header {
+        margin-bottom: 24px;
+      }
+      .tool-header h1 {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--primary);
+      }
+      .tool-header p {
+        color: var(--text-muted);
+        font-size: 15px;
+      }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg-main); color: var(--text-main); line-height: 1.6; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        
-        /* Header */
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .logo { font-size: 24px; font-weight: 700; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 8px; }
-        .nav-links { display: flex; gap: 20px; align-items: center; }
-        .nav-links a { text-decoration: none; color: var(--text-muted); font-size: 14px; font-weight: 500; }
-        .theme-toggle { background: none; border: 1px solid var(--border); padding: 8px; border-radius: 50%; cursor: pointer; color: var(--text-main); }
+      .mode-selector {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 20px;
+        padding: 4px;
+        background: var(--bg-main);
+        border-radius: 6px;
+        width: fit-content;
+      }
+      .mode-btn {
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+        background: transparent;
+        color: var(--text-muted);
+      }
+      .mode-btn.active {
+        background: var(--primary);
+        color: white;
+        box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+      }
 
-        /* Main Layout */
-        .layout { display: grid; grid-template-columns: 1fr 320px; gap: 24px; }
-        @media (max-width: 1024px) { .layout { grid-template-columns: 1fr; } }
+      .action-toggle {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 20px;
+      }
+      .action-btn {
+        flex: 1;
+        padding: 10px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1px solid var(--border);
+        background: var(--bg-card);
+        color: var(--text-muted);
+      }
+      .action-btn.active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+      }
 
-        /* Tool Card */
-        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); }
-        .tool-header { margin-bottom: 24px; }
-        .tool-header h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: var(--primary); }
-        .tool-header p { color: var(--text-muted); font-size: 15px; }
+      .form-section {
+        margin-bottom: 20px;
+      }
+      .form-section label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+      }
+      textarea {
+        width: 100%;
+        height: 180px;
+        padding: 12px 16px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: var(--bg-main);
+        color: var(--text-main);
+        font-size: 14px;
+        font-family: "JetBrains Mono", monospace;
+        transition: border-color 0.2s;
+        resize: vertical;
+      }
+      textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
 
-        .mode-selector { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; padding: 4px; background: var(--bg-main); border-radius: 6px; width: fit-content; }
-        .mode-btn { padding: 8px 16px; border-radius: 4px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; border: none; background: transparent; color: var(--text-muted); }
-        .mode-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3); }
+      .btn-group {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      button.btn {
+        padding: 10px 20px;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+      }
+      .btn-primary:hover {
+        background: var(--primary-dark);
+      }
+      .btn-secondary {
+        background: var(--bg-main);
+        color: var(--text-main);
+        border: 1px solid var(--border);
+      }
+      .btn-secondary:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
 
-        .action-toggle { display: flex; gap: 8px; margin-bottom: 20px; }
-        .action-btn { flex: 1; padding: 10px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-muted); }
-        .action-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+      .info-panel {
+        margin-top: 20px;
+        padding: 16px;
+        background: #eff6ff;
+        border-radius: 6px;
+        border: 1px solid #bfdbfe;
+        font-size: 14px;
+      }
+      .info-panel h4 {
+        color: #1d4ed8;
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+      .info-panel ul {
+        list-style: inside;
+        color: #1e40af;
+      }
 
-        .form-section { margin-bottom: 20px; }
-        .form-section label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); text-transform: uppercase; }
-        textarea { width: 100%; height: 180px; padding: 12px 16px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-main); color: var(--text-main); font-size: 14px; font-family: 'JetBrains Mono', monospace; transition: border-color 0.2s; resize: vertical; }
-        textarea:focus { outline: none; border-color: var(--primary); }
+      /* Sidebar */
+      .sidebar-section {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      .sidebar-section h3 {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        border-left: 4px solid var(--primary);
+        padding-left: 10px;
+      }
+      .sidebar-section ul {
+        list-style: none;
+      }
+      .sidebar-section li {
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: var(--text-muted);
+      }
+      .sidebar-section a {
+        color: var(--primary);
+        text-decoration: none;
+      }
+      .sidebar-section a:hover {
+        text-decoration: underline;
+      }
 
-        .btn-group { display: flex; gap: 12px; flex-wrap: wrap; }
-        button.btn { padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; font-size: 14px; display: flex; align-items: center; gap: 8px; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-dark); }
-        .btn-secondary { background: var(--bg-main); color: var(--text-main); border: 1px solid var(--border); }
-        .btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
+      .ad-placeholder {
+        background: #f1f5f9;
+        border: 2px dashed #cbd5e1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #94a3b8;
+        font-size: 12px;
+        margin: 20px 0;
+        min-height: 250px;
+        border-radius: var(--radius);
+      }
 
-        .info-panel { margin-top: 20px; padding: 16px; background: #eff6ff; border-radius: 6px; border: 1px solid #bfdbfe; font-size: 14px; }
-        .info-panel h4 { color: #1d4ed8; margin-bottom: 8px; font-size: 14px; }
-        .info-panel ul { list-style: inside; color: #1e40af; }
+      /* Article */
+      .article {
+        margin-top: 40px;
+      }
+      .article section {
+        margin-bottom: 30px;
+      }
+      .article h2 {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 16px;
+        color: var(--primary);
+      }
+      .article p {
+        margin-bottom: 12px;
+        color: var(--text-muted);
+        font-size: 16px;
+      }
+      .article ul {
+        margin-left: 20px;
+        margin-bottom: 12px;
+        color: var(--text-muted);
+      }
 
-        /* Sidebar */
-        .sidebar-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
-        .sidebar-section h3 { font-size: 16px; font-weight: 700; margin-bottom: 12px; border-left: 4px solid var(--primary); padding-left: 10px; }
-        .sidebar-section ul { list-style: none; }
-        .sidebar-section li { margin-bottom: 8px; font-size: 14px; color: var(--text-muted); }
-        .sidebar-section a { color: var(--primary); text-decoration: none; }
-        .sidebar-section a:hover { text-decoration: underline; }
-
-        .ad-placeholder { background: #f1f5f9; border: 2px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 12px; margin: 20px 0; min-height: 250px; border-radius: var(--radius); }
-
-        /* Article */
-        .article { margin-top: 40px; }
-        .article section { margin-bottom: 30px; }
-        .article h2 { font-size: 22px; font-weight: 700; margin-bottom: 16px; color: var(--primary); }
-        .article p { margin-bottom: 12px; color: var(--text-muted); font-size: 16px; }
-        .article ul { margin-left: 20px; margin-bottom: 12px; color: var(--text-muted); }
-        
-        footer { border-top: 1px solid var(--border); margin-top: 60px; padding: 40px 0; text-align: center; color: var(--text-muted); font-size: 14px; }
+      footer {
+        border-top: 1px solid var(--border);
+        margin-top: 60px;
+        padding: 40px 0;
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 14px;
+      }
     </style>
-</head>
-<body>
-
-<div class="container">
-    <header>
+  </head>
+  <body>
+    <div class="container">
+      <header>
         <a href="../../index.html" class="logo">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3h5v5M8 3H3v5M3 16v5h5M16 21h5v-5M15 9l-6 6M9 9l6 6"></path></svg>
-            WebUtils
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M16 3h5v5M8 3H3v5M3 16v5h5M16 21h5v-5M15 9l-6 6M9 9l6 6"></path>
+          </svg>
+          WebUtils
         </a>
         <div class="nav-links">
-            <a href="../../index.html">全部工具</a>
-            <a href="https://github.com/chicogong/html-tools" target="_blank">GitHub</a>
-            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
+          <a href="../../index.html">全部工具</a>
+          <a href="https://github.com/chicogong/html-tools" target="_blank">GitHub</a>
+          <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
         </div>
-    </header>
+      </header>
 
-    <div class="layout">
+      <div class="layout">
         <main>
-            <div class="card">
-                <div class="tool-header">
-                    <h1>字符串转义工具</h1>
-                    <p>在不同编程环境和文件格式之间进行字符串的转义与反转义处理。</p>
-                </div>
-
-                <div class="mode-selector" id="modeSelector">
-                    <button class="mode-btn active" data-mode="json">JSON</button>
-                    <button class="mode-btn" data-mode="js">JavaScript / Java</button>
-                    <button class="mode-btn" data-mode="html">HTML 实体</button>
-                    <button class="mode-btn" data-mode="url">URL 编码</button>
-                    <button class="mode-btn" data-mode="csv">CSV 格式</button>
-                </div>
-
-                <div class="action-toggle" id="actionToggle">
-                    <button class="action-btn active" data-action="escape">转义 (Escape)</button>
-                    <button class="action-btn" data-action="unescape">反转义 (Unescape)</button>
-                </div>
-
-                <div class="form-section">
-                    <label id="inputLabel">输入文本</label>
-                    <textarea id="inputText" placeholder="在这里输入原始文本..."></textarea>
-                </div>
-
-                <div class="form-section">
-                    <label id="outputLabel">处理结果</label>
-                    <textarea id="outputText" readonly placeholder="转义后的结果将显示在这里..."></textarea>
-                </div>
-
-                <div class="btn-group">
-                    <button class="btn btn-primary" onclick="copyResult()">复制结果</button>
-                    <button class="btn btn-secondary" onclick="clearAll()">清空全部</button>
-                    <button class="btn btn-secondary" onclick="swapContent()">↔ 交换内容</button>
-                </div>
-
-                <div class="info-panel" id="infoPanel">
-                    <h4 id="infoTitle">JSON 转义说明</h4>
-                    <ul id="infoList">
-                        <li>\n → 换行</li>
-                        <li>\" → 双引号</li>
-                        <li>\\ → 反斜杠</li>
-                        <li>\t → 制表符</li>
-                    </ul>
-                </div>
+          <div class="card">
+            <div class="tool-header">
+              <h1>字符串转义工具</h1>
+              <p>在不同编程环境和文件格式之间进行字符串的转义与反转义处理。</p>
             </div>
 
-            <!-- SEO Content -->
-            <article class="article">
-                <section>
-                    <h2>什么是字符串转义？</h2>
-                    <p>字符串转义（String Escaping）是指在编程和数据交换中，为了在字符串内表示具有特殊意义的字符（如引号、换行、反斜杠等），使用特定的“转义序列”来替代这些字符的过程。反转义（Unescaping）则是将其还原为原始字符的过程。</p>
-                    <p>不同的语言和格式有不同的转义规则。例如，在 JSON 中，双引号必须转义为 `\"`；在 HTML 中，小于号 `<` 必须转义为 `&lt;` 以防止被浏览器解析为标签。</p>
-                </section>
+            <div class="mode-selector" id="modeSelector">
+              <button class="mode-btn active" data-mode="json">JSON</button>
+              <button class="mode-btn" data-mode="js">JavaScript / Java</button>
+              <button class="mode-btn" data-mode="html">HTML 实体</button>
+              <button class="mode-btn" data-mode="url">URL 编码</button>
+              <button class="mode-btn" data-mode="csv">CSV 格式</button>
+            </div>
 
-                <section>
-                    <h2>为什么需要转义工具？</h2>
-                    <ul>
-                        <li><strong>防止语法错误:</strong> 在代码中定义字符串时，如果字符串本身包含引号，如果不转义会导致编译器或解释器报错。</li>
-                        <li><strong>数据安全 (XSS 防护):</strong> 在将用户生成的内容渲染到网页前，必须进行 HTML 转义，以防止恶意脚本注入攻击（跨站脚本攻击，XSS）。</li>
-                        <li><strong>网络传输:</strong> URL 编码（URL Encoding）确保非法字符（如空格、中文字符）能安全地在 HTTP 请求中传输。</li>
-                        <li><strong>调试辅助:</strong> 程序员在查看日志或 API 返回值时，经常需要手动将转义后的长字符串还原为可读格式。</li>
-                    </ul>
-                </section>
+            <div class="action-toggle" id="actionToggle">
+              <button class="action-btn active" data-action="escape">转义 (Escape)</button>
+              <button class="action-btn" data-action="unescape">反转义 (Unescape)</button>
+            </div>
 
-                <section>
-                    <h2>支持的转换模式详解</h2>
-                    <ul>
-                        <li><strong>JSON:</strong> 遵循 RFC 8259 标准，处理 JSON 字符串中的控制字符和引号。常用于处理 API 的 `body` 字段。</li>
-                        <li><strong>JavaScript / Java:</strong> 处理单引号、双引号、换行符以及 Unicode 转义序列。适用于在 Java 或 JS 代码中嵌入多行文本。</li>
-                        <li><strong>HTML 实体:</strong> 将特殊符号转换为 `&...;` 形式。除了基本的 `< > & "`，还支持一些常见的西欧特殊符号转换。</li>
-                        <li><strong>URL 编码:</strong> 使用百分号编码（Percent-encoding）对组件进行编码，使 URL 包含非法字符。</li>
-                        <li><strong>CSV:</strong> 处理逗号分隔值文件中的规则，如果内容包含逗号、换行或双引号，则将其包裹在双引号中并对内部引号进行倍增。</li>
-                    </ul>
-                </section>
+            <div class="form-section">
+              <label id="inputLabel">输入文本</label>
+              <textarea id="inputText" placeholder="在这里输入原始文本..."></textarea>
+            </div>
 
-                <section>
-                    <h2>如何使用本工具？</h2>
-                    <p>1. 在上方导航栏选择所需的**转换格式**（如 HTML）。</p>
-                    <p>2. 选择操作类型：**转义**（原始 → 编码）或**反转义**（编码 → 原始）。</p>
-                    <p>3. 在第一个输入框输入文本，结果将即时显示在第二个输入框中。</p>
-                    <p>4. 点击“复制结果”即可将结果保存到剪贴板，用于您的代码或文档中。</p>
-                </section>
-            </article>
+            <div class="form-section">
+              <label id="outputLabel">处理结果</label>
+              <textarea
+                id="outputText"
+                readonly
+                placeholder="转义后的结果将显示在这里..."
+              ></textarea>
+            </div>
+
+            <div class="btn-group">
+              <button class="btn btn-primary" onclick="copyResult()">复制结果</button>
+              <button class="btn btn-secondary" onclick="clearAll()">清空全部</button>
+              <button class="btn btn-secondary" onclick="swapContent()">↔ 交换内容</button>
+            </div>
+
+            <div class="info-panel" id="infoPanel">
+              <h4 id="infoTitle">JSON 转义说明</h4>
+              <ul id="infoList">
+                <li>\n → 换行</li>
+                <li>\" → 双引号</li>
+                <li>\\ → 反斜杠</li>
+                <li>\t → 制表符</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- SEO Content -->
+          <article class="article">
+            <section>
+              <h2>什么是字符串转义？</h2>
+              <p>
+                字符串转义（String
+                Escaping）是指在编程和数据交换中，为了在字符串内表示具有特殊意义的字符（如引号、换行、反斜杠等），使用特定的“转义序列”来替代这些字符的过程。反转义（Unescaping）则是将其还原为原始字符的过程。
+              </p>
+              <p>
+                不同的语言和格式有不同的转义规则。例如，在 JSON 中，双引号必须转义为 `\"`；在 HTML
+                中，小于号 `<` 必须转义为 `&lt;` 以防止被浏览器解析为标签。
+              </p>
+            </section>
+
+            <section>
+              <h2>为什么需要转义工具？</h2>
+              <ul>
+                <li>
+                  <strong>防止语法错误:</strong>
+                  在代码中定义字符串时，如果字符串本身包含引号，如果不转义会导致编译器或解释器报错。
+                </li>
+                <li>
+                  <strong>数据安全 (XSS 防护):</strong>
+                  在将用户生成的内容渲染到网页前，必须进行 HTML
+                  转义，以防止恶意脚本注入攻击（跨站脚本攻击，XSS）。
+                </li>
+                <li>
+                  <strong>网络传输:</strong>
+                  URL 编码（URL Encoding）确保非法字符（如空格、中文字符）能安全地在 HTTP
+                  请求中传输。
+                </li>
+                <li>
+                  <strong>调试辅助:</strong>
+                  程序员在查看日志或 API 返回值时，经常需要手动将转义后的长字符串还原为可读格式。
+                </li>
+              </ul>
+            </section>
+
+            <section>
+              <h2>支持的转换模式详解</h2>
+              <ul>
+                <li>
+                  <strong>JSON:</strong>
+                  遵循 RFC 8259 标准，处理 JSON 字符串中的控制字符和引号。常用于处理 API 的 `body`
+                  字段。
+                </li>
+                <li>
+                  <strong>JavaScript / Java:</strong>
+                  处理单引号、双引号、换行符以及 Unicode 转义序列。适用于在 Java 或 JS
+                  代码中嵌入多行文本。
+                </li>
+                <li>
+                  <strong>HTML 实体:</strong>
+                  将特殊符号转换为 `&...;` 形式。除了基本的 `< > &
+                  "`，还支持一些常见的西欧特殊符号转换。
+                </li>
+                <li>
+                  <strong>URL 编码:</strong>
+                  使用百分号编码（Percent-encoding）对组件进行编码，使 URL 包含非法字符。
+                </li>
+                <li>
+                  <strong>CSV:</strong>
+                  处理逗号分隔值文件中的规则，如果内容包含逗号、换行或双引号，则将其包裹在双引号中并对内部引号进行倍增。
+                </li>
+              </ul>
+            </section>
+
+            <section>
+              <h2>如何使用本工具？</h2>
+              <p>1. 在上方导航栏选择所需的**转换格式**（如 HTML）。</p>
+              <p>2. 选择操作类型：**转义**（原始 → 编码）或**反转义**（编码 → 原始）。</p>
+              <p>3. 在第一个输入框输入文本，结果将即时显示在第二个输入框中。</p>
+              <p>4. 点击“复制结果”即可将结果保存到剪贴板，用于您的代码或文档中。</p>
+            </section>
+          </article>
         </main>
 
         <aside>
-            <div class="ad-placeholder">
-                广告占位符<br>(Google AdSense)
-            </div>
+          <div class="ad-placeholder">
+            广告占位符
+            <br />
+            (Google AdSense)
+          </div>
 
-            <div class="sidebar-section">
-                <h3>常见转义符参考</h3>
-                <ul>
-                    <li><code>\n</code> : 换行符 (Line Feed)</li>
-                    <li><code>\t</code> : 制表符 (Tab)</li>
-                    <li><code>\\</code> : 反斜杠 (Backslash)</li>
-                    <li><code>&amp;quot;</code> : HTML 中的双引号</li>
-                    <li><code>%20</code> : URL 中的空格</li>
-                </ul>
-            </div>
+          <div class="sidebar-section">
+            <h3>常见转义符参考</h3>
+            <ul>
+              <li>
+                <code>\n</code>
+                : 换行符 (Line Feed)
+              </li>
+              <li>
+                <code>\t</code>
+                : 制表符 (Tab)
+              </li>
+              <li>
+                <code>\\</code>
+                : 反斜杠 (Backslash)
+              </li>
+              <li>
+                <code>&amp;quot;</code>
+                : HTML 中的双引号
+              </li>
+              <li>
+                <code>%20</code>
+                : URL 中的空格
+              </li>
+            </ul>
+          </div>
 
-            <div class="sidebar-section">
-                <h3>相关工具</h3>
-                <ul>
-                    <li><a href="word-counter.html">字数统计</a></li>
-                    <li><a href="diff-checker.html">文本对比</a></li>
-                    <li><a href="case-converter.html">大小写转换</a></li>
-                    <li><a href="template-filler.html">模板填充器</a></li>
-                </ul>
-            </div>
+          <div class="sidebar-section">
+            <h3>相关工具</h3>
+            <ul>
+              <li><a href="word-counter.html">字数统计</a></li>
+              <li><a href="diff-checker.html">文本对比</a></li>
+              <li><a href="case-converter.html">大小写转换</a></li>
+              <li><a href="template-filler.html">模板填充器</a></li>
+            </ul>
+          </div>
 
-            <div class="ad-placeholder">
-                广告占位符<br>(Google AdSense)
-            </div>
+          <div class="ad-placeholder">
+            广告占位符
+            <br />
+            (Google AdSense)
+          </div>
         </aside>
+      </div>
+
+      <footer>
+        <p>
+          &copy; 2024 WebUtils. All rights reserved. |
+          <a href="../../index.html">返回首页</a>
+        </p>
+      </footer>
     </div>
 
-    <footer>
-        <p>&copy; 2024 WebUtils. All rights reserved. | <a href="../../index.html">返回首页</a></p>
-    </footer>
-</div>
+    <script>
+      let currentMode = "json";
+      let currentAction = "escape";
 
-<script>
-    let currentMode = "json";
-    let currentAction = "escape";
-
-    const modeInfo = {
-        json: { title: "JSON 转义说明", items: ["\\n → 换行", "\\\" → 双引号", "\\\\ → 反斜杠", "\\t → 制表符"] },
-        js: { title: "JS / Java 转义说明", items: ["\\n → 换行", "\\' → 单引号", "\\\" → 双引号", "\\\\ → 反斜杠"] },
-        html: { title: "HTML 实体说明", items: ["&lt; → <", "&gt; → >", "&amp; → &", "&quot; → \"", "&#39; → '"] },
+      const modeInfo = {
+        json: {
+          title: "JSON 转义说明",
+          items: ["\\n → 换行", '\\" → 双引号', "\\\\ → 反斜杠", "\\t → 制表符"]
+        },
+        js: {
+          title: "JS / Java 转义说明",
+          items: ["\\n → 换行", "\\' → 单引号", '\\" → 双引号', "\\\\ → 反斜杠"]
+        },
+        html: {
+          title: "HTML 实体说明",
+          items: ["&lt; → <", "&gt; → >", "&amp; → &", '&quot; → "', "&#39; → '"]
+        },
         url: { title: "URL 编码说明", items: ["空格 → %20", "& → %26", "= → %3D", "? → %3F"] },
-        csv: { title: "CSV 格式说明", items: ["双引号加倍 → \"\"", "包含逗号/换行时加双引号包裹"] }
-    };
+        csv: { title: "CSV 格式说明", items: ['双引号加倍 → ""', "包含逗号/换行时加双引号包裹"] }
+      };
 
-    const inputText = document.getElementById('inputText');
-    const outputText = document.getElementById('outputText');
-    const modeBtns = document.querySelectorAll('.mode-btn');
-    const actionBtns = document.querySelectorAll('.action-btn');
+      const inputText = document.getElementById("inputText");
+      const outputText = document.getElementById("outputText");
+      const modeBtns = document.querySelectorAll(".mode-btn");
+      const actionBtns = document.querySelectorAll(".action-btn");
 
-    // UI Switching
-    modeBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            modeBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentMode = btn.dataset.mode;
-            updateInfoPanel();
-            process();
+      // UI Switching
+      modeBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          modeBtns.forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          currentMode = btn.dataset.mode;
+          updateInfoPanel();
+          process();
         });
-    });
+      });
 
-    actionBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            actionBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentAction = btn.dataset.action;
-            document.getElementById('inputLabel').textContent = currentAction === 'escape' ? '输入文本' : '输入转义后的文本';
-            document.getElementById('outputLabel').textContent = currentAction === 'escape' ? '转义结果' : '反转义结果';
-            process();
+      actionBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          actionBtns.forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          currentAction = btn.dataset.action;
+          document.getElementById("inputLabel").textContent =
+            currentAction === "escape" ? "输入文本" : "输入转义后的文本";
+          document.getElementById("outputLabel").textContent =
+            currentAction === "escape" ? "转义结果" : "反转义结果";
+          process();
         });
-    });
+      });
 
-    function updateInfoPanel() {
+      function updateInfoPanel() {
         const info = modeInfo[currentMode];
-        document.getElementById('infoTitle').textContent = info.title;
-        document.getElementById('infoList').innerHTML = info.items.map(i => `<li>${i}</li>`).join('');
-    }
+        document.getElementById("infoTitle").textContent = info.title;
+        document.getElementById("infoList").innerHTML = info.items
+          .map((i) => `<li>${i}</li>`)
+          .join("");
+      }
 
-    // Processing Logic
-    function process() {
+      // Processing Logic
+      function process() {
         const input = inputText.value;
         if (!input) {
-            outputText.value = "";
-            return;
+          outputText.value = "";
+          return;
         }
 
         let result = "";
         try {
-            if (currentAction === 'escape') {
-                switch (currentMode) {
-                    case "json":
-                        result = JSON.stringify(input);
-                        break;
-                    case "js":
-                        result = input
-                            .replace(/\\/g, "\\\\")
-                            .replace(/'/g, "\\'")
-                            .replace(/"/g, "\\\"")
-                            .replace(/\n/g, "\\n")
-                            .replace(/\r/g, "\\r")
-                            .replace(/\t/g, "\\t");
-                        break;
-                    case "html":
-                        result = input
-                            .replace(/&/g, "&amp;")
-                            .replace(/</g, "&lt;")
-                            .replace(/>/g, "&gt;")
-                            .replace(/"/g, "&quot;")
-                            .replace(/'/g, "&#39;");
-                        break;
-                    case "url":
-                        result = encodeURIComponent(input);
-                        break;
-                    case "csv":
-                        result = (input.includes(",") || input.includes("\n") || input.includes('"'))
-                            ? '"' + input.replace(/"/g, '""') + '"'
-                            : input;
-                        break;
-                }
-            } else {
-                switch (currentMode) {
-                    case "json":
-                        try {
-                            result = JSON.parse(input);
-                        } catch (e) {
-                            // If it's not a full JSON object, try to parse it as a JSON string literal
-                            result = JSON.parse('"' + input.replace(/^"|"$/g, '').replace(/"/g, '\\"') + '"');
-                        }
-                        break;
-                    case "js":
-                        result = input
-                            .replace(/\\n/g, "\n")
-                            .replace(/\\r/g, "\r")
-                            .replace(/\\t/g, "\t")
-                            .replace(/\\'/g, "'")
-                            .replace(/\\"/g, '"')
-                            .replace(/\\\\/g, "\\");
-                        break;
-                    case "html":
-                        const doc = new DOMParser().parseFromString(input, 'text/html');
-                        result = doc.documentElement.textContent;
-                        break;
-                    case "url":
-                        result = decodeURIComponent(input);
-                        break;
-                    case "csv":
-                        result = input.replace(/^"|"$/g, "").replace(/""/g, '"');
-                        break;
-                }
+          if (currentAction === "escape") {
+            switch (currentMode) {
+              case "json":
+                result = JSON.stringify(input);
+                break;
+              case "js":
+                result = input
+                  .replace(/\\/g, "\\\\")
+                  .replace(/'/g, "\\'")
+                  .replace(/"/g, '\\"')
+                  .replace(/\n/g, "\\n")
+                  .replace(/\r/g, "\\r")
+                  .replace(/\t/g, "\\t");
+                break;
+              case "html":
+                result = input
+                  .replace(/&/g, "&amp;")
+                  .replace(/</g, "&lt;")
+                  .replace(/>/g, "&gt;")
+                  .replace(/"/g, "&quot;")
+                  .replace(/'/g, "&#39;");
+                break;
+              case "url":
+                result = encodeURIComponent(input);
+                break;
+              case "csv":
+                result =
+                  input.includes(",") || input.includes("\n") || input.includes('"')
+                    ? '"' + input.replace(/"/g, '""') + '"'
+                    : input;
+                break;
             }
-            outputText.value = result;
+          } else {
+            switch (currentMode) {
+              case "json":
+                try {
+                  result = JSON.parse(input);
+                } catch (e) {
+                  // If it's not a full JSON object, try to parse it as a JSON string literal
+                  result = JSON.parse('"' + input.replace(/^"|"$/g, "").replace(/"/g, '\\"') + '"');
+                }
+                break;
+              case "js":
+                result = input
+                  .replace(/\\n/g, "\n")
+                  .replace(/\\r/g, "\r")
+                  .replace(/\\t/g, "\t")
+                  .replace(/\\'/g, "'")
+                  .replace(/\\"/g, '"')
+                  .replace(/\\\\/g, "\\");
+                break;
+              case "html":
+                const doc = new DOMParser().parseFromString(input, "text/html");
+                result = doc.documentElement.textContent;
+                break;
+              case "url":
+                result = decodeURIComponent(input);
+                break;
+              case "csv":
+                result = input.replace(/^"|"$/g, "").replace(/""/g, '"');
+                break;
+            }
+          }
+          outputText.value = result;
         } catch (e) {
-            outputText.value = "错误: 无法解析输入内容";
+          outputText.value = "错误: 无法解析输入内容";
         }
-    }
+      }
 
-    inputText.addEventListener('input', process);
+      inputText.addEventListener("input", process);
 
-    // Helpers
-    function copyResult() {
+      // Helpers
+      function copyResult() {
         if (!outputText.value) return;
         navigator.clipboard.writeText(outputText.value).then(() => {
-            const btn = document.querySelector('.btn-primary');
-            const originalText = btn.textContent;
-            btn.textContent = "✓ 已复制";
-            setTimeout(() => { btn.textContent = originalText; }, 2000);
+          const btn = document.querySelector(".btn-primary");
+          const originalText = btn.textContent;
+          btn.textContent = "✓ 已复制";
+          setTimeout(() => {
+            btn.textContent = originalText;
+          }, 2000);
         });
-    }
+      }
 
-    function clearAll() {
+      function clearAll() {
         inputText.value = "";
         outputText.value = "";
-    }
+      }
 
-    function swapContent() {
+      function swapContent() {
         const temp = inputText.value;
         inputText.value = outputText.value;
         outputText.value = temp;
         // Also toggle action if it makes sense, but usually users just want to check the reverse
-        currentAction = currentAction === 'escape' ? 'unescape' : 'escape';
-        actionBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.action === currentAction));
+        currentAction = currentAction === "escape" ? "unescape" : "escape";
+        actionBtns.forEach((btn) =>
+          btn.classList.toggle("active", btn.dataset.action === currentAction)
+        );
         process();
-    }
+      }
 
-    // Theme Toggle
-    function toggleTheme() {
-        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-        const newTheme = isDark ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', newTheme);
-        document.getElementById('themeBtn').textContent = newTheme === 'dark' ? '☀️' : '🌙';
-        localStorage.setItem('tool_theme', newTheme);
-    }
+      // Theme Toggle
+      function toggleTheme() {
+        const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+        const newTheme = isDark ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", newTheme);
+        document.getElementById("themeBtn").textContent = newTheme === "dark" ? "☀️" : "🌙";
+        localStorage.setItem("tool_theme", newTheme);
+      }
 
-    const savedTheme = localStorage.getItem('tool_theme') || 'light';
-    if (savedTheme === 'dark') {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        document.getElementById('themeBtn').textContent = '☀️';
-    }
-</script>
-</body>
+      const savedTheme = localStorage.getItem("tool_theme") || "light";
+      if (savedTheme === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+        document.getElementById("themeBtn").textContent = "☀️";
+      }
+    </script>
+  </body>
 </html>

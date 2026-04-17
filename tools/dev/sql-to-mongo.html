@@ -1,375 +1,536 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN" data-theme="light">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SQL转MongoDB查询语法转换器 - 在线SQL转NoSQL工具 - WebUtils</title>
-    <meta name="description" content="免费在线SQL转MongoDB查询语法转换器。支持SELECT, WHERE, ORDER BY, LIMIT, GROUP BY等SQL语法自动转换为MongoDB聚合管道或find查询。适用于从关系型数据库迁移到NoSQL的开发者。">
-    <meta name="keywords" content="SQL转MongoDB,SQL to MongoDB,NoSQL转换,数据库迁移,MongoDB查询生成器,SQL解析器,WebUtils">
-    <meta name="author" content="WebUtils">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://essays4u.net/tools/dev/sql-to-mongo.html">
+    <meta
+      name="description"
+      content="免费在线SQL转MongoDB查询语法转换器。支持SELECT, WHERE, ORDER BY, LIMIT, GROUP BY等SQL语法自动转换为MongoDB聚合管道或find查询。适用于从关系型数据库迁移到NoSQL的开发者。"
+    />
+    <meta
+      name="keywords"
+      content="SQL转MongoDB,SQL to MongoDB,NoSQL转换,数据库迁移,MongoDB查询生成器,SQL解析器,WebUtils"
+    />
+    <meta name="author" content="WebUtils" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://essays4u.net/tools/dev/sql-to-mongo.html" />
 
     <!-- Open Graph -->
-    <meta property="og:title" content="SQL转MongoDB查询语法转换器 - WebUtils">
-    <meta property="og:description" content="一键将SQL查询语句转换为MongoDB查询语法，支持聚合框架和常用操作符。">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://essays4u.net/tools/dev/sql-to-mongo.html">
-    <meta property="og:image" content="https://essays4u.net/social-preview.png">
+    <meta property="og:title" content="SQL转MongoDB查询语法转换器 - WebUtils" />
+    <meta
+      property="og:description"
+      content="一键将SQL查询语句转换为MongoDB查询语法，支持聚合框架和常用操作符。"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://essays4u.net/tools/dev/sql-to-mongo.html" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/theme/dracula.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/theme/dracula.min.css"
+    />
 
     <style>
-        :root {
-            --primary-color: #10b981; /* MongoDB Green */
-            --bg-deep: #0a0a0f;
-            --bg-surface: #12121a;
-            --bg-card: #1a1a24;
-            --text-primary: #e8e8ed;
-            --text-secondary: #8888a0;
-            --border-subtle: #2a2a3a;
-            --radius-lg: 12px;
-            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-        }
+      :root {
+        --primary-color: #10b981; /* MongoDB Green */
+        --bg-deep: #0a0a0f;
+        --bg-surface: #12121a;
+        --bg-card: #1a1a24;
+        --text-primary: #e8e8ed;
+        --text-secondary: #8888a0;
+        --border-subtle: #2a2a3a;
+        --radius-lg: 12px;
+        --font-mono: "JetBrains Mono", "Fira Code", monospace;
+      }
 
-        [data-theme="light"] {
-            --bg-deep: #f8fafc;
-            --bg-surface: #ffffff;
-            --bg-card: #ffffff;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --border-subtle: #e2e8f0;
-        }
+      [data-theme="light"] {
+        --bg-deep: #f8fafc;
+        --bg-surface: #ffffff;
+        --bg-card: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border-subtle: #e2e8f0;
+      }
 
-        body {
-            background-color: var(--bg-deep);
-            color: var(--text-primary);
-            min-height: 100vh;
-        }
+      body {
+        background-color: var(--bg-deep);
+        color: var(--text-primary);
+        min-height: 100vh;
+      }
 
-        .container {
-            max-width: 1400px;
-            padding: 2rem;
-        }
+      .container {
+        max-width: 1400px;
+        padding: 2rem;
+      }
 
-        .tool-header {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
+      .tool-header {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
 
-        .tool-header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, #10b981, #3b82f6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+      .tool-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #10b981, #3b82f6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
 
+      .main-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      @media (max-width: 992px) {
         .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
+          grid-template-columns: 1fr;
         }
+      }
 
-        @media (max-width: 992px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+      .editor-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+      }
 
-        .editor-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-        }
+      .card-header {
+        padding: 1rem;
+        background: rgba(0, 0, 0, 0.05);
+        border-bottom: 1px solid var(--border-subtle);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
 
-        .card-header {
-            padding: 1rem;
-            background: rgba(0,0,0,0.05);
-            border-bottom: 1px solid var(--border-subtle);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+      .CodeMirror {
+        height: 400px;
+        font-family: var(--font-mono);
+        font-size: 14px;
+      }
 
-        .CodeMirror {
-            height: 400px;
-            font-family: var(--font-mono);
-            font-size: 14px;
-        }
+      .actions-bar {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin: 2rem 0;
+        flex-wrap: wrap;
+      }
 
-        .actions-bar {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin: 2rem 0;
-            flex-wrap: wrap;
-        }
+      .btn-convert {
+        background-color: var(--primary-color);
+        border: none;
+        padding: 0.8rem 2rem;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
 
-        .btn-convert {
-            background-color: var(--primary-color);
-            border: none;
-            padding: 0.8rem 2rem;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
+      .btn-convert:hover {
+        filter: brightness(1.1);
+      }
 
-        .btn-convert:hover {
-            filter: brightness(1.1);
-        }
+      .ads-container {
+        margin: 2rem 0;
+        min-height: 90px;
+        background: var(--bg-card);
+        border: 1px dashed var(--border-subtle);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-lg);
+      }
 
-        .ads-container {
-            margin: 2rem 0;
-            min-height: 90px;
-            background: var(--bg-card);
-            border: 1px dashed var(--border-subtle);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: var(--radius-lg);
-        }
+      .content-section {
+        background: var(--bg-card);
+        padding: 2.5rem;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-subtle);
+        line-height: 1.8;
+        margin-top: 3rem;
+      }
 
-        .content-section {
-            background: var(--bg-card);
-            padding: 2.5rem;
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border-subtle);
-            line-height: 1.8;
-            margin-top: 3rem;
-        }
+      .content-section h2 {
+        color: var(--primary-color);
+        margin-top: 2rem;
+      }
 
-        .content-section h2 {
-            color: var(--primary-color);
-            margin-top: 2rem;
-        }
+      .example-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+      }
 
-        .example-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
+      .example-item {
+        padding: 0.8rem;
+        background: var(--bg-deep);
+        border: 1px solid var(--border-subtle);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+      }
 
-        .example-item {
-            padding: 0.8rem;
-            background: var(--bg-deep);
-            border: 1px solid var(--border-subtle);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.9rem;
-        }
+      .example-item:hover {
+        border-color: var(--primary-color);
+        transform: translateY(-2px);
+      }
 
-        .example-item:hover {
-            border-color: var(--primary-color);
-            transform: translateY(-2px);
-        }
+      .comparison-table {
+        width: 100%;
+        margin-top: 2rem;
+        border-collapse: collapse;
+      }
 
-        .comparison-table {
-            width: 100%;
-            margin-top: 2rem;
-            border-collapse: collapse;
-        }
+      .comparison-table th,
+      .comparison-table td {
+        padding: 1rem;
+        border: 1px solid var(--border-subtle);
+        text-align: left;
+      }
 
-        .comparison-table th, .comparison-table td {
-            padding: 1rem;
-            border: 1px solid var(--border-subtle);
-            text-align: left;
-        }
+      .comparison-table th {
+        background: rgba(0, 0, 0, 0.05);
+      }
 
-        .comparison-table th {
-            background: rgba(0,0,0,0.05);
-        }
+      .breadcrumb {
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+      }
 
-        .breadcrumb {
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-        }
-
-        .theme-toggle {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            z-index: 1000;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
+      .theme-toggle {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 1000;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <nav class="breadcrumb">
-            <a href="/">首页</a> / <a href="/tools/dev/">开发者工具</a> / SQL转MongoDB
-        </nav>
+      <nav class="breadcrumb">
+        <a href="/">首页</a>
+        /
+        <a href="/tools/dev/">开发者工具</a>
+        / SQL转MongoDB
+      </nav>
 
-        <header class="tool-header">
-            <h1>SQL转MongoDB查询语法</h1>
-            <p>专业的SQL到NoSQL迁移辅助工具，支持聚合管道自动生成</p>
-        </header>
+      <header class="tool-header">
+        <h1>SQL转MongoDB查询语法</h1>
+        <p>专业的SQL到NoSQL迁移辅助工具，支持聚合管道自动生成</p>
+      </header>
 
-        <div class="ads-container">
-            <!-- Google AdSense Placeholder -->
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-client="ca-pub-xxxxxxxxxxxxxxxx"
-                 data-ad-slot="xxxxxxxxxx"
-                 data-ad-format="auto"
-                 data-full-width-responsive="true"></ins>
+      <div class="ads-container">
+        <!-- Google AdSense Placeholder -->
+        <ins
+          class="adsbygoogle"
+          style="display: block"
+          data-ad-client="ca-pub-xxxxxxxxxxxxxxxx"
+          data-ad-slot="xxxxxxxxxx"
+          data-ad-format="auto"
+          data-full-width-responsive="true"
+        ></ins>
+      </div>
+
+      <div class="main-grid">
+        <div class="editor-card">
+          <div class="card-header">
+            <span>
+              <i class="fas fa-database"></i>
+              输入 SQL
+            </span>
+            <div class="btn-group">
+              <button
+                class="outline secondary contrast"
+                onclick="formatSQL()"
+                style="padding: 2px 10px; font-size: 12px"
+              >
+                格式化
+              </button>
+              <button
+                class="outline secondary contrast"
+                onclick="clearAll()"
+                style="padding: 2px 10px; font-size: 12px"
+              >
+                清空
+              </button>
+            </div>
+          </div>
+          <textarea id="sqlInput"></textarea>
+          <div style="padding: 1rem">
+            <h6>常用示例</h6>
+            <div class="example-list">
+              <div class="example-item" onclick="useExample('SELECT * FROM users WHERE age > 18')">
+                基本查询 (WHERE)
+              </div>
+              <div
+                class="example-item"
+                onclick="
+                  useExample(
+                    'SELECT name, email FROM users WHERE status = \'active\' ORDER BY created_at DESC LIMIT 10'
+                  )
+                "
+              >
+                选择与排序 (ORDER/LIMIT)
+              </div>
+              <div
+                class="example-item"
+                onclick="
+                  useExample(
+                    'SELECT category, COUNT(*) as total FROM products GROUP BY category HAVING total > 5'
+                  )
+                "
+              >
+                聚合统计 (GROUP BY)
+              </div>
+              <div
+                class="example-item"
+                onclick="
+                  useExample(
+                    'SELECT * FROM orders WHERE status IN (\'paid\', \'shipped\') AND price BETWEEN 100 AND 500'
+                  )
+                "
+              >
+                复杂过滤 (IN/BETWEEN)
+              </div>
+              <div
+                class="example-item"
+                onclick="useExample('SELECT * FROM users WHERE name LIKE \'%John%\'')"
+              >
+                模糊查询 (LIKE)
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="main-grid">
-            <div class="editor-card">
-                <div class="card-header">
-                    <span><i class="fas fa-database"></i> 输入 SQL</span>
-                    <div class="btn-group">
-                        <button class="outline secondary contrast" onclick="formatSQL()" style="padding: 2px 10px; font-size: 12px;">格式化</button>
-                        <button class="outline secondary contrast" onclick="clearAll()" style="padding: 2px 10px; font-size: 12px;">清空</button>
-                    </div>
-                </div>
-                <textarea id="sqlInput"></textarea>
-                <div style="padding: 1rem;">
-                    <h6>常用示例</h6>
-                    <div class="example-list">
-                        <div class="example-item" onclick="useExample('SELECT * FROM users WHERE age > 18')">基本查询 (WHERE)</div>
-                        <div class="example-item" onclick="useExample('SELECT name, email FROM users WHERE status = \'active\' ORDER BY created_at DESC LIMIT 10')">选择与排序 (ORDER/LIMIT)</div>
-                        <div class="example-item" onclick="useExample('SELECT category, COUNT(*) as total FROM products GROUP BY category HAVING total > 5')">聚合统计 (GROUP BY)</div>
-                        <div class="example-item" onclick="useExample('SELECT * FROM orders WHERE status IN (\'paid\', \'shipped\') AND price BETWEEN 100 AND 500')">复杂过滤 (IN/BETWEEN)</div>
-                        <div class="example-item" onclick="useExample('SELECT * FROM users WHERE name LIKE \'%John%\'')">模糊查询 (LIKE)</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="editor-card">
-                <div class="card-header">
-                    <span><i class="fas fa-leaf"></i> 输出 MongoDB Query</span>
-                    <button class="outline secondary contrast" onclick="copyResult()" style="padding: 2px 10px; font-size: 12px;">复制结果</button>
-                </div>
-                <textarea id="mongoOutput"></textarea>
-                <div style="padding: 1rem;">
-                    <h6>转换选项</h6>
-                    <label>
-                        <input type="checkbox" id="useAggregation" checked onchange="convertSQL()"> 使用聚合管道 (Aggregation Pipeline)
-                    </label>
-                    <p style="font-size: 0.8rem; color: var(--text-secondary);">聚合管道支持更复杂的 GROUP BY 和字段处理。</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="actions-bar">
-            <button class="btn-convert" onclick="convertSQL()">
-                <i class="fas fa-bolt"></i> 立即转换
+        <div class="editor-card">
+          <div class="card-header">
+            <span>
+              <i class="fas fa-leaf"></i>
+              输出 MongoDB Query
+            </span>
+            <button
+              class="outline secondary contrast"
+              onclick="copyResult()"
+              style="padding: 2px 10px; font-size: 12px"
+            >
+              复制结果
             </button>
+          </div>
+          <textarea id="mongoOutput"></textarea>
+          <div style="padding: 1rem">
+            <h6>转换选项</h6>
+            <label>
+              <input type="checkbox" id="useAggregation" checked onchange="convertSQL()" />
+              使用聚合管道 (Aggregation Pipeline)
+            </label>
+            <p style="font-size: 0.8rem; color: var(--text-secondary)">
+              聚合管道支持更复杂的 GROUP BY 和字段处理。
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions-bar">
+        <button class="btn-convert" onclick="convertSQL()">
+          <i class="fas fa-bolt"></i>
+          立即转换
+        </button>
+      </div>
+
+      <div class="ads-container">
+        <!-- Google AdSense Placeholder -->
+        <ins
+          class="adsbygoogle"
+          style="display: block"
+          data-ad-client="ca-pub-xxxxxxxxxxxxxxxx"
+          data-ad-slot="xxxxxxxxxx"
+          data-ad-format="auto"
+          data-full-width-responsive="true"
+        ></ins>
+      </div>
+
+      <article class="content-section">
+        <h2>为什么需要将 SQL 转换为 MongoDB 查询？</h2>
+        <p>
+          随着互联网应用对可扩展性和灵活性的需求增加，越来越多的项目从传统的关系型数据库（如 MySQL,
+          PostgreSQL）转向文档型数据库
+          MongoDB。然而，对于习惯了结构化查询语言（SQL）的开发者来说，MongoDB 的 JSON
+          风格查询语法（MQL）存在一定的学习曲线。
+        </p>
+        <p>本工具旨在解决以下具体问题：</p>
+        <ul>
+          <li>
+            <strong>迁移学习成本：</strong>
+            帮助开发者快速理解 SQL 概念在 MongoDB 中的对应实现。
+          </li>
+          <li>
+            <strong>聚合管道编写：</strong>
+            SQL 中的
+            <code>GROUP BY</code>
+            和
+            <code>HAVING</code>
+            在 MongoDB 中需要复杂的
+            <code>$group</code>
+            和
+            <code>$match</code>
+            管道，手动编写容易出错。
+          </li>
+          <li>
+            <strong>查询优化验证：</strong>
+            通过转换，对比不同数据库下的查询逻辑，确保业务逻辑的一致性。
+          </li>
+        </ul>
+
+        <h2>SQL 与 MongoDB 核心概念对比</h2>
+        <div style="overflow-x: auto">
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>概念</th>
+                <th>SQL (关系型)</th>
+                <th>MongoDB (文档型)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>存储单元</td>
+                <td>表 (Table)</td>
+                <td>集合 (Collection)</td>
+              </tr>
+              <tr>
+                <td>数据记录</td>
+                <td>行 (Row)</td>
+                <td>文档 (Document / JSON)</td>
+              </tr>
+              <tr>
+                <td>数据列</td>
+                <td>列 (Column)</td>
+                <td>字段 (Field)</td>
+              </tr>
+              <tr>
+                <td>主键</td>
+                <td>Primary Key</td>
+                <td>_id 字段</td>
+              </tr>
+              <tr>
+                <td>表关联</td>
+                <td>JOIN</td>
+                <td>$lookup / 嵌入文档</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
-        <div class="ads-container">
-            <!-- Google AdSense Placeholder -->
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-client="ca-pub-xxxxxxxxxxxxxxxx"
-                 data-ad-slot="xxxxxxxxxx"
-                 data-ad-format="auto"
-                 data-full-width-responsive="true"></ins>
-        </div>
+        <h2>高级转换技巧</h2>
+        <h3>1. WHERE 子句转换</h3>
+        <p>
+          简单的等于
+          <code>WHERE a = 1</code>
+          转换为
+          <code>{ a: 1 }</code>
+          。但对于范围查询，MongoDB 使用操作符：
+        </p>
+        <ul>
+          <li>
+            <code>></code>
+            对应
+            <code>$gt</code>
+          </li>
+          <li>
+            <code>>=</code>
+            对应
+            <code>$gte</code>
+          </li>
+          <li>
+            <code><</code>
+            对应
+            <code>$lt</code>
+          </li>
+          <li>
+            <code><=</code>
+            对应
+            <code>$lte</code>
+          </li>
+          <li>
+            <code>!=</code>
+            对应
+            <code>$ne</code>
+          </li>
+        </ul>
 
-        <article class="content-section">
-            <h2>为什么需要将 SQL 转换为 MongoDB 查询？</h2>
-            <p>随着互联网应用对可扩展性和灵活性的需求增加，越来越多的项目从传统的关系型数据库（如 MySQL, PostgreSQL）转向文档型数据库 MongoDB。然而，对于习惯了结构化查询语言（SQL）的开发者来说，MongoDB 的 JSON 风格查询语法（MQL）存在一定的学习曲线。</p>
-            <p>本工具旨在解决以下具体问题：</p>
-            <ul>
-                <li><strong>迁移学习成本：</strong> 帮助开发者快速理解 SQL 概念在 MongoDB 中的对应实现。</li>
-                <li><strong>聚合管道编写：</strong> SQL 中的 <code>GROUP BY</code> 和 <code>HAVING</code> 在 MongoDB 中需要复杂的 <code>$group</code> 和 <code>$match</code> 管道，手动编写容易出错。</li>
-                <li><strong>查询优化验证：</strong> 通过转换，对比不同数据库下的查询逻辑，确保业务逻辑的一致性。</li>
-            </ul>
+        <h3>2. LIKE 模糊查询</h3>
+        <p>
+          SQL 中的
+          <code>LIKE '%abc%'</code>
+          在 MongoDB 中通常使用正则表达式实现：
+          <code>{ field: /abc/ }</code>
+          。本工具会自动为您处理前缀、后缀和包含匹配的正则生成。
+        </p>
 
-            <h2>SQL 与 MongoDB 核心概念对比</h2>
-            <div style="overflow-x: auto;">
-                <table class="comparison-table">
-                    <thead>
-                        <tr>
-                            <th>概念</th>
-                            <th>SQL (关系型)</th>
-                            <th>MongoDB (文档型)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>存储单元</td>
-                            <td>表 (Table)</td>
-                            <td>集合 (Collection)</td>
-                        </tr>
-                        <tr>
-                            <td>数据记录</td>
-                            <td>行 (Row)</td>
-                            <td>文档 (Document / JSON)</td>
-                        </tr>
-                        <tr>
-                            <td>数据列</td>
-                            <td>列 (Column)</td>
-                            <td>字段 (Field)</td>
-                        </tr>
-                        <tr>
-                            <td>主键</td>
-                            <td>Primary Key</td>
-                            <td>_id 字段</td>
-                        </tr>
-                        <tr>
-                            <td>表关联</td>
-                            <td>JOIN</td>
-                            <td>$lookup / 嵌入文档</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <h3>3. 聚合与分组 (GROUP BY)</h3>
+        <p>
+          这是最复杂的部分。SQL 的聚合函数如
+          <code>COUNT()</code>
+          ,
+          <code>SUM()</code>
+          需要在 MongoDB 的
+          <code>$group</code>
+          阶段中定义。例如：
+          <br />
+          <code>SELECT user_id, SUM(price) FROM orders GROUP BY user_id</code>
+          <br />
+          转换后：
+          <br />
+          <code>
+            db.orders.aggregate([{ $group: { _id: "$user_id", total: { $sum: "$price" } } }])
+          </code>
+        </p>
 
-            <h2>高级转换技巧</h2>
-            <h3>1. WHERE 子句转换</h3>
-            <p>简单的等于 <code>WHERE a = 1</code> 转换为 <code>{ a: 1 }</code>。但对于范围查询，MongoDB 使用操作符：</p>
-            <ul>
-                <li><code>></code> 对应 <code>$gt</code></li>
-                <li><code>>=</code> 对应 <code>$gte</code></li>
-                <li><code><</code> 对应 <code>$lt</code></li>
-                <li><code><=</code> 对应 <code>$lte</code></li>
-                <li><code>!=</code> 对应 <code>$ne</code></li>
-            </ul>
-
-            <h3>2. LIKE 模糊查询</h3>
-            <p>SQL 中的 <code>LIKE '%abc%'</code> 在 MongoDB 中通常使用正则表达式实现：<code>{ field: /abc/ }</code>。本工具会自动为您处理前缀、后缀和包含匹配的正则生成。</p>
-
-            <h3>3. 聚合与分组 (GROUP BY)</h3>
-            <p>这是最复杂的部分。SQL 的聚合函数如 <code>COUNT()</code>, <code>SUM()</code> 需要在 MongoDB 的 <code>$group</code> 阶段中定义。例如：<br>
-            <code>SELECT user_id, SUM(price) FROM orders GROUP BY user_id</code><br>
-            转换后：<br>
-            <code>db.orders.aggregate([{ $group: { _id: "$user_id", total: { $sum: "$price" } } }])</code></p>
-
-            <h2>常见问题 (FAQ)</h2>
-            <details>
-                <summary>所有的 SQL 都能转为 MongoDB 吗？</summary>
-                <p>不是。复杂的嵌套子查询、多表 JOIN 或存储过程很难直接一对一转换。MongoDB 提倡数据去中心化和嵌入式设计，建议在迁移时重新审视数据建模方式。</p>
-            </details>
-            <details>
-                <summary>转换后的查询性能如何？</summary>
-                <p>转换结果仅代表语法上的等效。在 MongoDB 中，依然需要针对常用查询字段建立索引（Index）以保证性能。</p>
-            </details>
-        </article>
+        <h2>常见问题 (FAQ)</h2>
+        <details>
+          <summary>所有的 SQL 都能转为 MongoDB 吗？</summary>
+          <p>
+            不是。复杂的嵌套子查询、多表 JOIN 或存储过程很难直接一对一转换。MongoDB
+            提倡数据去中心化和嵌入式设计，建议在迁移时重新审视数据建模方式。
+          </p>
+        </details>
+        <details>
+          <summary>转换后的查询性能如何？</summary>
+          <p>
+            转换结果仅代表语法上的等效。在 MongoDB
+            中，依然需要针对常用查询字段建立索引（Index）以保证性能。
+          </p>
+        </details>
+      </article>
     </div>
 
     <button class="theme-toggle contrast" onclick="toggleTheme()">
-        <i class="fas fa-moon" id="theme-icon"></i>
+      <i class="fas fa-moon" id="theme-icon"></i>
     </button>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.js"></script>
@@ -378,318 +539,339 @@
     <script src="https://cdn.jsdelivr.net/npm/sql-formatter@12.2.0/dist/sql-formatter.min.js"></script>
 
     <script>
-        let sqlEditor, mongoEditor;
+      let sqlEditor, mongoEditor;
 
-        // Initialize Editors
-        document.addEventListener('DOMContentLoaded', () => {
-            sqlEditor = CodeMirror.fromTextArea(document.getElementById('sqlInput'), {
-                mode: 'text/x-sql',
-                theme: 'dracula',
-                lineNumbers: true,
-                viewportMargin: Infinity
-            });
-
-            mongoEditor = CodeMirror.fromTextArea(document.getElementById('mongoOutput'), {
-                mode: 'application/json',
-                theme: 'dracula',
-                lineNumbers: true,
-                readOnly: true
-            });
-
-            // Set default value
-            sqlEditor.setValue("SELECT * FROM users WHERE age > 18 AND status = 'active' ORDER BY name ASC LIMIT 10");
-            convertSQL();
+      // Initialize Editors
+      document.addEventListener("DOMContentLoaded", () => {
+        sqlEditor = CodeMirror.fromTextArea(document.getElementById("sqlInput"), {
+          mode: "text/x-sql",
+          theme: "dracula",
+          lineNumbers: true,
+          viewportMargin: Infinity
         });
 
-        function toggleTheme() {
-            const html = document.documentElement;
-            const icon = document.getElementById('theme-icon');
-            const newTheme = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-            html.setAttribute('data-theme', newTheme);
-            icon.className = newTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
-            
-            const cmTheme = newTheme === 'light' ? 'default' : 'dracula';
-            sqlEditor.setOption('theme', cmTheme);
-            mongoEditor.setOption('theme', cmTheme);
-            localStorage.setItem('theme', newTheme);
+        mongoEditor = CodeMirror.fromTextArea(document.getElementById("mongoOutput"), {
+          mode: "application/json",
+          theme: "dracula",
+          lineNumbers: true,
+          readOnly: true
+        });
+
+        // Set default value
+        sqlEditor.setValue(
+          "SELECT * FROM users WHERE age > 18 AND status = 'active' ORDER BY name ASC LIMIT 10"
+        );
+        convertSQL();
+      });
+
+      function toggleTheme() {
+        const html = document.documentElement;
+        const icon = document.getElementById("theme-icon");
+        const newTheme = html.getAttribute("data-theme") === "light" ? "dark" : "light";
+        html.setAttribute("data-theme", newTheme);
+        icon.className = newTheme === "light" ? "fas fa-moon" : "fas fa-sun";
+
+        const cmTheme = newTheme === "light" ? "default" : "dracula";
+        sqlEditor.setOption("theme", cmTheme);
+        mongoEditor.setOption("theme", cmTheme);
+        localStorage.setItem("theme", newTheme);
+      }
+
+      function formatSQL() {
+        const sql = sqlEditor.getValue();
+        const formatted = window.sqlFormatter.format(sql);
+        sqlEditor.setValue(formatted);
+      }
+
+      function clearAll() {
+        sqlEditor.setValue("");
+        mongoEditor.setValue("");
+      }
+
+      function copyResult() {
+        const code = mongoEditor.getValue();
+        navigator.clipboard.writeText(code).then(() => {
+          alert("已复制到剪贴板");
+        });
+      }
+
+      function useExample(sql) {
+        sqlEditor.setValue(sql);
+        convertSQL();
+      }
+
+      // Improved SQL to Mongo Parser
+      function convertSQL() {
+        const sql = sqlEditor.getValue().trim();
+        if (!sql) return;
+
+        try {
+          const converter = new SQLToMongo(sql);
+          const result = converter.parse();
+          const isAgg = document.getElementById("useAggregation").checked;
+
+          let output = "";
+          if (isAgg || result.aggregate || result.method === "aggregate") {
+            output = formatAggregation(result);
+          } else {
+            output = formatFind(result);
+          }
+
+          mongoEditor.setValue(output);
+        } catch (e) {
+          mongoEditor.setValue("// 转换错误: " + e.message);
+        }
+      }
+
+      class SQLToMongo {
+        constructor(sql) {
+          this.sql = sql;
+          this.tokens = this.tokenize(sql);
+          this.pos = 0;
         }
 
-        function formatSQL() {
-            const sql = sqlEditor.getValue();
-            const formatted = window.sqlFormatter.format(sql);
-            sqlEditor.setValue(formatted);
+        tokenize(sql) {
+          const tokens = [];
+          const regex =
+            /SELECT|FROM|WHERE|AND|OR|ORDER\s+BY|GROUP\s+BY|HAVING|LIMIT|OFFSET|ASC|DESC|IN|NOT|LIKE|IS|NULL|BETWEEN|COUNT|SUM|AVG|MIN|MAX|AS|[a-zA-Z_][a-zA-Z0-9_.]*|'[^']*'|"[^"]*"|\d+|>=|<=|!=|<>|=|>|<|\*|\(|\)|,/gi;
+          let match;
+          while ((match = regex.exec(sql)) !== null) {
+            let val = match[0];
+            let type = "IDENTIFIER";
+
+            if (
+              /^SELECT|FROM|WHERE|AND|OR|ORDER|BY|GROUP|LIMIT|OFFSET|ASC|DESC|IN|NOT|LIKE|IS|NULL|BETWEEN|COUNT|SUM|AVG|MIN|MAX|AS$/i.test(
+                val
+              )
+            ) {
+              type = "KEYWORD";
+              val = val.toUpperCase();
+            } else if (/^['"]/.test(val)) {
+              type = "STRING";
+              val = val.slice(1, -1);
+            } else if (/^\d+$/.test(val)) {
+              type = "NUMBER";
+              val = Number(val);
+            } else if (/^[>=|<=|!=|<>|=|>|<|\*|\(|\)|,]$/.test(val)) {
+              type = "OPERATOR";
+            }
+
+            tokens.push({ type, value: val });
+          }
+          return tokens;
         }
 
-        function clearAll() {
-            sqlEditor.setValue('');
-            mongoEditor.setValue('');
+        peek() {
+          return this.tokens[this.pos];
+        }
+        consume() {
+          return this.tokens[this.pos++];
+        }
+        match(type, value) {
+          const token = this.peek();
+          if (!token) return false;
+          if (type && token.type !== type) return false;
+          if (value && token.value.toUpperCase() !== value.toUpperCase()) return false;
+          return true;
         }
 
-        function copyResult() {
-            const code = mongoEditor.getValue();
-            navigator.clipboard.writeText(code).then(() => {
-                alert('已复制到剪贴板');
-            });
+        parse() {
+          const result = {
+            collection: "collection",
+            query: {},
+            projection: {},
+            sort: {},
+            limit: null,
+            skip: null,
+            aggregate: null
+          };
+
+          while (this.pos < this.tokens.length) {
+            if (this.match("KEYWORD", "SELECT")) {
+              this.consume();
+              this.parseSelect(result);
+            } else if (this.match("KEYWORD", "FROM")) {
+              this.consume();
+              if (this.peek()) result.collection = this.consume().value;
+            } else if (this.match("KEYWORD", "WHERE")) {
+              this.consume();
+              result.query = this.parseWhere();
+            } else if (this.match("KEYWORD", "GROUP")) {
+              this.consume();
+              if (this.match("KEYWORD", "BY")) {
+                this.consume();
+                this.parseGroupBy(result);
+              }
+            } else if (this.match("KEYWORD", "ORDER")) {
+              this.consume();
+              if (this.match("KEYWORD", "BY")) {
+                this.consume();
+                this.parseOrderBy(result);
+              }
+            } else if (this.match("KEYWORD", "LIMIT")) {
+              this.consume();
+              if (this.peek()) result.limit = this.consume().value;
+            } else if (this.match("KEYWORD", "OFFSET")) {
+              this.consume();
+              if (this.peek()) result.skip = this.consume().value;
+            } else {
+              this.pos++;
+            }
+          }
+          return result;
         }
 
-        function useExample(sql) {
-            sqlEditor.setValue(sql);
-            convertSQL();
+        parseSelect(result) {
+          if (this.match("OPERATOR", "*")) {
+            this.consume();
+            return;
+          }
+
+          while (this.pos < this.tokens.length && !this.match("KEYWORD", "FROM")) {
+            // Simple aggregate detection
+            if (this.match("KEYWORD", "COUNT") || this.match("KEYWORD", "SUM")) {
+              const func = this.consume().value;
+              this.consume(); // (
+              const field = this.consume().value;
+              this.consume(); // )
+              let alias = func.toLowerCase();
+              if (this.match("KEYWORD", "AS")) {
+                this.consume();
+                alias = this.consume().value;
+              }
+              if (!result.aggregate) result.aggregate = { group: { _id: null }, project: {} };
+              result.aggregate.group[alias] = {
+                [`$${func.toLowerCase()}`]: field === "*" ? 1 : `$${field}`
+              };
+            } else {
+              const field = this.consume().value;
+              result.projection[field] = 1;
+            }
+
+            if (this.match("OPERATOR", ",")) this.consume();
+            else break;
+          }
         }
 
-        // Improved SQL to Mongo Parser
-        function convertSQL() {
-            const sql = sqlEditor.getValue().trim();
-            if (!sql) return;
-
-            try {
-                const converter = new SQLToMongo(sql);
-                const result = converter.parse();
-                const isAgg = document.getElementById('useAggregation').checked;
-                
-                let output = '';
-                if (isAgg || result.aggregate || result.method === 'aggregate') {
-                    output = formatAggregation(result);
-                } else {
-                    output = formatFind(result);
-                }
-                
-                mongoEditor.setValue(output);
-            } catch (e) {
-                mongoEditor.setValue("// 转换错误: " + e.message);
-            }
+        parseWhere() {
+          return this.parseExpression();
         }
 
-        class SQLToMongo {
-            constructor(sql) {
-                this.sql = sql;
-                this.tokens = this.tokenize(sql);
-                this.pos = 0;
+        parseExpression() {
+          let left = this.parseSimpleCondition();
+          while (this.match("KEYWORD", "AND") || this.match("KEYWORD", "OR")) {
+            const op = this.consume().value;
+            const right = this.parseSimpleCondition();
+            if (op === "AND") {
+              left = { ...left, ...right };
+            } else {
+              left = { $or: [left, right] };
             }
-
-            tokenize(sql) {
-                const tokens = [];
-                const regex = /SELECT|FROM|WHERE|AND|OR|ORDER\s+BY|GROUP\s+BY|HAVING|LIMIT|OFFSET|ASC|DESC|IN|NOT|LIKE|IS|NULL|BETWEEN|COUNT|SUM|AVG|MIN|MAX|AS|[a-zA-Z_][a-zA-Z0-9_.]*|'[^']*'|"[^"]*"|\d+|>=|<=|!=|<>|=|>|<|\*|\(|\)|,/gi;
-                let match;
-                while ((match = regex.exec(sql)) !== null) {
-                    let val = match[0];
-                    let type = 'IDENTIFIER';
-                    
-                    if (/^SELECT|FROM|WHERE|AND|OR|ORDER|BY|GROUP|LIMIT|OFFSET|ASC|DESC|IN|NOT|LIKE|IS|NULL|BETWEEN|COUNT|SUM|AVG|MIN|MAX|AS$/i.test(val)) {
-                        type = 'KEYWORD';
-                        val = val.toUpperCase();
-                    } else if (/^['"]/.test(val)) {
-                        type = 'STRING';
-                        val = val.slice(1, -1);
-                    } else if (/^\d+$/.test(val)) {
-                        type = 'NUMBER';
-                        val = Number(val);
-                    } else if (/^[>=|<=|!=|<>|=|>|<|\*|\(|\)|,]$/.test(val)) {
-                        type = 'OPERATOR';
-                    }
-                    
-                    tokens.push({ type, value: val });
-                }
-                return tokens;
-            }
-
-            peek() { return this.tokens[this.pos]; }
-            consume() { return this.tokens[this.pos++]; }
-            match(type, value) {
-                const token = this.peek();
-                if (!token) return false;
-                if (type && token.type !== type) return false;
-                if (value && token.value.toUpperCase() !== value.toUpperCase()) return false;
-                return true;
-            }
-
-            parse() {
-                const result = {
-                    collection: 'collection',
-                    query: {},
-                    projection: {},
-                    sort: {},
-                    limit: null,
-                    skip: null,
-                    aggregate: null
-                };
-
-                while (this.pos < this.tokens.length) {
-                    if (this.match('KEYWORD', 'SELECT')) {
-                        this.consume();
-                        this.parseSelect(result);
-                    } else if (this.match('KEYWORD', 'FROM')) {
-                        this.consume();
-                        if (this.peek()) result.collection = this.consume().value;
-                    } else if (this.match('KEYWORD', 'WHERE')) {
-                        this.consume();
-                        result.query = this.parseWhere();
-                    } else if (this.match('KEYWORD', 'GROUP')) {
-                        this.consume();
-                        if (this.match('KEYWORD', 'BY')) {
-                            this.consume();
-                            this.parseGroupBy(result);
-                        }
-                    } else if (this.match('KEYWORD', 'ORDER')) {
-                        this.consume();
-                        if (this.match('KEYWORD', 'BY')) {
-                            this.consume();
-                            this.parseOrderBy(result);
-                        }
-                    } else if (this.match('KEYWORD', 'LIMIT')) {
-                        this.consume();
-                        if (this.peek()) result.limit = this.consume().value;
-                    } else if (this.match('KEYWORD', 'OFFSET')) {
-                        this.consume();
-                        if (this.peek()) result.skip = this.consume().value;
-                    } else {
-                        this.pos++;
-                    }
-                }
-                return result;
-            }
-
-            parseSelect(result) {
-                if (this.match('OPERATOR', '*')) {
-                    this.consume();
-                    return;
-                }
-                
-                while (this.pos < this.tokens.length && !this.match('KEYWORD', 'FROM')) {
-                    // Simple aggregate detection
-                    if (this.match('KEYWORD', 'COUNT') || this.match('KEYWORD', 'SUM')) {
-                        const func = this.consume().value;
-                        this.consume(); // (
-                        const field = this.consume().value;
-                        this.consume(); // )
-                        let alias = func.toLowerCase();
-                        if (this.match('KEYWORD', 'AS')) {
-                            this.consume();
-                            alias = this.consume().value;
-                        }
-                        if (!result.aggregate) result.aggregate = { group: { _id: null }, project: {} };
-                        result.aggregate.group[alias] = { [`$${func.toLowerCase()}`]: field === '*' ? 1 : `$${field}` };
-                    } else {
-                        const field = this.consume().value;
-                        result.projection[field] = 1;
-                    }
-                    
-                    if (this.match('OPERATOR', ',')) this.consume();
-                    else break;
-                }
-            }
-
-            parseWhere() {
-                return this.parseExpression();
-            }
-
-            parseExpression() {
-                let left = this.parseSimpleCondition();
-                while (this.match('KEYWORD', 'AND') || this.match('KEYWORD', 'OR')) {
-                    const op = this.consume().value;
-                    const right = this.parseSimpleCondition();
-                    if (op === 'AND') {
-                        left = { ...left, ...right };
-                    } else {
-                        left = { $or: [left, right] };
-                    }
-                }
-                return left;
-            }
-
-            parseSimpleCondition() {
-                const field = this.consume().value;
-                const opToken = this.consume();
-                if (!opToken) return { [field]: 1 };
-                const op = opToken.value;
-
-                if (op === 'IN') {
-                    this.consume(); // (
-                    const vals = [];
-                    while (!this.match('OPERATOR', ')')) {
-                        vals.push(this.consume().value);
-                        if (this.match('OPERATOR', ',')) this.consume();
-                    }
-                    this.consume(); // )
-                    return { [field]: { $in: vals } };
-                }
-
-                if (op === 'LIKE') {
-                    let val = this.consume().value;
-                    let regex = val.replace(/%/g, '.*');
-                    if (!val.startsWith('%')) regex = '^' + regex;
-                    if (!val.endsWith('%')) regex = regex + '$';
-                    return { [field]: { $regex: regex, $options: 'i' } };
-                }
-
-                if (op === 'BETWEEN') {
-                    const low = this.consume().value;
-                    this.consume(); // AND
-                    const high = this.consume().value;
-                    return { [field]: { $gte: low, $lte: high } };
-                }
-
-                const val = this.consume().value;
-                const opMap = { '=': null, '>': '$gt', '>=': '$gte', '<': '$lt', '<=': '$lte', '!=': '$ne', '<>': '$ne' };
-                if (opMap[op] === null) return { [field]: val };
-                return { [field]: { [opMap[op]]: val } };
-            }
-
-            parseOrderBy(result) {
-                while (this.pos < this.tokens.length) {
-                    const field = this.consume().value;
-                    let dir = 1;
-                    if (this.match('KEYWORD', 'DESC')) {
-                        this.consume();
-                        dir = -1;
-                    } else if (this.match('KEYWORD', 'ASC')) {
-                        this.consume();
-                    }
-                    result.sort[field] = dir;
-                    if (this.match('OPERATOR', ',')) this.consume();
-                    else break;
-                }
-            }
-
-            parseGroupBy(result) {
-                if (!result.aggregate) result.aggregate = { group: { _id: {} } };
-                while (this.pos < this.tokens.length) {
-                    const field = this.consume().value;
-                    result.aggregate.group._id[field] = `$${field}`;
-                    if (this.match('OPERATOR', ',')) this.consume();
-                    else break;
-                }
-            }
+          }
+          return left;
         }
 
-        function formatFind(res) {
-            let code = `db.${res.collection}.find(\n  ${JSON.stringify(res.query, null, 2).replace(/\n/g, '\n  ')}`;
-            if (Object.keys(res.projection).length > 0) {
-                code += `,\n  ${JSON.stringify(res.projection, null, 2).replace(/\n/g, '\n  ')}`;
+        parseSimpleCondition() {
+          const field = this.consume().value;
+          const opToken = this.consume();
+          if (!opToken) return { [field]: 1 };
+          const op = opToken.value;
+
+          if (op === "IN") {
+            this.consume(); // (
+            const vals = [];
+            while (!this.match("OPERATOR", ")")) {
+              vals.push(this.consume().value);
+              if (this.match("OPERATOR", ",")) this.consume();
             }
-            code += `\n)`;
-            if (Object.keys(res.sort).length > 0) code += `.sort(${JSON.stringify(res.sort)})`;
-            if (res.limit) code += `.limit(${res.limit})`;
-            if (res.skip) code += `.skip(${res.skip})`;
-            return code;
+            this.consume(); // )
+            return { [field]: { $in: vals } };
+          }
+
+          if (op === "LIKE") {
+            let val = this.consume().value;
+            let regex = val.replace(/%/g, ".*");
+            if (!val.startsWith("%")) regex = "^" + regex;
+            if (!val.endsWith("%")) regex = regex + "$";
+            return { [field]: { $regex: regex, $options: "i" } };
+          }
+
+          if (op === "BETWEEN") {
+            const low = this.consume().value;
+            this.consume(); // AND
+            const high = this.consume().value;
+            return { [field]: { $gte: low, $lte: high } };
+          }
+
+          const val = this.consume().value;
+          const opMap = {
+            "=": null,
+            ">": "$gt",
+            ">=": "$gte",
+            "<": "$lt",
+            "<=": "$lte",
+            "!=": "$ne",
+            "<>": "$ne"
+          };
+          if (opMap[op] === null) return { [field]: val };
+          return { [field]: { [opMap[op]]: val } };
         }
 
-        function formatAggregation(res) {
-            const pipeline = [];
-            if (Object.keys(res.query).length > 0) pipeline.push({ $match: res.query });
-            
-            if (res.aggregate) {
-                pipeline.push({ $group: res.aggregate.group });
-            } else if (Object.keys(res.projection).length > 0) {
-                pipeline.push({ $project: res.projection });
+        parseOrderBy(result) {
+          while (this.pos < this.tokens.length) {
+            const field = this.consume().value;
+            let dir = 1;
+            if (this.match("KEYWORD", "DESC")) {
+              this.consume();
+              dir = -1;
+            } else if (this.match("KEYWORD", "ASC")) {
+              this.consume();
             }
-
-            if (Object.keys(res.sort).length > 0) pipeline.push({ $sort: res.sort });
-            if (res.skip) pipeline.push({ $skip: Number(res.skip) });
-            if (res.limit) pipeline.push({ $limit: Number(res.limit) });
-
-            return `db.${res.collection}.aggregate(${JSON.stringify(pipeline, null, 2)})`;
+            result.sort[field] = dir;
+            if (this.match("OPERATOR", ",")) this.consume();
+            else break;
+          }
         }
+
+        parseGroupBy(result) {
+          if (!result.aggregate) result.aggregate = { group: { _id: {} } };
+          while (this.pos < this.tokens.length) {
+            const field = this.consume().value;
+            result.aggregate.group._id[field] = `$${field}`;
+            if (this.match("OPERATOR", ",")) this.consume();
+            else break;
+          }
+        }
+      }
+
+      function formatFind(res) {
+        let code = `db.${res.collection}.find(\n  ${JSON.stringify(res.query, null, 2).replace(/\n/g, "\n  ")}`;
+        if (Object.keys(res.projection).length > 0) {
+          code += `,\n  ${JSON.stringify(res.projection, null, 2).replace(/\n/g, "\n  ")}`;
+        }
+        code += `\n)`;
+        if (Object.keys(res.sort).length > 0) code += `.sort(${JSON.stringify(res.sort)})`;
+        if (res.limit) code += `.limit(${res.limit})`;
+        if (res.skip) code += `.skip(${res.skip})`;
+        return code;
+      }
+
+      function formatAggregation(res) {
+        const pipeline = [];
+        if (Object.keys(res.query).length > 0) pipeline.push({ $match: res.query });
+
+        if (res.aggregate) {
+          pipeline.push({ $group: res.aggregate.group });
+        } else if (Object.keys(res.projection).length > 0) {
+          pipeline.push({ $project: res.projection });
+        }
+
+        if (Object.keys(res.sort).length > 0) pipeline.push({ $sort: res.sort });
+        if (res.skip) pipeline.push({ $skip: Number(res.skip) });
+        if (res.limit) pipeline.push({ $limit: Number(res.limit) });
+
+        return `db.${res.collection}.aggregate(${JSON.stringify(pipeline, null, 2)})`;
+      }
     </script>
-</body>
+  </body>
 </html>

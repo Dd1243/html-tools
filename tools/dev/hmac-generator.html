@@ -1,341 +1,616 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>HMAC 生成器 - 在线 API 签名加密与数据校验工具 - WebUtils</title>
-    
+
     <!-- SEO Meta Tags -->
-    <meta name="description" content="专业的在线 HMAC 生成器。支持 HMAC-SHA1, HMAC-SHA256, HMAC-SHA512 等多种哈希算法。提供密钥管理、消息加密及多种输出格式（Hex, Base64）。纯前端本地计算，确保 API 密钥安全不泄露。助力开发者调试 Webhook、JWT 签名和 API 鉴权。">
-    <meta name="keywords" content="HMAC生成器,HMAC-SHA256在线,API签名工具,数据加密校验,Webhook验证,JWT签名,哈希消息认证码">
-    <meta name="author" content="WebUtils">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://essays4u.net/tools/dev/hmac-generator.html">
+    <meta
+      name="description"
+      content="专业的在线 HMAC 生成器。支持 HMAC-SHA1, HMAC-SHA256, HMAC-SHA512 等多种哈希算法。提供密钥管理、消息加密及多种输出格式（Hex, Base64）。纯前端本地计算，确保 API 密钥安全不泄露。助力开发者调试 Webhook、JWT 签名和 API 鉴权。"
+    />
+    <meta
+      name="keywords"
+      content="HMAC生成器,HMAC-SHA256在线,API签名工具,数据加密校验,Webhook验证,JWT签名,哈希消息认证码"
+    />
+    <meta name="author" content="WebUtils" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://essays4u.net/tools/dev/hmac-generator.html" />
 
     <!-- Open Graph -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://essays4u.net/tools/dev/hmac-generator.html">
-    <meta property="og:title" content="HMAC 生成器 - 在线 API 签名加密与数据校验工具">
-    <meta property="og:description" content="本地计算，安全极速。支持主流 HMAC 算法，开发者调试 API 签名的利器。">
-    <meta property="og:image" content="https://essays4u.net/social-preview.png">
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://essays4u.net/tools/dev/hmac-generator.html" />
+    <meta property="og:title" content="HMAC 生成器 - 在线 API 签名加密与数据校验工具" />
+    <meta
+      property="og:description"
+      content="本地计算，安全极速。支持主流 HMAC 算法，开发者调试 API 签名的利器。"
+    />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="HMAC 生成器 - 在线 API 签名加密与数据校验工具">
-    <meta property="twitter:description" content="本地计算，安全极速。支持主流 HMAC 算法，开发者调试 API 签名的利器。">
-    <meta property="twitter:image" content="https://essays4u.net/social-preview.png">
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content="HMAC 生成器 - 在线 API 签名加密与数据校验工具" />
+    <meta
+      property="twitter:description"
+      content="本地计算，安全极速。支持主流 HMAC 算法，开发者调试 API 签名的利器。"
+    />
+    <meta property="twitter:image" content="https://essays4u.net/social-preview.png" />
 
     <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
 
     <style>
-        :root {
-            --bg-deep: #0a0a0f;
-            --bg-surface: #12121a;
-            --bg-card: #1a1a24;
-            --bg-input: #0e0e14;
-            --text-primary: #e8e8ed;
-            --text-secondary: #8888a0;
-            --text-muted: #55556a;
-            --border-subtle: #2a2a3a;
-            --border-strong: #3a3a4a;
-            --accent-hmac: #f72585;
-            --accent-hmac-glow: rgba(247, 37, 133, 0.15);
-            --radius-md: 10px;
-            --radius-lg: 16px;
-            --font-sans: 'Inter', -apple-system, sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
-            --font-display: 'Space Grotesk', sans-serif;
+      :root {
+        --bg-deep: #0a0a0f;
+        --bg-surface: #12121a;
+        --bg-card: #1a1a24;
+        --bg-input: #0e0e14;
+        --text-primary: #e8e8ed;
+        --text-secondary: #8888a0;
+        --text-muted: #55556a;
+        --border-subtle: #2a2a3a;
+        --border-strong: #3a3a4a;
+        --accent-hmac: #f72585;
+        --accent-hmac-glow: rgba(247, 37, 133, 0.15);
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", -apple-system, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+        --font-display: "Space Grotesk", sans-serif;
+      }
+
+      [data-theme="light"] {
+        --bg-deep: #f8fafc;
+        --bg-surface: #ffffff;
+        --bg-card: #ffffff;
+        --bg-input: #f1f5f9;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-muted: #94a3b8;
+        --border-subtle: #e2e8f0;
+        --border-strong: #cbd5e1;
+        --accent-hmac: #db2777;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: var(--font-sans);
+        background-color: var(--bg-deep);
+        color: var(--text-primary);
+        line-height: 1.6;
+        transition: background-color 0.3s;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      header {
+        margin-bottom: 2.5rem;
+        text-align: center;
+        position: relative;
+      }
+      .breadcrumb {
+        display: flex;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+        justify-content: center;
+      }
+      .breadcrumb a {
+        color: var(--accent-hmac);
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+
+      h1 {
+        font-family: var(--font-display);
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--accent-hmac);
+      }
+      .subtitle {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+      }
+
+      .theme-toggle {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-primary);
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+      @media (max-width: 640px) {
+        .form-grid {
+          grid-template-columns: 1fr;
         }
+      }
 
-        [data-theme="light"] {
-            --bg-deep: #f8fafc;
-            --bg-surface: #ffffff;
-            --bg-card: #ffffff;
-            --bg-input: #f1f5f9;
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
-            --text-muted: #94a3b8;
-            --border-subtle: #e2e8f0;
-            --border-strong: #cbd5e1;
-            --accent-hmac: #db2777;
-        }
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+      .form-group label {
+        display: block;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 600;
+      }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: var(--font-sans);
-            background-color: var(--bg-deep);
-            color: var(--text-primary);
-            line-height: 1.6;
-            transition: background-color 0.3s;
-            min-height: 100vh;
-        }
+      input[type="text"],
+      select,
+      textarea {
+        width: 100%;
+        background: var(--bg-input);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-primary);
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius-md);
+        outline: none;
+        font-family: var(--font-sans);
+        font-size: 0.95rem;
+        transition: all 0.2s;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--accent-hmac);
+        box-shadow: 0 0 0 3px var(--accent-hmac-glow);
+      }
+      textarea {
+        font-family: var(--font-mono);
+        resize: vertical;
+        min-height: 120px;
+      }
 
-        .container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
-        
-        header { margin-bottom: 2.5rem; text-align: center; position: relative; }
-        .breadcrumb { display: flex; gap: 0.5rem; font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem; justify-content: center; }
-        .breadcrumb a { color: var(--accent-hmac); text-decoration: none; }
-        .breadcrumb a:hover { text-decoration: underline; }
-        
-        h1 { font-family: var(--font-display); font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--accent-hmac); }
-        .subtitle { color: var(--text-secondary); font-size: 1.1rem; }
+      .result-card {
+        background: var(--bg-input);
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius-md);
+        padding: 1.5rem;
+        margin-top: 2rem;
+        position: relative;
+      }
+      .result-label {
+        font-size: 0.75rem;
+        color: var(--accent-hmac);
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 0.75rem;
+        display: block;
+      }
+      .result-val {
+        font-family: var(--font-mono);
+        font-size: 1.1rem;
+        word-break: break-all;
+        color: var(--text-primary);
+        line-height: 1.4;
+      }
 
-        .theme-toggle { position: absolute; top: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 0.5rem 1rem; border-radius: var(--radius-md); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
+      .toolbar {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+      }
+      .btn {
+        padding: 0.6rem 1.2rem;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-subtle);
+        background: var(--bg-surface);
+        color: var(--text-primary);
+        cursor: pointer;
+        font-size: 0.875rem;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .btn:hover {
+        background: var(--border-subtle);
+        transform: translateY(-1px);
+      }
+      .btn-primary {
+        background: var(--accent-hmac);
+        color: #fff;
+        border: none;
+        font-weight: 600;
+      }
+      .btn-primary:hover {
+        opacity: 0.9;
+        box-shadow: 0 4px 12px var(--accent-hmac-glow);
+      }
 
-        .card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
-        
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
-        @media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }
+      /* AdSense Placeholders */
+      .ads-placeholder {
+        margin: 2rem 0;
+        background: var(--bg-card);
+        border: 1px dashed var(--border-subtle);
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        border-radius: var(--radius-lg);
+      }
 
-        .form-group { margin-bottom: 1.5rem; }
-        .form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+      /* Article Content */
+      article {
+        margin-top: 4rem;
+        max-width: 850px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      article h2 {
+        font-family: var(--font-display);
+        font-size: 1.75rem;
+        margin: 2.5rem 0 1rem;
+        color: var(--accent-hmac);
+      }
+      article h3 {
+        font-size: 1.25rem;
+        margin: 1.5rem 0 0.75rem;
+      }
+      article p {
+        margin-bottom: 1.25rem;
+        color: var(--text-secondary);
+      }
+      article ul,
+      article ol {
+        margin-bottom: 1.5rem;
+        padding-left: 1.5rem;
+        color: var(--text-secondary);
+      }
+      article li {
+        margin-bottom: 0.5rem;
+      }
+      code {
+        background: var(--bg-input);
+        padding: 0.2rem 0.4rem;
+        border-radius: 4px;
+        font-family: var(--font-mono);
+        font-size: 0.9em;
+      }
 
-        input[type="text"], select, textarea {
-            width: 100%;
-            background: var(--bg-input);
-            border: 1px solid var(--border-subtle);
-            color: var(--text-primary);
-            padding: 0.75rem 1rem;
-            border-radius: var(--radius-md);
-            outline: none;
-            font-family: var(--font-sans);
-            font-size: 0.95rem;
-            transition: all 0.2s;
-        }
-        input:focus, select:focus, textarea:focus { border-color: var(--accent-hmac); box-shadow: 0 0 0 3px var(--accent-hmac-glow); }
-        textarea { font-family: var(--font-mono); resize: vertical; min-height: 120px; }
+      .toast {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: var(--accent-hmac);
+        color: #fff;
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        transform: translateY(100px);
+        transition: transform 0.3s;
+        z-index: 1000;
+      }
+      .toast.show {
+        transform: translateY(0);
+      }
 
-        .result-card {
-            background: var(--bg-input);
-            border: 1px solid var(--border-strong);
-            border-radius: var(--radius-md);
-            padding: 1.5rem;
-            margin-top: 2rem;
-            position: relative;
-        }
-        .result-label { font-size: 0.75rem; color: var(--accent-hmac); font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem; display: block; }
-        .result-val { font-family: var(--font-mono); font-size: 1.1rem; word-break: break-all; color: var(--text-primary); line-height: 1.4; }
-
-        .toolbar { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
-        .btn {
-            padding: 0.6rem 1.2rem;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-subtle);
-            background: var(--bg-surface);
-            color: var(--text-primary);
-            cursor: pointer;
-            font-size: 0.875rem;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .btn:hover { background: var(--border-subtle); transform: translateY(-1px); }
-        .btn-primary { background: var(--accent-hmac); color: #fff; border: none; font-weight: 600; }
-        .btn-primary:hover { opacity: 0.9; box-shadow: 0 4px 12px var(--accent-hmac-glow); }
-
-        /* AdSense Placeholders */
-        .ads-placeholder { margin: 2rem 0; background: var(--bg-card); border: 1px dashed var(--border-subtle); height: 100px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem; border-radius: var(--radius-lg); }
-
-        /* Article Content */
-        article { margin-top: 4rem; max-width: 850px; margin-left: auto; margin-right: auto; }
-        article h2 { font-family: var(--font-display); font-size: 1.75rem; margin: 2.5rem 0 1rem; color: var(--accent-hmac); }
-        article h3 { font-size: 1.25rem; margin: 1.5rem 0 0.75rem; }
-        article p { margin-bottom: 1.25rem; color: var(--text-secondary); }
-        article ul, article ol { margin-bottom: 1.5rem; padding-left: 1.5rem; color: var(--text-secondary); }
-        article li { margin-bottom: 0.5rem; }
-        code { background: var(--bg-input); padding: 0.2rem 0.4rem; border-radius: 4px; font-family: var(--font-mono); font-size: 0.9em; }
-
-        .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--accent-hmac); color: #fff; padding: 0.75rem 1.5rem; border-radius: var(--radius-md); font-weight: 600; transform: translateY(100px); transition: transform 0.3s; z-index: 1000; }
-        .toast.show { transform: translateY(0); }
-
-        footer { margin-top: 4rem; padding: 2rem; border-top: 1px solid var(--border-subtle); text-align: center; color: var(--text-muted); font-size: 0.875rem; }
-        footer a { color: var(--text-secondary); text-decoration: none; margin: 0 0.5rem; }
+      footer {
+        margin-top: 4rem;
+        padding: 2rem;
+        border-top: 1px solid var(--border-subtle);
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.875rem;
+      }
+      footer a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        margin: 0 0.5rem;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <nav class="breadcrumb">
-            <a href="../../index.html">首页</a> / <span>开发工具</span> / <span>HMAC 生成器</span>
-        </nav>
+      <nav class="breadcrumb">
+        <a href="../../index.html">首页</a>
+        /
+        <span>开发工具</span>
+        /
+        <span>HMAC 生成器</span>
+      </nav>
 
-        <header>
-            <h1>HMAC 生成器</h1>
-            <p class="subtitle">安全、实时的哈希消息认证码计算，助力 API 鉴权调试</p>
-            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">
-                <span>🌙</span> 暗色模式
-            </button>
-        </header>
+      <header>
+        <h1>HMAC 生成器</h1>
+        <p class="subtitle">安全、实时的哈希消息认证码计算，助力 API 鉴权调试</p>
+        <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">
+          <span>🌙</span>
+          暗色模式
+        </button>
+      </header>
 
-        <!-- Google AdSense Top -->
-        <div class="ads-placeholder">
-            广告占位符 - Google AdSense (Top)
-        </div>
+      <!-- Google AdSense Top -->
+      <div class="ads-placeholder">广告占位符 - Google AdSense (Top)</div>
 
-        <main>
-            <section class="card">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="algo">算法 (Algorithm)</label>
-                        <select id="algo" onchange="calculate()">
-                            <option value="SHA256">HMAC-SHA256 (推荐)</option>
-                            <option value="SHA1">HMAC-SHA1</option>
-                            <option value="SHA512">HMAC-SHA512</option>
-                            <option value="MD5">HMAC-MD5</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="format">输出格式 (Format)</label>
-                        <select id="format" onchange="calculate()">
-                            <option value="hex">Hex (十六进制)</option>
-                            <option value="base64">Base64</option>
-                        </select>
-                    </div>
-                </div>
+      <main>
+        <section class="card">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="algo">算法 (Algorithm)</label>
+              <select id="algo" onchange="calculate()">
+                <option value="SHA256">HMAC-SHA256 (推荐)</option>
+                <option value="SHA1">HMAC-SHA1</option>
+                <option value="SHA512">HMAC-SHA512</option>
+                <option value="MD5">HMAC-MD5</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="format">输出格式 (Format)</label>
+              <select id="format" onchange="calculate()">
+                <option value="hex">Hex (十六进制)</option>
+                <option value="base64">Base64</option>
+              </select>
+            </div>
+          </div>
 
-                <div class="form-group">
-                    <label for="key">密钥 (Secret Key)</label>
-                    <input type="text" id="key" placeholder="输入您的签名密钥..." spellcheck="false" oninput="calculate()">
-                </div>
+          <div class="form-group">
+            <label for="key">密钥 (Secret Key)</label>
+            <input
+              type="text"
+              id="key"
+              placeholder="输入您的签名密钥..."
+              spellcheck="false"
+              oninput="calculate()"
+            />
+          </div>
 
-                <div class="form-group">
-                    <label for="message">消息内容 (Message)</label>
-                    <textarea id="message" placeholder="在此输入需要签名的消息字符串、JSON 或其他数据..." spellcheck="false" oninput="calculate()"></textarea>
-                </div>
+          <div class="form-group">
+            <label for="message">消息内容 (Message)</label>
+            <textarea
+              id="message"
+              placeholder="在此输入需要签名的消息字符串、JSON 或其他数据..."
+              spellcheck="false"
+              oninput="calculate()"
+            ></textarea>
+          </div>
 
-                <div class="result-card">
-                    <span class="result-label" id="resLabel">HMAC-SHA256 签名</span>
-                    <div class="result-val" id="resVal">-</div>
-                    <div class="toolbar">
-                        <button class="btn btn-primary" onclick="copyResult()">复制结果</button>
-                        <button class="btn" onclick="clearAll()">清空全部</button>
-                    </div>
-                </div>
-            </section>
-        </main>
+          <div class="result-card">
+            <span class="result-label" id="resLabel">HMAC-SHA256 签名</span>
+            <div class="result-val" id="resVal">-</div>
+            <div class="toolbar">
+              <button class="btn btn-primary" onclick="copyResult()">复制结果</button>
+              <button class="btn" onclick="clearAll()">清空全部</button>
+            </div>
+          </div>
+        </section>
+      </main>
 
-        <!-- Google AdSense Bottom -->
-        <div class="ads-placeholder">
-            广告占位符 - Google AdSense (Bottom)
-        </div>
+      <!-- Google AdSense Bottom -->
+      <div class="ads-placeholder">广告占位符 - Google AdSense (Bottom)</div>
 
-        <!-- SEO Content -->
-        <article>
-            <h2>深入理解 HMAC：为什么它是 API 安全的黄金标准？</h2>
-            <p>HMAC（Hash-based Message Authentication Code，基于哈希的消息认证码）是一种通过特定哈希算法，结合一个加密密钥而形成的认证码。它不仅能保证数据的<strong>完整性</strong>（数据未被篡改），还能实现<strong>身份认证</strong>（数据确实来自持有该密钥的发送者）。</p>
-            
-            <h3>HMAC vs 普通哈希 (Hash)</h3>
-            <p>普通的哈希算法（如 SHA-256）是公开且确定的。如果黑客截获了你的消息和哈希值，他们可以修改消息并重新计算一个新的哈希值发送给服务器。而 HMAC 引入了只有发送者和接收者才知道的<strong>密钥 (Secret Key)</strong>。没有密钥，攻击者无法伪造合法的签名，即使他们掌握了完整的哈希算法。</p>
+      <!-- SEO Content -->
+      <article>
+        <h2>深入理解 HMAC：为什么它是 API 安全的黄金标准？</h2>
+        <p>
+          HMAC（Hash-based Message Authentication
+          Code，基于哈希的消息认证码）是一种通过特定哈希算法，结合一个加密密钥而形成的认证码。它不仅能保证数据的
+          <strong>完整性</strong>
+          （数据未被篡改），还能实现
+          <strong>身份认证</strong>
+          （数据确实来自持有该密钥的发送者）。
+        </p>
 
-            <h3>解决的具体场景与痛点</h3>
-            <ul>
-                <li><strong>Webhook 验证：</strong> 当 GitHub 或 Stripe 向你的服务器发送事件通知时，它们会带上一个 HMAC 签名。使用本工具，你可以快速手动验证你的接收逻辑是否正确解析了这些签名。</li>
-                <li><strong>API 请求鉴权：</strong> 许多云服务（如 AWS, 阿里云）要求请求参数按字典序排列并进行 HMAC 签名。调试这类复杂的签名逻辑时，本工具可以作为你的“参考答案”。</li>
-                <li><strong>JWT (JSON Web Tokens) 调试：</strong> JWT 的第一部分和第二部分是 Base64 编码的 JSON，而第三部分正是前两部分的 HMAC 签名。本工具能助你手动校验 Token 的有效性。</li>
-                <li><strong>本地调试，无需联网：</strong> 处理敏感的 API 密钥时，安全是首要考虑。本工具的所有计算均在浏览器内存中完成，<strong>绝不会将您的密钥发送到互联网</strong>。</li>
-            </ul>
+        <h3>HMAC vs 普通哈希 (Hash)</h3>
+        <p>
+          普通的哈希算法（如
+          SHA-256）是公开且确定的。如果黑客截获了你的消息和哈希值，他们可以修改消息并重新计算一个新的哈希值发送给服务器。而
+          HMAC 引入了只有发送者和接收者才知道的
+          <strong>密钥 (Secret Key)</strong>
+          。没有密钥，攻击者无法伪造合法的签名，即使他们掌握了完整的哈希算法。
+        </p>
 
-            <h3>HMAC 最佳实践建议</h3>
-            <ol>
-                <li><strong>选择强算法：</strong> 除非兼容旧系统，否则应优先选择 <code>HMAC-SHA256</code> 或 <code>HMAC-SHA512</code>。避免使用已证实存在安全隐患的 <code>MD5</code>。</li>
-                <li><strong>密钥强度：</strong> 密钥的长度应至少与哈希算法的输出长度一致。建议使用随机生成的长字符串作为密钥。</li>
-                <li><strong>防重放攻击：</strong> 在签名的消息中包含一个时间戳（Timestamp）或随机数（Nonce），并在服务端验证其有效性，防止攻击者拦截并重复发送合法请求。</li>
-                <li><strong>定期更换密钥：</strong> 就像定期更改密码一样，定期轮换 API 密钥能有效降低泄露风险。</li>
-            </ol>
+        <h3>解决的具体场景与痛点</h3>
+        <ul>
+          <li>
+            <strong>Webhook 验证：</strong>
+            当 GitHub 或 Stripe 向你的服务器发送事件通知时，它们会带上一个 HMAC
+            签名。使用本工具，你可以快速手动验证你的接收逻辑是否正确解析了这些签名。
+          </li>
+          <li>
+            <strong>API 请求鉴权：</strong>
+            许多云服务（如 AWS, 阿里云）要求请求参数按字典序排列并进行 HMAC
+            签名。调试这类复杂的签名逻辑时，本工具可以作为你的“参考答案”。
+          </li>
+          <li>
+            <strong>JWT (JSON Web Tokens) 调试：</strong>
+            JWT 的第一部分和第二部分是 Base64 编码的 JSON，而第三部分正是前两部分的 HMAC
+            签名。本工具能助你手动校验 Token 的有效性。
+          </li>
+          <li>
+            <strong>本地调试，无需联网：</strong>
+            处理敏感的 API 密钥时，安全是首要考虑。本工具的所有计算均在浏览器内存中完成，
+            <strong>绝不会将您的密钥发送到互联网</strong>
+            。
+          </li>
+        </ul>
 
-            <h3>如何使用本工具？</h3>
-            <p>1. <strong>配置环境：</strong> 选择服务端要求的算法（通常是 SHA256）和输出格式（Hex 是最常见的，Base64 常用于 Header）。</p>
-            <p>2. <strong>输入数据：</strong> 粘贴你的 Secret Key 和待签名的原始消息。工具会随着你的输入实时更新结果。</p>
-            <p>3. <strong>对比验证：</strong> 将本工具生成的签名与你代码生成的签名进行对比。如果不同，请检查消息的空格、换行符或编码是否完全一致。</p>
-        </article>
+        <h3>HMAC 最佳实践建议</h3>
+        <ol>
+          <li>
+            <strong>选择强算法：</strong>
+            除非兼容旧系统，否则应优先选择
+            <code>HMAC-SHA256</code>
+            或
+            <code>HMAC-SHA512</code>
+            。避免使用已证实存在安全隐患的
+            <code>MD5</code>
+            。
+          </li>
+          <li>
+            <strong>密钥强度：</strong>
+            密钥的长度应至少与哈希算法的输出长度一致。建议使用随机生成的长字符串作为密钥。
+          </li>
+          <li>
+            <strong>防重放攻击：</strong>
+            在签名的消息中包含一个时间戳（Timestamp）或随机数（Nonce），并在服务端验证其有效性，防止攻击者拦截并重复发送合法请求。
+          </li>
+          <li>
+            <strong>定期更换密钥：</strong>
+            就像定期更改密码一样，定期轮换 API 密钥能有效降低泄露风险。
+          </li>
+        </ol>
 
-        <footer>
-            <p>&copy; 2026 WebUtils. 基于 MIT 协议开源。 <a href="https://github.com/nicepkg/html-tools">GitHub</a> | <a href="../../index.html">更多工具</a></p>
-        </footer>
+        <h3>如何使用本工具？</h3>
+        <p>
+          1.
+          <strong>配置环境：</strong>
+          选择服务端要求的算法（通常是 SHA256）和输出格式（Hex 是最常见的，Base64 常用于 Header）。
+        </p>
+        <p>
+          2.
+          <strong>输入数据：</strong>
+          粘贴你的 Secret Key 和待签名的原始消息。工具会随着你的输入实时更新结果。
+        </p>
+        <p>
+          3.
+          <strong>对比验证：</strong>
+          将本工具生成的签名与你代码生成的签名进行对比。如果不同，请检查消息的空格、换行符或编码是否完全一致。
+        </p>
+      </article>
+
+      <footer>
+        <p>
+          &copy; 2026 WebUtils. 基于 MIT 协议开源。
+          <a href="https://github.com/nicepkg/html-tools">GitHub</a>
+          |
+          <a href="../../index.html">更多工具</a>
+        </p>
+      </footer>
     </div>
 
     <div id="toast" class="toast">结果已复制</div>
 
     <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.min.js"></script>
     <script>
-        const algoSelect = document.getElementById('algo');
-        const formatSelect = document.getElementById('format');
-        const keyInput = document.getElementById('key');
-        const messageInput = document.getElementById('message');
-        const resLabel = document.getElementById('resLabel');
-        const resVal = document.getElementById('resVal');
-        const toast = document.getElementById('toast');
+      const algoSelect = document.getElementById("algo");
+      const formatSelect = document.getElementById("format");
+      const keyInput = document.getElementById("key");
+      const messageInput = document.getElementById("message");
+      const resLabel = document.getElementById("resLabel");
+      const resVal = document.getElementById("resVal");
+      const toast = document.getElementById("toast");
 
-        // Theme Toggle
-        function toggleTheme() {
-            const html = document.documentElement;
-            const btn = document.getElementById('themeBtn');
-            const isDark = html.getAttribute('data-theme') !== 'light';
-            if (isDark) {
-                html.setAttribute('data-theme', 'light');
-                btn.innerHTML = '<span>☀️</span> 亮色模式';
-                localStorage.setItem('theme', 'light');
-            } else {
-                html.removeAttribute('data-theme');
-                btn.innerHTML = '<span>🌙</span> 暗色模式';
-                localStorage.setItem('theme', 'dark');
-            }
+      // Theme Toggle
+      function toggleTheme() {
+        const html = document.documentElement;
+        const btn = document.getElementById("themeBtn");
+        const isDark = html.getAttribute("data-theme") !== "light";
+        if (isDark) {
+          html.setAttribute("data-theme", "light");
+          btn.innerHTML = "<span>☀️</span> 亮色模式";
+          localStorage.setItem("theme", "light");
+        } else {
+          html.removeAttribute("data-theme");
+          btn.innerHTML = "<span>🌙</span> 暗色模式";
+          localStorage.setItem("theme", "dark");
+        }
+      }
+
+      if (localStorage.getItem("theme") === "light") {
+        document.documentElement.setAttribute("data-theme", "light");
+        document.getElementById("themeBtn").innerHTML = "<span>☀️</span> 亮色模式";
+      }
+
+      function calculate() {
+        const algo = algoSelect.value;
+        const format = formatSelect.value;
+        const key = keyInput.value;
+        const message = messageInput.value;
+
+        resLabel.textContent = `HMAC-${algo} 签名 (${format === "hex" ? "十六进制" : "Base64"})`;
+
+        if (!key || !message) {
+          resVal.textContent = "-";
+          return;
         }
 
-        if (localStorage.getItem('theme') === 'light') {
-            document.documentElement.setAttribute('data-theme', 'light');
-            document.getElementById('themeBtn').innerHTML = '<span>☀️</span> 亮色模式';
+        try {
+          let hmac;
+          switch (algo) {
+            case "SHA256":
+              hmac = CryptoJS.HmacSHA256(message, key);
+              break;
+            case "SHA1":
+              hmac = CryptoJS.HmacSHA1(message, key);
+              break;
+            case "SHA512":
+              hmac = CryptoJS.HmacSHA512(message, key);
+              break;
+            case "MD5":
+              hmac = CryptoJS.HmacMD5(message, key);
+              break;
+          }
+
+          const output =
+            format === "hex" ? hmac.toString(CryptoJS.enc.Hex) : hmac.toString(CryptoJS.enc.Base64);
+          resVal.textContent = output;
+        } catch (err) {
+          resVal.textContent = "计算出错: " + err.message;
         }
+      }
 
-        function calculate() {
-            const algo = algoSelect.value;
-            const format = formatSelect.value;
-            const key = keyInput.value;
-            const message = messageInput.value;
+      function copyResult() {
+        const text = resVal.textContent;
+        if (text === "-") return;
+        navigator.clipboard.writeText(text).then(() => {
+          toast.classList.add("show");
+          setTimeout(() => toast.classList.remove("show"), 2000);
+        });
+      }
 
-            resLabel.textContent = `HMAC-${algo} 签名 (${format === 'hex' ? '十六进制' : 'Base64'})`;
-
-            if (!key || !message) {
-                resVal.textContent = '-';
-                return;
-            }
-
-            try {
-                let hmac;
-                switch(algo) {
-                    case 'SHA256': hmac = CryptoJS.HmacSHA256(message, key); break;
-                    case 'SHA1': hmac = CryptoJS.HmacSHA1(message, key); break;
-                    case 'SHA512': hmac = CryptoJS.HmacSHA512(message, key); break;
-                    case 'MD5': hmac = CryptoJS.HmacMD5(message, key); break;
-                }
-
-                const output = format === 'hex' ? hmac.toString(CryptoJS.enc.Hex) : hmac.toString(CryptoJS.enc.Base64);
-                resVal.textContent = output;
-            } catch (err) {
-                resVal.textContent = '计算出错: ' + err.message;
-            }
-        }
-
-        function copyResult() {
-            const text = resVal.textContent;
-            if (text === '-') return;
-            navigator.clipboard.writeText(text).then(() => {
-                toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), 2000);
-            });
-        }
-
-        function clearAll() {
-            keyInput.value = '';
-            messageInput.value = '';
-            calculate();
-        }
-
-        // Init
+      function clearAll() {
+        keyInput.value = "";
+        messageInput.value = "";
         calculate();
+      }
+
+      // Init
+      calculate();
     </script>
-</body>
+  </body>
 </html>

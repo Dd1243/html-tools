@@ -6,10 +6,13 @@ const toolConfigs = {
   // 开发工具
   'json-formatter': {
     title: 'JSON格式化工具 - 免费在线格式化 | WebUtils',
-    description: '免费在线JSON格式化工具，支持美化、压缩、语法高亮。无需上传服务器，100%本地处理，保护隐私。支持大文件，实时格式化，一键复制。',
-    keywords: 'json格式化,json美化,json压缩,json在线工具,json格式化工具,json validator,免费json格式化',
+    description:
+      '免费在线JSON格式化工具，支持美化、压缩、语法高亮。无需上传服务器，100%本地处理，保护隐私。支持大文件，实时格式化，一键复制。',
+    keywords:
+      'json格式化,json美化,json压缩,json在线工具,json格式化工具,json validator,免费json格式化',
     category: '开发工具',
-    intro: 'JSON格式化工具是一个功能强大且易于使用的在线工具，专门用于JSON数据的格式化、美化和压缩。本工具完全在浏览器本地运行，无需上传数据到服务器，确保您的隐私和数据安全。',
+    intro:
+      'JSON格式化工具是一个功能强大且易于使用的在线工具，专门用于JSON数据的格式化、美化和压缩。本工具完全在浏览器本地运行，无需上传数据到服务器，确保您的隐私和数据安全。',
     features: [
       'JSON格式化（美化）',
       'JSON压缩（最小化）',
@@ -27,18 +30,32 @@ const toolConfigs = {
       { icon: '📋', title: '代码整理', desc: '美化JSON代码，提升代码可读性' }
     ],
     faqs: [
-      { q: '什么是JSON格式化？', a: 'JSON格式化是指将压缩的JSON数据按照一定的缩进和换行规则进行美化，使其更易于阅读和理解。格式化后的JSON数据具有清晰的层级结构，便于开发者查看和调试。' },
-      { q: '使用这个JSON格式化工具安全吗？', a: '完全安全。所有的格式化操作都在您的浏览器本地完成，数据不会上传到任何服务器。您可以完全离线使用这个工具，确保您的隐私和数据安全。' },
-      { q: '支持多大的JSON文件？', a: '本工具支持处理大文件，建议文件大小不超过50MB以确保最佳性能。对于超大文件，建议先进行压缩处理。' },
-      { q: '如何检测JSON语法错误？', a: '工具会自动检测JSON语法错误，如果有错误会显示错误信息和位置，帮助您快速定位和修复问题。' }
+      {
+        q: '什么是JSON格式化？',
+        a: 'JSON格式化是指将压缩的JSON数据按照一定的缩进和换行规则进行美化，使其更易于阅读和理解。格式化后的JSON数据具有清晰的层级结构，便于开发者查看和调试。'
+      },
+      {
+        q: '使用这个JSON格式化工具安全吗？',
+        a: '完全安全。所有的格式化操作都在您的浏览器本地完成，数据不会上传到任何服务器。您可以完全离线使用这个工具，确保您的隐私和数据安全。'
+      },
+      {
+        q: '支持多大的JSON文件？',
+        a: '本工具支持处理大文件，建议文件大小不超过50MB以确保最佳性能。对于超大文件，建议先进行压缩处理。'
+      },
+      {
+        q: '如何检测JSON语法错误？',
+        a: '工具会自动检测JSON语法错误，如果有错误会显示错误信息和位置，帮助您快速定位和修复问题。'
+      }
     ]
   },
   'json-diff': {
     title: 'JSON比较工具 - 免费在线对比差异 | WebUtils',
-    description: '免费在线JSON比较工具，支持两个JSON文件的差异对比。无需上传服务器，100%本地处理，保护隐私。高亮显示差异，支持大文件，一键导出。',
+    description:
+      '免费在线JSON比较工具，支持两个JSON文件的差异对比。无需上传服务器，100%本地处理，保护隐私。高亮显示差异，支持大文件，一键导出。',
     keywords: 'json比较,json差异,json diff,json对比工具,json在线比较,免费json对比,json差异检测',
     category: '开发工具',
-    intro: 'JSON比较工具是一个专业的在线工具，用于对比两个JSON文件的差异。本工具完全在浏览器本地运行，无需上传数据到服务器，确保您的隐私和数据安全。',
+    intro:
+      'JSON比较工具是一个专业的在线工具，用于对比两个JSON文件的差异。本工具完全在浏览器本地运行，无需上传数据到服务器，确保您的隐私和数据安全。',
     features: [
       'JSON差异对比',
       '高亮显示变化',
@@ -56,17 +73,29 @@ const toolConfigs = {
       { icon: '✅', title: '回归测试', desc: '对比测试前后的JSON输出，确保功能正常' }
     ],
     faqs: [
-      { q: '什么是JSON比较？', a: 'JSON比较是指对比两个JSON文件或数据，找出它们之间的差异。本工具会高亮显示新增、删除和修改的内容，帮助您快速了解数据变化。' },
-      { q: '如何使用JSON比较工具？', a: '在左右两个输入框中分别粘贴或上传需要对比的JSON数据，工具会自动进行对比并高亮显示差异。' },
-      { q: '支持哪些差异显示方式？', a: '支持多种差异显示方式，包括并排对比、统一差异视图等，您可以根据需要选择最适合的显示方式。' }
+      {
+        q: '什么是JSON比较？',
+        a: 'JSON比较是指对比两个JSON文件或数据，找出它们之间的差异。本工具会高亮显示新增、删除和修改的内容，帮助您快速了解数据变化。'
+      },
+      {
+        q: '如何使用JSON比较工具？',
+        a: '在左右两个输入框中分别粘贴或上传需要对比的JSON数据，工具会自动进行对比并高亮显示差异。'
+      },
+      {
+        q: '支持哪些差异显示方式？',
+        a: '支持多种差异显示方式，包括并排对比、统一差异视图等，您可以根据需要选择最适合的显示方式。'
+      }
     ]
   },
   'regex-tester': {
     title: '正则表达式测试工具 - 免费在线测试 | WebUtils',
-    description: '免费在线正则表达式测试工具，支持实时测试、语法高亮、匹配结果展示。无需上传服务器，100%本地处理，保护隐私。支持多种正则语法，一键复制。',
-    keywords: '正则表达式,regex测试,正则测试器,正则在线测试,regex tester,免费正则工具,正则表达式测试',
+    description:
+      '免费在线正则表达式测试工具，支持实时测试、语法高亮、匹配结果展示。无需上传服务器，100%本地处理，保护隐私。支持多种正则语法，一键复制。',
+    keywords:
+      '正则表达式,regex测试,正则测试器,正则在线测试,regex tester,免费正则工具,正则表达式测试',
     category: '开发工具',
-    intro: '正则表达式测试工具是一个功能强大的在线工具，用于测试和调试正则表达式。本工具完全在浏览器本地运行，无需上传数据到服务器，确保您的隐私和数据安全。',
+    intro:
+      '正则表达式测试工具是一个功能强大的在线工具，用于测试和调试正则表达式。本工具完全在浏览器本地运行，无需上传数据到服务器，确保您的隐私和数据安全。',
     features: [
       '正则表达式测试',
       '实时匹配结果',
@@ -84,18 +113,29 @@ const toolConfigs = {
       { icon: '📚', title: '学习正则', desc: '通过实时测试学习正则表达式语法' }
     ],
     faqs: [
-      { q: '什么是正则表达式？', a: '正则表达式（Regular Expression）是一种用于匹配字符串模式的强大工具。它使用特定的语法规则来描述字符串模式，可以用于搜索、替换、验证等操作。' },
-      { q: '如何使用正则表达式测试工具？', a: '在正则表达式输入框中输入您的正则模式，在测试文本框中输入需要测试的文本，工具会实时显示匹配结果。' },
-      { q: '支持哪些正则语法？', a: '支持JavaScript正则表达式语法，包括字符类、量词、分组、断言等所有常用特性。' }
+      {
+        q: '什么是正则表达式？',
+        a: '正则表达式（Regular Expression）是一种用于匹配字符串模式的强大工具。它使用特定的语法规则来描述字符串模式，可以用于搜索、替换、验证等操作。'
+      },
+      {
+        q: '如何使用正则表达式测试工具？',
+        a: '在正则表达式输入框中输入您的正则模式，在测试文本框中输入需要测试的文本，工具会实时显示匹配结果。'
+      },
+      {
+        q: '支持哪些正则语法？',
+        a: '支持JavaScript正则表达式语法，包括字符类、量词、分组、断言等所有常用特性。'
+      }
     ]
   },
   // 默认配置
-  'default': {
+  default: {
     title: '在线工具 - 免费使用 | WebUtils',
-    description: '免费在线工具，无需上传服务器，100%本地处理，保护隐私。支持多种功能，实时处理，一键复制结果。',
+    description:
+      '免费在线工具，无需上传服务器，100%本地处理，保护隐私。支持多种功能，实时处理，一键复制结果。',
     keywords: '在线工具,免费工具,web工具,在线转换,实用工具',
     category: '工具',
-    intro: '这是一个功能强大的在线工具，完全在浏览器本地运行，无需上传数据到服务器，确保您的隐私和数据安全。',
+    intro:
+      '这是一个功能强大的在线工具，完全在浏览器本地运行，无需上传数据到服务器，确保您的隐私和数据安全。',
     features: [
       '100%本地处理',
       '实时转换',
@@ -113,7 +153,10 @@ const toolConfigs = {
       { icon: '📱', title: '移动友好', desc: '响应式设计，完美支持移动设备' }
     ],
     faqs: [
-      { q: '使用这个工具安全吗？', a: '完全安全。所有操作都在您的浏览器本地完成，数据不会上传到任何服务器。您可以完全离线使用这个工具，确保您的隐私和数据安全。' },
+      {
+        q: '使用这个工具安全吗？',
+        a: '完全安全。所有操作都在您的浏览器本地完成，数据不会上传到任何服务器。您可以完全离线使用这个工具，确保您的隐私和数据安全。'
+      },
       { q: '需要注册吗？', a: '不需要。本工具完全免费，无需注册，打开即用。' },
       { q: '支持离线使用吗？', a: '支持。所有功能都在浏览器中运行，您可以离线使用。' }
     ]
@@ -161,24 +204,24 @@ function generateStructuredData(config, url, toolName) {
   const breadcrumbList = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
-    'itemListElement': [
+    itemListElement: [
       {
         '@type': 'ListItem',
-        'position': 1,
-        'name': '首页',
-        'item': 'https://essays4u.net/'
+        position: 1,
+        name: '首页',
+        item: 'https://essays4u.net/'
       },
       {
         '@type': 'ListItem',
-        'position': 2,
-        'name': config.category,
-        'item': 'https://essays4u.net/#dev'
+        position: 2,
+        name: config.category,
+        item: 'https://essays4u.net/#dev'
       },
       {
         '@type': 'ListItem',
-        'position': 3,
-        'name': toolName,
-        'item': url
+        position: 3,
+        name: toolName,
+        item: url
       }
     ]
   };
@@ -186,50 +229,50 @@ function generateStructuredData(config, url, toolName) {
   const softwareApplication = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
-    'name': toolName,
-    'applicationCategory': 'DeveloperApplication',
-    'operatingSystem': 'Any',
-    'browserRequirements': 'Requires JavaScript. Works in Chrome, Firefox, Safari, Edge.',
-    'offers': {
+    name: toolName,
+    applicationCategory: 'DeveloperApplication',
+    operatingSystem: 'Any',
+    browserRequirements: 'Requires JavaScript. Works in Chrome, Firefox, Safari, Edge.',
+    offers: {
       '@type': 'Offer',
-      'price': '0',
-      'priceCurrency': 'USD'
+      price: '0',
+      priceCurrency: 'USD'
     },
-    'description': config.description,
-    'featureList': config.features,
-    'screenshot': 'https://essays4u.net/social-preview.png',
-    'author': {
+    description: config.description,
+    featureList: config.features,
+    screenshot: 'https://essays4u.net/social-preview.png',
+    author: {
       '@type': 'Organization',
-      'name': 'WebUtils',
-      'url': 'https://essays4u.net/'
+      name: 'WebUtils',
+      url: 'https://essays4u.net/'
     }
   };
 
   const howTo = {
     '@context': 'https://schema.org',
     '@type': 'HowTo',
-    'name': `如何使用${toolName}`,
-    'description': `详细说明如何使用${toolName}进行相关操作`,
-    'step': [
+    name: `如何使用${toolName}`,
+    description: `详细说明如何使用${toolName}进行相关操作`,
+    step: [
       {
         '@type': 'HowToStep',
-        'name': '输入数据',
-        'text': '在输入框中输入需要处理的数据'
+        name: '输入数据',
+        text: '在输入框中输入需要处理的数据'
       },
       {
         '@type': 'HowToStep',
-        'name': '选择操作',
-        'text': '选择需要执行的操作类型'
+        name: '选择操作',
+        text: '选择需要执行的操作类型'
       },
       {
         '@type': 'HowToStep',
-        'name': '查看结果',
-        'text': '查看处理结果，支持实时更新'
+        name: '查看结果',
+        text: '查看处理结果，支持实时更新'
       },
       {
         '@type': 'HowToStep',
-        'name': '复制或导出',
-        'text': '点击复制或导出按钮保存结果'
+        name: '复制或导出',
+        text: '点击复制或导出按钮保存结果'
       }
     ]
   };
@@ -237,12 +280,12 @@ function generateStructuredData(config, url, toolName) {
   const faqPage = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    'mainEntity': config.faqs.map(faq => ({
+    mainEntity: config.faqs.map((faq) => ({
       '@type': 'Question',
-      'name': faq.q,
-      'acceptedAnswer': {
+      name: faq.q,
+      acceptedAnswer: {
         '@type': 'Answer',
-        'text': faq.a
+        text: faq.a
       }
     }))
   };
@@ -272,13 +315,17 @@ function generateStructuredData(config, url, toolName) {
 
 // 生成工具介绍HTML
 function generateToolIntro(config) {
-  const featuresHtml = config.features.map(f => `<li>✅ <strong>${f}</strong></li>`).join('');
-  const useCasesHtml = config.useCases.map(uc => `
+  const featuresHtml = config.features.map((f) => `<li>✅ <strong>${f}</strong></li>`).join('');
+  const useCasesHtml = config.useCases
+    .map(
+      (uc) => `
     <div class="use-case">
       <h4>${uc.icon} ${uc.title}</h4>
       <p>${uc.desc}</p>
     </div>
-  `).join('');
+  `
+    )
+    .join('');
 
   return `
     <!-- 工具介绍部分 -->
@@ -369,7 +416,10 @@ function processHtmlFile(filePath, category) {
     // 替换或添加结构化数据
     const structuredDataRegex = /<!-- JSON-LD BreadcrumbList Schema -->[\s\S]*?<\/script>/;
     if (structuredDataRegex.test(newContent)) {
-      newContent = newContent.replace(structuredDataRegex, generateStructuredData(config, url, toolName).trim());
+      newContent = newContent.replace(
+        structuredDataRegex,
+        generateStructuredData(config, url, toolName).trim()
+      );
     }
 
     // 在工具标题后添加工具介绍和测评
@@ -390,11 +440,11 @@ function processHtmlFile(filePath, category) {
 // 递归处理目录
 function processDirectory(dirPath, category) {
   const files = fs.readdirSync(dirPath);
-  
-  files.forEach(file => {
+
+  files.forEach((file) => {
     const filePath = path.join(dirPath, file);
     const stat = fs.statSync(filePath);
-    
+
     if (stat.isDirectory()) {
       processDirectory(filePath, file);
     } else if (file.endsWith('.html')) {
@@ -406,18 +456,18 @@ function processDirectory(dirPath, category) {
 // 主函数
 function main() {
   const toolsDir = path.join(__dirname, 'tools');
-  
+
   console.log('开始批量优化工具页面SEO...\n');
-  
+
   const categories = fs.readdirSync(toolsDir);
-  categories.forEach(category => {
+  categories.forEach((category) => {
     const categoryPath = path.join(toolsDir, category);
     if (fs.statSync(categoryPath).isDirectory()) {
       console.log(`\n处理分类: ${category}`);
       processDirectory(categoryPath, category);
     }
   });
-  
+
   console.log('\n✓ 批量优化完成！');
 }
 

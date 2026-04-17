@@ -1,25 +1,31 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>JSON 树形查看器 - 在线可视化 JSON 数据结构工具 - WebUtils</title>
-    
+
     <!-- SEO Meta Tags -->
-    <meta name="description" content="专业在线 JSON 树形查看器。将复杂的 JSON 数据转换为可交互的树形图，支持节点折叠、路径复制、搜索定位及多种视图切换。帮助开发者直观理解深层嵌套的数据结构。">
-    <meta name="keywords" content="JSON树形查看器,JSON可视化,JSON Tree Viewer,JSON树状图,在线JSON工具,数据结构导航">
-    <meta name="author" content="WebUtils">
-    <link rel="canonical" href="https://essays4u.net/tools/dev/json-tree.html">
-    
+    <meta
+      name="description"
+      content="专业在线 JSON 树形查看器。将复杂的 JSON 数据转换为可交互的树形图，支持节点折叠、路径复制、搜索定位及多种视图切换。帮助开发者直观理解深层嵌套的数据结构。"
+    />
+    <meta
+      name="keywords"
+      content="JSON树形查看器,JSON可视化,JSON Tree Viewer,JSON树状图,在线JSON工具,数据结构导航"
+    />
+    <meta name="author" content="WebUtils" />
+    <link rel="canonical" href="https://essays4u.net/tools/dev/json-tree.html" />
+
     <!-- Open Graph -->
-    <meta property="og:title" content="JSON 树形查看器 - 在线可视化 JSON 数据结构工具">
-    <meta property="og:description" content="直观展示 JSON 层级关系，支持快速搜索与路径定位。">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://essays4u.net/tools/dev/json-tree.html">
-    
+    <meta property="og:title" content="JSON 树形查看器 - 在线可视化 JSON 数据结构工具" />
+    <meta property="og:description" content="直观展示 JSON 层级关系，支持快速搜索与路径定位。" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://essays4u.net/tools/dev/json-tree.html" />
+
     <!-- JSON-LD -->
     <script type="application/ld+json">
-    {
+      {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "JSON 树形查看器",
@@ -27,636 +33,788 @@
         "applicationCategory": "DeveloperApplication",
         "description": "可视化 JSON 数据为交互式树形结构。",
         "offers": {
-            "@type": "Offer",
-            "price": "0"
+          "@type": "Offer",
+          "price": "0"
         }
-    }
+      }
     </script>
 
     <!-- Google AdSense Placeholder -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-################" crossorigin="anonymous"></script>
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-################"
+      crossorigin="anonymous"
+    ></script>
 
     <style>
-        :root {
-            --primary-color: #3b82f6;
-            --primary-hover: #2563eb;
-            --bg-main: #0f172a;
-            --bg-card: #1e293b;
-            --bg-input: #0f172a;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border-color: #334155;
-            --accent-color: #60a5fa;
-            --success-color: #10b981;
-            --error-color: #ef4444;
-            --warning-color: #f59e0b;
-            --radius: 12px;
-            --transition: all 0.3s ease;
-        }
+      :root {
+        --primary-color: #3b82f6;
+        --primary-hover: #2563eb;
+        --bg-main: #0f172a;
+        --bg-card: #1e293b;
+        --bg-input: #0f172a;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --border-color: #334155;
+        --accent-color: #60a5fa;
+        --success-color: #10b981;
+        --error-color: #ef4444;
+        --warning-color: #f59e0b;
+        --radius: 12px;
+        --transition: all 0.3s ease;
+      }
 
-        [data-theme="light"] {
-            --bg-main: #f8fafc;
-            --bg-card: #ffffff;
-            --bg-input: #f1f5f9;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-        }
+      [data-theme="light"] {
+        --bg-main: #f8fafc;
+        --bg-card: #ffffff;
+        --bg-input: #f1f5f9;
+        --text-main: #0f172a;
+        --text-muted: #64748b;
+        --border-color: #e2e8f0;
+      }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            line-height: 1.6;
-            transition: var(--transition);
-            padding-top: 60px;
-        }
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        background-color: var(--bg-main);
+        color: var(--text-main);
+        line-height: 1.6;
+        transition: var(--transition);
+        padding-top: 60px;
+      }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+      }
 
-        nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: var(--bg-card);
-            border-bottom: 1px solid var(--border-color);
-            z-index: 1000;
-            padding: 10px 20px;
-        }
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border-color);
+        z-index: 1000;
+        padding: 10px 20px;
+      }
 
-        .nav-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-        }
+      .nav-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+      }
 
-        .back-home {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+      .back-home {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
 
-        .theme-toggle {
-            background: none;
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 8px;
-            border-radius: 50%;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+      .theme-toggle {
+        background: none;
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+        padding: 8px;
+        border-radius: 50%;
+        cursor: pointer;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
 
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
+      header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
 
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+      h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
 
-        .subtitle {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-        }
+      .subtitle {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+      }
 
+      .main-grid {
+        display: grid;
+        grid-template-columns: 450px 1fr;
+        gap: 25px;
+        margin-bottom: 30px;
+      }
+
+      @media (max-width: 1024px) {
         .main-grid {
-            display: grid;
-            grid-template-columns: 450px 1fr;
-            gap: 25px;
-            margin-bottom: 30px;
+          grid-template-columns: 1fr;
         }
+      }
 
-        @media (max-width: 1024px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+      .card {
+        background: var(--bg-card);
+        border-radius: var(--radius);
+        padding: 25px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+      }
 
-        .card {
-            background: var(--bg-card);
-            border-radius: var(--radius);
-            padding: 25px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-        }
+      .card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: var(--accent-color);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
 
-        .card-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: var(--accent-color);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+      .search-bar {
+        margin-bottom: 15px;
+        display: flex;
+        gap: 10px;
+      }
 
-        .search-bar {
-            margin-bottom: 15px;
-            display: flex;
-            gap: 10px;
-        }
+      .input-control {
+        flex: 1;
+        padding: 10px 14px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        color: var(--text-main);
+        font-size: 0.9rem;
+      }
 
-        .input-control {
-            flex: 1;
-            padding: 10px 14px;
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-main);
-            font-size: 0.9rem;
-        }
+      textarea {
+        width: 100%;
+        height: 500px;
+        background: var(--bg-input);
+        color: var(--text-main);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 15px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.85rem;
+        resize: vertical;
+        transition: var(--transition);
+      }
 
-        textarea {
-            width: 100%;
-            height: 500px;
-            background: var(--bg-input);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 15px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            resize: vertical;
-            transition: var(--transition);
-        }
+      .tree-container {
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 20px;
+        height: 600px;
+        overflow: auto;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.9rem;
+      }
 
-        .tree-container {
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 20px;
-            height: 600px;
-            overflow: auto;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.9rem;
-        }
+      .tree-node {
+        margin-left: 20px;
+        border-left: 1px dashed var(--border-color);
+        padding-left: 10px;
+      }
 
-        .tree-node {
-            margin-left: 20px;
-            border-left: 1px dashed var(--border-color);
-            padding-left: 10px;
-        }
+      .node-key {
+        color: var(--accent-color);
+        cursor: pointer;
+        font-weight: 600;
+      }
 
-        .node-key {
-            color: var(--accent-color);
-            cursor: pointer;
-            font-weight: 600;
-        }
+      .node-value {
+        color: var(--text-main);
+      }
+      .type-string {
+        color: var(--warning-color);
+      }
+      .type-number {
+        color: #f472b6;
+      }
+      .type-boolean {
+        color: var(--success-color);
+      }
+      .type-null {
+        color: var(--text-muted);
+      }
 
-        .node-value { color: var(--text-main); }
-        .type-string { color: var(--warning-color); }
-        .type-number { color: #f472b6; }
-        .type-boolean { color: var(--success-color); }
-        .type-null { color: var(--text-muted); }
+      .toggle-icon {
+        cursor: pointer;
+        display: inline-block;
+        width: 16px;
+        text-align: center;
+        color: var(--text-muted);
+        user-select: none;
+      }
 
-        .toggle-icon {
-            cursor: pointer;
-            display: inline-block;
-            width: 16px;
-            text-align: center;
-            color: var(--text-muted);
-            user-select: none;
-        }
+      .path-info {
+        background: var(--bg-input);
+        padding: 10px 15px;
+        border-radius: 8px;
+        margin-top: 15px;
+        font-size: 0.85rem;
+        border: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
 
-        .path-info {
-            background: var(--bg-input);
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            font-size: 0.85rem;
-            border: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+      .btn-group {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 15px;
+      }
 
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 15px;
-        }
+      .btn {
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-card);
+        color: var(--text-main);
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
 
-        .btn {
-            padding: 8px 16px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background: var(--bg-card);
-            color: var(--text-main);
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+      .btn:hover {
+        border-color: var(--primary-color);
+        background: var(--border-color);
+      }
 
-        .btn:hover {
-            border-color: var(--primary-color);
-            background: var(--border-color);
-        }
+      .btn-primary {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+      }
 
-        .btn-primary {
-            background: var(--primary-color);
-            border-color: var(--primary-color);
-            color: white;
-        }
+      .ad-container {
+        margin: 40px 0;
+        text-align: center;
+        min-height: 90px;
+        background: rgba(255, 255, 255, 0.02);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px dashed var(--border-color);
+        border-radius: var(--radius);
+      }
 
-        .ad-container {
-            margin: 40px 0;
-            text-align: center;
-            min-height: 90px;
-            background: rgba(255, 255, 255, 0.02);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px dashed var(--border-color);
-            border-radius: var(--radius);
-        }
+      .article-section {
+        margin-top: 60px;
+        padding-top: 40px;
+        border-top: 1px solid var(--border-color);
+      }
 
-        .article-section {
-            margin-top: 60px;
-            padding-top: 40px;
-            border-top: 1px solid var(--border-color);
-        }
+      .article-section h2 {
+        margin-bottom: 25px;
+        color: var(--primary-color);
+      }
 
-        .article-section h2 {
-            margin-bottom: 25px;
-            color: var(--primary-color);
-        }
+      .article-section h3 {
+        margin: 30px 0 15px;
+      }
 
-        .article-section h3 {
-            margin: 30px 0 15px;
-        }
+      .article-section p {
+        margin-bottom: 20px;
+        color: var(--text-muted);
+      }
 
-        .article-section p {
-            margin-bottom: 20px;
-            color: var(--text-muted);
-        }
+      .problem-solution {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+        margin: 35px 0;
+      }
 
-        .problem-solution {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-            margin: 35px 0;
-        }
+      .ps-card {
+        background: rgba(59, 130, 246, 0.05);
+        padding: 25px;
+        border-radius: 15px;
+        border-left: 5px solid var(--primary-color);
+      }
 
-        .ps-card {
-            background: rgba(59, 130, 246, 0.05);
-            padding: 25px;
-            border-radius: 15px;
-            border-left: 5px solid var(--primary-color);
-        }
+      .ps-card.solution {
+        background: rgba(16, 185, 129, 0.05);
+        border-left-color: var(--success-color);
+      }
 
-        .ps-card.solution {
-            background: rgba(16, 185, 129, 0.05);
-            border-left-color: var(--success-color);
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 60px;
-            padding: 40px 0;
-            color: var(--text-muted);
-            border-top: 1px solid var(--border-color);
-        }
+      footer {
+        text-align: center;
+        margin-top: 60px;
+        padding: 40px 0;
+        color: var(--text-muted);
+        border-top: 1px solid var(--border-color);
+      }
     </style>
-</head>
-<body data-theme="dark">
+  </head>
+  <body data-theme="dark">
     <nav>
-        <div class="nav-content">
-            <a href="../../index.html" class="back-home">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-                返回首页
-            </a>
-            <div style="position: absolute; left: 50%; transform: translateX(-50%); text-align: center;">
-                <span style="font-weight: 700; font-size: 1.1rem; color: var(--primary-color);">WebUtils</span>
-            </div>
-            <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
-                <svg class="sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-            </button>
+      <div class="nav-content">
+        <a href="../../index.html" class="back-home">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          返回首页
+        </a>
+        <div style="position: absolute; left: 50%; transform: translateX(-50%); text-align: center">
+          <span style="font-weight: 700; font-size: 1.1rem; color: var(--primary-color)">
+            WebUtils
+          </span>
         </div>
+        <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+          <svg
+            class="sun"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+      </div>
     </nav>
 
     <div class="container">
-        <header>
-            <h1>JSON 树形查看器</h1>
-            <p class="subtitle">可视化探索 JSON 数据层级，支持交互式导航与快速路径提取</p>
-        </header>
+      <header>
+        <h1>JSON 树形查看器</h1>
+        <p class="subtitle">可视化探索 JSON 数据层级，支持交互式导航与快速路径提取</p>
+      </header>
 
-        <div id="ads-top" class="ad-container">
-            <!-- AdSense Placeholder -->
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-client="ca-pub-################"
-                 data-ad-slot="################"
-                 data-ad-format="auto"
-                 data-full-width-responsive="true"></ins>
-            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+      <div id="ads-top" class="ad-container">
+        <!-- AdSense Placeholder -->
+        <ins
+          class="adsbygoogle"
+          style="display: block"
+          data-ad-client="ca-pub-################"
+          data-ad-slot="################"
+          data-ad-format="auto"
+          data-full-width-responsive="true"
+        ></ins>
+        <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+      </div>
+
+      <main>
+        <div class="main-grid">
+          <div class="card">
+            <div class="card-title">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+                <polyline points="10 9 9 9 8 9" />
+              </svg>
+              JSON 输入
+            </div>
+            <textarea id="jsonInput" placeholder="在此粘贴 JSON 数据..."></textarea>
+            <div class="btn-group">
+              <button class="btn btn-primary" onclick="renderTree()">解析并查看</button>
+              <button class="btn" onclick="formatInput()">美化 JSON</button>
+              <button class="btn" onclick="loadExample()">示例数据</button>
+              <button class="btn" onclick="clearAll()">清空</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
+                />
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                <line x1="12" y1="22.08" x2="12" y2="12" />
+              </svg>
+              树形视图
+            </div>
+            <div class="search-bar">
+              <input
+                type="text"
+                id="nodeSearch"
+                class="input-control"
+                placeholder="搜索键名或值..."
+                oninput="searchNodes()"
+              />
+              <button class="btn" onclick="expandAll()">展开全部</button>
+              <button class="btn" onclick="collapseAll()">折叠全部</button>
+            </div>
+            <div class="tree-container" id="treeView">
+              <p style="color: var(--text-muted); text-align: center; padding-top: 100px">
+                解析 JSON 后将在此显示可视化树
+              </p>
+            </div>
+            <div class="path-info">
+              <span id="currentPath" style="color: var(--text-muted)">点击节点查看路径...</span>
+              <button
+                class="btn btn-primary"
+                style="padding: 4px 10px; font-size: 0.75rem"
+                onclick="copyPath()"
+              >
+                复制路径
+              </button>
+            </div>
+          </div>
         </div>
 
-        <main>
-            <div class="main-grid">
-                <div class="card">
-                    <div class="card-title">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                        JSON 输入
-                    </div>
-                    <textarea id="jsonInput" placeholder="在此粘贴 JSON 数据..."></textarea>
-                    <div class="btn-group">
-                        <button class="btn btn-primary" onclick="renderTree()">解析并查看</button>
-                        <button class="btn" onclick="formatInput()">美化 JSON</button>
-                        <button class="btn" onclick="loadExample()">示例数据</button>
-                        <button class="btn" onclick="clearAll()">清空</button>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-title">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-                        树形视图
-                    </div>
-                    <div class="search-bar">
-                        <input type="text" id="nodeSearch" class="input-control" placeholder="搜索键名或值..." oninput="searchNodes()">
-                        <button class="btn" onclick="expandAll()">展开全部</button>
-                        <button class="btn" onclick="collapseAll()">折叠全部</button>
-                    </div>
-                    <div class="tree-container" id="treeView">
-                        <p style="color: var(--text-muted); text-align: center; padding-top: 100px;">解析 JSON 后将在此显示可视化树</p>
-                    </div>
-                    <div class="path-info">
-                        <span id="currentPath" style="color: var(--text-muted);">点击节点查看路径...</span>
-                        <button class="btn btn-primary" style="padding: 4px 10px; font-size: 0.75rem;" onclick="copyPath()">复制路径</button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="ads-middle" class="ad-container">
-                <!-- AdSense Placeholder -->
-                <ins class="adsbygoogle"
-                     style="display:block"
-                     data-ad-client="ca-pub-################"
-                     data-ad-slot="################"
-                     data-ad-format="auto"
-                     data-full-width-responsive="true"></ins>
-                <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-            </div>
-
-            <section class="article-section">
-                <h2>JSON 树形查看器：让复杂数据一目了然</h2>
-                
-                <div class="problem-solution">
-                    <div class="ps-card">
-                        <h3>面临的挑战</h3>
-                        <p>随着微服务和大型 API 的普及，我们经常需要处理成千上万行的 JSON 响应。在纯文本编辑器中查看这些数据就像在迷宫中穿行，很难快速理清对象之间的层级关系，尤其是在深层嵌套的数组中查找特定字段时，极易迷失方向。</p>
-                    </div>
-                    <div class="ps-card solution">
-                        <h3>我们的解决方案</h3>
-                        <p>本工具将枯燥的 JSON 字符串转换为动态、可交互的树形结构。您可以自由折叠不需要关注的分支，通过颜色区分数据类型，并利用内置的搜索功能瞬间定位目标节点。更重要的是，点击任何节点即可获得其完整的 JS 访问路径，彻底告别手动推算路径的烦恼。</p>
-                    </div>
-                </div>
-
-                <h3>核心功能深度解析</h3>
-                <ul>
-                    <li><strong>交互式折叠</strong>: 点击 <code>▼</code> 或 <code>▶</code> 图标即可展开或收起复杂的对象和数组，帮助您在大局观和细节之间快速切换。</li>
-                    <li><strong>类型色彩高亮</strong>: 字符串、数字、布尔值和 Null 分别拥有独特的配色，一眼即可识别数据属性。</li>
-                    <li><strong>智能路径提取</strong>: 点击树中的任何键名，下方会自动生成对应的 JavaScript 访问路径（如 <code>data.items[0].meta.id</code>），直接复制即可在代码中使用。</li>
-                    <li><strong>实时节点搜索</strong>: 无论 JSON 有多大，顶部的搜索框都能实时过滤并高亮显示匹配的键名或内容。</li>
-                </ul>
-
-                <h3>为什么开发者需要可视化树？</h3>
-                <p>相比于传统的文本格式，可视化树形视图提供了多维度的优势：</p>
-                <ol>
-                    <li><strong>降低认知负载</strong>: 空间化的布局比线性文本更符合人类大脑处理层级信息的习惯。</li>
-                    <li><strong>调试效率提升</strong>: 在复杂的 Redux 状态树或 GraphQL 响应中，可视化能帮助您快速发现不符合预期的结构错误。</li>
-                    <li><strong>协作沟通工具</strong>: 在向产品经理或新入职同事解释数据结构时，直接展示树形图比解释代码逻辑要高效得多。</li>
-                </ol>
-
-                <h3>隐私与本地性能</h3>
-                <p>您的所有数据解析操作均在您的浏览器本地线程中执行。WebUtils 不会将您的 JSON 内容上传到任何云端服务器。这意味着即使是处理包含敏感业务逻辑或个人隐私的数据，您也可以百分之百放心使用。同时，经过优化的渲染引擎确保即使面对兆级（MB）大小的 JSON，树形视图依然能保持丝滑顺畅的交互体验。</p>
-            </section>
-        </main>
-
-        <div id="ads-bottom" class="ad-container">
-            <!-- AdSense Placeholder -->
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-client="ca-pub-################"
-                 data-ad-slot="################"
-                 data-ad-format="auto"
-                 data-full-width-responsive="true"></ins>
-            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        <div id="ads-middle" class="ad-container">
+          <!-- AdSense Placeholder -->
+          <ins
+            class="adsbygoogle"
+            style="display: block"
+            data-ad-client="ca-pub-################"
+            data-ad-slot="################"
+            data-ad-format="auto"
+            data-full-width-responsive="true"
+          ></ins>
+          <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+          </script>
         </div>
 
-        <footer>
-            <p>&copy; 2026 WebUtils - 专业开发者的在线工具箱</p>
-        </footer>
+        <section class="article-section">
+          <h2>JSON 树形查看器：让复杂数据一目了然</h2>
+
+          <div class="problem-solution">
+            <div class="ps-card">
+              <h3>面临的挑战</h3>
+              <p>
+                随着微服务和大型 API 的普及，我们经常需要处理成千上万行的 JSON
+                响应。在纯文本编辑器中查看这些数据就像在迷宫中穿行，很难快速理清对象之间的层级关系，尤其是在深层嵌套的数组中查找特定字段时，极易迷失方向。
+              </p>
+            </div>
+            <div class="ps-card solution">
+              <h3>我们的解决方案</h3>
+              <p>
+                本工具将枯燥的 JSON
+                字符串转换为动态、可交互的树形结构。您可以自由折叠不需要关注的分支，通过颜色区分数据类型，并利用内置的搜索功能瞬间定位目标节点。更重要的是，点击任何节点即可获得其完整的
+                JS 访问路径，彻底告别手动推算路径的烦恼。
+              </p>
+            </div>
+          </div>
+
+          <h3>核心功能深度解析</h3>
+          <ul>
+            <li>
+              <strong>交互式折叠</strong>
+              : 点击
+              <code>▼</code>
+              或
+              <code>▶</code>
+              图标即可展开或收起复杂的对象和数组，帮助您在大局观和细节之间快速切换。
+            </li>
+            <li>
+              <strong>类型色彩高亮</strong>
+              : 字符串、数字、布尔值和 Null 分别拥有独特的配色，一眼即可识别数据属性。
+            </li>
+            <li>
+              <strong>智能路径提取</strong>
+              : 点击树中的任何键名，下方会自动生成对应的 JavaScript 访问路径（如
+              <code>data.items[0].meta.id</code>
+              ），直接复制即可在代码中使用。
+            </li>
+            <li>
+              <strong>实时节点搜索</strong>
+              : 无论 JSON 有多大，顶部的搜索框都能实时过滤并高亮显示匹配的键名或内容。
+            </li>
+          </ul>
+
+          <h3>为什么开发者需要可视化树？</h3>
+          <p>相比于传统的文本格式，可视化树形视图提供了多维度的优势：</p>
+          <ol>
+            <li>
+              <strong>降低认知负载</strong>
+              : 空间化的布局比线性文本更符合人类大脑处理层级信息的习惯。
+            </li>
+            <li>
+              <strong>调试效率提升</strong>
+              : 在复杂的 Redux 状态树或 GraphQL 响应中，可视化能帮助您快速发现不符合预期的结构错误。
+            </li>
+            <li>
+              <strong>协作沟通工具</strong>
+              : 在向产品经理或新入职同事解释数据结构时，直接展示树形图比解释代码逻辑要高效得多。
+            </li>
+          </ol>
+
+          <h3>隐私与本地性能</h3>
+          <p>
+            您的所有数据解析操作均在您的浏览器本地线程中执行。WebUtils 不会将您的 JSON
+            内容上传到任何云端服务器。这意味着即使是处理包含敏感业务逻辑或个人隐私的数据，您也可以百分之百放心使用。同时，经过优化的渲染引擎确保即使面对兆级（MB）大小的
+            JSON，树形视图依然能保持丝滑顺畅的交互体验。
+          </p>
+        </section>
+      </main>
+
+      <div id="ads-bottom" class="ad-container">
+        <!-- AdSense Placeholder -->
+        <ins
+          class="adsbygoogle"
+          style="display: block"
+          data-ad-client="ca-pub-################"
+          data-ad-slot="################"
+          data-ad-format="auto"
+          data-full-width-responsive="true"
+        ></ins>
+        <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+      </div>
+
+      <footer>
+        <p>&copy; 2026 WebUtils - 专业开发者的在线工具箱</p>
+      </footer>
     </div>
 
     <script>
-        // --- Theme Logic ---
-        const themeToggle = document.getElementById('themeToggle');
-        function initTheme() {
-            const saved = localStorage.getItem('theme') || 'dark';
-            document.body.setAttribute('data-theme', saved);
+      // --- Theme Logic ---
+      const themeToggle = document.getElementById("themeToggle");
+      function initTheme() {
+        const saved = localStorage.getItem("theme") || "dark";
+        document.body.setAttribute("data-theme", saved);
+      }
+      themeToggle.addEventListener("click", () => {
+        const current = document.body.getAttribute("data-theme");
+        const next = current === "dark" ? "light" : "dark";
+        document.body.setAttribute("data-theme", next);
+        localStorage.setItem("theme", next);
+      });
+      initTheme();
+
+      // --- Core Logic ---
+      let rawData = null;
+
+      window.loadExample = function () {
+        const example = {
+          id: "0001",
+          type: "donut",
+          name: "Cake",
+          ppu: 0.55,
+          batters: {
+            batter: [
+              { id: "1001", type: "Regular" },
+              { id: "1002", type: "Chocolate" },
+              { id: "1003", type: "Blueberry" }
+            ]
+          },
+          topping: [
+            { id: "5001", type: "None" },
+            { id: "5002", type: "Glazed" },
+            { id: "5005", type: "Sugar" },
+            { id: "5007", type: "Powdered Sugar" }
+          ],
+          is_available: true,
+          stock: null
+        };
+        document.getElementById("jsonInput").value = JSON.stringify(example, null, 2);
+        renderTree();
+      };
+
+      window.formatInput = function () {
+        const el = document.getElementById("jsonInput");
+        try {
+          el.value = JSON.stringify(JSON.parse(el.value), null, 2);
+        } catch (e) {
+          alert("JSON 格式错误");
         }
-        themeToggle.addEventListener('click', () => {
-            const current = document.body.getAttribute('data-theme');
-            const next = current === 'dark' ? 'light' : 'dark';
-            document.body.setAttribute('data-theme', next);
-            localStorage.setItem('theme', next);
-        });
-        initTheme();
+      };
 
-        // --- Core Logic ---
-        let rawData = null;
+      window.clearAll = function () {
+        document.getElementById("jsonInput").value = "";
+        document.getElementById("treeView").innerHTML =
+          '<p style="color: var(--text-muted); text-align: center; padding-top: 100px;">解析 JSON 后将在此显示可视化树</p>';
+        document.getElementById("currentPath").textContent = "点击节点查看路径...";
+      };
 
-        window.loadExample = function() {
-            const example = {
-                id: "0001",
-                type: "donut",
-                name: "Cake",
-                ppu: 0.55,
-                batters: {
-                    batter: [
-                        { id: "1001", type: "Regular" },
-                        { id: "1002", type: "Chocolate" },
-                        { id: "1003", type: "Blueberry" }
-                    ]
-                },
-                topping: [
-                    { id: "5001", type: "None" },
-                    { id: "5002", type: "Glazed" },
-                    { id: "5005", type: "Sugar" },
-                    { id: "5007", type: "Powdered Sugar" }
-                ],
-                is_available: true,
-                stock: null
-            };
-            document.getElementById('jsonInput').value = JSON.stringify(example, null, 2);
-            renderTree();
-        };
+      window.renderTree = function () {
+        const input = document.getElementById("jsonInput").value.trim();
+        if (!input) return;
+        try {
+          rawData = JSON.parse(input);
+          const container = document.getElementById("treeView");
+          container.innerHTML = "";
+          container.appendChild(createNode(rawData, "root", "root"));
+        } catch (e) {
+          document.getElementById("treeView").innerHTML =
+            `<p style="color: var(--error-color); padding: 20px;">解析失败: ${e.message}</p>`;
+        }
+      };
 
-        window.formatInput = function() {
-            const el = document.getElementById('jsonInput');
-            try { el.value = JSON.stringify(JSON.parse(el.value), null, 2); } catch(e) { alert('JSON 格式错误'); }
-        };
+      function createNode(val, key, path) {
+        const div = document.createElement("div");
+        div.className = "tree-node-wrapper";
 
-        window.clearAll = function() {
-            document.getElementById('jsonInput').value = '';
-            document.getElementById('treeView').innerHTML = '<p style="color: var(--text-muted); text-align: center; padding-top: 100px;">解析 JSON 后将在此显示可视化树</p>';
-            document.getElementById('currentPath').textContent = '点击节点查看路径...';
-        };
+        const isObj = typeof val === "object" && val !== null;
+        const isArr = Array.isArray(val);
 
-        window.renderTree = function() {
-            const input = document.getElementById('jsonInput').value.trim();
-            if (!input) return;
-            try {
-                rawData = JSON.parse(input);
-                const container = document.getElementById('treeView');
-                container.innerHTML = '';
-                container.appendChild(createNode(rawData, 'root', 'root'));
-            } catch (e) {
-                document.getElementById('treeView').innerHTML = `<p style="color: var(--error-color); padding: 20px;">解析失败: ${e.message}</p>`;
-            }
-        };
+        const header = document.createElement("div");
+        header.className = "node-header";
 
-        function createNode(val, key, path) {
-            const div = document.createElement('div');
-            div.className = 'tree-node-wrapper';
-            
-            const isObj = typeof val === 'object' && val !== null;
-            const isArr = Array.isArray(val);
-            
-            const header = document.createElement('div');
-            header.className = 'node-header';
-            
-            if (isObj) {
-                const toggle = document.createElement('span');
-                toggle.className = 'toggle-icon';
-                toggle.textContent = '▼';
-                toggle.onclick = (e) => {
-                    const content = div.querySelector('.node-content');
-                    const isHidden = content.style.display === 'none';
-                    content.style.display = isHidden ? 'block' : 'none';
-                    toggle.textContent = isHidden ? '▼' : '▶';
-                    e.stopPropagation();
-                };
-                header.appendChild(toggle);
-            } else {
-                const dot = document.createElement('span');
-                dot.className = 'toggle-icon';
-                dot.style.cursor = 'default';
-                dot.innerHTML = '&bull;';
-                header.appendChild(dot);
-            }
-
-            const keySpan = document.createElement('span');
-            keySpan.className = 'node-key';
-            keySpan.textContent = key + ': ';
-            keySpan.onclick = () => {
-                document.getElementById('currentPath').textContent = path.replace(/^root\.?/, '');
-            };
-            header.appendChild(keySpan);
-
-            if (isObj) {
-                const typeInfo = document.createElement('span');
-                typeInfo.style.color = 'var(--text-muted)';
-                typeInfo.style.fontSize = '0.8rem';
-                typeInfo.textContent = isArr ? `Array(${val.length})` : `Object{${Object.keys(val).length}}`;
-                header.appendChild(typeInfo);
-
-                const content = document.createElement('div');
-                content.className = 'node-content tree-node';
-                
-                if (isArr) {
-                    val.forEach((item, i) => {
-                        content.appendChild(createNode(item, `[${i}]`, `${path}[${i}]`));
-                    });
-                } else {
-                    Object.entries(val).forEach(([k, v]) => {
-                        content.appendChild(createNode(v, k, `${path}.${k}`));
-                    });
-                }
-                div.appendChild(header);
-                div.appendChild(content);
-            } else {
-                const valSpan = document.createElement('span');
-                const type = val === null ? 'null' : typeof val;
-                valSpan.className = `node-value type-${type}`;
-                valSpan.textContent = type === 'string' ? `"${val}"` : String(val);
-                header.appendChild(valSpan);
-                div.appendChild(header);
-            }
-
-            return div;
+        if (isObj) {
+          const toggle = document.createElement("span");
+          toggle.className = "toggle-icon";
+          toggle.textContent = "▼";
+          toggle.onclick = (e) => {
+            const content = div.querySelector(".node-content");
+            const isHidden = content.style.display === "none";
+            content.style.display = isHidden ? "block" : "none";
+            toggle.textContent = isHidden ? "▼" : "▶";
+            e.stopPropagation();
+          };
+          header.appendChild(toggle);
+        } else {
+          const dot = document.createElement("span");
+          dot.className = "toggle-icon";
+          dot.style.cursor = "default";
+          dot.innerHTML = "&bull;";
+          header.appendChild(dot);
         }
 
-        window.expandAll = function() {
-            document.querySelectorAll('.node-content').forEach(el => el.style.display = 'block');
-            document.querySelectorAll('.toggle-icon').forEach(el => { if(el.textContent === '▶') el.textContent = '▼'; });
+        const keySpan = document.createElement("span");
+        keySpan.className = "node-key";
+        keySpan.textContent = key + ": ";
+        keySpan.onclick = () => {
+          document.getElementById("currentPath").textContent = path.replace(/^root\.?/, "");
         };
+        header.appendChild(keySpan);
 
-        window.collapseAll = function() {
-            document.querySelectorAll('.node-content').forEach(el => el.style.display = 'none');
-            document.querySelectorAll('.toggle-icon').forEach(el => { if(el.textContent === '▼') el.textContent = '▶'; });
-        };
+        if (isObj) {
+          const typeInfo = document.createElement("span");
+          typeInfo.style.color = "var(--text-muted)";
+          typeInfo.style.fontSize = "0.8rem";
+          typeInfo.textContent = isArr
+            ? `Array(${val.length})`
+            : `Object{${Object.keys(val).length}}`;
+          header.appendChild(typeInfo);
 
-        window.searchNodes = function() {
-            const term = document.getElementById('nodeSearch').value.toLowerCase();
-            if (!term) {
-                document.querySelectorAll('.node-header').forEach(el => el.style.background = 'none');
-                return;
-            }
-            document.querySelectorAll('.node-header').forEach(el => {
-                const match = el.textContent.toLowerCase().includes(term);
-                el.style.background = match ? 'rgba(59, 130, 246, 0.2)' : 'none';
-                if (match) {
-                    let parent = el.parentElement.parentElement;
-                    while (parent && parent.classList.contains('node-content')) {
-                        parent.style.display = 'block';
-                        const toggle = parent.previousElementSibling.querySelector('.toggle-icon');
-                        if (toggle) toggle.textContent = '▼';
-                        parent = parent.parentElement.parentElement;
-                    }
-                }
+          const content = document.createElement("div");
+          content.className = "node-content tree-node";
+
+          if (isArr) {
+            val.forEach((item, i) => {
+              content.appendChild(createNode(item, `[${i}]`, `${path}[${i}]`));
             });
-        };
+          } else {
+            Object.entries(val).forEach(([k, v]) => {
+              content.appendChild(createNode(v, k, `${path}.${k}`));
+            });
+          }
+          div.appendChild(header);
+          div.appendChild(content);
+        } else {
+          const valSpan = document.createElement("span");
+          const type = val === null ? "null" : typeof val;
+          valSpan.className = `node-value type-${type}`;
+          valSpan.textContent = type === "string" ? `"${val}"` : String(val);
+          header.appendChild(valSpan);
+          div.appendChild(header);
+        }
 
-        window.copyPath = function() {
-            const path = document.getElementById('currentPath').textContent;
-            if (path && path !== '点击节点查看路径...') {
-                navigator.clipboard.writeText(path).then(() => alert('路径已复制'));
+        return div;
+      }
+
+      window.expandAll = function () {
+        document.querySelectorAll(".node-content").forEach((el) => (el.style.display = "block"));
+        document.querySelectorAll(".toggle-icon").forEach((el) => {
+          if (el.textContent === "▶") el.textContent = "▼";
+        });
+      };
+
+      window.collapseAll = function () {
+        document.querySelectorAll(".node-content").forEach((el) => (el.style.display = "none"));
+        document.querySelectorAll(".toggle-icon").forEach((el) => {
+          if (el.textContent === "▼") el.textContent = "▶";
+        });
+      };
+
+      window.searchNodes = function () {
+        const term = document.getElementById("nodeSearch").value.toLowerCase();
+        if (!term) {
+          document.querySelectorAll(".node-header").forEach((el) => (el.style.background = "none"));
+          return;
+        }
+        document.querySelectorAll(".node-header").forEach((el) => {
+          const match = el.textContent.toLowerCase().includes(term);
+          el.style.background = match ? "rgba(59, 130, 246, 0.2)" : "none";
+          if (match) {
+            let parent = el.parentElement.parentElement;
+            while (parent && parent.classList.contains("node-content")) {
+              parent.style.display = "block";
+              const toggle = parent.previousElementSibling.querySelector(".toggle-icon");
+              if (toggle) toggle.textContent = "▼";
+              parent = parent.parentElement.parentElement;
             }
-        };
+          }
+        });
+      };
+
+      window.copyPath = function () {
+        const path = document.getElementById("currentPath").textContent;
+        if (path && path !== "点击节点查看路径...") {
+          navigator.clipboard.writeText(path).then(() => alert("路径已复制"));
+        }
+      };
     </script>
-</body>
+  </body>
 </html>

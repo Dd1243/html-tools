@@ -1,327 +1,433 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Unicode 查询工具 - 在线字符编码查询 - WebUtils</title>
-    <meta name="description" content="专业的在线 Unicode 查询工具。支持输入字符查询码点，或输入码点反查字符。提供十六进制、十进制、HTML 实体及 UTF-8 编码详细信息。支持批量处理，是开发者处理乱码、特殊字符的必备神器。">
-    <meta name="keywords" content="Unicode查询,字符编码,码点查询,UTF-8编码,HTML实体,特殊字符,WebUtils">
-    <meta name="author" content="WebUtils">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://essays4u.net/tools/dev/unicode-lookup.html">
+    <meta
+      name="description"
+      content="专业的在线 Unicode 查询工具。支持输入字符查询码点，或输入码点反查字符。提供十六进制、十进制、HTML 实体及 UTF-8 编码详细信息。支持批量处理，是开发者处理乱码、特殊字符的必备神器。"
+    />
+    <meta
+      name="keywords"
+      content="Unicode查询,字符编码,码点查询,UTF-8编码,HTML实体,特殊字符,WebUtils"
+    />
+    <meta name="author" content="WebUtils" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://essays4u.net/tools/dev/unicode-lookup.html" />
 
     <!-- Open Graph -->
-    <meta property="og:title" content="Unicode 查询工具 - WebUtils">
-    <meta property="og:description" content="支持字符与 Unicode 码点互查，提供详细的编码属性与批量处理功能。">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://essays4u.net/tools/dev/unicode-lookup.html">
-    <meta property="og:image" content="https://essays4u.net/social-preview.png">
+    <meta property="og:title" content="Unicode 查询工具 - WebUtils" />
+    <meta
+      property="og:description"
+      content="支持字符与 Unicode 码点互查，提供详细的编码属性与批量处理功能。"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://essays4u.net/tools/dev/unicode-lookup.html" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
 
     <style>
-        :root {
-            --primary-color: #10b981;
-            --bg-deep: #0f172a;
-            --bg-surface: #1e293b;
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --border-subtle: #334155;
-            --radius-lg: 12px;
-        }
+      :root {
+        --primary-color: #10b981;
+        --bg-deep: #0f172a;
+        --bg-surface: #1e293b;
+        --text-primary: #f1f5f9;
+        --text-secondary: #94a3b8;
+        --border-subtle: #334155;
+        --radius-lg: 12px;
+      }
 
-        [data-theme="light"] {
-            --bg-deep: #f8fafc;
-            --bg-surface: #ffffff;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --border-subtle: #e2e8f0;
-        }
+      [data-theme="light"] {
+        --bg-deep: #f8fafc;
+        --bg-surface: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border-subtle: #e2e8f0;
+      }
 
-        body {
-            background-color: var(--bg-deep);
-            color: var(--text-primary);
-            min-height: 100vh;
-            padding-bottom: 3rem;
-        }
+      body {
+        background-color: var(--bg-deep);
+        color: var(--text-primary);
+        min-height: 100vh;
+        padding-bottom: 3rem;
+      }
 
+      .container {
+        max-width: 1100px;
+        padding: 2rem;
+      }
+
+      .header-section {
+        text-align: center;
+        margin-bottom: 2.5rem;
+      }
+
+      .header-section h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, #10b981, #3b82f6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .tool-card {
+        background: var(--bg-surface);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-subtle);
+        padding: 2rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+      }
+
+      .ads-placeholder {
+        background: rgba(0, 0, 0, 0.05);
+        border: 1px dashed var(--border-subtle);
+        border-radius: var(--radius-lg);
+        height: 90px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 1.5rem 0;
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+      }
+
+      .input-group {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      input[type="text"] {
+        flex: 1;
+        margin-bottom: 0;
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      .result-table-container {
+        overflow-x: auto;
+        margin-top: 1.5rem;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+      }
+
+      th {
+        background: rgba(0, 0, 0, 0.1);
+        color: var(--text-secondary);
+        text-align: left;
+        padding: 0.75rem;
+        white-space: nowrap;
+      }
+
+      td {
+        padding: 0.75rem;
+        border-bottom: 1px solid var(--border-subtle);
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      .char-preview {
+        font-size: 1.5rem;
+        font-family: serif;
+      }
+
+      .article-content {
+        line-height: 1.8;
+        background: var(--bg-surface);
+        padding: 2.5rem;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-subtle);
+      }
+
+      .article-content h2 {
+        color: var(--primary-color);
+        margin-top: 2rem;
+      }
+
+      .theme-toggle {
+        position: fixed;
+        top: 1.5rem;
+        right: 1.5rem;
+        z-index: 100;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        background: var(--primary-color);
+        color: white;
+        margin-left: 0.5rem;
+      }
+
+      @media (max-width: 600px) {
         .container {
-            max-width: 1100px;
-            padding: 2rem;
+          padding: 1rem;
         }
-
-        .header-section {
-            text-align: center;
-            margin-bottom: 2.5rem;
-        }
-
         .header-section h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, #10b981, #3b82f6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+          font-size: 1.8rem;
         }
-
         .tool-card {
-            background: var(--bg-surface);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border-subtle);
-            padding: 2rem;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
+          padding: 1.2rem;
         }
-
-        .ads-placeholder {
-            background: rgba(0,0,0,0.05);
-            border: 1px dashed var(--border-subtle);
-            border-radius: var(--radius-lg);
-            height: 90px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 1.5rem 0;
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-        }
-
         .input-group {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+          flex-direction: column;
         }
-
-        input[type="text"] {
-            flex: 1;
-            margin-bottom: 0;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .result-table-container {
-            overflow-x: auto;
-            margin-top: 1.5rem;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-        }
-
-        th {
-            background: rgba(0,0,0,0.1);
-            color: var(--text-secondary);
-            text-align: left;
-            padding: 0.75rem;
-            white-space: nowrap;
-        }
-
-        td {
-            padding: 0.75rem;
-            border-bottom: 1px solid var(--border-subtle);
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .char-preview {
-            font-size: 1.5rem;
-            font-family: serif;
-        }
-
-        .article-content {
-            line-height: 1.8;
-            background: var(--bg-surface);
-            padding: 2.5rem;
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border-subtle);
-        }
-
-        .article-content h2 {
-            color: var(--primary-color);
-            margin-top: 2rem;
-        }
-
-        .theme-toggle {
-            position: fixed;
-            top: 1.5rem;
-            right: 1.5rem;
-            z-index: 100;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            background: var(--primary-color);
-            color: white;
-            margin-left: 0.5rem;
-        }
-
-        @media (max-width: 600px) {
-            .container { padding: 1rem; }
-            .header-section h1 { font-size: 1.8rem; }
-            .tool-card { padding: 1.2rem; }
-            .input-group { flex-direction: column; }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <button class="outline secondary theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
+      <button class="outline secondary theme-toggle" onclick="toggleTheme()" id="themeBtn">
+        🌙
+      </button>
 
-        <header class="header-section">
-            <nav aria-label="breadcrumb">
-                <ul>
-                    <li><a href="/">首页</a></li>
-                    <li><a href="/tools/dev/">开发工具</a></li>
-                    <li>Unicode 查询</li>
-                </ul>
-            </nav>
-            <h1>Unicode 查询工具</h1>
-            <p>探索字符背后的编码奥秘，支持批量查询与深度解析</p>
-        </header>
+      <header class="header-section">
+        <nav aria-label="breadcrumb">
+          <ul>
+            <li><a href="/">首页</a></li>
+            <li><a href="/tools/dev/">开发工具</a></li>
+            <li>Unicode 查询</li>
+          </ul>
+        </nav>
+        <h1>Unicode 查询工具</h1>
+        <p>探索字符背后的编码奥秘，支持批量查询与深度解析</p>
+      </header>
 
-        <div class="ads-placeholder">
-            <!-- Google AdSense Placeholder -->
-            <span>广告位展示区域</span>
+      <div class="ads-placeholder">
+        <!-- Google AdSense Placeholder -->
+        <span>广告位展示区域</span>
+      </div>
+
+      <main class="tool-card">
+        <div class="input-group">
+          <input
+            type="text"
+            id="input"
+            placeholder="输入字符 (如: 汉) 或码点 (如: U+6C49, 0x6C49, 27721)"
+            oninput="lookup()"
+          />
+          <button onclick="clearAll()">清空</button>
         </div>
 
-        <main class="tool-card">
-            <div class="input-group">
-                <input type="text" id="input" placeholder="输入字符 (如: 汉) 或码点 (如: U+6C49, 0x6C49, 27721)" oninput="lookup()">
-                <button onclick="clearAll()">清空</button>
-            </div>
-
-            <div class="result-table-container">
-                <table id="resultTable">
-                    <thead>
-                        <tr>
-                            <th>字符</th>
-                            <th>Unicode 码点</th>
-                            <th>十进制</th>
-                            <th>HTML 实体</th>
-                            <th>UTF-8 编码</th>
-                        </tr>
-                    </thead>
-                    <tbody id="resultBody">
-                        <tr>
-                            <td colspan="5" style="text-align: center; color: var(--text-secondary);">请输入内容开始查询</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </main>
-
-        <div class="ads-placeholder">
-            <!-- Google AdSense Placeholder -->
-            <span>广告位展示区域</span>
+        <div class="result-table-container">
+          <table id="resultTable">
+            <thead>
+              <tr>
+                <th>字符</th>
+                <th>Unicode 码点</th>
+                <th>十进制</th>
+                <th>HTML 实体</th>
+                <th>UTF-8 编码</th>
+              </tr>
+            </thead>
+            <tbody id="resultBody">
+              <tr>
+                <td colspan="5" style="text-align: center; color: var(--text-secondary)">
+                  请输入内容开始查询
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
+      </main>
 
-        <article class="article-content">
-            <h2>什么是 Unicode？为什么我们需要查询它？</h2>
-            <p>Unicode（万国码）是计算机科学领域里的一项业界标准，旨在为世界上超过 100 万个字符提供统一且唯一的数字编号。无论是中文、英文、表情符号（Emoji），还是古老的象形文字，在 Unicode 标准中都有其对应的<strong>码点（Code Point）</strong>。</p>
-            <p><strong>Unicode 查询工具</strong>可以帮助开发者解决以下具体问题：</p>
-            <ul>
-                <li><strong>乱码排查：</strong> 当网页出现 <code>锟斤拷</code> 或方框时，通过查询原始字符的编码，可以定位是数据库字符集还是前端渲染的问题。</li>
-                <li><strong>特殊字符调用：</strong> 在编写 CSS 或 JavaScript 时，经常需要使用 <code>\uXXXX</code> 格式。本工具能直接提供这些格式的代码。</li>
-                <li><strong>Emoji 深度研究：</strong> 每一个 Emoji 其实都是由一个或多个 Unicode 码点组成的，通过本工具可以拆解它们的构成。</li>
-            </ul>
+      <div class="ads-placeholder">
+        <!-- Google AdSense Placeholder -->
+        <span>广告位展示区域</span>
+      </div>
 
-            <h2>本工具功能亮点</h2>
-            <ul>
-                <li><strong>智能识别：</strong> 无论您输入的是“中”这个字，还是 <code>U+4E2D</code>，亦或是 <code>20013</code>，工具都能自动识别并展示结果。</li>
-                <li><strong>批量查询：</strong> 您可以一次性输入一串文字，工具会逐一列出每个字符的详细编码信息。</li>
-                <li><strong>多维展示：</strong> 同时提供十六进制、十进制、HTML 实体和 UTF-8 字节序列，满足不同开发语言的需求。</li>
-                <li><strong>本地运行：</strong> 所有计算都在您的设备上完成，响应极快且隐私安全。</li>
-            </ul>
+      <article class="article-content">
+        <h2>什么是 Unicode？为什么我们需要查询它？</h2>
+        <p>
+          Unicode（万国码）是计算机科学领域里的一项业界标准，旨在为世界上超过 100
+          万个字符提供统一且唯一的数字编号。无论是中文、英文、表情符号（Emoji），还是古老的象形文字，在
+          Unicode 标准中都有其对应的
+          <strong>码点（Code Point）</strong>
+          。
+        </p>
+        <p>
+          <strong>Unicode 查询工具</strong>
+          可以帮助开发者解决以下具体问题：
+        </p>
+        <ul>
+          <li>
+            <strong>乱码排查：</strong>
+            当网页出现
+            <code>锟斤拷</code>
+            或方框时，通过查询原始字符的编码，可以定位是数据库字符集还是前端渲染的问题。
+          </li>
+          <li>
+            <strong>特殊字符调用：</strong>
+            在编写 CSS 或 JavaScript 时，经常需要使用
+            <code>\uXXXX</code>
+            格式。本工具能直接提供这些格式的代码。
+          </li>
+          <li>
+            <strong>Emoji 深度研究：</strong>
+            每一个 Emoji 其实都是由一个或多个 Unicode 码点组成的，通过本工具可以拆解它们的构成。
+          </li>
+        </ul>
 
-            <h2>Unicode 常见知识点</h2>
-            <h3>1. 什么是码点 (Code Point)？</h3>
-            <p>码点是 Unicode 分配给每个字符的唯一数字，通常以 <code>U+</code> 开头后跟十六进制数字。例如，汉字“一”的码点是 <code>U+4E00</code>。</p>
+        <h2>本工具功能亮点</h2>
+        <ul>
+          <li>
+            <strong>智能识别：</strong>
+            无论您输入的是“中”这个字，还是
+            <code>U+4E2D</code>
+            ，亦或是
+            <code>20013</code>
+            ，工具都能自动识别并展示结果。
+          </li>
+          <li>
+            <strong>批量查询：</strong>
+            您可以一次性输入一串文字，工具会逐一列出每个字符的详细编码信息。
+          </li>
+          <li>
+            <strong>多维展示：</strong>
+            同时提供十六进制、十进制、HTML 实体和 UTF-8 字节序列，满足不同开发语言的需求。
+          </li>
+          <li>
+            <strong>本地运行：</strong>
+            所有计算都在您的设备上完成，响应极快且隐私安全。
+          </li>
+        </ul>
 
-            <h3>2. Unicode 与 UTF-8 的区别</h3>
-            <p>Unicode 是<strong>字符集</strong>（定义了字符与数字的对应关系），而 UTF-8 是一种<strong>编码方案</strong>（定义了如何将这些数字转换为计算机存储的字节流）。一个 Unicode 字符在 UTF-8 编码下可能占用 1 到 4 个字节。</p>
+        <h2>Unicode 常见知识点</h2>
+        <h3>1. 什么是码点 (Code Point)？</h3>
+        <p>
+          码点是 Unicode 分配给每个字符的唯一数字，通常以
+          <code>U+</code>
+          开头后跟十六进制数字。例如，汉字“一”的码点是
+          <code>U+4E00</code>
+          。
+        </p>
 
-            <h3>3. 在代码中使用 Unicode</h3>
-            <p>在 HTML 中，您可以使用 <code>&#x4E2D;</code> 渲染字符；在 CSS 中使用 <code>content: "\4E2D";</code>；在 JavaScript 中使用 <code>"\u4E2D"</code>。本工具为您一键准备了这些代码。</p>
+        <h3>2. Unicode 与 UTF-8 的区别</h3>
+        <p>
+          Unicode 是
+          <strong>字符集</strong>
+          （定义了字符与数字的对应关系），而 UTF-8 是一种
+          <strong>编码方案</strong>
+          （定义了如何将这些数字转换为计算机存储的字节流）。一个 Unicode 字符在 UTF-8 编码下可能占用
+          1 到 4 个字节。
+        </p>
 
-            <h2>如何使用本工具？</h2>
-            <p>直接在顶部的输入框中输入您感兴趣的任何内容。如果您想查询码点对应的字符，请确保使用 <code>U+</code> 或 <code>0x</code> 前缀。查询结果会自动以表格形式呈现，点击对应单元格即可轻松查看详细数据。</p>
-        </article>
+        <h3>3. 在代码中使用 Unicode</h3>
+        <p>
+          在 HTML 中，您可以使用
+          <code>&#x4E2D;</code>
+          渲染字符；在 CSS 中使用
+          <code>content: "\4E2D";</code>
+          ；在 JavaScript 中使用
+          <code>"\u4E2D"</code>
+          。本工具为您一键准备了这些代码。
+        </p>
+
+        <h2>如何使用本工具？</h2>
+        <p>
+          直接在顶部的输入框中输入您感兴趣的任何内容。如果您想查询码点对应的字符，请确保使用
+          <code>U+</code>
+          或
+          <code>0x</code>
+          前缀。查询结果会自动以表格形式呈现，点击对应单元格即可轻松查看详细数据。
+        </p>
+      </article>
     </div>
 
     <script>
-        const inputEl = document.getElementById('input');
-        const resultBody = document.getElementById('resultBody');
+      const inputEl = document.getElementById("input");
+      const resultBody = document.getElementById("resultBody");
 
-        function lookup() {
-            const val = inputEl.value.trim();
-            if (!val) {
-                resultBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-secondary);">请输入内容开始查询</td></tr>';
-                return;
-            }
-
-            let results = [];
-            
-            // 尝试解析码点输入
-            if (val.startsWith('U+') || val.startsWith('u+') || val.startsWith('0x') || val.startsWith('0X') || /^\d+$/.test(val)) {
-                let codePoint;
-                if (val.toLowerCase().startsWith('u+') || val.toLowerCase().startsWith('0x')) {
-                    codePoint = parseInt(val.substring(2), 16);
-                } else {
-                    codePoint = parseInt(val, 10);
-                }
-
-                if (!isNaN(codePoint) && codePoint >= 0 && codePoint <= 0x10FFFF) {
-                    results.push(processChar(String.fromCodePoint(codePoint)));
-                }
-            }
-            
-            // 无论如何，都作为字符串处理每个字符
-            const chars = Array.from(val);
-            chars.forEach(char => {
-                results.push(processChar(char));
-            });
-
-            // 去重
-            const uniqueResults = [];
-            const seen = new Set();
-            results.forEach(r => {
-                if (!seen.has(r.hex)) {
-                    uniqueResults.push(r);
-                    seen.add(r.hex);
-                }
-            });
-
-            renderResults(uniqueResults);
+      function lookup() {
+        const val = inputEl.value.trim();
+        if (!val) {
+          resultBody.innerHTML =
+            '<tr><td colspan="5" style="text-align: center; color: var(--text-secondary);">请输入内容开始查询</td></tr>';
+          return;
         }
 
-        function processChar(char) {
-            const codePoint = char.codePointAt(0);
-            const hex = codePoint.toString(16).toUpperCase().padStart(4, '0');
-            
-            // UTF-8 编码计算
-            const encoder = new TextEncoder();
-            const utf8Bytes = encoder.encode(char);
-            const utf8Hex = Array.from(utf8Bytes).map(b => b.toString(16).toUpperCase().padStart(2, '0')).join(' ');
+        let results = [];
 
-            return {
-                char: char,
-                hex: 'U+' + hex,
-                dec: codePoint,
-                html: `&#x${hex};`,
-                utf8: utf8Hex
-            };
+        // 尝试解析码点输入
+        if (
+          val.startsWith("U+") ||
+          val.startsWith("u+") ||
+          val.startsWith("0x") ||
+          val.startsWith("0X") ||
+          /^\d+$/.test(val)
+        ) {
+          let codePoint;
+          if (val.toLowerCase().startsWith("u+") || val.toLowerCase().startsWith("0x")) {
+            codePoint = parseInt(val.substring(2), 16);
+          } else {
+            codePoint = parseInt(val, 10);
+          }
+
+          if (!isNaN(codePoint) && codePoint >= 0 && codePoint <= 0x10ffff) {
+            results.push(processChar(String.fromCodePoint(codePoint)));
+          }
         }
 
-        function renderResults(data) {
-            if (data.length === 0) {
-                resultBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-secondary);">未找到有效结果</td></tr>';
-                return;
-            }
+        // 无论如何，都作为字符串处理每个字符
+        const chars = Array.from(val);
+        chars.forEach((char) => {
+          results.push(processChar(char));
+        });
 
-            resultBody.innerHTML = data.map(item => `
+        // 去重
+        const uniqueResults = [];
+        const seen = new Set();
+        results.forEach((r) => {
+          if (!seen.has(r.hex)) {
+            uniqueResults.push(r);
+            seen.add(r.hex);
+          }
+        });
+
+        renderResults(uniqueResults);
+      }
+
+      function processChar(char) {
+        const codePoint = char.codePointAt(0);
+        const hex = codePoint.toString(16).toUpperCase().padStart(4, "0");
+
+        // UTF-8 编码计算
+        const encoder = new TextEncoder();
+        const utf8Bytes = encoder.encode(char);
+        const utf8Hex = Array.from(utf8Bytes)
+          .map((b) => b.toString(16).toUpperCase().padStart(2, "0"))
+          .join(" ");
+
+        return {
+          char: char,
+          hex: "U+" + hex,
+          dec: codePoint,
+          html: `&#x${hex};`,
+          utf8: utf8Hex
+        };
+      }
+
+      function renderResults(data) {
+        if (data.length === 0) {
+          resultBody.innerHTML =
+            '<tr><td colspan="5" style="text-align: center; color: var(--text-secondary);">未找到有效结果</td></tr>';
+          return;
+        }
+
+        resultBody.innerHTML = data
+          .map(
+            (item) => `
                 <tr>
                     <td><span class="char-preview">${item.char}</span></td>
                     <td>${item.hex}</td>
@@ -329,27 +435,31 @@
                     <td>${item.html}</td>
                     <td>${item.utf8}</td>
                 </tr>
-            `).join('');
-        }
+            `
+          )
+          .join("");
+      }
 
-        function clearAll() {
-            inputEl.value = '';
-            lookup();
-        }
+      function clearAll() {
+        inputEl.value = "";
+        lookup();
+      }
 
-        function toggleTheme() {
-            const html = document.documentElement;
-            const btn = document.getElementById('themeBtn');
-            const isDark = html.getAttribute('data-theme') === 'dark';
-            html.setAttribute('data-theme', isDark ? 'light' : 'dark');
-            btn.innerText = isDark ? '🌙' : '☀️';
-            localStorage.setItem('theme', isDark ? 'light' : 'dark');
-        }
+      function toggleTheme() {
+        const html = document.documentElement;
+        const btn = document.getElementById("themeBtn");
+        const isDark = html.getAttribute("data-theme") === "dark";
+        html.setAttribute("data-theme", isDark ? "light" : "dark");
+        btn.innerText = isDark ? "🌙" : "☀️";
+        localStorage.setItem("theme", isDark ? "light" : "dark");
+      }
 
-        // Init theme
-        const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        document.getElementById('themeBtn').innerText = savedTheme === 'dark' ? '☀️' : '🌙';
+      // Init theme
+      const savedTheme =
+        localStorage.getItem("theme") ||
+        (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", savedTheme);
+      document.getElementById("themeBtn").innerText = savedTheme === "dark" ? "☀️" : "🌙";
     </script>
-</body>
+  </body>
 </html>

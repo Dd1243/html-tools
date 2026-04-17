@@ -1,164 +1,450 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Markdown 在线预览器 - 实时渲染、分栏预览、代码高亮 | WebUtils</title>
-  <meta name="description" content="WebUtils 免费在线 Markdown 预览工具。采用 Marked.js 高性能渲染引擎，支持分栏、纯编辑及纯预览三种模式，内置 DOMPurify 安全过滤，完美兼容 GitHub GFM 语法。100% 本地运算。">
-  <meta name="keywords" content="Markdown预览, Markdown渲染, 在线Markdown, MD预览器, WebUtils, Markdown Viewer, GFM预览">
-  <link rel="canonical" href="https://essays4u.net/tools/text/markdown-preview.html">
-  
-  <!-- Open Graph -->
-  <meta property="og:title" content="Markdown 在线预览器 - 让你的创作瞬间呈现专业质感">
-  <meta property="og:description" content="实时预览 Markdown 效果，支持多种视图切换，安全高效。">
-  <meta property="og:url" content="https://essays4u.net/tools/text/markdown-preview.html">
-  <meta property="og:type" content="website">
-  <meta property="og:image" content="https://essays4u.net/social-preview.png">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Markdown 在线预览器 - 实时渲染、分栏预览、代码高亮 | WebUtils</title>
+    <meta
+      name="description"
+      content="WebUtils 免费在线 Markdown 预览工具。采用 Marked.js 高性能渲染引擎，支持分栏、纯编辑及纯预览三种模式，内置 DOMPurify 安全过滤，完美兼容 GitHub GFM 语法。100% 本地运算。"
+    />
+    <meta
+      name="keywords"
+      content="Markdown预览, Markdown渲染, 在线Markdown, MD预览器, WebUtils, Markdown Viewer, GFM预览"
+    />
+    <link rel="canonical" href="https://essays4u.net/tools/text/markdown-preview.html" />
 
-  <!-- Libraries -->
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+    <!-- Open Graph -->
+    <meta property="og:title" content="Markdown 在线预览器 - 让你的创作瞬间呈现专业质感" />
+    <meta
+      property="og:description"
+      content="实时预览 Markdown 效果，支持多种视图切换，安全高效。"
+    />
+    <meta property="og:url" content="https://essays4u.net/tools/text/markdown-preview.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
 
-  <style>
-    :root {
-      --primary-color: #007acc;
-      --primary-hover: #005f99;
-      --bg-color: #f9f9f9;
-      --card-bg: #ffffff;
-      --text-main: #333333;
-      --text-muted: #666666;
-      --border-color: #dddddd;
-      --shadow: 0 2px 10px rgba(0,0,0,0.08);
-      --radius: 6px;
-      --accent-blue: #e8f4fd;
-    }
+    <!-- Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: "Segoe UI", system-ui, -apple-system, sans-serif; line-height: 1.6; color: var(--text-main); background: var(--bg-color); }
-    
-    .container { width: 95%; max-width: 1400px; margin: 0 auto; }
+    <style>
+      :root {
+        --primary-color: #007acc;
+        --primary-hover: #005f99;
+        --bg-color: #f9f9f9;
+        --card-bg: #ffffff;
+        --text-main: #333333;
+        --text-muted: #666666;
+        --border-color: #dddddd;
+        --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        --radius: 6px;
+        --accent-blue: #e8f4fd;
+      }
 
-    /* 顶部导航 */
-    .site-header { background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
-    .site-header .container { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
-    .logo a { font-size: 1.4rem; font-weight: 700; color: var(--primary-color); text-decoration: none; }
-    .site-nav ul { display: flex; list-style: none; gap: 20px; }
-    .site-nav a { text-decoration: none; color: var(--text-muted); font-weight: 500; font-size: 0.95rem; }
-    .site-nav a:hover { color: var(--primary-color); }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        line-height: 1.6;
+        color: var(--text-main);
+        background: var(--bg-color);
+      }
 
-    /* 主体布局 */
-    main.container { display: grid; grid-template-columns: 1fr 320px; gap: 25px; padding: 30px 0; }
+      .container {
+        width: 95%;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
 
-    /* 工具区 */
-    .tool-section { background: var(--card-bg); padding: 30px; border-radius: var(--radius); box-shadow: var(--shadow); }
-    .tool-header { margin-bottom: 25px; border-bottom: 2px solid var(--bg-color); padding-bottom: 15px; }
-    .tool-header h1 { font-size: 1.8rem; color: #111; margin-bottom: 8px; }
-    .tool-header p { color: var(--text-muted); font-size: 0.95rem; }
+      /* 顶部导航 */
+      .site-header {
+        background: #fff;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .site-header .container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 0;
+      }
+      .logo a {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        text-decoration: none;
+      }
+      .site-nav ul {
+        display: flex;
+        list-style: none;
+        gap: 20px;
+      }
+      .site-nav a {
+        text-decoration: none;
+        color: var(--text-muted);
+        font-weight: 500;
+        font-size: 0.95rem;
+      }
+      .site-nav a:hover {
+        color: var(--primary-color);
+      }
 
-    /* 视图控制 */
-    .view-controls { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
-    .view-btn { padding: 8px 20px; border: 1px solid var(--border-color); border-radius: 4px; background: #fff; color: #666; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all 0.2s; }
-    .view-btn.active { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
+      /* 主体布局 */
+      main.container {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 25px;
+        padding: 30px 0;
+      }
 
-    /* 编辑器网格 */
-    .editor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; min-height: 600px; margin-bottom: 20px; }
-    .editor-grid.view-edit { grid-template-columns: 1fr; }
-    .editor-grid.view-edit #previewPanel { display: none; }
-    .editor-grid.view-preview { grid-template-columns: 1fr; }
-    .editor-grid.view-preview #editorPanel { display: none; }
+      /* 工具区 */
+      .tool-section {
+        background: var(--card-bg);
+        padding: 30px;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+      .tool-header {
+        margin-bottom: 25px;
+        border-bottom: 2px solid var(--bg-color);
+        padding-bottom: 15px;
+      }
+      .tool-header h1 {
+        font-size: 1.8rem;
+        color: #111;
+        margin-bottom: 8px;
+      }
+      .tool-header p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+      }
 
-    .panel { border: 1px solid var(--border-color); border-radius: var(--radius); display: flex; flex-direction: column; overflow: hidden; }
-    .panel-header { padding: 10px 15px; background: #f8f9fa; border-bottom: 1px solid var(--border-color); font-size: 0.8rem; font-weight: 700; color: #555; display: flex; justify-content: space-between; }
-    
-    textarea { flex: 1; width: 100%; padding: 20px; border: none; font-family: "JetBrains Mono", monospace; font-size: 0.95rem; line-height: 1.6; outline: none; background: #fcfcfc; resize: none; }
-    
-    .preview-body { flex: 1; padding: 25px; overflow-y: auto; background: #fff; font-size: 1rem; color: #333; }
-    
-    /* Markdown Preview Styles */
-    .preview-body h1 { font-size: 1.8rem; margin-bottom: 1rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; }
-    .preview-body h2 { font-size: 1.4rem; margin: 1.5rem 0 1rem; }
-    .preview-body p { margin-bottom: 1rem; }
-    .preview-body ul, .preview-body ol { padding-left: 2rem; margin-bottom: 1rem; }
-    .preview-body pre { background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto; margin-bottom: 1rem; }
-    .preview-body code { font-family: monospace; background: #f0f0f0; padding: 2px 4px; border-radius: 3px; }
-    .preview-body blockquote { border-left: 4px solid #ddd; padding-left: 1rem; color: #777; font-style: italic; margin-bottom: 1rem; }
-    .preview-body table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
-    .preview-body th, .preview-body td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-    .preview-body th { background: #f8f9fa; }
+      /* 视图控制 */
+      .view-controls {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+      .view-btn {
+        padding: 8px 20px;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        background: #fff;
+        color: #666;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: all 0.2s;
+      }
+      .view-btn.active {
+        background: var(--primary-color);
+        color: #fff;
+        border-color: var(--primary-color);
+      }
 
-    .stats-bar { display: flex; gap: 20px; font-size: 0.85rem; color: var(--text-muted); margin-top: 10px; }
+      /* 编辑器网格 */
+      .editor-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        min-height: 600px;
+        margin-bottom: 20px;
+      }
+      .editor-grid.view-edit {
+        grid-template-columns: 1fr;
+      }
+      .editor-grid.view-edit #previewPanel {
+        display: none;
+      }
+      .editor-grid.view-preview {
+        grid-template-columns: 1fr;
+      }
+      .editor-grid.view-preview #editorPanel {
+        display: none;
+      }
 
-    /* 侧边栏 */
-    .sidebar { display: flex; flex-direction: column; gap: 25px; }
-    .sidebar-widget { background: #fff; padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); border-top: 3px solid var(--primary-color); }
-    .widget-title { font-size: 1rem; font-weight: 700; margin-bottom: 15px; color: #111; }
-    .sidebar-list { list-style: none; }
-    .sidebar-list li { margin-bottom: 12px; font-size: 0.9rem; }
-    .sidebar-list a { color: var(--text-muted); text-decoration: none; display: block; padding: 4px 0; border-bottom: 1px solid #f0f0f0; }
-    .sidebar-list a:hover { color: var(--primary-color); padding-left: 5px; }
+      .panel {
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .panel-header {
+        padding: 10px 15px;
+        background: #f8f9fa;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #555;
+        display: flex;
+        justify-content: space-between;
+      }
 
-    /* SEO 文章 */
-    .seo-section { margin-top: 50px; border-top: 1px solid #eee; padding-top: 40px; }
-    .seo-section h2 { font-size: 1.5rem; margin-bottom: 25px; color: #111; display: flex; align-items: center; gap: 10px; }
-    .seo-section h2::before { content: ""; width: 4px; height: 20px; background: var(--primary-color); border-radius: 2px; display: inline-block; }
-    .seo-article { font-size: 0.95rem; color: #444; line-height: 1.8; }
-    .seo-article h3 { margin: 25px 0 15px; color: #111; }
-    .seo-article p { margin-bottom: 15px; }
-    .seo-article ul { padding-left: 20px; margin-bottom: 20px; }
-    .seo-article li { margin-bottom: 10px; }
+      textarea {
+        flex: 1;
+        width: 100%;
+        padding: 20px;
+        border: none;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        outline: none;
+        background: #fcfcfc;
+        resize: none;
+      }
 
-    /* 广告占位 */
-    .ad-placeholder { background: #f0f2f5; border: 1px dashed #ccc; color: #999; text-align: center; padding: 15px; border-radius: var(--radius); font-size: 0.8rem; min-height: 90px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+      .preview-body {
+        flex: 1;
+        padding: 25px;
+        overflow-y: auto;
+        background: #fff;
+        font-size: 1rem;
+        color: #333;
+      }
 
-    /* 页脚 */
-    .site-footer { background: #2c3e50; color: #ecf0f1; padding: 40px 0 20px; margin-top: 50px; text-align: center; }
-    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; font-size: 0.85rem; color: #95a5a6; }
+      /* Markdown Preview Styles */
+      .preview-body h1 {
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 0.5rem;
+      }
+      .preview-body h2 {
+        font-size: 1.4rem;
+        margin: 1.5rem 0 1rem;
+      }
+      .preview-body p {
+        margin-bottom: 1rem;
+      }
+      .preview-body ul,
+      .preview-body ol {
+        padding-left: 2rem;
+        margin-bottom: 1rem;
+      }
+      .preview-body pre {
+        background: #f4f4f4;
+        padding: 15px;
+        border-radius: 4px;
+        overflow-x: auto;
+        margin-bottom: 1rem;
+      }
+      .preview-body code {
+        font-family: monospace;
+        background: #f0f0f0;
+        padding: 2px 4px;
+        border-radius: 3px;
+      }
+      .preview-body blockquote {
+        border-left: 4px solid #ddd;
+        padding-left: 1rem;
+        color: #777;
+        font-style: italic;
+        margin-bottom: 1rem;
+      }
+      .preview-body table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1rem;
+      }
+      .preview-body th,
+      .preview-body td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      .preview-body th {
+        background: #f8f9fa;
+      }
 
-    @media (max-width: 992px) {
-      main.container { grid-template-columns: 1fr; }
-      .editor-grid { grid-template-columns: 1fr; min-height: 800px; }
-      .editor-grid #previewPanel, .editor-grid #editorPanel { display: flex !important; }
-    }
-  </style>
-</head>
-<body>
-  <header class="site-header">
-    <div class="container">
-      <div class="logo"><a href="../../index.html">WebUtils</a></div>
-      <nav class="site-nav">
-        <ul>
-          <li><a href="../../index.html">首页</a></li>
-          <li><a href="markdown-preview.html">MD预览</a></li>
-          <li><a href="word-counter.html">字数统计</a></li>
-          <li><a href="diff-checker.html">文本对比</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
+      .stats-bar {
+        display: flex;
+        gap: 20px;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-top: 10px;
+      }
 
-  <main class="container">
-    <div class="content-left">
-      <div class="ad-placeholder">广告展示 (AdSense Placeholder)</div>
-      
-      <div class="tool-section">
-        <div class="tool-header">
-          <h1>Markdown 在线预览器</h1>
-          <p>高性能、安全、实时的 Markdown 编辑与预览工具。支持 GFM 语法与 HTML 导出。</p>
-        </div>
+      /* 侧边栏 */
+      .sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+      }
+      .sidebar-widget {
+        background: #fff;
+        padding: 20px;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        border-top: 3px solid var(--primary-color);
+      }
+      .widget-title {
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: #111;
+      }
+      .sidebar-list {
+        list-style: none;
+      }
+      .sidebar-list li {
+        margin-bottom: 12px;
+        font-size: 0.9rem;
+      }
+      .sidebar-list a {
+        color: var(--text-muted);
+        text-decoration: none;
+        display: block;
+        padding: 4px 0;
+        border-bottom: 1px solid #f0f0f0;
+      }
+      .sidebar-list a:hover {
+        color: var(--primary-color);
+        padding-left: 5px;
+      }
 
-        <div class="view-controls">
-          <button class="view-btn active" onclick="changeView('split', this)">分栏视图</button>
-          <button class="view-btn" onclick="changeView('edit', this)">仅源码</button>
-          <button class="view-btn" onclick="changeView('preview', this)">仅预览</button>
-        </div>
+      /* SEO 文章 */
+      .seo-section {
+        margin-top: 50px;
+        border-top: 1px solid #eee;
+        padding-top: 40px;
+      }
+      .seo-section h2 {
+        font-size: 1.5rem;
+        margin-bottom: 25px;
+        color: #111;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .seo-section h2::before {
+        content: "";
+        width: 4px;
+        height: 20px;
+        background: var(--primary-color);
+        border-radius: 2px;
+        display: inline-block;
+      }
+      .seo-article {
+        font-size: 0.95rem;
+        color: #444;
+        line-height: 1.8;
+      }
+      .seo-article h3 {
+        margin: 25px 0 15px;
+        color: #111;
+      }
+      .seo-article p {
+        margin-bottom: 15px;
+      }
+      .seo-article ul {
+        padding-left: 20px;
+        margin-bottom: 20px;
+      }
+      .seo-article li {
+        margin-bottom: 10px;
+      }
 
-        <div class="editor-grid" id="mainGrid">
-          <div class="panel" id="editorPanel">
-            <div class="panel-header">
-              <span>Markdown 源码</span>
-              <span id="charCount">0 字符</span>
-            </div>
-            <textarea id="input" oninput="updatePreview()" placeholder="在此输入 Markdown 内容..."># 探索 Markdown 的魅力
+      /* 广告占位 */
+      .ad-placeholder {
+        background: #f0f2f5;
+        border: 1px dashed #ccc;
+        color: #999;
+        text-align: center;
+        padding: 15px;
+        border-radius: var(--radius);
+        font-size: 0.8rem;
+        min-height: 90px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+
+      /* 页脚 */
+      .site-footer {
+        background: #2c3e50;
+        color: #ecf0f1;
+        padding: 40px 0 20px;
+        margin-top: 50px;
+        text-align: center;
+      }
+      .footer-bottom {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 20px;
+        font-size: 0.85rem;
+        color: #95a5a6;
+      }
+
+      @media (max-width: 992px) {
+        main.container {
+          grid-template-columns: 1fr;
+        }
+        .editor-grid {
+          grid-template-columns: 1fr;
+          min-height: 800px;
+        }
+        .editor-grid #previewPanel,
+        .editor-grid #editorPanel {
+          display: flex !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <div class="logo"><a href="../../index.html">WebUtils</a></div>
+        <nav class="site-nav">
+          <ul>
+            <li><a href="../../index.html">首页</a></li>
+            <li><a href="markdown-preview.html">MD预览</a></li>
+            <li><a href="word-counter.html">字数统计</a></li>
+            <li><a href="diff-checker.html">文本对比</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="content-left">
+        <div class="ad-placeholder">广告展示 (AdSense Placeholder)</div>
+
+        <div class="tool-section">
+          <div class="tool-header">
+            <h1>Markdown 在线预览器</h1>
+            <p>高性能、安全、实时的 Markdown 编辑与预览工具。支持 GFM 语法与 HTML 导出。</p>
+          </div>
+
+          <div class="view-controls">
+            <button class="view-btn active" onclick="changeView('split', this)">分栏视图</button>
+            <button class="view-btn" onclick="changeView('edit', this)">仅源码</button>
+            <button class="view-btn" onclick="changeView('preview', this)">仅预览</button>
+          </div>
+
+          <div class="editor-grid" id="mainGrid">
+            <div class="panel" id="editorPanel">
+              <div class="panel-header">
+                <span>Markdown 源码</span>
+                <span id="charCount">0 字符</span>
+              </div>
+              <textarea
+                id="input"
+                oninput="updatePreview()"
+                placeholder="在此输入 Markdown 内容..."
+              >
+# 探索 Markdown 的魅力
 
 Markdown 是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档。
 
@@ -174,126 +460,181 @@ def welcome():
     print("Welcome to Markdown Previewer!")
 ```
 
-> 优秀的内容值得拥有更完美的呈现方式。</textarea>
-          </div>
-          <div class="panel" id="previewPanel">
-            <div class="panel-header">渲染结果</div>
-            <div class="preview-body" id="preview"></div>
-          </div>
-        </div>
-
-        <div class="toolbar" style="display: flex; gap: 10px;">
-          <button class="btn btn-primary" onclick="copyHtml()">复制 HTML 源码</button>
-          <button class="btn btn-outline" onclick="clearAll()">重置清空</button>
-        </div>
-
-        <section class="seo-section">
-          <h2>什么是 Markdown 预览器？它能解决什么问题？</h2>
-          <article class="seo-article">
-            <p>虽然 Markdown 的语法非常直观，但在处理复杂的表格、嵌套列表或多级标题时，仅凭纯文本源码很难直观地判断排版效果。<strong>Markdown 在线预览器</strong>正是为了填补这一空白而生。它能将你的 MD 源码实时转换为浏览器可识别的 HTML 格式，帮助你在正式发布文章（如发布到 GitHub README、个人博客或技术社区）前，进行最后的视觉确认。</p>
-            
-            <h3>1. 为什么它是创作者的必备工具？</h3>
-            <ul>
-              <li><strong>消除排版焦虑：</strong> 即时看到标题级别、列表缩进和加粗效果，避免发布后出现排版错误。</li>
-              <li><strong>支持复杂语法：</strong> 支持 GitHub Flavored Markdown (GFM)，包括任务列表、表格和自动链接。</li>
-              <li><strong>跨平台兼容性：</strong> 我们的预览样式接近大多数主流平台的默认渲染效果，确保所见即所得。</li>
-            </ul>
-
-            <div class="ad-placeholder">文章内嵌入广告 (AdSense Placeholder)</div>
-
-            <h3>2. 技术核心：性能与安全</h3>
-            <p>我们的预览器集成了业界领先的 <strong>Marked.js</strong> 解析引擎，即使处理上万行的超长文档，也能保持毫秒级的实时响应。在安全性方面，我们引入了 <strong>DOMPurify</strong> 进行实时过滤，防止任何潜在的跨站脚本（XSS）注入，确保您的创作环境绝对安全。</p>
-
-            <h3>3. 常见问题 (FAQ)</h3>
-            <div style="background: #fdfdfd; padding: 15px; border-left: 4px solid var(--primary-color); margin-bottom: 15px;">
-              <p><strong>问：该工具会将我的文章上传到服务器吗？</strong><br>答：绝对不会。所有渲染逻辑均在您的本地浏览器中完成。您的内容永远留在您的计算机上。</p>
+> 优秀的内容值得拥有更完美的呈现方式。</textarea
+              >
             </div>
-            <div style="background: #fdfdfd; padding: 15px; border-left: 4px solid var(--primary-color);">
-              <p><strong>问：支持数学公式和流程图吗？</strong><br>答：目前专注于标准 GFM 语法的极致性能预览。对于更高级的插件功能，我们正在持续评估中。</p>
+            <div class="panel" id="previewPanel">
+              <div class="panel-header">渲染结果</div>
+              <div class="preview-body" id="preview"></div>
             </div>
-          </article>
-        </section>
-      </div>
-    </div>
+          </div>
 
-    <aside class="sidebar">
-      <div class="sidebar-widget">
-        <div class="widget-title">推荐工具</div>
-        <ul class="sidebar-list">
-          <li><a href="word-counter.html">文章字数统计器</a></li>
-          <li><a href="diff-checker.html">文本差异对比</a></li>
-          <li><a href="duplicate-remover.html">文本内容去重</a></li>
-          <li><a href="whitespace-cleaner.html">空白行处理</a></li>
-          <li><a href="pinyin.html">汉字转拼音</a></li>
-        </ul>
-      </div>
+          <div class="toolbar" style="display: flex; gap: 10px">
+            <button class="btn btn-primary" onclick="copyHtml()">复制 HTML 源码</button>
+            <button class="btn btn-outline" onclick="clearAll()">重置清空</button>
+          </div>
 
-      <div class="sidebar-widget">
-        <div class="widget-title">使用提示</div>
-        <div style="font-size: 0.85rem; color: #666; line-height: 1.6;">
-          <p style="margin-bottom: 10px;">• <b>分栏视图：</b>最推荐的写作模式，左侧编辑右侧查看。</p>
-          <p style="margin-bottom: 10px;">• <b>自动保存：</b>内容会自动保存在本地浏览器中，刷新页面不会丢失。</p>
-          <p>• <b>HTML 导出：</b>转换完成后，可以直接复制 HTML 源码到博客编辑器中使用。</p>
+          <section class="seo-section">
+            <h2>什么是 Markdown 预览器？它能解决什么问题？</h2>
+            <article class="seo-article">
+              <p>
+                虽然 Markdown
+                的语法非常直观，但在处理复杂的表格、嵌套列表或多级标题时，仅凭纯文本源码很难直观地判断排版效果。
+                <strong>Markdown 在线预览器</strong>
+                正是为了填补这一空白而生。它能将你的 MD 源码实时转换为浏览器可识别的 HTML
+                格式，帮助你在正式发布文章（如发布到 GitHub
+                README、个人博客或技术社区）前，进行最后的视觉确认。
+              </p>
+
+              <h3>1. 为什么它是创作者的必备工具？</h3>
+              <ul>
+                <li>
+                  <strong>消除排版焦虑：</strong>
+                  即时看到标题级别、列表缩进和加粗效果，避免发布后出现排版错误。
+                </li>
+                <li>
+                  <strong>支持复杂语法：</strong>
+                  支持 GitHub Flavored Markdown (GFM)，包括任务列表、表格和自动链接。
+                </li>
+                <li>
+                  <strong>跨平台兼容性：</strong>
+                  我们的预览样式接近大多数主流平台的默认渲染效果，确保所见即所得。
+                </li>
+              </ul>
+
+              <div class="ad-placeholder">文章内嵌入广告 (AdSense Placeholder)</div>
+
+              <h3>2. 技术核心：性能与安全</h3>
+              <p>
+                我们的预览器集成了业界领先的
+                <strong>Marked.js</strong>
+                解析引擎，即使处理上万行的超长文档，也能保持毫秒级的实时响应。在安全性方面，我们引入了
+                <strong>DOMPurify</strong>
+                进行实时过滤，防止任何潜在的跨站脚本（XSS）注入，确保您的创作环境绝对安全。
+              </p>
+
+              <h3>3. 常见问题 (FAQ)</h3>
+              <div
+                style="
+                  background: #fdfdfd;
+                  padding: 15px;
+                  border-left: 4px solid var(--primary-color);
+                  margin-bottom: 15px;
+                "
+              >
+                <p>
+                  <strong>问：该工具会将我的文章上传到服务器吗？</strong>
+                  <br />
+                  答：绝对不会。所有渲染逻辑均在您的本地浏览器中完成。您的内容永远留在您的计算机上。
+                </p>
+              </div>
+              <div
+                style="
+                  background: #fdfdfd;
+                  padding: 15px;
+                  border-left: 4px solid var(--primary-color);
+                "
+              >
+                <p>
+                  <strong>问：支持数学公式和流程图吗？</strong>
+                  <br />
+                  答：目前专注于标准 GFM
+                  语法的极致性能预览。对于更高级的插件功能，我们正在持续评估中。
+                </p>
+              </div>
+            </article>
+          </section>
         </div>
       </div>
-    </aside>
-  </main>
 
-  <footer class="site-footer">
-    <div class="container">
-      <p style="font-size: 0.9rem;">WebUtils - 专业高效的单页在线工具箱</p>
-      <div class="footer-bottom">
-        &copy; 2026 WebUtils. 纯本地运算，守护数据隐私。
+      <aside class="sidebar">
+        <div class="sidebar-widget">
+          <div class="widget-title">推荐工具</div>
+          <ul class="sidebar-list">
+            <li><a href="word-counter.html">文章字数统计器</a></li>
+            <li><a href="diff-checker.html">文本差异对比</a></li>
+            <li><a href="duplicate-remover.html">文本内容去重</a></li>
+            <li><a href="whitespace-cleaner.html">空白行处理</a></li>
+            <li><a href="pinyin.html">汉字转拼音</a></li>
+          </ul>
+        </div>
+
+        <div class="sidebar-widget">
+          <div class="widget-title">使用提示</div>
+          <div style="font-size: 0.85rem; color: #666; line-height: 1.6">
+            <p style="margin-bottom: 10px">
+              •
+              <b>分栏视图：</b>
+              最推荐的写作模式，左侧编辑右侧查看。
+            </p>
+            <p style="margin-bottom: 10px">
+              •
+              <b>自动保存：</b>
+              内容会自动保存在本地浏览器中，刷新页面不会丢失。
+            </p>
+            <p>
+              •
+              <b>HTML 导出：</b>
+              转换完成后，可以直接复制 HTML 源码到博客编辑器中使用。
+            </p>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p style="font-size: 0.9rem">WebUtils - 专业高效的单页在线工具箱</p>
+        <div class="footer-bottom">&copy; 2026 WebUtils. 纯本地运算，守护数据隐私。</div>
       </div>
-    </div>
-  </footer>
+    </footer>
 
-  <script>
-    const input = document.getElementById('input');
-    const preview = document.getElementById('preview');
-    const charCount = document.getElementById('charCount');
-    const mainGrid = document.getElementById('mainGrid');
+    <script>
+      const input = document.getElementById("input");
+      const preview = document.getElementById("preview");
+      const charCount = document.getElementById("charCount");
+      const mainGrid = document.getElementById("mainGrid");
 
-    function updatePreview() {
-      const text = input.value;
-      const rawHtml = marked.parse(text);
-      const cleanHtml = DOMPurify.sanitize(rawHtml);
-      preview.innerHTML = cleanHtml;
-      charCount.innerText = `${text.length} 字符`;
-      localStorage.setItem('md_preview_storage', text);
-    }
-
-    function changeView(mode, btn) {
-      mainGrid.className = 'editor-grid view-' + mode;
-      document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-    }
-
-    function copyHtml() {
-      const html = preview.innerHTML;
-      if (!html) return;
-      navigator.clipboard.writeText(html).then(() => {
-        const btn = event.target;
-        const oldText = btn.innerText;
-        btn.innerText = 'HTML 已复制！';
-        setTimeout(() => btn.innerText = oldText, 2000);
-      });
-    }
-
-    function clearAll() {
-      if(confirm('确定要清空编辑器吗？')) {
-        input.value = '';
-        updatePreview();
-        localStorage.removeItem('md_preview_storage');
+      function updatePreview() {
+        const text = input.value;
+        const rawHtml = marked.parse(text);
+        const cleanHtml = DOMPurify.sanitize(rawHtml);
+        preview.innerHTML = cleanHtml;
+        charCount.innerText = `${text.length} 字符`;
+        localStorage.setItem("md_preview_storage", text);
       }
-    }
 
-    // Init
-    window.onload = () => {
-      const savedContent = localStorage.getItem('md_preview_storage');
-      if (savedContent) input.value = savedContent;
-      updatePreview();
-    };
-  </script>
-</body>
+      function changeView(mode, btn) {
+        mainGrid.className = "editor-grid view-" + mode;
+        document.querySelectorAll(".view-btn").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+      }
+
+      function copyHtml() {
+        const html = preview.innerHTML;
+        if (!html) return;
+        navigator.clipboard.writeText(html).then(() => {
+          const btn = event.target;
+          const oldText = btn.innerText;
+          btn.innerText = "HTML 已复制！";
+          setTimeout(() => (btn.innerText = oldText), 2000);
+        });
+      }
+
+      function clearAll() {
+        if (confirm("确定要清空编辑器吗？")) {
+          input.value = "";
+          updatePreview();
+          localStorage.removeItem("md_preview_storage");
+        }
+      }
+
+      // Init
+      window.onload = () => {
+        const savedContent = localStorage.getItem("md_preview_storage");
+        if (savedContent) input.value = savedContent;
+        updatePreview();
+      };
+    </script>
+  </body>
 </html>

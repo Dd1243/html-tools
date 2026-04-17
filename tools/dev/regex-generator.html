@@ -4,16 +4,25 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>正则表达式生成器 - 可视化构建并测试常用的正则模式 | WebUtils</title>
-    
+
     <!-- SEO Meta Tags -->
-    <meta name="description" content="在线可视化生成正则表达式。内置邮箱、手机号、密码强度、URL 等多种常用正则模板。支持可视化构建块、实时匹配测试及多种语言代码生成。助力开发者零门槛编写高效正则。" />
-    <meta name="keywords" content="正则表达式生成器, regex generator, 正则在线构建, 自动生成正则, 正则测试工具, 常用正则模板, 开发者工具" />
+    <meta
+      name="description"
+      content="在线可视化生成正则表达式。内置邮箱、手机号、密码强度、URL 等多种常用正则模板。支持可视化构建块、实时匹配测试及多种语言代码生成。助力开发者零门槛编写高效正则。"
+    />
+    <meta
+      name="keywords"
+      content="正则表达式生成器, regex generator, 正则在线构建, 自动生成正则, 正则测试工具, 常用正则模板, 开发者工具"
+    />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/dev/regex-generator.html" />
 
     <!-- Open Graph -->
-    <meta property="og:title" content="正则表达式生成器 - 可视化构建并测试常用的正则模式 | WebUtils" />
+    <meta
+      property="og:title"
+      content="正则表达式生成器 - 可视化构建并测试常用的正则模式 | WebUtils"
+    />
     <meta property="og:description" content="一键生成常用正则表达式，支持可视化构建与实时校验。" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://essays4u.net/tools/dev/regex-generator.html" />
@@ -21,7 +30,10 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
 
     <style>
       :root {
@@ -60,83 +72,412 @@
         --accent-purple: #9b4dca;
       }
 
-      * { box-sizing: border-box; margin: 0; padding: 0; }
-      body { font-family: var(--font-sans); background: var(--bg-body); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
-      
-      .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
-      
-      .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
-      .header-left { display: flex; align-items: center; gap: 16px; }
-      .back-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; }
-      .back-btn:hover { background: var(--border-color); color: var(--text-primary); }
-      .title-group h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--accent), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-      .title-group p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
-      
-      .header-right { display: flex; align-items: center; gap: 12px; }
-      .theme-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; width: 40px; height: 40px; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: var(--font-sans);
+        background: var(--bg-body);
+        color: var(--text-primary);
+        line-height: 1.6;
+        min-height: 100vh;
+      }
 
-      .main-grid { display: grid; grid-template-columns: 350px 1fr; gap: 24px; }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 32px 24px;
+      }
 
-      .sidebar { display: flex; flex-direction: column; gap: 20px; }
-      .panel { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; }
-      .panel-header { padding: 12px 20px; background: var(--bg-input); border-bottom: 1px solid var(--border-color); font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; display: flex; justify-content: space-between; align-items: center; }
-      
-      .template-list { padding: 12px; display: flex; flex-direction: column; gap: 8px; max-height: 500px; overflow-y: auto; }
-      .template-item { padding: 10px 16px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; transition: all 0.2s; font-size: 0.8125rem; color: var(--text-secondary); }
-      .template-item:hover { border-color: var(--accent); color: var(--accent); }
-      .template-item.active { background: rgba(0, 245, 212, 0.1); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+      .header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .back-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        background: transparent;
+        border: none;
+        border-radius: var(--radius-sm);
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: all 0.2s;
+      }
+      .back-btn:hover {
+        background: var(--border-color);
+        color: var(--text-primary);
+      }
+      .title-group h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .title-group p {
+        font-size: 0.8125rem;
+        color: var(--text-secondary);
+        margin-top: 2px;
+      }
 
-      .content-main { display: flex; flex-direction: column; gap: 24px; }
-      
-      .output-section { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 24px; }
-      .output-display { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px; position: relative; margin-bottom: 16px; }
-      .regex-text { font-family: var(--font-mono); font-size: 1.25rem; color: var(--accent); word-break: break-all; padding-right: 120px; min-height: 30px; }
-      .copy-group { position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; }
-      .copy-btn { padding: 6px 12px; background: var(--accent); color: var(--bg-body); border: none; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
-      .copy-btn:hover { opacity: 0.8; }
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .theme-toggle {
+        display: flex;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+        width: 40px;
+        height: 40px;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
 
-      .tester-section { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 24px; }
-      .tester-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-      .tester-title { font-size: 0.875rem; font-weight: 700; color: var(--text-primary); }
-      
-      .test-input { width: 100%; height: 120px; padding: 16px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary); font-family: var(--font-mono); font-size: 0.875rem; resize: vertical; outline: none; margin-bottom: 12px; }
-      .test-input:focus { border-color: var(--accent); }
-      
-      .test-results { padding: 16px; background: var(--bg-input); border-radius: var(--radius-md); border: 1px solid var(--border-color); min-height: 60px; font-family: var(--font-mono); font-size: 0.875rem; line-height: 1.6; word-break: break-all; }
-      .match-highlight { background: rgba(0, 245, 212, 0.3); border-bottom: 2px solid var(--accent); color: var(--text-primary); border-radius: 2px; }
+      .main-grid {
+        display: grid;
+        grid-template-columns: 350px 1fr;
+        gap: 24px;
+      }
 
-      .flags-bar { display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap; }
-      .flag-check { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--text-muted); cursor: pointer; user-select: none; }
+      .sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .panel {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+      }
+      .panel-header {
+        padding: 12px 20px;
+        background: var(--bg-input);
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
 
-      .code-section { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 24px; margin-top: 24px; }
-      .code-tabs { display: flex; gap: 12px; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
-      .code-tab { padding: 6px 12px; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-radius: var(--radius-sm); transition: all 0.2s; }
-      .code-tab:hover { background: var(--bg-input); color: var(--text-primary); }
-      .code-tab.active { background: var(--accent); color: var(--bg-body); }
-      .code-display { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; font-family: var(--font-mono); font-size: 0.8125rem; color: var(--text-secondary); position: relative; white-space: pre-wrap; }
+      .template-list {
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-height: 500px;
+        overflow-y: auto;
+      }
+      .template-item {
+        padding: 10px 16px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.8125rem;
+        color: var(--text-secondary);
+      }
+      .template-item:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .template-item.active {
+        background: rgba(0, 245, 212, 0.1);
+        border-color: var(--accent);
+        color: var(--accent);
+        font-weight: 600;
+      }
 
-      .ads-container { margin: 24px 0; min-height: 100px; background: rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem; border: 1px dashed var(--border-color); border-radius: 12px; overflow: hidden; }
+      .content-main {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
 
-      .seo-content { margin-top: 48px; padding: 40px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); color: var(--text-secondary); font-size: 0.875rem; line-height: 1.8; }
-      .seo-content h2 { color: var(--text-primary); font-size: 1.5rem; margin-bottom: 24px; font-weight: 700; border-left: 5px solid var(--accent); padding-left: 20px; }
-      .seo-content h3 { color: var(--text-primary); font-size: 1.2rem; margin-top: 32px; margin-bottom: 16px; font-weight: 600; }
-      .seo-content p { margin-bottom: 20px; }
-      .seo-content ul, .seo-content ol { margin-bottom: 24px; padding-left: 28px; }
-      .seo-content li { margin-bottom: 12px; }
-      .seo-content strong { color: var(--accent); }
+      .output-section {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+      }
+      .output-display {
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 20px;
+        position: relative;
+        margin-bottom: 16px;
+      }
+      .regex-text {
+        font-family: var(--font-mono);
+        font-size: 1.25rem;
+        color: var(--accent);
+        word-break: break-all;
+        padding-right: 120px;
+        min-height: 30px;
+      }
+      .copy-group {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        display: flex;
+        gap: 8px;
+      }
+      .copy-btn {
+        padding: 6px 12px;
+        background: var(--accent);
+        color: var(--bg-body);
+        border: none;
+        border-radius: var(--radius-sm);
+        font-size: 0.75rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: opacity 0.2s;
+      }
+      .copy-btn:hover {
+        opacity: 0.8;
+      }
 
-      .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); background: var(--accent); color: var(--bg-body); padding: 8px 16px; border-radius: var(--radius-md); font-weight: 600; font-size: 0.875rem; z-index: 1000; opacity: 0; pointer-events: none; transition: all 0.3s; }
-      .toast.show { opacity: 1; transform: translateX(-50%) translateY(-10px); }
+      .tester-section {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+      }
+      .tester-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+      .tester-title {
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+
+      .test-input {
+        width: 100%;
+        height: 120px;
+        padding: 16px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        color: var(--text-primary);
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+        resize: vertical;
+        outline: none;
+        margin-bottom: 12px;
+      }
+      .test-input:focus {
+        border-color: var(--accent);
+      }
+
+      .test-results {
+        padding: 16px;
+        background: var(--bg-input);
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-color);
+        min-height: 60px;
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+        line-height: 1.6;
+        word-break: break-all;
+      }
+      .match-highlight {
+        background: rgba(0, 245, 212, 0.3);
+        border-bottom: 2px solid var(--accent);
+        color: var(--text-primary);
+        border-radius: 2px;
+      }
+
+      .flags-bar {
+        display: flex;
+        gap: 16px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+      .flag-check {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .code-section {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        margin-top: 24px;
+      }
+      .code-tabs {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 16px;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 8px;
+      }
+      .code-tab {
+        padding: 6px 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        cursor: pointer;
+        border-radius: var(--radius-sm);
+        transition: all 0.2s;
+      }
+      .code-tab:hover {
+        background: var(--bg-input);
+        color: var(--text-primary);
+      }
+      .code-tab.active {
+        background: var(--accent);
+        color: var(--bg-body);
+      }
+      .code-display {
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 16px;
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        color: var(--text-secondary);
+        position: relative;
+        white-space: pre-wrap;
+      }
+
+      .ads-container {
+        margin: 24px 0;
+        min-height: 100px;
+        background: rgba(0, 0, 0, 0.02);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        border: 1px dashed var(--border-color);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      .seo-content {
+        margin-top: 48px;
+        padding: 40px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        line-height: 1.8;
+      }
+      .seo-content h2 {
+        color: var(--text-primary);
+        font-size: 1.5rem;
+        margin-bottom: 24px;
+        font-weight: 700;
+        border-left: 5px solid var(--accent);
+        padding-left: 20px;
+      }
+      .seo-content h3 {
+        color: var(--text-primary);
+        font-size: 1.2rem;
+        margin-top: 32px;
+        margin-bottom: 16px;
+        font-weight: 600;
+      }
+      .seo-content p {
+        margin-bottom: 20px;
+      }
+      .seo-content ul,
+      .seo-content ol {
+        margin-bottom: 24px;
+        padding-left: 28px;
+      }
+      .seo-content li {
+        margin-bottom: 12px;
+      }
+      .seo-content strong {
+        color: var(--accent);
+      }
+
+      .toast {
+        position: fixed;
+        bottom: 32px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--accent);
+        color: var(--bg-body);
+        padding: 8px 16px;
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        font-size: 0.875rem;
+        z-index: 1000;
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.3s;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-10px);
+      }
 
       @media (max-width: 992px) {
-        .main-grid { grid-template-columns: 1fr; }
+        .main-grid {
+          grid-template-columns: 1fr;
+        }
       }
       @media (max-width: 640px) {
-        .container { padding: 16px; }
-        .header { flex-direction: column; align-items: stretch; }
-        .header-right { margin-top: -48px; align-self: flex-end; }
-        .regex-text { font-size: 1rem; padding-right: 0; margin-bottom: 40px; }
-        .copy-group { top: auto; bottom: 12px; right: 12px; }
+        .container {
+          padding: 16px;
+        }
+        .header {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .header-right {
+          margin-top: -48px;
+          align-self: flex-end;
+        }
+        .regex-text {
+          font-size: 1rem;
+          padding-right: 0;
+          margin-bottom: 40px;
+        }
+        .copy-group {
+          top: auto;
+          bottom: 12px;
+          right: 12px;
+        }
       }
     </style>
   </head>
@@ -145,7 +486,16 @@
       <header class="header">
         <div class="header-left">
           <a href="../../index.html" class="back-btn" title="返回首页">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
               <path d="M10 12L6 8L10 4" />
             </svg>
           </a>
@@ -163,12 +513,14 @@
 
       <!-- Google AdSense Placeholder -->
       <div class="ads-container">
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-xxxxxxxxxxxxxxxx"
-             data-ad-slot="xxxxxxxxxx"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
+        <ins
+          class="adsbygoogle"
+          style="display: block"
+          data-ad-client="ca-pub-xxxxxxxxxxxxxxxx"
+          data-ad-slot="xxxxxxxxxx"
+          data-ad-format="auto"
+          data-full-width-responsive="true"
+        ></ins>
         <span>广告展示区域 (AdSense Placeholder)</span>
       </div>
 
@@ -177,7 +529,18 @@
           <section class="panel">
             <div class="panel-header">
               <span>常用正则模板</span>
-              <span id="templateCount" style="font-size: 0.65rem; background: var(--accent); color: var(--bg-body); padding: 2px 6px; border-radius: 10px;">0</span>
+              <span
+                id="templateCount"
+                style="
+                  font-size: 0.65rem;
+                  background: var(--accent);
+                  color: var(--bg-body);
+                  padding: 2px 6px;
+                  border-radius: 10px;
+                "
+              >
+                0
+              </span>
             </div>
             <div class="template-list" id="templateList">
               <!-- Injected by JS -->
@@ -187,7 +550,12 @@
 
         <div class="content-main">
           <section class="output-section">
-            <div class="panel-header" style="background:transparent; padding:0 0 12px 0; border:none">生成的正则表达式</div>
+            <div
+              class="panel-header"
+              style="background: transparent; padding: 0 0 12px 0; border: none"
+            >
+              生成的正则表达式
+            </div>
             <div class="output-display">
               <div class="regex-text" id="regexOutput">/^$/</div>
               <div class="copy-group">
@@ -195,20 +563,42 @@
               </div>
             </div>
             <div class="flags-bar">
-              <label class="flag-check"><input type="checkbox" data-flag="g" onchange="update()"> 全局匹配 (g)</label>
-              <label class="flag-check"><input type="checkbox" data-flag="i" onchange="update()"> 忽略大小写 (i)</label>
-              <label class="flag-check"><input type="checkbox" data-flag="m" onchange="update()"> 多行模式 (m)</label>
-              <label class="flag-check"><input type="checkbox" data-flag="s" onchange="update()"> dotAll 模式 (s)</label>
-              <label class="flag-check"><input type="checkbox" data-flag="u" onchange="update()"> Unicode (u)</label>
+              <label class="flag-check">
+                <input type="checkbox" data-flag="g" onchange="update()" />
+                全局匹配 (g)
+              </label>
+              <label class="flag-check">
+                <input type="checkbox" data-flag="i" onchange="update()" />
+                忽略大小写 (i)
+              </label>
+              <label class="flag-check">
+                <input type="checkbox" data-flag="m" onchange="update()" />
+                多行模式 (m)
+              </label>
+              <label class="flag-check">
+                <input type="checkbox" data-flag="s" onchange="update()" />
+                dotAll 模式 (s)
+              </label>
+              <label class="flag-check">
+                <input type="checkbox" data-flag="u" onchange="update()" />
+                Unicode (u)
+              </label>
             </div>
           </section>
 
           <section class="tester-section">
             <div class="tester-header">
               <span class="tester-title">实时匹配测试</span>
-              <span style="font-size: 0.75rem; color: var(--text-muted);">输入文本后自动高亮匹配结果</span>
+              <span style="font-size: 0.75rem; color: var(--text-muted)">
+                输入文本后自动高亮匹配结果
+              </span>
             </div>
-            <textarea id="testInput" class="test-input" placeholder="在此输入测试文本..." oninput="runTest()"></textarea>
+            <textarea
+              id="testInput"
+              class="test-input"
+              placeholder="在此输入测试文本..."
+              oninput="runTest()"
+            ></textarea>
             <div id="testResults" class="test-results"></div>
           </section>
 
@@ -223,7 +613,7 @@
             <div class="code-display" id="codeDisplay">
               <!-- Injected by JS -->
             </div>
-            <button class="copy-btn" style="margin-top: 12px;" onclick="copyCode()">复制片段</button>
+            <button class="copy-btn" style="margin-top: 12px" onclick="copyCode()">复制片段</button>
           </section>
         </div>
       </main>
@@ -235,47 +625,152 @@
 
       <article class="seo-content">
         <h2>正则表达式生成器：解决复杂文本匹配的终极指南</h2>
-        <p>在现代软件开发中，<strong>正则表达式 (Regular Expression)</strong> 几乎无处不在。无论是前端的表单验证、后端的日志分析，还是数据爬虫中的文本提取，正则都是一项不可或缺的技能。然而，正则的语法晦涩难懂，手动编写一个既高效又无误的模式往往耗时费力。本生成器旨在通过<strong>可视化模板、实时测试和自动代码生成</strong>，彻底解决开发者在编写正则时的痛点。</p>
+        <p>
+          在现代软件开发中，
+          <strong>正则表达式 (Regular Expression)</strong>
+          几乎无处不在。无论是前端的表单验证、后端的日志分析，还是数据爬虫中的文本提取，正则都是一项不可或缺的技能。然而，正则的语法晦涩难懂，手动编写一个既高效又无误的模式往往耗时费力。本生成器旨在通过
+          <strong>可视化模板、实时测试和自动代码生成</strong>
+          ，彻底解决开发者在编写正则时的痛点。
+        </p>
 
         <h3>1. 解决实际问题：为什么你不能只用一个简单的正则？</h3>
-        <p>以<strong>电子邮箱验证</strong>为例，很多开发者会随手写下 <code>/^\w+@\w+\.\w+$/</code>。但在实际业务中，这会导致以下问题：</p>
+        <p>
+          以
+          <strong>电子邮箱验证</strong>
+          为例，很多开发者会随手写下
+          <code>/^\w+@\w+\.\w+$/</code>
+          。但在实际业务中，这会导致以下问题：
+        </p>
         <ul>
-          <li><strong>不支持带点的用户名：</strong> 如 <code>john.doe@company.com</code> 会验证失败。</li>
-          <li><strong>不支持带加号的 Gmail：</strong> 如 <code>user+extra@gmail.com</code>。</li>
-          <li><strong>不支持多级域名：</strong> 如 <code>.com.cn</code> 或 <code>.co.uk</code>。</li>
+          <li>
+            <strong>不支持带点的用户名：</strong>
+            如
+            <code>john.doe@company.com</code>
+            会验证失败。
+          </li>
+          <li>
+            <strong>不支持带加号的 Gmail：</strong>
+            如
+            <code>user+extra@gmail.com</code>
+            。
+          </li>
+          <li>
+            <strong>不支持多级域名：</strong>
+            如
+            <code>.com.cn</code>
+            或
+            <code>.co.uk</code>
+            。
+          </li>
         </ul>
-        <p>我们的工具内置了<strong>生产环境级别</strong>的模板。每一个模板都经过了边界情况的反复测试，确保您的数据验证既严密又灵活，避免因正则漏洞导致的业务逻辑错误。</p>
+        <p>
+          我们的工具内置了
+          <strong>生产环境级别</strong>
+          的模板。每一个模板都经过了边界情况的反复测试，确保您的数据验证既严密又灵活，避免因正则漏洞导致的业务逻辑错误。
+        </p>
 
         <h3>2. 深度优化：如何利用修饰符 (Flags) 提升效率？</h3>
         <p>理解修饰符是掌握正则的关键。本工具允许您一键切换常用的修饰符：</p>
         <ul>
-          <li><strong>g (Global):</strong> 解决“只替换第一个匹配项”的尴尬，开启全局匹配。</li>
-          <li><strong>i (Ignore Case):</strong> 无论用户输入的是大写还是小写，都能准确捕获，极大简化了 <code>[a-zA-Z]</code> 的编写。</li>
-          <li><strong>m (Multiline):</strong> 让 <code>^</code> 和 <code>$</code> 作用于每一行的起止，而非整个字符串。这在处理多行日志文件时至关重要。</li>
-          <li><strong>s (dotAll):</strong> 让 <code>.</code> 真正匹配“任意字符”，包括换行符。这在提取 HTML 标签间的多行文本时非常有用。</li>
+          <li>
+            <strong>g (Global):</strong>
+            解决“只替换第一个匹配项”的尴尬，开启全局匹配。
+          </li>
+          <li>
+            <strong>i (Ignore Case):</strong>
+            无论用户输入的是大写还是小写，都能准确捕获，极大简化了
+            <code>[a-zA-Z]</code>
+            的编写。
+          </li>
+          <li>
+            <strong>m (Multiline):</strong>
+            让
+            <code>^</code>
+            和
+            <code>$</code>
+            作用于每一行的起止，而非整个字符串。这在处理多行日志文件时至关重要。
+          </li>
+          <li>
+            <strong>s (dotAll):</strong>
+            让
+            <code>.</code>
+            真正匹配“任意字符”，包括换行符。这在提取 HTML 标签间的多行文本时非常有用。
+          </li>
         </ul>
 
         <h3>3. 从生成到落地：多语言代码一键导出</h3>
-        <p>编写出正确的正则只是第一步，将其集成到代码中往往涉及转义字符处理（如 JavaScript 中的双反斜杠问题）。本生成器支持：</p>
+        <p>
+          编写出正确的正则只是第一步，将其集成到代码中往往涉及转义字符处理（如 JavaScript
+          中的双反斜杠问题）。本生成器支持：
+        </p>
         <ol>
-          <li><strong>JavaScript:</strong> 生成字面量或 <code>RegExp</code> 构造函数。</li>
-          <li><strong>Python:</strong> 使用 <code>re</code> 模块的 <code>compile</code> 模式。</li>
-          <li><strong>PHP:</strong> 自动处理 <code>preg_match</code> 所需的分隔符。</li>
-          <li><strong>Java/Go:</strong> 预置了语言特定的转义逻辑。</li>
+          <li>
+            <strong>JavaScript:</strong>
+            生成字面量或
+            <code>RegExp</code>
+            构造函数。
+          </li>
+          <li>
+            <strong>Python:</strong>
+            使用
+            <code>re</code>
+            模块的
+            <code>compile</code>
+            模式。
+          </li>
+          <li>
+            <strong>PHP:</strong>
+            自动处理
+            <code>preg_match</code>
+            所需的分隔符。
+          </li>
+          <li>
+            <strong>Java/Go:</strong>
+            预置了语言特定的转义逻辑。
+          </li>
         </ol>
 
         <h3>常见场景下的正则编写建议 (FAQ)</h3>
-        <p><strong>Q: 为什么我的正则会导致浏览器卡死？</strong><br>
-        A: 这通常是由于<strong>灾难性回溯 (Catastrophic Backtracking)</strong> 引起的。当您的正则中存在多重嵌套的量词（如 <code>(a+)+$</code>）且匹配失败时，引擎会尝试指数级的可能路径。建议使用本工具的实时测试功能，观察复杂文本下的匹配速度。</p>
-        
-        <p><strong>Q: 如何匹配非贪婪模式？</strong><br>
-        A: 在量词（如 <code>*</code>, <code>+</code>, <code>{n,m}</code>）后面紧跟一个 <code>?</code>。例如，<code><.*?></code> 会匹配 HTML 标签本身，而 <code><.*></code> 则会一直匹配到页面最后一个闭合标签。本工具的模板库中已预置了非贪婪匹配的最佳实践。</p>
+        <p>
+          <strong>Q: 为什么我的正则会导致浏览器卡死？</strong>
+          <br />
+          A: 这通常是由于
+          <strong>灾难性回溯 (Catastrophic Backtracking)</strong>
+          引起的。当您的正则中存在多重嵌套的量词（如
+          <code>(a+)+$</code>
+          ）且匹配失败时，引擎会尝试指数级的可能路径。建议使用本工具的实时测试功能，观察复杂文本下的匹配速度。
+        </p>
 
-        <p><strong>Q: 身份证号和手机号正则会过时吗？</strong><br>
-        A: 随着号段的开放（如虚拟运营商号段），正则确实需要维护。本工具的模板会定期更新，涵盖最新的中国 11 位手机号段和 18 位二代身份证校验逻辑。</p>
+        <p>
+          <strong>Q: 如何匹配非贪婪模式？</strong>
+          <br />
+          A: 在量词（如
+          <code>*</code>
+          ,
+          <code>+</code>
+          ,
+          <code>{n,m}</code>
+          ）后面紧跟一个
+          <code>?</code>
+          。例如，
+          <code><.*?></code>
+          会匹配 HTML 标签本身，而
+          <code><.*></code>
+          则会一直匹配到页面最后一个闭合标签。本工具的模板库中已预置了非贪婪匹配的最佳实践。
+        </p>
+
+        <p>
+          <strong>Q: 身份证号和手机号正则会过时吗？</strong>
+          <br />
+          A:
+          随着号段的开放（如虚拟运营商号段），正则确实需要维护。本工具的模板会定期更新，涵盖最新的中国
+          11 位手机号段和 18 位二代身份证校验逻辑。
+        </p>
       </article>
 
-      <footer style="margin-top: 32px; text-align: center; color: var(--text-muted); font-size: 0.75rem;">
+      <footer
+        style="margin-top: 32px; text-align: center; color: var(--text-muted); font-size: 0.75rem"
+      >
         <p>© 2026 WebUtils. All rights reserved.</p>
       </footer>
     </div>
@@ -284,16 +779,52 @@
 
     <script>
       const templates = [
-        { group: "基础验证", name: "电子邮箱 (Email)", pattern: "[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}" },
+        {
+          group: "基础验证",
+          name: "电子邮箱 (Email)",
+          pattern: "[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}"
+        },
         { group: "基础验证", name: "手机号 (中国 11位)", pattern: "^1[3-9]\\d{9}$" },
-        { group: "基础验证", name: "身份证号 (18位)", pattern: "^[1-9]\\d{5}(18|19|20)\\d{2}((0[1-9])|(1[0-2]))(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$" },
-        { group: "安全性", name: "强密码 (大小写+数字+8位)", pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$" },
-        { group: "网络地址", name: "URL 网址 (带协议)", pattern: "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)" },
-        { group: "网络地址", name: "IPv4 地址", pattern: "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$" },
-        { group: "网络地址", name: "IPv6 地址", pattern: "(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))" },
-        { group: "文本处理", name: "HTML 标签", pattern: "<([a-z]+)([^>]+)*(?:>(.*)<\\/\\1>|\\s+\\/>)" },
+        {
+          group: "基础验证",
+          name: "身份证号 (18位)",
+          pattern:
+            "^[1-9]\\d{5}(18|19|20)\\d{2}((0[1-9])|(1[0-2]))(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$"
+        },
+        {
+          group: "安全性",
+          name: "强密码 (大小写+数字+8位)",
+          pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$"
+        },
+        {
+          group: "网络地址",
+          name: "URL 网址 (带协议)",
+          pattern:
+            "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)"
+        },
+        {
+          group: "网络地址",
+          name: "IPv4 地址",
+          pattern:
+            "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+        },
+        {
+          group: "网络地址",
+          name: "IPv6 地址",
+          pattern:
+            "(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))"
+        },
+        {
+          group: "文本处理",
+          name: "HTML 标签",
+          pattern: "<([a-z]+)([^>]+)*(?:>(.*)<\\/\\1>|\\s+\\/>)"
+        },
         { group: "文本处理", name: "中文字符", pattern: "[\\u4e00-\\u9fa5]" },
-        { group: "文本处理", name: "日期 (YYYY-MM-DD)", pattern: "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$" },
+        {
+          group: "文本处理",
+          name: "日期 (YYYY-MM-DD)",
+          pattern: "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$"
+        },
         { group: "文本处理", name: "十六进制颜色", pattern: "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$" },
         { group: "数字相关", name: "整数 (正/负)", pattern: "^-?\\d+$" },
         { group: "数字相关", name: "浮点数 (正/负)", pattern: "^-?\\d*\\.?\\d+$" },
@@ -304,72 +835,77 @@
       let currentLang = "js";
 
       function init() {
-        const list = document.getElementById('templateList');
-        document.getElementById('templateCount').textContent = templates.length;
-        
+        const list = document.getElementById("templateList");
+        document.getElementById("templateCount").textContent = templates.length;
+
         let lastGroup = "";
         templates.forEach((t, i) => {
           if (t.group !== lastGroup) {
-            const groupHeader = document.createElement('div');
-            groupHeader.style.cssText = "font-size: 0.7rem; color: var(--text-muted); margin: 12px 0 4px 4px; font-weight: 700; text-transform: uppercase;";
+            const groupHeader = document.createElement("div");
+            groupHeader.style.cssText =
+              "font-size: 0.7rem; color: var(--text-muted); margin: 12px 0 4px 4px; font-weight: 700; text-transform: uppercase;";
             groupHeader.textContent = t.group;
             list.appendChild(groupHeader);
             lastGroup = t.group;
           }
-          const div = document.createElement('div');
-          div.className = 'template-item';
+          const div = document.createElement("div");
+          div.className = "template-item";
           div.textContent = t.name;
           div.onclick = () => selectTemplate(i, div);
           list.appendChild(div);
         });
-        
+
         // Code tabs logic
-        document.querySelectorAll('.code-tab').forEach(tab => {
+        document.querySelectorAll(".code-tab").forEach((tab) => {
           tab.onclick = () => {
-            document.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
+            document.querySelectorAll(".code-tab").forEach((t) => t.classList.remove("active"));
+            tab.classList.add("active");
             currentLang = tab.dataset.lang;
             updateCodeSnippet();
           };
         });
 
-        selectTemplate(0, list.querySelectorAll('.template-item')[0]);
+        selectTemplate(0, list.querySelectorAll(".template-item")[0]);
       }
 
       function selectTemplate(index, el) {
-        document.querySelectorAll('.template-item').forEach(i => i.classList.remove('active'));
-        el.classList.add('active');
+        document.querySelectorAll(".template-item").forEach((i) => i.classList.remove("active"));
+        el.classList.add("active");
         currentPattern = templates[index].pattern;
         update();
       }
 
       function update() {
-        const flags = Array.from(document.querySelectorAll('.flag-check input:checked')).map(i => i.dataset.flag).join('');
+        const flags = Array.from(document.querySelectorAll(".flag-check input:checked"))
+          .map((i) => i.dataset.flag)
+          .join("");
         const output = `/${currentPattern}/${flags}`;
-        document.getElementById('regexOutput').textContent = output;
+        document.getElementById("regexOutput").textContent = output;
         updateCodeSnippet();
         runTest();
       }
 
       function updateCodeSnippet() {
-        const flags = Array.from(document.querySelectorAll('.flag-check input:checked')).map(i => i.dataset.flag).join('');
-        const display = document.getElementById('codeDisplay');
+        const flags = Array.from(document.querySelectorAll(".flag-check input:checked"))
+          .map((i) => i.dataset.flag)
+          .join("");
+        const display = document.getElementById("codeDisplay");
         let code = "";
 
-        switch(currentLang) {
-          case 'js':
+        switch (currentLang) {
+          case "js":
             code = `const regex = /${currentPattern}/${flags};\nconst str = '测试文本';\nconst result = regex.test(str);\nconsole.log(result);`;
             break;
-          case 'python':
-            code = `import re\n\npattern = r'${currentPattern}'\nflags = 0\n${flags.includes('i') ? 'flags |= re.IGNORECASE\n' : ''}${flags.includes('m') ? 'flags |= re.MULTILINE\n' : ''}${flags.includes('s') ? 'flags |= re.DOTALL\n' : ''}regex = re.compile(pattern, flags)\nresult = regex.search('测试文本')\nprint(bool(result))`;
+          case "python":
+            code = `import re\n\npattern = r'${currentPattern}'\nflags = 0\n${flags.includes("i") ? "flags |= re.IGNORECASE\n" : ""}${flags.includes("m") ? "flags |= re.MULTILINE\n" : ""}${flags.includes("s") ? "flags |= re.DOTALL\n" : ""}regex = re.compile(pattern, flags)\nresult = regex.search('测试文本')\nprint(bool(result))`;
             break;
-          case 'php':
-            code = `<?php\n$pattern = '/${currentPattern.replace(/\//g, '\\/')}/${flags}';\n$str = '测试文本';\n$result = preg_match($pattern, $str);\necho $result ? "匹配成功" : "匹配失败";\n?>`;
+          case "php":
+            code = `<?php\n$pattern = '/${currentPattern.replace(/\//g, "\\/")}/${flags}';\n$str = '测试文本';\n$result = preg_match($pattern, $str);\necho $result ? "匹配成功" : "匹配失败";\n?>`;
             break;
-          case 'java':
-            code = `import java.util.regex.*;\n\nString pattern = "${currentPattern.replace(/\\/g, '\\\\')}";\nPattern r = Pattern.compile(pattern${flags ? ', ' + getJavaFlags(flags) : ''});\nMatcher m = r.matcher("测试文本");\nSystem.out.println(m.find());`;
+          case "java":
+            code = `import java.util.regex.*;\n\nString pattern = "${currentPattern.replace(/\\/g, "\\\\")}";\nPattern r = Pattern.compile(pattern${flags ? ", " + getJavaFlags(flags) : ""});\nMatcher m = r.matcher("测试文本");\nSystem.out.println(m.find());`;
             break;
-          case 'go':
+          case "go":
             code = `package main\n\nimport (\n\t"fmt"\n\t"regexp"\n)\n\nfunc main() {\n\tre := regexp.MustCompile(\`${currentPattern}\`)\n\tfmt.Println(re.MatchString("测试文本"))\n}`;
             break;
         }
@@ -378,17 +914,19 @@
 
       function getJavaFlags(flags) {
         let f = [];
-        if (flags.includes('i')) f.push('Pattern.CASE_INSENSITIVE');
-        if (flags.includes('m')) f.push('Pattern.MULTILINE');
-        if (flags.includes('s')) f.push('Pattern.DOTALL');
-        return f.join(' | ');
+        if (flags.includes("i")) f.push("Pattern.CASE_INSENSITIVE");
+        if (flags.includes("m")) f.push("Pattern.MULTILINE");
+        if (flags.includes("s")) f.push("Pattern.DOTALL");
+        return f.join(" | ");
       }
 
       function runTest() {
-        const text = document.getElementById('testInput').value;
-        const resultArea = document.getElementById('testResults');
-        const flags = Array.from(document.querySelectorAll('.flag-check input:checked')).map(i => i.dataset.flag).join('');
-        
+        const text = document.getElementById("testInput").value;
+        const resultArea = document.getElementById("testResults");
+        const flags = Array.from(document.querySelectorAll(".flag-check input:checked"))
+          .map((i) => i.dataset.flag)
+          .join("");
+
         if (!text) {
           resultArea.innerHTML = '<span style="color:var(--text-muted)">输入文本开始测试...</span>';
           return;
@@ -396,10 +934,10 @@
 
         try {
           const regex = new RegExp(currentPattern, flags);
-          
+
           let matchCount = 0;
           // Global match needs specialized logic for highlighting multiple occurrences
-          if (flags.includes('g')) {
+          if (flags.includes("g")) {
             let highlighted = "";
             let lastIndex = 0;
             let match;
@@ -411,26 +949,33 @@
               lastIndex = regex.lastIndex;
             }
             highlighted += escapeHtml(text.substring(lastIndex));
-            resultArea.innerHTML = highlighted.replace(/\n/g, '<br>');
+            resultArea.innerHTML = highlighted.replace(/\n/g, "<br>");
           } else {
             const match = text.match(regex);
             if (match) {
               matchCount = 1;
               const start = match.index;
               const end = start + match[0].length;
-              const highlighted = escapeHtml(text.substring(0, start)) + 
-                                `<span class="match-highlight">${escapeHtml(match[0])}</span>` + 
-                                escapeHtml(text.substring(end));
-              resultArea.innerHTML = highlighted.replace(/\n/g, '<br>');
+              const highlighted =
+                escapeHtml(text.substring(0, start)) +
+                `<span class="match-highlight">${escapeHtml(match[0])}</span>` +
+                escapeHtml(text.substring(end));
+              resultArea.innerHTML = highlighted.replace(/\n/g, "<br>");
             } else {
-              resultArea.innerHTML = escapeHtml(text).replace(/\n/g, '<br>');
+              resultArea.innerHTML = escapeHtml(text).replace(/\n/g, "<br>");
             }
           }
-          
+
           if (matchCount > 0) {
-            resultArea.insertAdjacentHTML('afterbegin', `<div style="color:var(--success); font-size:0.75rem; margin-bottom:8px; font-weight:700">✓ 找到 ${matchCount} 处匹配</div>`);
+            resultArea.insertAdjacentHTML(
+              "afterbegin",
+              `<div style="color:var(--success); font-size:0.75rem; margin-bottom:8px; font-weight:700">✓ 找到 ${matchCount} 处匹配</div>`
+            );
           } else {
-            resultArea.insertAdjacentHTML('afterbegin', `<div style="color:var(--warning); font-size:0.75rem; margin-bottom:8px; font-weight:700">! 未找到匹配项</div>`);
+            resultArea.insertAdjacentHTML(
+              "afterbegin",
+              `<div style="color:var(--warning); font-size:0.75rem; margin-bottom:8px; font-weight:700">! 未找到匹配项</div>`
+            );
           }
         } catch (e) {
           resultArea.innerHTML = `<div style="color:var(--error)">正则语法错误: ${e.message}</div>`;
@@ -438,19 +983,19 @@
       }
 
       function escapeHtml(text) {
-        const div = document.createElement('div');
+        const div = document.createElement("div");
         div.textContent = text;
         return div.innerHTML;
       }
 
       window.copyRegex = () => {
-        const text = document.getElementById('regexOutput').textContent;
-        navigator.clipboard.writeText(text).then(() => showToast('已复制正则表达式'));
+        const text = document.getElementById("regexOutput").textContent;
+        navigator.clipboard.writeText(text).then(() => showToast("已复制正则表达式"));
       };
 
       window.copyCode = () => {
-        const text = document.getElementById('codeDisplay').textContent;
-        navigator.clipboard.writeText(text).then(() => showToast('已复制代码片段'));
+        const text = document.getElementById("codeDisplay").textContent;
+        navigator.clipboard.writeText(text).then(() => showToast("已复制代码片段"));
       };
 
       function showToast(msg) {
@@ -462,9 +1007,10 @@
 
       // Theme logic
       window.toggleTheme = () => {
-        const theme = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+        const theme =
+          document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
         setTheme(theme);
-      }
+      };
       function setTheme(theme) {
         document.documentElement.setAttribute("data-theme", theme);
         document.getElementById("theme-icon").textContent = theme === "light" ? "☀️" : "🌙";

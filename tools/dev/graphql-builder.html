@@ -1,342 +1,676 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GraphQL 查询构建器 - 可视化 SDL 解析与 API 请求生成工具 - WebUtils</title>
-    
+
     <!-- SEO Meta Tags -->
-    <meta name="description" content="专业的在线 GraphQL 查询构建器。支持解析 GraphQL SDL (Schema Definition Language)，可视化选择字段、定义变量和 Fragment。自动生成标准的 Query、Mutation 和 cURL 请求命令，助力前端开发者高效对接 GraphQL 接口。">
-    <meta name="keywords" content="GraphQL构建器,GraphQL查询生成,SDL解析,GraphQL可视化,API调试工具,Query生成器,Mutation构建">
-    <meta name="author" content="WebUtils">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://essays4u.net/tools/dev/graphql-builder.html">
+    <meta
+      name="description"
+      content="专业的在线 GraphQL 查询构建器。支持解析 GraphQL SDL (Schema Definition Language)，可视化选择字段、定义变量和 Fragment。自动生成标准的 Query、Mutation 和 cURL 请求命令，助力前端开发者高效对接 GraphQL 接口。"
+    />
+    <meta
+      name="keywords"
+      content="GraphQL构建器,GraphQL查询生成,SDL解析,GraphQL可视化,API调试工具,Query生成器,Mutation构建"
+    />
+    <meta name="author" content="WebUtils" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://essays4u.net/tools/dev/graphql-builder.html" />
 
     <!-- Open Graph -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://essays4u.net/tools/dev/graphql-builder.html">
-    <meta property="og:title" content="GraphQL 查询构建器 - 可视化 SDL 解析与 API 请求生成工具">
-    <meta property="og:description" content="通过可视化界面构建复杂的 GraphQL 查询，支持 SDL 解析与 cURL 导出。">
-    <meta property="og:image" content="https://essays4u.net/social-preview.png">
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://essays4u.net/tools/dev/graphql-builder.html" />
+    <meta property="og:title" content="GraphQL 查询构建器 - 可视化 SDL 解析与 API 请求生成工具" />
+    <meta
+      property="og:description"
+      content="通过可视化界面构建复杂的 GraphQL 查询，支持 SDL 解析与 cURL 导出。"
+    />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="GraphQL 查询构建器 - 可视化 SDL 解析与 API 请求生成工具">
-    <meta property="twitter:description" content="通过可视化界面构建复杂的 GraphQL 查询，支持 SDL 解析与 cURL 导出。">
-    <meta property="twitter:image" content="https://essays4u.net/social-preview.png">
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta
+      property="twitter:title"
+      content="GraphQL 查询构建器 - 可视化 SDL 解析与 API 请求生成工具"
+    />
+    <meta
+      property="twitter:description"
+      content="通过可视化界面构建复杂的 GraphQL 查询，支持 SDL 解析与 cURL 导出。"
+    />
+    <meta property="twitter:image" content="https://essays4u.net/social-preview.png" />
 
     <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
 
     <style>
-        :root {
-            --bg-deep: #0a0a0f;
-            --bg-surface: #12121a;
-            --bg-card: #1a1a24;
-            --bg-input: #0e0e14;
-            --text-primary: #e8e8ed;
-            --text-secondary: #8888a0;
-            --text-muted: #55556a;
-            --border-subtle: #2a2a3a;
-            --border-strong: #3a3a4a;
-            --accent-gql: #e535ab;
-            --accent-gql-glow: rgba(229, 53, 171, 0.15);
-            --radius-md: 10px;
-            --radius-lg: 16px;
-            --font-sans: 'Inter', -apple-system, sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
-            --font-display: 'Space Grotesk', sans-serif;
+      :root {
+        --bg-deep: #0a0a0f;
+        --bg-surface: #12121a;
+        --bg-card: #1a1a24;
+        --bg-input: #0e0e14;
+        --text-primary: #e8e8ed;
+        --text-secondary: #8888a0;
+        --text-muted: #55556a;
+        --border-subtle: #2a2a3a;
+        --border-strong: #3a3a4a;
+        --accent-gql: #e535ab;
+        --accent-gql-glow: rgba(229, 53, 171, 0.15);
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", -apple-system, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+        --font-display: "Space Grotesk", sans-serif;
+      }
+
+      [data-theme="light"] {
+        --bg-deep: #f8fafc;
+        --bg-surface: #ffffff;
+        --bg-card: #ffffff;
+        --bg-input: #f1f5f9;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-muted: #94a3b8;
+        --border-subtle: #e2e8f0;
+        --border-strong: #cbd5e1;
+        --accent-gql: #d1108a;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: var(--font-sans);
+        background-color: var(--bg-deep);
+        color: var(--text-primary);
+        line-height: 1.6;
+        transition: background-color 0.3s;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      header {
+        margin-bottom: 2.5rem;
+        text-align: center;
+        position: relative;
+      }
+      .breadcrumb {
+        display: flex;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+        justify-content: center;
+      }
+      .breadcrumb a {
+        color: var(--accent-gql);
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+
+      h1 {
+        font-family: var(--font-display);
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--accent-gql);
+      }
+      .subtitle {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+      }
+
+      .theme-toggle {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-primary);
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .main-layout {
+        display: grid;
+        grid-template-columns: 320px 1fr 400px;
+        gap: 1.5rem;
+        height: calc(100vh - 250px);
+        min-height: 700px;
+      }
+      @media (max-width: 1400px) {
+        .main-layout {
+          grid-template-columns: 300px 1fr;
+          height: auto;
         }
-
-        [data-theme="light"] {
-            --bg-deep: #f8fafc;
-            --bg-surface: #ffffff;
-            --bg-card: #ffffff;
-            --bg-input: #f1f5f9;
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
-            --text-muted: #94a3b8;
-            --border-subtle: #e2e8f0;
-            --border-strong: #cbd5e1;
-            --accent-gql: #d1108a;
+      }
+      @media (max-width: 968px) {
+        .main-layout {
+          grid-template-columns: 1fr;
         }
+      }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: var(--font-sans);
-            background-color: var(--bg-deep);
-            color: var(--text-primary);
-            line-height: 1.6;
-            transition: background-color 0.3s;
-            min-height: 100vh;
-        }
+      .panel {
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-lg);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      }
+      .panel-header {
+        padding: 1rem;
+        background: var(--bg-surface);
+        border-bottom: 1px solid var(--border-subtle);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .panel-header h3 {
+        font-size: 0.9rem;
+        font-family: var(--font-display);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--accent-gql);
+      }
+      .panel-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.25rem;
+      }
 
-        .container { max-width: 1600px; margin: 0 auto; padding: 2rem; }
-        
-        header { margin-bottom: 2.5rem; text-align: center; position: relative; }
-        .breadcrumb { display: flex; gap: 0.5rem; font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem; justify-content: center; }
-        .breadcrumb a { color: var(--accent-gql); text-decoration: none; }
-        .breadcrumb a:hover { text-decoration: underline; }
-        
-        h1 { font-family: var(--font-display); font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--accent-gql); }
-        .subtitle { color: var(--text-secondary); font-size: 1.1rem; }
+      textarea {
+        width: 100%;
+        height: 100%;
+        background: var(--bg-input);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-primary);
+        padding: 1rem;
+        border-radius: var(--radius-md);
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        resize: none;
+        outline: none;
+      }
+      textarea:focus {
+        border-color: var(--accent-gql);
+      }
 
-        .theme-toggle { position: absolute; top: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 0.5rem 1rem; border-radius: var(--radius-md); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
+      /* Builder Specifics */
+      .op-tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+      }
+      .op-tab {
+        flex: 1;
+        padding: 0.5rem;
+        background: var(--bg-input);
+        border: 1px solid var(--border-subtle);
+        border-radius: 8px;
+        color: var(--text-secondary);
+        cursor: pointer;
+        font-size: 0.85rem;
+        text-align: center;
+      }
+      .op-tab.active {
+        background: var(--accent-gql);
+        color: #fff;
+        border-color: var(--accent-gql);
+      }
 
-        .main-layout { display: grid; grid-template-columns: 320px 1fr 400px; gap: 1.5rem; height: calc(100vh - 250px); min-height: 700px; }
-        @media (max-width: 1400px) { .main-layout { grid-template-columns: 300px 1fr; height: auto; } }
-        @media (max-width: 968px) { .main-layout { grid-template-columns: 1fr; } }
+      .builder-section {
+        margin-bottom: 2rem;
+      }
+      .section-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+      .section-head h4 {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+      }
 
-        .panel { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
-        .panel-header { padding: 1rem; background: var(--bg-surface); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; }
-        .panel-header h3 { font-size: 0.9rem; font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent-gql); }
-        .panel-content { flex: 1; overflow-y: auto; padding: 1.25rem; }
+      .field-card {
+        background: var(--bg-input);
+        border: 1px solid var(--border-subtle);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        position: relative;
+      }
+      .field-row {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        margin-bottom: 0.5rem;
+      }
+      .field-row input {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-primary);
+        padding: 0.4rem 0.6rem;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        outline: none;
+      }
+      .field-row input:focus {
+        border-color: var(--accent-gql);
+      }
 
-        textarea { width: 100%; height: 100%; background: var(--bg-input); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 1rem; border-radius: var(--radius-md); font-family: var(--font-mono); font-size: 0.85rem; resize: none; outline: none; }
-        textarea:focus { border-color: var(--accent-gql); }
+      .nested-fields {
+        margin-left: 1.5rem;
+        padding-left: 1rem;
+        border-left: 2px solid var(--border-subtle);
+        margin-top: 0.5rem;
+      }
 
-        /* Builder Specifics */
-        .op-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
-        .op-tab { flex: 1; padding: 0.5rem; background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: 8px; color: var(--text-secondary); cursor: pointer; font-size: 0.85rem; text-align: center; }
-        .op-tab.active { background: var(--accent-gql); color: #fff; border-color: var(--accent-gql); }
+      /* Output View */
+      .code-box {
+        background: #0d1117;
+        color: #c9d1d9;
+        padding: 1rem;
+        border-radius: 8px;
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        line-height: 1.5;
+        white-space: pre-wrap;
+        position: relative;
+      }
 
-        .builder-section { margin-bottom: 2rem; }
-        .section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-        .section-head h4 { font-size: 0.85rem; color: var(--text-muted); }
+      .btn {
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-subtle);
+        background: var(--bg-card);
+        color: var(--text-primary);
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .btn:hover {
+        background: var(--border-subtle);
+      }
+      .btn-primary {
+        background: var(--accent-gql);
+        color: #fff;
+        border: none;
+      }
+      .btn-primary:hover {
+        opacity: 0.9;
+        box-shadow: 0 4px 12px var(--accent-gql-glow);
+      }
 
-        .field-card { background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; position: relative; }
-        .field-row { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem; }
-        .field-row input { background: var(--bg-surface); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 0.4rem 0.6rem; border-radius: 4px; font-size: 0.85rem; outline: none; }
-        .field-row input:focus { border-color: var(--accent-gql); }
+      /* AdSense Placeholders */
+      .ads-placeholder {
+        margin: 2rem 0;
+        background: var(--bg-card);
+        border: 1px dashed var(--border-subtle);
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        border-radius: var(--radius-lg);
+      }
 
-        .nested-fields { margin-left: 1.5rem; padding-left: 1rem; border-left: 2px solid var(--border-subtle); margin-top: 0.5rem; }
+      /* Article Content */
+      article {
+        margin-top: 4rem;
+        max-width: 1000px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      article h2 {
+        font-family: var(--font-display);
+        font-size: 1.75rem;
+        margin: 2.5rem 0 1rem;
+        color: var(--accent-gql);
+      }
+      article h3 {
+        font-size: 1.25rem;
+        margin: 1.5rem 0 0.75rem;
+      }
+      article p {
+        margin-bottom: 1.25rem;
+        color: var(--text-secondary);
+      }
+      article ul,
+      article ol {
+        margin-bottom: 1.5rem;
+        padding-left: 1.5rem;
+        color: var(--text-secondary);
+      }
+      article li {
+        margin-bottom: 0.5rem;
+      }
+      code {
+        background: var(--bg-input);
+        padding: 0.2rem 0.4rem;
+        border-radius: 4px;
+        font-family: var(--font-mono);
+        font-size: 0.9em;
+      }
 
-        /* Output View */
-        .code-box { background: #0d1117; color: #c9d1d9; padding: 1rem; border-radius: 8px; font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.5; white-space: pre-wrap; position: relative; }
+      .toast {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: var(--accent-gql);
+        color: #fff;
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--radius-md);
+        transform: translateY(100px);
+        transition: transform 0.3s;
+        z-index: 1000;
+      }
+      .toast.show {
+        transform: translateY(0);
+      }
 
-        .btn { padding: 0.5rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); background: var(--bg-card); color: var(--text-primary); cursor: pointer; font-size: 0.8rem; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.4rem; }
-        .btn:hover { background: var(--border-subtle); }
-        .btn-primary { background: var(--accent-gql); color: #fff; border: none; }
-        .btn-primary:hover { opacity: 0.9; box-shadow: 0 4px 12px var(--accent-gql-glow); }
-
-        /* AdSense Placeholders */
-        .ads-placeholder { margin: 2rem 0; background: var(--bg-card); border: 1px dashed var(--border-subtle); height: 100px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem; border-radius: var(--radius-lg); }
-
-        /* Article Content */
-        article { margin-top: 4rem; max-width: 1000px; margin-left: auto; margin-right: auto; }
-        article h2 { font-family: var(--font-display); font-size: 1.75rem; margin: 2.5rem 0 1rem; color: var(--accent-gql); }
-        article h3 { font-size: 1.25rem; margin: 1.5rem 0 0.75rem; }
-        article p { margin-bottom: 1.25rem; color: var(--text-secondary); }
-        article ul, article ol { margin-bottom: 1.5rem; padding-left: 1.5rem; color: var(--text-secondary); }
-        article li { margin-bottom: 0.5rem; }
-        code { background: var(--bg-input); padding: 0.2rem 0.4rem; border-radius: 4px; font-family: var(--font-mono); font-size: 0.9em; }
-
-        .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--accent-gql); color: #fff; padding: 0.75rem 1.5rem; border-radius: var(--radius-md); transform: translateY(100px); transition: transform 0.3s; z-index: 1000; }
-        .toast.show { transform: translateY(0); }
-
-        footer { margin-top: 4rem; padding: 2rem; border-top: 1px solid var(--border-subtle); text-align: center; color: var(--text-muted); font-size: 0.875rem; }
-        footer a { color: var(--text-secondary); text-decoration: none; margin: 0 0.5rem; }
+      footer {
+        margin-top: 4rem;
+        padding: 2rem;
+        border-top: 1px solid var(--border-subtle);
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.875rem;
+      }
+      footer a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        margin: 0 0.5rem;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <nav class="breadcrumb">
-            <a href="../../index.html">首页</a> / <span>开发工具</span> / <span>GraphQL 查询构建器</span>
-        </nav>
+      <nav class="breadcrumb">
+        <a href="../../index.html">首页</a>
+        /
+        <span>开发工具</span>
+        /
+        <span>GraphQL 查询构建器</span>
+      </nav>
 
-        <header>
-            <h1>GraphQL 查询构建器</h1>
-            <p class="subtitle">可视化构建复杂的 GraphQL 请求，提升 API 对接效率</p>
-            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">
-                <span>🌙</span> 暗色模式
-            </button>
-        </header>
+      <header>
+        <h1>GraphQL 查询构建器</h1>
+        <p class="subtitle">可视化构建复杂的 GraphQL 请求，提升 API 对接效率</p>
+        <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">
+          <span>🌙</span>
+          暗色模式
+        </button>
+      </header>
 
-        <!-- Google AdSense Top -->
-        <div class="ads-placeholder">
-            广告占位符 - Google AdSense (Top)
-        </div>
+      <!-- Google AdSense Top -->
+      <div class="ads-placeholder">广告占位符 - Google AdSense (Top)</div>
 
-        <main class="main-layout">
-            <!-- Left: Schema Input -->
-            <aside class="panel">
-                <div class="panel-header">
-                    <h3>Schema 定义 (SDL)</h3>
-                    <button class="btn" onclick="parseSchema()">解析</button>
-                </div>
-                <div class="panel-content">
-                    <textarea id="schemaInput" placeholder="粘贴您的 GraphQL SDL (类型定义)...&#10;&#10;type User {&#10;  id: ID!&#10;  name: String!&#10;  email: String&#10;}"></textarea>
-                    <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
-                        <button class="btn" style="flex:1" onclick="loadExample('blog')">博客示例</button>
-                        <button class="btn" style="flex:1" onclick="loadExample('ecommerce')">电商示例</button>
-                    </div>
-                </div>
-            </aside>
+      <main class="main-layout">
+        <!-- Left: Schema Input -->
+        <aside class="panel">
+          <div class="panel-header">
+            <h3>Schema 定义 (SDL)</h3>
+            <button class="btn" onclick="parseSchema()">解析</button>
+          </div>
+          <div class="panel-content">
+            <textarea
+              id="schemaInput"
+              placeholder="粘贴您的 GraphQL SDL (类型定义)...&#10;&#10;type User {&#10;  id: ID!&#10;  name: String!&#10;  email: String&#10;}"
+            ></textarea>
+            <div style="margin-top: 1rem; display: flex; gap: 0.5rem">
+              <button class="btn" style="flex: 1" onclick="loadExample('blog')">博客示例</button>
+              <button class="btn" style="flex: 1" onclick="loadExample('ecommerce')">
+                电商示例
+              </button>
+            </div>
+          </div>
+        </aside>
 
-            <!-- Middle: Builder -->
-            <section class="panel">
-                <div class="panel-header">
-                    <h3>查询构建器</h3>
-                </div>
-                <div class="panel-content">
-                    <div class="op-tabs">
-                        <div class="op-tab active" onclick="setOp('query')">Query</div>
-                        <div class="op-tab" onclick="setOp('mutation')">Mutation</div>
-                        <div class="op-tab" onclick="setOp('subscription')">Subscription</div>
-                    </div>
+        <!-- Middle: Builder -->
+        <section class="panel">
+          <div class="panel-header">
+            <h3>查询构建器</h3>
+          </div>
+          <div class="panel-content">
+            <div class="op-tabs">
+              <div class="op-tab active" onclick="setOp('query')">Query</div>
+              <div class="op-tab" onclick="setOp('mutation')">Mutation</div>
+              <div class="op-tab" onclick="setOp('subscription')">Subscription</div>
+            </div>
 
-                    <div class="builder-section">
-                        <div class="section-head">
-                            <h4>根字段与选择集</h4>
-                            <button class="btn btn-primary" onclick="addRootField()">+ 根字段</button>
-                        </div>
-                        <div id="fieldsContainer"></div>
-                    </div>
+            <div class="builder-section">
+              <div class="section-head">
+                <h4>根字段与选择集</h4>
+                <button class="btn btn-primary" onclick="addRootField()">+ 根字段</button>
+              </div>
+              <div id="fieldsContainer"></div>
+            </div>
 
-                    <div class="builder-section">
-                        <div class="section-head">
-                            <h4>变量定义</h4>
-                            <button class="btn" onclick="addVariable()">+ 变量</button>
-                        </div>
-                        <div id="variablesContainer"></div>
-                    </div>
-                </div>
-            </section>
+            <div class="builder-section">
+              <div class="section-head">
+                <h4>变量定义</h4>
+                <button class="btn" onclick="addVariable()">+ 变量</button>
+              </div>
+              <div id="variablesContainer"></div>
+            </div>
+          </div>
+        </section>
 
-            <!-- Right: Output -->
-            <aside class="panel">
-                <div class="panel-header">
-                    <h3>生成的代码</h3>
-                    <div style="display: flex; gap: 0.4rem;">
-                        <button class="btn btn-primary" onclick="copyQuery()">复制</button>
-                    </div>
-                </div>
-                <div class="panel-content">
-                    <div class="form-group">
-                        <label>GraphQL Query</label>
-                        <div class="code-box" id="queryOutput"></div>
-                    </div>
-                    <div class="form-group">
-                        <label>Variables (JSON)</label>
-                        <div class="code-box" id="variablesOutput">{}</div>
-                    </div>
-                    <div class="form-group">
-                        <label>cURL 命令</label>
-                        <input type="text" id="endpoint" placeholder="Endpoint URL..." style="margin-bottom: 0.5rem;">
-                        <div class="code-box" id="curlOutput" style="max-height: 150px; overflow: auto;"></div>
-                    </div>
-                </div>
-            </aside>
-        </main>
+        <!-- Right: Output -->
+        <aside class="panel">
+          <div class="panel-header">
+            <h3>生成的代码</h3>
+            <div style="display: flex; gap: 0.4rem">
+              <button class="btn btn-primary" onclick="copyQuery()">复制</button>
+            </div>
+          </div>
+          <div class="panel-content">
+            <div class="form-group">
+              <label>GraphQL Query</label>
+              <div class="code-box" id="queryOutput"></div>
+            </div>
+            <div class="form-group">
+              <label>Variables (JSON)</label>
+              <div class="code-box" id="variablesOutput">{}</div>
+            </div>
+            <div class="form-group">
+              <label>cURL 命令</label>
+              <input
+                type="text"
+                id="endpoint"
+                placeholder="Endpoint URL..."
+                style="margin-bottom: 0.5rem"
+              />
+              <div class="code-box" id="curlOutput" style="max-height: 150px; overflow: auto"></div>
+            </div>
+          </div>
+        </aside>
+      </main>
 
-        <!-- Google AdSense Bottom -->
-        <div class="ads-placeholder">
-            广告占位符 - Google AdSense (Bottom)
-        </div>
+      <!-- Google AdSense Bottom -->
+      <div class="ads-placeholder">广告占位符 - Google AdSense (Bottom)</div>
 
-        <!-- SEO Content -->
-        <article>
-            <h2>GraphQL 查询构建器：连接前端与数据的桥梁</h2>
-            <p>GraphQL 彻底改变了前端获取数据的方式，通过声明式的查询，前端可以精确地获取所需的数据，不多也不少。然而，对于复杂的 Schema，手动编写无错误的 Query、Mutation 往往耗时且容易出错。我们的在线构建器旨在简化这一过程。</p>
-            
-            <h3>为什么要使用可视化构建器？</h3>
-            <ul>
-                <li><strong>消除语法焦虑：</strong> 无需担心忘记大括号、变量声明前的 <code>$</code> 符号或必填参数的校验。</li>
-                <li><strong>快速探索 Schema：</strong> 通过解析 SDL (Schema Definition Language)，您可以直观地看到所有可用的类型和字段，像拼积木一样组合查询。</li>
-                <li><strong>生产级代码导出：</strong> 除了生成的 Query，我们还为您准备了 cURL 命令。这意味着您可以直接在终端或 Postman 中测试接口，而无需编写任何代码。</li>
-                <li><strong> Fragment 支持：</strong> 在大型项目中，复用字段定义（Fragment）是最佳实践。本工具支持可视化定义并引用 Fragment。</li>
-            </ul>
+      <!-- SEO Content -->
+      <article>
+        <h2>GraphQL 查询构建器：连接前端与数据的桥梁</h2>
+        <p>
+          GraphQL
+          彻底改变了前端获取数据的方式，通过声明式的查询，前端可以精确地获取所需的数据，不多也不少。然而，对于复杂的
+          Schema，手动编写无错误的 Query、Mutation
+          往往耗时且容易出错。我们的在线构建器旨在简化这一过程。
+        </p>
 
-            <h3>解决的具体场景</h3>
-            <p><strong>场景一：对接新接口。</strong><br>后端刚发布了新的 GraphQL Schema，您可以使用本工具快速解析 SDL，点选出页面所需的字段，生成 Query 后直接放入代码库中。</p>
-            
-            <p><strong>场景二：调试复杂的 Mutation。</strong><br>Mutation 通常包含复杂的 Input 类型变量。通过可视化界面输入变量值，自动生成的 JSON 变量块可以确保发送的数据结构完全符合服务端要求。</p>
+        <h3>为什么要使用可视化构建器？</h3>
+        <ul>
+          <li>
+            <strong>消除语法焦虑：</strong>
+            无需担心忘记大括号、变量声明前的
+            <code>$</code>
+            符号或必填参数的校验。
+          </li>
+          <li>
+            <strong>快速探索 Schema：</strong>
+            通过解析 SDL (Schema Definition
+            Language)，您可以直观地看到所有可用的类型和字段，像拼积木一样组合查询。
+          </li>
+          <li>
+            <strong>生产级代码导出：</strong>
+            除了生成的 Query，我们还为您准备了 cURL 命令。这意味着您可以直接在终端或 Postman
+            中测试接口，而无需编写任何代码。
+          </li>
+          <li>
+            <strong>Fragment 支持：</strong>
+            在大型项目中，复用字段定义（Fragment）是最佳实践。本工具支持可视化定义并引用 Fragment。
+          </li>
+        </ul>
 
-            <p><strong>场景三：CI/CD 与 脚本测试。</strong><br>如果您需要通过脚本定期调用 GraphQL 接口进行监控，使用本工具生成的 cURL 命令是最快捷的方案。</p>
+        <h3>解决的具体场景</h3>
+        <p>
+          <strong>场景一：对接新接口。</strong>
+          <br />
+          后端刚发布了新的 GraphQL Schema，您可以使用本工具快速解析 SDL，点选出页面所需的字段，生成
+          Query 后直接放入代码库中。
+        </p>
 
-            <h3>GraphQL 最佳实践提示</h3>
-            <ol>
-                <li><strong>命名您的操作：</strong> 始终为您的 Query 和 Mutation 命名（如 <code>query GetUserDetail { ... }</code>），这有助于在生产环境的监控日志中快速定位问题。</li>
-                <li><strong>使用变量而非硬编码：</strong> 永远不要在 Query 字符串中硬编码参数值，使用变量可以提高性能并防止注入风险。</li>
-                <li><strong>按需请求字段：</strong> 既然选择了 GraphQL，就不要贪图方便请求 <code>*</code>（在 GraphQL 中通常指所有可用字段），只请求页面当前渲染所需的字段。</li>
-            </ol>
-        </article>
+        <p>
+          <strong>场景二：调试复杂的 Mutation。</strong>
+          <br />
+          Mutation 通常包含复杂的 Input 类型变量。通过可视化界面输入变量值，自动生成的 JSON
+          变量块可以确保发送的数据结构完全符合服务端要求。
+        </p>
 
-        <footer>
-            <p>&copy; 2026 WebUtils. 基于 MIT 协议开源。 <a href="https://github.com/nicepkg/html-tools">GitHub</a> | <a href="../../index.html">更多工具</a></p>
-        </footer>
+        <p>
+          <strong>场景三：CI/CD 与 脚本测试。</strong>
+          <br />
+          如果您需要通过脚本定期调用 GraphQL 接口进行监控，使用本工具生成的 cURL
+          命令是最快捷的方案。
+        </p>
+
+        <h3>GraphQL 最佳实践提示</h3>
+        <ol>
+          <li>
+            <strong>命名您的操作：</strong>
+            始终为您的 Query 和 Mutation 命名（如
+            <code>query GetUserDetail { ... }</code>
+            ），这有助于在生产环境的监控日志中快速定位问题。
+          </li>
+          <li>
+            <strong>使用变量而非硬编码：</strong>
+            永远不要在 Query 字符串中硬编码参数值，使用变量可以提高性能并防止注入风险。
+          </li>
+          <li>
+            <strong>按需请求字段：</strong>
+            既然选择了 GraphQL，就不要贪图方便请求
+            <code>*</code>
+            （在 GraphQL 中通常指所有可用字段），只请求页面当前渲染所需的字段。
+          </li>
+        </ol>
+      </article>
+
+      <footer>
+        <p>
+          &copy; 2026 WebUtils. 基于 MIT 协议开源。
+          <a href="https://github.com/nicepkg/html-tools">GitHub</a>
+          |
+          <a href="../../index.html">更多工具</a>
+        </p>
+      </footer>
     </div>
 
     <div id="toast" class="toast">已复制到剪贴板</div>
 
     <script>
-        let operationType = 'query';
-        let variables = [];
-        let rootFields = [];
-        let fieldId = 0;
-        let varId = 0;
+      let operationType = "query";
+      let variables = [];
+      let rootFields = [];
+      let fieldId = 0;
+      let varId = 0;
 
-        // Theme Toggle
-        function toggleTheme() {
-            const html = document.documentElement;
-            const btn = document.getElementById('themeBtn');
-            const isDark = html.getAttribute('data-theme') !== 'light';
-            if (isDark) {
-                html.setAttribute('data-theme', 'light');
-                btn.innerHTML = '<span>☀️</span> 亮色模式';
-                localStorage.setItem('theme', 'light');
-            } else {
-                html.removeAttribute('data-theme');
-                btn.innerHTML = '<span>🌙</span> 暗色模式';
-                localStorage.setItem('theme', 'dark');
-            }
+      // Theme Toggle
+      function toggleTheme() {
+        const html = document.documentElement;
+        const btn = document.getElementById("themeBtn");
+        const isDark = html.getAttribute("data-theme") !== "light";
+        if (isDark) {
+          html.setAttribute("data-theme", "light");
+          btn.innerHTML = "<span>☀️</span> 亮色模式";
+          localStorage.setItem("theme", "light");
+        } else {
+          html.removeAttribute("data-theme");
+          btn.innerHTML = "<span>🌙</span> 暗色模式";
+          localStorage.setItem("theme", "dark");
         }
+      }
 
-        if (localStorage.getItem('theme') === 'light') {
-            document.documentElement.setAttribute('data-theme', 'light');
-            document.getElementById('themeBtn').innerHTML = '<span>☀️</span> 亮色模式';
+      if (localStorage.getItem("theme") === "light") {
+        document.documentElement.setAttribute("data-theme", "light");
+        document.getElementById("themeBtn").innerHTML = "<span>☀️</span> 亮色模式";
+      }
+
+      function setOp(type) {
+        operationType = type;
+        document
+          .querySelectorAll(".op-tab")
+          .forEach((t) => t.classList.toggle("active", t.textContent.toLowerCase() === type));
+        generate();
+      }
+
+      function addRootField() {
+        const id = fieldId++;
+        rootFields.push({ id, name: "", alias: "", args: [], fields: [] });
+        renderFields();
+        generate();
+      }
+
+      function addSubField(parentField) {
+        const id = fieldId++;
+        parentField.fields.push({ id, name: "", alias: "", args: [], fields: [] });
+        renderFields();
+        generate();
+      }
+
+      function removeField(id, list) {
+        const idx = list.findIndex((f) => f.id === id);
+        if (idx > -1) {
+          list.splice(idx, 1);
+        } else {
+          list.forEach((f) => removeField(id, f.fields));
         }
+        renderFields();
+        generate();
+      }
 
-        function setOp(type) {
-            operationType = type;
-            document.querySelectorAll('.op-tab').forEach(t => t.classList.toggle('active', t.textContent.toLowerCase() === type));
-            generate();
-        }
+      function renderFields() {
+        const container = document.getElementById("fieldsContainer");
+        container.innerHTML = rootFields.map((f) => renderFieldItem(f, rootFields)).join("");
+      }
 
-        function addRootField() {
-            const id = fieldId++;
-            rootFields.push({ id, name: '', alias: '', args: [], fields: [] });
-            renderFields();
-            generate();
-        }
-
-        function addSubField(parentField) {
-            const id = fieldId++;
-            parentField.fields.push({ id, name: '', alias: '', args: [], fields: [] });
-            renderFields();
-            generate();
-        }
-
-        function removeField(id, list) {
-            const idx = list.findIndex(f => f.id === id);
-            if (idx > -1) {
-                list.splice(idx, 1);
-            } else {
-                list.forEach(f => removeField(id, f.fields));
-            }
-            renderFields();
-            generate();
-        }
-
-        function renderFields() {
-            const container = document.getElementById('fieldsContainer');
-            container.innerHTML = rootFields.map(f => renderFieldItem(f, rootFields)).join('');
-        }
-
-        function renderFieldItem(field, parentList) {
-            return `
+      function renderFieldItem(field, parentList) {
+        return `
                 <div class="field-card">
                     <button style="position:absolute; top:0.5rem; right:0.5rem; border:none; background:none; color:var(--accent-red); cursor:pointer;" onclick="removeField(${field.id}, rootFields)">&times;</button>
                     <div class="field-row">
@@ -344,29 +678,31 @@
                         <input type="text" placeholder="字段名" style="flex:1" value="${field.name}" oninput="field.name=this.value; generate()">
                     </div>
                     <div class="nested-fields">
-                        ${field.fields.map(sub => renderFieldItem(sub, field.fields)).join('')}
+                        ${field.fields.map((sub) => renderFieldItem(sub, field.fields)).join("")}
                         <button class="btn" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick="addSubField(rootFields.find(rf => findIn(rf, ${field.id})))">+ 子字段</button>
                     </div>
                 </div>
             `;
-        }
+      }
 
-        function findIn(root, id) {
-            if (root.id === id) return true;
-            return root.fields.some(f => findIn(f, id));
-        }
+      function findIn(root, id) {
+        if (root.id === id) return true;
+        return root.fields.some((f) => findIn(f, id));
+      }
 
-        // Variable management
-        function addVariable() {
-            const id = varId++;
-            variables.push({ id, name: '', type: 'String', required: true, value: '' });
-            renderVariables();
-            generate();
-        }
+      // Variable management
+      function addVariable() {
+        const id = varId++;
+        variables.push({ id, name: "", type: "String", required: true, value: "" });
+        renderVariables();
+        generate();
+      }
 
-        function renderVariables() {
-            const container = document.getElementById('variablesContainer');
-            container.innerHTML = variables.map((v, i) => `
+      function renderVariables() {
+        const container = document.getElementById("variablesContainer");
+        container.innerHTML = variables
+          .map(
+            (v, i) => `
                 <div class="field-card">
                     <div class="field-row">
                         <input type="text" placeholder="变量名" value="${v.name}" oninput="variables[${i}].name=this.value; generate()">
@@ -380,87 +716,94 @@
                         <button onclick="variables.splice(${i}, 1); renderVariables(); generate()" style="color:var(--accent-red); border:none; background:none; cursor:pointer;">&times;</button>
                     </div>
                 </div>
-            `).join('');
+            `
+          )
+          .join("");
+      }
+
+      function generate() {
+        let query = `${operationType} `;
+
+        // Operation name and variables
+        const activeVars = variables.filter((v) => v.name);
+        if (activeVars.length) {
+          query += `MyOperation(${activeVars.map((v) => `$${v.name}: ${v.type}${v.required ? "!" : ""}`).join(", ")}) `;
         }
 
-        function generate() {
-            let query = `${operationType} `;
-            
-            // Operation name and variables
-            const activeVars = variables.filter(v => v.name);
-            if (activeVars.length) {
-                query += `MyOperation(${activeVars.map(v => `$${v.name}: ${v.type}${v.required ? '!' : ''}`).join(', ')}) `;
-            }
-            
-            query += '{\n';
-            query += rootFields.map(f => generateFieldString(f, 1)).join('\n');
-            query += '\n}';
+        query += "{\n";
+        query += rootFields.map((f) => generateFieldString(f, 1)).join("\n");
+        query += "\n}";
 
-            document.getElementById('queryOutput').textContent = query;
+        document.getElementById("queryOutput").textContent = query;
 
-            // Variables JSON
-            const varObj = {};
-            activeVars.forEach(v => varObj[v.name] = v.type === 'Int' ? parseInt(v.value) : v.value);
-            document.getElementById('variablesOutput').textContent = JSON.stringify(varObj, null, 2);
+        // Variables JSON
+        const varObj = {};
+        activeVars.forEach(
+          (v) => (varObj[v.name] = v.type === "Int" ? parseInt(v.value) : v.value)
+        );
+        document.getElementById("variablesOutput").textContent = JSON.stringify(varObj, null, 2);
 
-            generateCurl(query, varObj);
+        generateCurl(query, varObj);
+      }
+
+      function generateFieldString(f, indent) {
+        if (!f.name) return "";
+        const spaces = "  ".repeat(indent);
+        let str = spaces;
+        if (f.alias) str += `${f.alias}: `;
+        str += f.name;
+        if (f.fields.length) {
+          str += " {\n";
+          str += f.fields
+            .map((sub) => generateFieldString(sub, indent + 1))
+            .filter((s) => s)
+            .join("\n");
+          str += `\n${spaces}}`;
         }
+        return str;
+      }
 
-        function generateFieldString(f, indent) {
-            if (!f.name) return '';
-            const spaces = '  '.repeat(indent);
-            let str = spaces;
-            if (f.alias) str += `${f.alias}: `;
-            str += f.name;
-            if (f.fields.length) {
-                str += ' {\n';
-                str += f.fields.map(sub => generateFieldString(sub, indent + 1)).filter(s => s).join('\n');
-                str += `\n${spaces}}`;
-            }
-            return str;
-        }
-
-        function generateCurl(query, vars) {
-            const url = document.getElementById('endpoint').value || 'https://api.example.com/graphql';
-            const curl = `curl '${url}' \\
+      function generateCurl(query, vars) {
+        const url = document.getElementById("endpoint").value || "https://api.example.com/graphql";
+        const curl = `curl '${url}' \\
   -H 'Content-Type: application/json' \\
   --data-binary '${JSON.stringify({ query, variables: vars })}'`;
-            document.getElementById('curlOutput').textContent = curl;
-        }
+        document.getElementById("curlOutput").textContent = curl;
+      }
 
-        function copyQuery() {
-            navigator.clipboard.writeText(document.getElementById('queryOutput').textContent);
-            showToast();
-        }
+      function copyQuery() {
+        navigator.clipboard.writeText(document.getElementById("queryOutput").textContent);
+        showToast();
+      }
 
-        function showToast() {
-            const t = document.getElementById('toast');
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 2000);
-        }
+      function showToast() {
+        const t = document.getElementById("toast");
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 2000);
+      }
 
-        function parseSchema() {
-            // Simplified SDL parsing logic for demo
-            const sdl = document.getElementById('schemaInput').value;
-            if (!sdl) return;
-            // Real parser would use graphql-js or similar
-            alert('Schema 已记录并用于字段联想（演示版：手动输入字段名即可）');
-        }
+      function parseSchema() {
+        // Simplified SDL parsing logic for demo
+        const sdl = document.getElementById("schemaInput").value;
+        if (!sdl) return;
+        // Real parser would use graphql-js or similar
+        alert("Schema 已记录并用于字段联想（演示版：手动输入字段名即可）");
+      }
 
-        const examples = {
-            blog: `type Post {\n  id: ID!\n  title: String!\n  content: String\n  author: User!\n}`,
-            ecommerce: `type Product {\n  id: ID!\n  name: String!\n  price: Float!\n  category: Category!\n}`
-        };
+      const examples = {
+        blog: `type Post {\n  id: ID!\n  title: String!\n  content: String\n  author: User!\n}`,
+        ecommerce: `type Product {\n  id: ID!\n  name: String!\n  price: Float!\n  category: Category!\n}`
+      };
 
-        function loadExample(type) {
-            document.getElementById('schemaInput').value = examples[type];
-            parseSchema();
-        }
+      function loadExample(type) {
+        document.getElementById("schemaInput").value = examples[type];
+        parseSchema();
+      }
 
-        document.getElementById('endpoint').addEventListener('input', generate);
+      document.getElementById("endpoint").addEventListener("input", generate);
 
-        // Initial render
-        generate();
+      // Initial render
+      generate();
     </script>
-</body>
+  </body>
 </html>

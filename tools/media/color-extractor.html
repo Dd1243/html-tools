@@ -1,552 +1,895 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>在线图片颜色提取器 - 自动生成调色板、RGB/HEX 互转、配色灵感 | WebUtils</title>
-  <meta name="description" content="WebUtils 免费在线图片颜色提取器。一键从照片中提取主色调，自动生成专业级配色方案。支持 HEX/RGB 导出、CSS 变量生成、K-Means 智能算法，100% 隐私保护，本地处理。">
-  <meta name="keywords" content="颜色提取,调色板生成,图片取色,Color Extractor,Palette Generator,HEX取色,RGB转换,UI设计配色,配色灵感,网页设计工具">
-  <link rel="canonical" href="https://essays4u.net/tools/media/color-extractor.html">
-  
-  <!-- Open Graph -->
-  <meta property="og:title" content="在线图片颜色提取器 - 你的智能配色助手">
-  <meta property="og:description" content="上传图片，瞬间获取配色方案。支持精确取色与智能调色板生成，助力设计师与开发者。">
-  <meta property="og:url" content="https://essays4u.net/tools/media/color-extractor.html">
-  <meta property="og:type" content="website">
-  <meta property="og:image" content="https://essays4u.net/social-preview.png">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>在线图片颜色提取器 - 自动生成调色板、RGB/HEX 互转、配色灵感 | WebUtils</title>
+    <meta
+      name="description"
+      content="WebUtils 免费在线图片颜色提取器。一键从照片中提取主色调，自动生成专业级配色方案。支持 HEX/RGB 导出、CSS 变量生成、K-Means 智能算法，100% 隐私保护，本地处理。"
+    />
+    <meta
+      name="keywords"
+      content="颜色提取,调色板生成,图片取色,Color Extractor,Palette Generator,HEX取色,RGB转换,UI设计配色,配色灵感,网页设计工具"
+    />
+    <link rel="canonical" href="https://essays4u.net/tools/media/color-extractor.html" />
 
-  <!-- JSON-LD -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "在线图片颜色提取器",
-    "description": "从上传的图片中自动提取主导色并生成配色方案，支持导出多种格式。",
-    "applicationCategory": "DesignApplication",
-    "operatingSystem": "Any",
-    "url": "https://essays4u.net/tools/media/color-extractor.html",
-    "offers": {
-      "@type": "Offer",
-      "price": "0"
-    }
-  }
-  </script>
+    <!-- Open Graph -->
+    <meta property="og:title" content="在线图片颜色提取器 - 你的智能配色助手" />
+    <meta
+      property="og:description"
+      content="上传图片，瞬间获取配色方案。支持精确取色与智能调色板生成，助力设计师与开发者。"
+    />
+    <meta property="og:url" content="https://essays4u.net/tools/media/color-extractor.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
 
-  <style>
-    :root {
-      --primary-color: #4cc9f0; /* 天蓝色 */
-      --secondary-color: #480ca8; /* 深紫色 */
-      --accent-yellow: #fee440; /* 明黄 */
-      --bg-color: #0a0a0f;
-      --card-bg: #12121a;
-      --text-main: #e8e8ed;
-      --text-muted: #8888a0;
-      --border-color: #2a2a3a;
-      --neo-shadow: 8px 8px 0px 0px #000;
-      --neo-border: 3px solid #000;
-      --radius: 0px;
-    }
+    <!-- JSON-LD -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "在线图片颜色提取器",
+        "description": "从上传的图片中自动提取主导色并生成配色方案，支持导出多种格式。",
+        "applicationCategory": "DesignApplication",
+        "operatingSystem": "Any",
+        "url": "https://essays4u.net/tools/media/color-extractor.html",
+        "offers": {
+          "@type": "Offer",
+          "price": "0"
+        }
+      }
+    </script>
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { 
-      font-family: "Space Grotesk", "Segoe UI", system-ui, sans-serif; 
-      line-height: 1.6; 
-      color: var(--text-main); 
-      background: var(--bg-color); 
-      padding-bottom: 50px;
-    }
-    
-    .container { width: 95%; max-width: 1200px; margin: 0 auto; }
+    <style>
+      :root {
+        --primary-color: #4cc9f0; /* 天蓝色 */
+        --secondary-color: #480ca8; /* 深紫色 */
+        --accent-yellow: #fee440; /* 明黄 */
+        --bg-color: #0a0a0f;
+        --card-bg: #12121a;
+        --text-main: #e8e8ed;
+        --text-muted: #8888a0;
+        --border-color: #2a2a3a;
+        --neo-shadow: 8px 8px 0px 0px #000;
+        --neo-border: 3px solid #000;
+        --radius: 0px;
+      }
 
-    /* 顶部导航 */
-    .site-header { background: #000; border-bottom: 3px solid var(--primary-color); position: sticky; top: 0; z-index: 100; }
-    .site-header .container { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; }
-    .logo a { font-size: 1.6rem; font-weight: 800; color: var(--primary-color); text-decoration: none; text-transform: uppercase; letter-spacing: 1px; }
-    .site-nav ul { display: flex; list-style: none; gap: 20px; }
-    .site-nav a { text-decoration: none; color: #fff; font-weight: 600; font-size: 0.95rem; }
-    .site-nav a:hover { color: var(--primary-color); }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+        line-height: 1.6;
+        color: var(--text-main);
+        background: var(--bg-color);
+        padding-bottom: 50px;
+      }
 
-    /* 主体布局 */
-    main.container { display: flex; flex-direction: column; gap: 30px; padding: 40px 0; }
-    @media (min-width: 992px) {
-      main.container { flex-direction: row; align-items: flex-start; }
-    }
+      .container {
+        width: 95%;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
 
-    /* 左侧工具区 */
-    .tool-section { flex: 3; background: var(--card-bg); padding: 30px; border: var(--neo-border); box-shadow: var(--neo-shadow); }
-    .tool-header { margin-bottom: 30px; border-bottom: 2px solid var(--border-color); padding-bottom: 15px; }
-    .tool-header h1 { font-size: 2.2rem; font-weight: 800; color: var(--primary-color); margin-bottom: 10px; }
-    .tool-header p { color: var(--text-muted); font-size: 1rem; }
+      /* 顶部导航 */
+      .site-header {
+        background: #000;
+        border-bottom: 3px solid var(--primary-color);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .site-header .container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px 0;
+      }
+      .logo a {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--primary-color);
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+      .site-nav ul {
+        display: flex;
+        list-style: none;
+        gap: 20px;
+      }
+      .site-nav a {
+        text-decoration: none;
+        color: #fff;
+        font-weight: 600;
+        font-size: 0.95rem;
+      }
+      .site-nav a:hover {
+        color: var(--primary-color);
+      }
 
-    /* 上传区 */
-    .drop-zone {
-      border: 3px dashed var(--primary-color);
-      padding: 50px 20px;
-      text-align: center;
-      cursor: pointer;
-      background: #1a1a24;
-      transition: all 0.2s;
-      margin-bottom: 30px;
-    }
-    .drop-zone:hover, .drop-zone.dragover { background: #232332; border-style: solid; }
-    .drop-zone p { color: var(--text-muted); font-size: 1.1rem; }
-    .drop-zone span { display: block; font-size: 0.8rem; margin-top: 10px; color: var(--primary-color); }
+      /* 主体布局 */
+      main.container {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        padding: 40px 0;
+      }
+      @media (min-width: 992px) {
+        main.container {
+          flex-direction: row;
+          align-items: flex-start;
+        }
+      }
 
-    /* 图片预览与取色 */
-    .preview-layout {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 25px;
-      margin-bottom: 35px;
-    }
-    @media (min-width: 768px) {
-      .preview-layout { grid-template-columns: 3fr 2fr; }
-    }
+      /* 左侧工具区 */
+      .tool-section {
+        flex: 3;
+        background: var(--card-bg);
+        padding: 30px;
+        border: var(--neo-border);
+        box-shadow: var(--neo-shadow);
+      }
+      .tool-header {
+        margin-bottom: 30px;
+        border-bottom: 2px solid var(--border-color);
+        padding-bottom: 15px;
+      }
+      .tool-header h1 {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: var(--primary-color);
+        margin-bottom: 10px;
+      }
+      .tool-header p {
+        color: var(--text-muted);
+        font-size: 1rem;
+      }
 
-    .image-viewer {
-      background: #000;
-      border: var(--neo-border);
-      position: relative;
-      cursor: crosshair;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 300px;
-    }
-    #previewImg { max-width: 100%; max-height: 500px; display: block; }
-    
-    .color-picker-result {
-      background: #1a1a24;
-      border: var(--neo-border);
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-    .picked-swatch {
-      width: 100%;
-      height: 100px;
-      border: 2px solid #000;
-      background: #000;
-    }
-    .color-value-box {
-      background: #0a0a0f;
-      padding: 12px;
-      border: 1px solid var(--border-color);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-    }
-    .color-value-box:hover { border-color: var(--primary-color); }
-    .color-value-box span { font-family: "JetBrains Mono", monospace; font-size: 0.9rem; }
-    .copy-label { font-size: 0.7rem; color: var(--primary-color); text-transform: uppercase; }
+      /* 上传区 */
+      .drop-zone {
+        border: 3px dashed var(--primary-color);
+        padding: 50px 20px;
+        text-align: center;
+        cursor: pointer;
+        background: #1a1a24;
+        transition: all 0.2s;
+        margin-bottom: 30px;
+      }
+      .drop-zone:hover,
+      .drop-zone.dragover {
+        background: #232332;
+        border-style: solid;
+      }
+      .drop-zone p {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+      }
+      .drop-zone span {
+        display: block;
+        font-size: 0.8rem;
+        margin-top: 10px;
+        color: var(--primary-color);
+      }
 
-    /* 调色板生成 */
-    .palette-section {
-      background: #000;
-      border: var(--neo-border);
-      padding: 25px;
-      box-shadow: 4px 4px 0px 0px var(--primary-color);
-    }
-    .palette-controls {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    .palette-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 15px;
-    }
-    .color-card {
-      background: #1a1a24;
-      border: 1px solid var(--border-color);
-      padding: 8px;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-    .color-card:hover { transform: translateY(-5px); border-color: var(--primary-color); }
-    .swatch { width: 100%; height: 80px; border: 1px solid #000; margin-bottom: 8px; }
-    .card-hex { font-family: "JetBrains Mono", monospace; font-size: 0.8rem; text-align: center; display: block; }
-    .card-percent { font-size: 0.65rem; color: var(--text-muted); text-align: center; display: block; }
+      /* 图片预览与取色 */
+      .preview-layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 25px;
+        margin-bottom: 35px;
+      }
+      @media (min-width: 768px) {
+        .preview-layout {
+          grid-template-columns: 3fr 2fr;
+        }
+      }
 
-    /* 按钮样式 */
-    .btn {
-      padding: 12px 24px;
-      font-weight: 800;
-      font-size: 0.9rem;
-      cursor: pointer;
-      border: 3px solid #000;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      transition: all 0.1s;
-    }
-    .btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px 0px #000; }
-    .btn-primary { background: var(--primary-color); color: #000; box-shadow: 4px 4px 0px 0px #000; }
-    .btn-outline { background: transparent; border-color: var(--primary-color); color: var(--primary-color); box-shadow: 4px 4px 0px 0px #000; }
+      .image-viewer {
+        background: #000;
+        border: var(--neo-border);
+        position: relative;
+        cursor: crosshair;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 300px;
+      }
+      #previewImg {
+        max-width: 100%;
+        max-height: 500px;
+        display: block;
+      }
 
-    /* 侧边栏 */
-    .sidebar-section { flex: 1; display: flex; flex-direction: column; gap: 25px; }
-    .article-card { background: var(--card-bg); padding: 25px; border: var(--neo-border); box-shadow: var(--neo-shadow); }
-    .article-card h2 { font-size: 1.3rem; margin-bottom: 15px; color: var(--primary-color); text-transform: uppercase; border-left: 5px solid var(--accent-yellow); padding-left: 12px; }
-    .article-card p { font-size: 0.95rem; color: var(--text-main); margin-bottom: 12px; }
-    .article-card li { margin-bottom: 8px; font-size: 0.9rem; color: var(--text-muted); }
+      .color-picker-result {
+        background: #1a1a24;
+        border: var(--neo-border);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+      .picked-swatch {
+        width: 100%;
+        height: 100px;
+        border: 2px solid #000;
+        background: #000;
+      }
+      .color-value-box {
+        background: #0a0a0f;
+        padding: 12px;
+        border: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+      }
+      .color-value-box:hover {
+        border-color: var(--primary-color);
+      }
+      .color-value-box span {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.9rem;
+      }
+      .copy-label {
+        font-size: 0.7rem;
+        color: var(--primary-color);
+        text-transform: uppercase;
+      }
 
-    /* 广告位 */
-    .ad-placeholder { background: #1a1a24; border: 2px dashed var(--border-color); color: var(--text-muted); text-align: center; padding: 20px; font-size: 0.8rem; min-height: 100px; display: flex; align-items: center; justify-content: center; }
-    .ad-top { margin-bottom: 25px; }
+      /* 调色板生成 */
+      .palette-section {
+        background: #000;
+        border: var(--neo-border);
+        padding: 25px;
+        box-shadow: 4px 4px 0px 0px var(--primary-color);
+      }
+      .palette-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      .palette-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 15px;
+      }
+      .color-card {
+        background: #1a1a24;
+        border: 1px solid var(--border-color);
+        padding: 8px;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+      .color-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--primary-color);
+      }
+      .swatch {
+        width: 100%;
+        height: 80px;
+        border: 1px solid #000;
+        margin-bottom: 8px;
+      }
+      .card-hex {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.8rem;
+        text-align: center;
+        display: block;
+      }
+      .card-percent {
+        font-size: 0.65rem;
+        color: var(--text-muted);
+        text-align: center;
+        display: block;
+      }
 
-    /* 页脚 */
-    .site-footer { background: #000; border-top: 3px solid var(--primary-color); color: #fff; padding: 60px 0 30px; margin-top: 60px; }
-    .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; }
-    .footer-section h3 { font-size: 1.2rem; margin-bottom: 20px; color: var(--primary-color); }
-    .footer-section a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; }
-    .footer-section a:hover { color: #fff; }
+      /* 按钮样式 */
+      .btn {
+        padding: 12px 24px;
+        font-weight: 800;
+        font-size: 0.9rem;
+        cursor: pointer;
+        border: 3px solid #000;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.1s;
+      }
+      .btn:active {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0px 0px #000;
+      }
+      .btn-primary {
+        background: var(--primary-color);
+        color: #000;
+        box-shadow: 4px 4px 0px 0px #000;
+      }
+      .btn-outline {
+        background: transparent;
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+        box-shadow: 4px 4px 0px 0px #000;
+      }
 
-    #fileInput { display: none; }
-    canvas { display: none; }
+      /* 侧边栏 */
+      .sidebar-section {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+      }
+      .article-card {
+        background: var(--card-bg);
+        padding: 25px;
+        border: var(--neo-border);
+        box-shadow: var(--neo-shadow);
+      }
+      .article-card h2 {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+        color: var(--primary-color);
+        text-transform: uppercase;
+        border-left: 5px solid var(--accent-yellow);
+        padding-left: 12px;
+      }
+      .article-card p {
+        font-size: 0.95rem;
+        color: var(--text-main);
+        margin-bottom: 12px;
+      }
+      .article-card li {
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+      }
 
-    @media (max-width: 768px) {
-      .tool-header h1 { font-size: 1.8rem; }
-      .btn { width: 100%; text-align: center; }
-    }
-  </style>
-</head>
-<body>
-  <header class="site-header">
-    <div class="container">
-      <div class="logo"><a href="../../index.html">WebUtils</a></div>
-      <nav class="site-nav">
-        <ul>
-          <li><a href="../../index.html">首页</a></li>
-          <li><a href="../media/base64-image.html">图片Base64</a></li>
-          <li><a href="../media/color-extractor.html">颜色提取</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
+      /* 广告位 */
+      .ad-placeholder {
+        background: #1a1a24;
+        border: 2px dashed var(--border-color);
+        color: var(--text-muted);
+        text-align: center;
+        padding: 20px;
+        font-size: 0.8rem;
+        min-height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .ad-top {
+        margin-bottom: 25px;
+      }
 
-  <main class="container">
-    <div class="tool-section">
-      <div class="ad-placeholder ad-top">Advertisement - Support our Tools</div>
-      
-      <div class="tool-header">
-        <h1>在线图片颜色提取器</h1>
-        <p>精准提取图片中的主色调与配色方案。支持 K-Means 算法智能聚类，助您寻找网页设计与 UI 开发的视觉灵感。</p>
-      </div>
+      /* 页脚 */
+      .site-footer {
+        background: #000;
+        border-top: 3px solid var(--primary-color);
+        color: #fff;
+        padding: 60px 0 30px;
+        margin-top: 60px;
+      }
+      .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 40px;
+      }
+      .footer-section h3 {
+        font-size: 1.2rem;
+        margin-bottom: 20px;
+        color: var(--primary-color);
+      }
+      .footer-section a {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.9rem;
+      }
+      .footer-section a:hover {
+        color: #fff;
+      }
 
-      <!-- 上传区 -->
-      <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
-        <p>📥 点击或拖拽图片文件到此处</p>
-        <span>支持 JPG, PNG, WEBP, GIF | 100% 本地处理</span>
-        <input type="file" id="fileInput" accept="image/*">
-      </div>
+      #fileInput {
+        display: none;
+      }
+      canvas {
+        display: none;
+      }
 
-      <div id="mainContent" style="display: none;">
-        <!-- 预览与取色 -->
-        <div class="preview-layout">
-          <div class="image-viewer" id="imageViewer">
-            <img id="previewImg" alt="Preview">
-            <div id="loadingOverlay" style="position: absolute; display: none; background: rgba(0,0,0,0.5); width: 100%; height: 100%; align-items: center; justify-content: center;">
-              <span style="color: var(--primary-color); font-weight: 800;">正在提取颜色...</span>
-            </div>
-          </div>
-          <div class="color-picker-result">
-            <label>精准取色点</label>
-            <div class="picked-swatch" id="pickedSwatch"></div>
-            <div class="color-value-box" onclick="copyText(this.querySelector('.val').textContent)">
-              <span class="val" id="hexVal">#000000</span>
-              <span class="copy-label">HEX</span>
-            </div>
-            <div class="color-value-box" onclick="copyText(this.querySelector('.val').textContent)">
-              <span class="val" id="rgbVal">rgb(0,0,0)</span>
-              <span class="copy-label">RGB</span>
-            </div>
-            <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center;">(点击上方视频画面可精准取色)</p>
-          </div>
-        </div>
-
-        <!-- 调色板 -->
-        <div class="palette-section">
-          <div class="palette-controls">
-            <h2 style="font-size: 1.2rem; text-transform: uppercase;">智能调色板</h2>
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <label style="font-size: 0.75rem;">数量:</label>
-              <select id="colorCount" style="background: #1a1a24; color: #fff; border: 1px solid var(--border-color); padding: 5px;">
-                <option value="5">5 色</option>
-                <option value="8" selected>8 色</option>
-                <option value="12">12 色</option>
-                <option value="16">16 色</option>
-              </select>
-            </div>
-          </div>
-          <div class="palette-grid" id="paletteGrid">
-            <!-- 自动生成 -->
-          </div>
-          <div style="display: flex; gap: 15px; margin-top: 25px;">
-            <button class="btn btn-primary" id="btnExportCSS">导出 CSS 变量</button>
-            <button class="btn btn-outline" id="btnExportJSON">导出 JSON</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- SEO 内容 -->
-      <section style="margin-top: 50px; border-top: 2px solid var(--border-color); padding-top: 40px;">
-        <h2 style="font-size: 1.8rem; margin-bottom: 25px; color: var(--primary-color);">深度解析：如何利用颜色提取器构建完美的 UI 配色方案？</h2>
-        <article style="font-size: 1rem; color: var(--text-main); line-height: 1.8;">
-          <p>在 UI 设计和前端开发中，<strong>颜色提取</strong>（Color Extraction）不仅是简单的获取一个 HEX 码，更是理解视觉氛围、建立品牌一致性的核心步骤。WebUtils 的这款工具不仅能实现像素级的“吸管取色”，更采用了先进的聚类算法，帮助您从复杂的摄影或设计作品中抽离出最具代表性的调色板。</p>
-          
-          <h3 style="margin: 25px 0 15px; color: var(--accent-yellow); text-transform: uppercase;">1. 什么是 K-Means 聚类提取算法？</h3>
-          <p>普通的取色工具可能只是随机抓取几个像素点，而我们的工具在后端（实际上是您的浏览器前端）运行了 <strong>K-Means 聚类算法</strong>。该算法会将图片中数百万个像素映射到三维色彩空间（RGB 或 Lab），通过不断迭代寻找色彩分布的“质心”。这意味着提取出的 8 个颜色不仅是图片中出现的，更是代表了图片整体色调、饱和度和亮度的核心色彩组合。</p>
-
-          <div class="ad-placeholder" style="margin: 30px 0;">Advertisement - Mid-Content Support</div>
-
-          <h3 style="margin: 25px 0 15px; color: var(--accent-yellow); text-transform: uppercase;">2. 从图片到 CSS：开发者的捷径</h3>
-          <p>当您从一张风景照或参考稿中获取了灵感，如何将其转化为代码？我们的工具提供了“导出 CSS 变量”功能。它会自动生成一套符合命名规范的 <code>:root</code> 变量，如 <code>--primary-color</code>、<code>--accent-color</code> 等。您可以直接将其粘贴到项目的全局样式表中，瞬间建立起一套基于自然灵感的视觉系统。</p>
-
-          <h3 style="margin: 25px 0 15px; color: var(--accent-yellow); text-transform: uppercase;">3. 隐私与性能：本地处理的优势</h3>
-          <p>图片通常包含大量的元数据和敏感视觉信息。传统的在线工具需要将图片上传到服务器进行处理，这既消耗带宽又存在泄露风险。WebUtils 采用 <strong>HTML5 Canvas API</strong> 在您的浏览器内存中解析图像数据。这意味着无论图片多大，处理速度仅取决于您的 CPU 性能，且您的图片绝对不会离开您的电脑。</p>
-
-          <h3 style="margin: 25px 0 15px; color: var(--accent-yellow); text-transform: uppercase;">4. 常见问题 (FAQ)</h3>
-          <div style="background: #1a1a24; padding: 20px; border-left: 5px solid var(--primary-color); margin-bottom: 20px;">
-            <p><strong>问：为什么提取出的颜色看起来比图片灰暗？</strong><br>答：算法计算的是颜色区域的平均值。如果图片中有很多细微的噪点或渐变，主色调可能会偏向于中值色。您可以尝试通过点击图片手动选取更鲜艳的特定点。</p>
-          </div>
-          <div style="background: #1a1a24; padding: 20px; border-left: 5px solid var(--accent-yellow);">
-            <p><strong>问：支持从网页 URL 提取吗？</strong><br>答：受限于浏览器的跨域安全策略（CORS），目前仅支持本地上传或拖拽图片。这是为了保护您的浏览器不被恶意脚本利用。</p>
-          </div>
-        </article>
-      </section>
-    </div>
-
-    <aside class="sidebar-section">
-      <div class="article-card">
-        <h2>使用技巧</h2>
-        <ul>
-          <li><strong>精准捕捉：</strong> 将鼠标移至左侧图片上方，点击任意位置即可更新右侧的取色框。</li>
-          <li><strong>一键复制：</strong> 点击颜色卡片或 HEX/RGB 数值框，系统会自动复制到剪贴板。</li>
-          <li><strong>动态调整：</strong> 修改右侧的“数量”下拉框，可以生成不同复杂度的调色板。</li>
-        </ul>
-      </div>
-
-      <div class="ad-placeholder" style="min-height: 250px;">Banner Ad - Sidebar</div>
-
-      <div class="article-card">
-        <h2>推荐工具</h2>
-        <ul>
-          <li><a href="base64-image.html" style="color: var(--primary-color);">图片转 Base64 编码</a></li>
-          <li><a href="image-compressor.html" style="color: var(--primary-color);">图片质量压缩</a></li>
-          <li><a href="svg-render.html" style="color: var(--primary-color);">SVG 代码预览器</a></li>
-        </ul>
-      </div>
-
-      <div class="article-card" style="border-color: var(--accent-yellow);">
-        <h2>配色小贴士</h2>
-        <p style="font-size: 0.85rem; color: var(--text-muted);">遵循 60-30-10 原则：主色占 60%，辅助色占 30%，点缀色（强调色）占 10%，能让您的设计更平衡。</p>
-      </div>
-    </aside>
-  </main>
-
-  <footer class="site-footer">
-    <div class="container">
-      <div class="footer-content">
-        <div class="footer-section">
-          <h3>关于 WebUtils</h3>
-          <p style="color: var(--text-muted); font-size: 0.9rem;">WebUtils 专注于提供高效、安全、充满设计感的 Web 开发者工具。每一个工具都力求极致的简单与强大。</p>
-        </div>
-        <div class="footer-section">
-          <h3>快速链接</h3>
+      @media (max-width: 768px) {
+        .tool-header h1 {
+          font-size: 1.8rem;
+        }
+        .btn {
+          width: 100%;
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <div class="logo"><a href="../../index.html">WebUtils</a></div>
+        <nav class="site-nav">
           <ul>
-            <li><a href="../../index.html">返回首页</a></li>
-            <li><a href="https://github.com/chicogong/html-tools" target="_blank">获取源码</a></li>
+            <li><a href="../../index.html">首页</a></li>
+            <li><a href="../media/base64-image.html">图片Base64</a></li>
+            <li><a href="../media/color-extractor.html">颜色提取</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="tool-section">
+        <div class="ad-placeholder ad-top">Advertisement - Support our Tools</div>
+
+        <div class="tool-header">
+          <h1>在线图片颜色提取器</h1>
+          <p>
+            精准提取图片中的主色调与配色方案。支持 K-Means 算法智能聚类，助您寻找网页设计与 UI
+            开发的视觉灵感。
+          </p>
+        </div>
+
+        <!-- 上传区 -->
+        <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+          <p>📥 点击或拖拽图片文件到此处</p>
+          <span>支持 JPG, PNG, WEBP, GIF | 100% 本地处理</span>
+          <input type="file" id="fileInput" accept="image/*" />
+        </div>
+
+        <div id="mainContent" style="display: none">
+          <!-- 预览与取色 -->
+          <div class="preview-layout">
+            <div class="image-viewer" id="imageViewer">
+              <img id="previewImg" alt="Preview" />
+              <div
+                id="loadingOverlay"
+                style="
+                  position: absolute;
+                  display: none;
+                  background: rgba(0, 0, 0, 0.5);
+                  width: 100%;
+                  height: 100%;
+                  align-items: center;
+                  justify-content: center;
+                "
+              >
+                <span style="color: var(--primary-color); font-weight: 800">正在提取颜色...</span>
+              </div>
+            </div>
+            <div class="color-picker-result">
+              <label>精准取色点</label>
+              <div class="picked-swatch" id="pickedSwatch"></div>
+              <div
+                class="color-value-box"
+                onclick="copyText(this.querySelector('.val').textContent)"
+              >
+                <span class="val" id="hexVal">#000000</span>
+                <span class="copy-label">HEX</span>
+              </div>
+              <div
+                class="color-value-box"
+                onclick="copyText(this.querySelector('.val').textContent)"
+              >
+                <span class="val" id="rgbVal">rgb(0,0,0)</span>
+                <span class="copy-label">RGB</span>
+              </div>
+              <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center">
+                (点击上方视频画面可精准取色)
+              </p>
+            </div>
+          </div>
+
+          <!-- 调色板 -->
+          <div class="palette-section">
+            <div class="palette-controls">
+              <h2 style="font-size: 1.2rem; text-transform: uppercase">智能调色板</h2>
+              <div style="display: flex; align-items: center; gap: 10px">
+                <label style="font-size: 0.75rem">数量:</label>
+                <select
+                  id="colorCount"
+                  style="
+                    background: #1a1a24;
+                    color: #fff;
+                    border: 1px solid var(--border-color);
+                    padding: 5px;
+                  "
+                >
+                  <option value="5">5 色</option>
+                  <option value="8" selected>8 色</option>
+                  <option value="12">12 色</option>
+                  <option value="16">16 色</option>
+                </select>
+              </div>
+            </div>
+            <div class="palette-grid" id="paletteGrid">
+              <!-- 自动生成 -->
+            </div>
+            <div style="display: flex; gap: 15px; margin-top: 25px">
+              <button class="btn btn-primary" id="btnExportCSS">导出 CSS 变量</button>
+              <button class="btn btn-outline" id="btnExportJSON">导出 JSON</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SEO 内容 -->
+        <section
+          style="margin-top: 50px; border-top: 2px solid var(--border-color); padding-top: 40px"
+        >
+          <h2 style="font-size: 1.8rem; margin-bottom: 25px; color: var(--primary-color)">
+            深度解析：如何利用颜色提取器构建完美的 UI 配色方案？
+          </h2>
+          <article style="font-size: 1rem; color: var(--text-main); line-height: 1.8">
+            <p>
+              在 UI 设计和前端开发中，
+              <strong>颜色提取</strong>
+              （Color Extraction）不仅是简单的获取一个 HEX
+              码，更是理解视觉氛围、建立品牌一致性的核心步骤。WebUtils
+              的这款工具不仅能实现像素级的“吸管取色”，更采用了先进的聚类算法，帮助您从复杂的摄影或设计作品中抽离出最具代表性的调色板。
+            </p>
+
+            <h3 style="margin: 25px 0 15px; color: var(--accent-yellow); text-transform: uppercase">
+              1. 什么是 K-Means 聚类提取算法？
+            </h3>
+            <p>
+              普通的取色工具可能只是随机抓取几个像素点，而我们的工具在后端（实际上是您的浏览器前端）运行了
+              <strong>K-Means 聚类算法</strong>
+              。该算法会将图片中数百万个像素映射到三维色彩空间（RGB 或
+              Lab），通过不断迭代寻找色彩分布的“质心”。这意味着提取出的 8
+              个颜色不仅是图片中出现的，更是代表了图片整体色调、饱和度和亮度的核心色彩组合。
+            </p>
+
+            <div class="ad-placeholder" style="margin: 30px 0">
+              Advertisement - Mid-Content Support
+            </div>
+
+            <h3 style="margin: 25px 0 15px; color: var(--accent-yellow); text-transform: uppercase">
+              2. 从图片到 CSS：开发者的捷径
+            </h3>
+            <p>
+              当您从一张风景照或参考稿中获取了灵感，如何将其转化为代码？我们的工具提供了“导出 CSS
+              变量”功能。它会自动生成一套符合命名规范的
+              <code>:root</code>
+              变量，如
+              <code>--primary-color</code>
+              、
+              <code>--accent-color</code>
+              等。您可以直接将其粘贴到项目的全局样式表中，瞬间建立起一套基于自然灵感的视觉系统。
+            </p>
+
+            <h3 style="margin: 25px 0 15px; color: var(--accent-yellow); text-transform: uppercase">
+              3. 隐私与性能：本地处理的优势
+            </h3>
+            <p>
+              图片通常包含大量的元数据和敏感视觉信息。传统的在线工具需要将图片上传到服务器进行处理，这既消耗带宽又存在泄露风险。WebUtils
+              采用
+              <strong>HTML5 Canvas API</strong>
+              在您的浏览器内存中解析图像数据。这意味着无论图片多大，处理速度仅取决于您的 CPU
+              性能，且您的图片绝对不会离开您的电脑。
+            </p>
+
+            <h3 style="margin: 25px 0 15px; color: var(--accent-yellow); text-transform: uppercase">
+              4. 常见问题 (FAQ)
+            </h3>
+            <div
+              style="
+                background: #1a1a24;
+                padding: 20px;
+                border-left: 5px solid var(--primary-color);
+                margin-bottom: 20px;
+              "
+            >
+              <p>
+                <strong>问：为什么提取出的颜色看起来比图片灰暗？</strong>
+                <br />
+                答：算法计算的是颜色区域的平均值。如果图片中有很多细微的噪点或渐变，主色调可能会偏向于中值色。您可以尝试通过点击图片手动选取更鲜艳的特定点。
+              </p>
+            </div>
+            <div
+              style="
+                background: #1a1a24;
+                padding: 20px;
+                border-left: 5px solid var(--accent-yellow);
+              "
+            >
+              <p>
+                <strong>问：支持从网页 URL 提取吗？</strong>
+                <br />
+                答：受限于浏览器的跨域安全策略（CORS），目前仅支持本地上传或拖拽图片。这是为了保护您的浏览器不被恶意脚本利用。
+              </p>
+            </div>
+          </article>
+        </section>
+      </div>
+
+      <aside class="sidebar-section">
+        <div class="article-card">
+          <h2>使用技巧</h2>
+          <ul>
+            <li>
+              <strong>精准捕捉：</strong>
+              将鼠标移至左侧图片上方，点击任意位置即可更新右侧的取色框。
+            </li>
+            <li>
+              <strong>一键复制：</strong>
+              点击颜色卡片或 HEX/RGB 数值框，系统会自动复制到剪贴板。
+            </li>
+            <li>
+              <strong>动态调整：</strong>
+              修改右侧的“数量”下拉框，可以生成不同复杂度的调色板。
+            </li>
           </ul>
         </div>
+
+        <div class="ad-placeholder" style="min-height: 250px">Banner Ad - Sidebar</div>
+
+        <div class="article-card">
+          <h2>推荐工具</h2>
+          <ul>
+            <li>
+              <a href="base64-image.html" style="color: var(--primary-color)">图片转 Base64 编码</a>
+            </li>
+            <li>
+              <a href="image-compressor.html" style="color: var(--primary-color)">图片质量压缩</a>
+            </li>
+            <li>
+              <a href="svg-render.html" style="color: var(--primary-color)">SVG 代码预览器</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="article-card" style="border-color: var(--accent-yellow)">
+          <h2>配色小贴士</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted)">
+            遵循 60-30-10 原则：主色占 60%，辅助色占 30%，点缀色（强调色）占
+            10%，能让您的设计更平衡。
+          </p>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3>关于 WebUtils</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem">
+              WebUtils 专注于提供高效、安全、充满设计感的 Web
+              开发者工具。每一个工具都力求极致的简单与强大。
+            </p>
+          </div>
+          <div class="footer-section">
+            <h3>快速链接</h3>
+            <ul>
+              <li><a href="../../index.html">返回首页</a></li>
+              <li>
+                <a href="https://github.com/chicogong/html-tools" target="_blank">获取源码</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div
+          style="
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            text-align: center;
+            color: #555;
+            font-size: 0.8rem;
+          "
+        >
+          &copy; 2024 WebUtils - 赋能全球开发者
+        </div>
       </div>
-      <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #333; text-align: center; color: #555; font-size: 0.8rem;">
-        &copy; 2024 WebUtils - 赋能全球开发者
-      </div>
-    </div>
-  </footer>
+    </footer>
 
-  <canvas id="canvas"></canvas>
+    <canvas id="canvas"></canvas>
 
-  <script>
-    const dropZone = document.getElementById('dropZone');
-    const fileInput = document.getElementById('fileInput');
-    const mainContent = document.getElementById('mainContent');
-    const previewImg = document.getElementById('previewImg');
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    const pickedSwatch = document.getElementById('pickedSwatch');
-    const hexVal = document.getElementById('hexVal');
-    const rgbVal = document.getElementById('rgbVal');
-    const paletteGrid = document.getElementById('paletteGrid');
-    const colorCountSelect = document.getElementById('colorCount');
-    const loadingOverlay = document.getElementById('loadingOverlay');
+    <script>
+      const dropZone = document.getElementById("dropZone");
+      const fileInput = document.getElementById("fileInput");
+      const mainContent = document.getElementById("mainContent");
+      const previewImg = document.getElementById("previewImg");
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+      const pickedSwatch = document.getElementById("pickedSwatch");
+      const hexVal = document.getElementById("hexVal");
+      const rgbVal = document.getElementById("rgbVal");
+      const paletteGrid = document.getElementById("paletteGrid");
+      const colorCountSelect = document.getElementById("colorCount");
+      const loadingOverlay = document.getElementById("loadingOverlay");
 
-    let currentImageData = null;
-    let extractedPalette = [];
+      let currentImageData = null;
+      let extractedPalette = [];
 
-    // 1. 文件处理
-    fileInput.addEventListener('change', handleFile);
-    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
-    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-    dropZone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      dropZone.classList.remove('dragover');
-      const file = e.dataTransfer.files[0];
-      if (file) processImage(file);
-    });
+      // 1. 文件处理
+      fileInput.addEventListener("change", handleFile);
+      dropZone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropZone.classList.add("dragover");
+      });
+      dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragover"));
+      dropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropZone.classList.remove("dragover");
+        const file = e.dataTransfer.files[0];
+        if (file) processImage(file);
+      });
 
-    function handleFile(e) {
-      const file = e.target.files[0];
-      if (file) processImage(file);
-    }
+      function handleFile(e) {
+        const file = e.target.files[0];
+        if (file) processImage(file);
+      }
 
-    function processImage(file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        previewImg.src = e.target.result;
-        previewImg.onload = () => {
-          mainContent.style.display = 'block';
-          dropZone.style.display = 'none';
-          analyzeImage();
+      function processImage(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          previewImg.src = e.target.result;
+          previewImg.onload = () => {
+            mainContent.style.display = "block";
+            dropZone.style.display = "none";
+            analyzeImage();
+          };
         };
-      };
-      reader.readAsDataURL(file);
-    }
-
-    // 2. 颜色分析 (K-Means 简化版)
-    async function analyzeImage() {
-      loadingOverlay.style.display = 'flex';
-      
-      // 等待 DOM 渲染
-      await new Promise(r => setTimeout(r, 50));
-
-      canvas.width = previewImg.naturalWidth;
-      canvas.height = previewImg.naturalHeight;
-      ctx.drawImage(previewImg, 0, 0);
-      currentImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-      const pixels = [];
-      const data = currentImageData.data;
-      // 采样以提高性能 (取 5000 个样点)
-      const step = Math.max(1, Math.floor(data.length / 4 / 5000));
-      for (let i = 0; i < data.length; i += 4 * step) {
-        if (data[i + 3] > 128) { // 忽略透明像素
-          pixels.push([data[i], data[i + 1], data[i + 2]]);
-        }
+        reader.readAsDataURL(file);
       }
 
-      const count = parseInt(colorCountSelect.value);
-      extractedPalette = kMeans(pixels, count);
-      renderPalette();
-      
-      loadingOverlay.style.display = 'none';
-    }
+      // 2. 颜色分析 (K-Means 简化版)
+      async function analyzeImage() {
+        loadingOverlay.style.display = "flex";
 
-    function kMeans(pixels, k, iterations = 5) {
-      if (pixels.length === 0) return [];
-      
-      // 初始化质心 (随机选择)
-      let centroids = [];
-      for (let i = 0; i < k; i++) {
-        centroids.push(pixels[Math.floor(Math.random() * pixels.length)]);
-      }
+        // 等待 DOM 渲染
+        await new Promise((r) => setTimeout(r, 50));
 
-      for (let iter = 0; iter < iterations; iter++) {
-        const clusters = Array.from({ length: k }, () => []);
-        
-        // 分配点到最近的质心
-        for (const p of pixels) {
-          let minDist = Infinity;
-          let idx = 0;
-          for (let i = 0; i < k; i++) {
-            const d = Math.hypot(p[0] - centroids[i][0], p[1] - centroids[i][1], p[2] - centroids[i][2]);
-            if (d < minDist) { minDist = d; idx = i; }
+        canvas.width = previewImg.naturalWidth;
+        canvas.height = previewImg.naturalHeight;
+        ctx.drawImage(previewImg, 0, 0);
+        currentImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+        const pixels = [];
+        const data = currentImageData.data;
+        // 采样以提高性能 (取 5000 个样点)
+        const step = Math.max(1, Math.floor(data.length / 4 / 5000));
+        for (let i = 0; i < data.length; i += 4 * step) {
+          if (data[i + 3] > 128) {
+            // 忽略透明像素
+            pixels.push([data[i], data[i + 1], data[i + 2]]);
           }
-          clusters[idx].push(p);
         }
 
-        // 重新计算质心
-        centroids = clusters.map((cluster, i) => {
-          if (cluster.length === 0) return centroids[i];
-          const sum = cluster.reduce((acc, p) => [acc[0] + p[0], acc[1] + p[1], acc[2] + p[2]], [0, 0, 0]);
-          return [Math.round(sum[0] / cluster.length), Math.round(sum[1] / cluster.length), Math.round(sum[2] / cluster.length)];
-        });
+        const count = parseInt(colorCountSelect.value);
+        extractedPalette = kMeans(pixels, count);
+        renderPalette();
+
+        loadingOverlay.style.display = "none";
       }
 
-      // 计算每个集群的占比
-      const total = pixels.length;
-      return centroids.map((c, i) => {
-        const hex = rgbToHex(c[0], c[1], c[2]);
-        // 简单计算占比 (实际分配时的点数)
-        return { hex, rgb: c };
-      }).filter((v, i, a) => a.findIndex(t => t.hex === v.hex) === i); // 去重
-    }
+      function kMeans(pixels, k, iterations = 5) {
+        if (pixels.length === 0) return [];
 
-    // 3. UI 渲染
-    function renderPalette() {
-      paletteGrid.innerHTML = '';
-      extractedPalette.forEach(color => {
-        const card = document.createElement('div');
-        card.className = 'color-card';
-        card.onclick = () => copyText(color.hex);
-        card.innerHTML = `
+        // 初始化质心 (随机选择)
+        let centroids = [];
+        for (let i = 0; i < k; i++) {
+          centroids.push(pixels[Math.floor(Math.random() * pixels.length)]);
+        }
+
+        for (let iter = 0; iter < iterations; iter++) {
+          const clusters = Array.from({ length: k }, () => []);
+
+          // 分配点到最近的质心
+          for (const p of pixels) {
+            let minDist = Infinity;
+            let idx = 0;
+            for (let i = 0; i < k; i++) {
+              const d = Math.hypot(
+                p[0] - centroids[i][0],
+                p[1] - centroids[i][1],
+                p[2] - centroids[i][2]
+              );
+              if (d < minDist) {
+                minDist = d;
+                idx = i;
+              }
+            }
+            clusters[idx].push(p);
+          }
+
+          // 重新计算质心
+          centroids = clusters.map((cluster, i) => {
+            if (cluster.length === 0) return centroids[i];
+            const sum = cluster.reduce(
+              (acc, p) => [acc[0] + p[0], acc[1] + p[1], acc[2] + p[2]],
+              [0, 0, 0]
+            );
+            return [
+              Math.round(sum[0] / cluster.length),
+              Math.round(sum[1] / cluster.length),
+              Math.round(sum[2] / cluster.length)
+            ];
+          });
+        }
+
+        // 计算每个集群的占比
+        const total = pixels.length;
+        return centroids
+          .map((c, i) => {
+            const hex = rgbToHex(c[0], c[1], c[2]);
+            // 简单计算占比 (实际分配时的点数)
+            return { hex, rgb: c };
+          })
+          .filter((v, i, a) => a.findIndex((t) => t.hex === v.hex) === i); // 去重
+      }
+
+      // 3. UI 渲染
+      function renderPalette() {
+        paletteGrid.innerHTML = "";
+        extractedPalette.forEach((color) => {
+          const card = document.createElement("div");
+          card.className = "color-card";
+          card.onclick = () => copyText(color.hex);
+          card.innerHTML = `
           <div class="swatch" style="background: ${color.hex}"></div>
           <span class="card-hex">${color.hex.toUpperCase()}</span>
         `;
-        paletteGrid.appendChild(card);
-      });
-    }
-
-    // 精准取色
-    previewImg.addEventListener('click', (e) => {
-      const rect = previewImg.getBoundingClientRect();
-      const x = Math.floor((e.clientX - rect.left) / rect.width * canvas.width);
-      const y = Math.floor((e.clientY - rect.top) / rect.height * canvas.height);
-      
-      const pixel = ctx.getImageData(x, y, 1, 1).data;
-      const hex = rgbToHex(pixel[0], pixel[1], pixel[2]);
-      const rgb = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
-      
-      pickedSwatch.style.background = hex;
-      hexVal.textContent = hex.toUpperCase();
-      rgbVal.textContent = rgb;
-    });
-
-    // 辅助函数
-    function rgbToHex(r, g, b) {
-      return "#" + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
-    }
-
-    window.copyText = (text) => {
-      navigator.clipboard.writeText(text);
-      // 简单提示
-      const originalHex = hexVal.textContent;
-      if (text === hexVal.textContent || text === rgbVal.textContent) {
-        const el = text === hexVal.textContent ? hexVal : rgbVal;
-        el.textContent = 'COPIED!';
-        setTimeout(() => el.textContent = text, 1000);
-      } else {
-        alert('已复制: ' + text);
+          paletteGrid.appendChild(card);
+        });
       }
-    };
 
-    colorCountSelect.addEventListener('change', analyzeImage);
+      // 精准取色
+      previewImg.addEventListener("click", (e) => {
+        const rect = previewImg.getBoundingClientRect();
+        const x = Math.floor(((e.clientX - rect.left) / rect.width) * canvas.width);
+        const y = Math.floor(((e.clientY - rect.top) / rect.height) * canvas.height);
 
-    // 导出
-    document.getElementById('btnExportCSS').onclick = () => {
-      const css = `:root {\n${extractedPalette.map((c, i) => `  --color-${i + 1}: ${c.hex};`).join('\n')}\n}`;
-      copyText(css);
-    };
+        const pixel = ctx.getImageData(x, y, 1, 1).data;
+        const hex = rgbToHex(pixel[0], pixel[1], pixel[2]);
+        const rgb = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
 
-    document.getElementById('btnExportJSON').onclick = () => {
-      const json = JSON.stringify(extractedPalette.map(c => c.hex), null, 2);
-      copyText(json);
-    };
+        pickedSwatch.style.background = hex;
+        hexVal.textContent = hex.toUpperCase();
+        rgbVal.textContent = rgb;
+      });
 
-  </script>
-</body>
+      // 辅助函数
+      function rgbToHex(r, g, b) {
+        return "#" + [r, g, b].map((x) => x.toString(16).padStart(2, "0")).join("");
+      }
+
+      window.copyText = (text) => {
+        navigator.clipboard.writeText(text);
+        // 简单提示
+        const originalHex = hexVal.textContent;
+        if (text === hexVal.textContent || text === rgbVal.textContent) {
+          const el = text === hexVal.textContent ? hexVal : rgbVal;
+          el.textContent = "COPIED!";
+          setTimeout(() => (el.textContent = text), 1000);
+        } else {
+          alert("已复制: " + text);
+        }
+      };
+
+      colorCountSelect.addEventListener("change", analyzeImage);
+
+      // 导出
+      document.getElementById("btnExportCSS").onclick = () => {
+        const css = `:root {\n${extractedPalette.map((c, i) => `  --color-${i + 1}: ${c.hex};`).join("\n")}\n}`;
+        copyText(css);
+      };
+
+      document.getElementById("btnExportJSON").onclick = () => {
+        const json = JSON.stringify(
+          extractedPalette.map((c) => c.hex),
+          null,
+          2
+        );
+        copyText(json);
+      };
+    </script>
+  </body>
 </html>

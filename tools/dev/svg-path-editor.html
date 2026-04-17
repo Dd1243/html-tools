@@ -1,647 +1,751 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN" data-theme="light">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SVG 路径编辑器 - 在线 SVG Path 绘图工具 - WebUtils</title>
-    <meta name="description" content="专业的在线 SVG 路径编辑器。支持可视化绘制 SVG 路径（M, L, C, Q, A 等指令），提供网格对齐、实时代码预览、多种导出格式（SVG, JSX, Android Vector）。适合前端开发与 UI 设计。">
-    <meta name="keywords" content="SVG路径编辑, SVG Path Editor, 在线SVG绘图, SVG代码生成, 矢量图编辑, 开发者工具, WebUtils">
-    <meta name="author" content="WebUtils">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://essays4u.net/tools/dev/svg-path-editor.html">
+    <meta
+      name="description"
+      content="专业的在线 SVG 路径编辑器。支持可视化绘制 SVG 路径（M, L, C, Q, A 等指令），提供网格对齐、实时代码预览、多种导出格式（SVG, JSX, Android Vector）。适合前端开发与 UI 设计。"
+    />
+    <meta
+      name="keywords"
+      content="SVG路径编辑, SVG Path Editor, 在线SVG绘图, SVG代码生成, 矢量图编辑, 开发者工具, WebUtils"
+    />
+    <meta name="author" content="WebUtils" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://essays4u.net/tools/dev/svg-path-editor.html" />
 
     <!-- Open Graph -->
-    <meta property="og:title" content="SVG 路径编辑器 - 在线 SVG Path 绘图工具 - WebUtils">
-    <meta property="og:description" content="专业的在线 SVG 路径编辑器。支持可视化绘制、网格对齐与多格式导出。">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://essays4u.net/tools/dev/svg-path-editor.html">
-    <meta property="og:image" content="https://essays4u.net/social-preview.png">
+    <meta property="og:title" content="SVG 路径编辑器 - 在线 SVG Path 绘图工具 - WebUtils" />
+    <meta
+      property="og:description"
+      content="专业的在线 SVG 路径编辑器。支持可视化绘制、网格对齐与多格式导出。"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://essays4u.net/tools/dev/svg-path-editor.html" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
     <style>
-        :root {
-            --primary-color: #3b82f6;
-            --bg-deep: #0a0a0f;
-            --bg-surface: #12121a;
-            --bg-card: #1a1a24;
-            --text-primary: #e8e8ed;
-            --text-secondary: #8888a0;
-            --border-subtle: #2a2a3a;
-            --radius-lg: 12px;
-            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-        }
+      :root {
+        --primary-color: #3b82f6;
+        --bg-deep: #0a0a0f;
+        --bg-surface: #12121a;
+        --bg-card: #1a1a24;
+        --text-primary: #e8e8ed;
+        --text-secondary: #8888a0;
+        --border-subtle: #2a2a3a;
+        --radius-lg: 12px;
+        --font-mono: "JetBrains Mono", "Fira Code", monospace;
+      }
 
-        [data-theme="light"] {
-            --bg-deep: #f8fafc;
-            --bg-surface: #ffffff;
-            --bg-card: #ffffff;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --border-subtle: #e2e8f0;
-        }
+      [data-theme="light"] {
+        --bg-deep: #f8fafc;
+        --bg-surface: #ffffff;
+        --bg-card: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border-subtle: #e2e8f0;
+      }
 
-        body {
-            background-color: var(--bg-deep);
-            color: var(--text-primary);
-            min-height: 100vh;
-        }
+      body {
+        background-color: var(--bg-deep);
+        color: var(--text-primary);
+        min-height: 100vh;
+      }
 
-        .container {
-            max-width: 1400px;
-            padding: 2rem;
-        }
+      .container {
+        max-width: 1400px;
+        padding: 2rem;
+      }
 
-        .tool-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
+      .tool-header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
 
-        .tool-header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, #3b82f6, #2dd4bf);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+      .tool-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, #3b82f6, #2dd4bf);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
 
+      .main-layout {
+        display: grid;
+        grid-template-columns: 350px 1fr 300px;
+        gap: 1.5rem;
+      }
+
+      @media (max-width: 1200px) {
         .main-layout {
-            display: grid;
-            grid-template-columns: 350px 1fr 300px;
-            gap: 1.5rem;
+          grid-template-columns: 300px 1fr;
         }
+        .right-panel {
+          grid-column: span 2;
+        }
+      }
 
-        @media (max-width: 1200px) {
-            .main-layout {
-                grid-template-columns: 300px 1fr;
-            }
-            .right-panel {
-                grid-column: span 2;
-            }
+      @media (max-width: 900px) {
+        .main-layout {
+          grid-template-columns: 1fr;
         }
+        .right-panel {
+          grid-column: span 1;
+        }
+      }
 
-        @media (max-width: 900px) {
-            .main-layout {
-                grid-template-columns: 1fr;
-            }
-            .right-panel {
-                grid-column: span 1;
-            }
-        }
+      .panel {
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-lg);
+        padding: 1.2rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
 
-        .panel {
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-lg);
-            padding: 1.2rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
+      .canvas-container {
+        background: white; /* Visual editor usually better on light background */
+        border: 1px solid var(--border-subtle);
+        border-radius: 8px;
+        position: relative;
+        aspect-ratio: 1/1;
+        overflow: hidden;
+        cursor: crosshair;
+      }
 
-        .canvas-container {
-            background: white; /* Visual editor usually better on light background */
-            border: 1px solid var(--border-subtle);
-            border-radius: 8px;
-            position: relative;
-            aspect-ratio: 1/1;
-            overflow: hidden;
-            cursor: crosshair;
-        }
+      .svg-canvas {
+        width: 100%;
+        height: 100%;
+      }
 
-        .svg-canvas {
-            width: 100%;
-            height: 100%;
-        }
+      .grid-layer {
+        pointer-events: none;
+      }
 
-        .grid-layer {
-            pointer-events: none;
-        }
+      .path-layer {
+        fill: none;
+        stroke: #3b82f6;
+        stroke-width: 2;
+      }
 
-        .path-layer {
-            fill: none;
-            stroke: #3b82f6;
-            stroke-width: 2;
-        }
+      .handle {
+        fill: white;
+        stroke: #3b82f6;
+        stroke-width: 2;
+        cursor: move;
+      }
 
-        .handle {
-            fill: white;
-            stroke: #3b82f6;
-            stroke-width: 2;
-            cursor: move;
-        }
+      .handle.control {
+        fill: #fbbf24;
+        stroke: #d97706;
+      }
 
-        .handle.control {
-            fill: #fbbf24;
-            stroke: #d97706;
-        }
+      .control-line {
+        stroke: #fbbf24;
+        stroke-width: 1;
+        stroke-dasharray: 4;
+      }
 
-        .control-line {
-            stroke: #fbbf24;
-            stroke-width: 1;
-            stroke-dasharray: 4;
-        }
+      .tool-btn {
+        width: 100%;
+        text-align: left;
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+      }
 
-        .tool-btn {
-            width: 100%;
-            text-align: left;
-            padding: 0.6rem 1rem;
-            font-size: 0.85rem;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-        }
+      .tool-btn.active {
+        background: var(--primary-color);
+        color: white;
+      }
 
-        .tool-btn.active {
-            background: var(--primary-color);
-            color: white;
-        }
+      .code-preview {
+        background: #1e1e1e;
+        color: #d4d4d4;
+        padding: 1rem;
+        border-radius: 8px;
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        white-space: pre-wrap;
+        word-break: break-all;
+        height: 200px;
+        overflow-y: auto;
+      }
 
-        .code-preview {
-            background: #1e1e1e;
-            color: #d4d4d4;
-            padding: 1rem;
-            border-radius: 8px;
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
-            white-space: pre-wrap;
-            word-break: break-all;
-            height: 200px;
-            overflow-y: auto;
-        }
+      .ads-container {
+        margin: 2rem 0;
+        min-height: 90px;
+        background: var(--bg-card);
+        border: 1px dashed var(--border-subtle);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-lg);
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+      }
 
-        .ads-container {
-            margin: 2rem 0;
-            min-height: 90px;
-            background: var(--bg-card);
-            border: 1px dashed var(--border-subtle);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: var(--radius-lg);
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-        }
+      .content-section {
+        background: var(--bg-card);
+        padding: 2.5rem;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-subtle);
+        line-height: 1.8;
+        margin-top: 3rem;
+      }
 
-        .content-section {
-            background: var(--bg-card);
-            padding: 2.5rem;
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border-subtle);
-            line-height: 1.8;
-            margin-top: 3rem;
-        }
+      .content-section h2 {
+        color: var(--primary-color);
+        margin-top: 2rem;
+      }
 
-        .content-section h2 {
-            color: var(--primary-color);
-            margin-top: 2rem;
-        }
+      .theme-toggle {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 1000;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+      }
 
-        .theme-toggle {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            z-index: 1000;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            cursor: pointer;
-        }
+      .coord-display {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.6);
+        color: white;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        pointer-events: none;
+      }
 
-        .coord-display {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            background: rgba(0,0,0,0.6);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            pointer-events: none;
-        }
+      .config-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+      }
 
-        .config-item {
-            display: flex;
-            flex-direction: column;
-            gap: 0.3rem;
-        }
+      .config-item label {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+      }
 
-        .config-item label {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-
-        .config-item input, .config-item select {
-            margin-bottom: 0;
-            padding: 4px 8px;
-            font-size: 0.85rem;
-        }
+      .config-item input,
+      .config-item select {
+        margin-bottom: 0;
+        padding: 4px 8px;
+        font-size: 0.85rem;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <nav aria-label="breadcrumb">
-            <ul>
-                <li><a href="/">首页</a></li>
-                <li><a href="/tools/dev/">开发者工具</a></li>
-                <li>SVG 路径编辑器</li>
-            </ul>
-        </nav>
+      <nav aria-label="breadcrumb">
+        <ul>
+          <li><a href="/">首页</a></li>
+          <li><a href="/tools/dev/">开发者工具</a></li>
+          <li>SVG 路径编辑器</li>
+        </ul>
+      </nav>
 
-        <header class="tool-header">
-            <h1>SVG 路径编辑器</h1>
-            <p>可视化绘制与生成 SVG Path 代码，支持复杂指令与多种导出格式</p>
-        </header>
+      <header class="tool-header">
+        <h1>SVG 路径编辑器</h1>
+        <p>可视化绘制与生成 SVG Path 代码，支持复杂指令与多种导出格式</p>
+      </header>
 
-        <div class="ads-container">
-            <!-- Google AdSense Placeholder -->
-            <span>广告位</span>
-        </div>
+      <div class="ads-container">
+        <!-- Google AdSense Placeholder -->
+        <span>广告位</span>
+      </div>
 
-        <div class="main-layout">
-            <!-- Left Panel: Tools -->
-            <aside class="panel">
-                <div style="font-weight:700">绘制工具</div>
-                <button class="tool-btn active" id="btn-move" onclick="setMode('move')">
-                    <i class="fas fa-mouse-pointer"></i> 选择 / 移动 (V)
-                </button>
-                <button class="tool-btn" id="btn-line" onclick="setMode('line')">
-                    <i class="fas fa-pen-nib"></i> 绘制直线 (L)
-                </button>
-                <button class="tool-btn" id="btn-cubic" onclick="setMode('cubic')">
-                    <i class="fas fa-bezier-curve"></i> 三次贝塞尔 (C)
-                </button>
-                <button class="tool-btn" id="btn-quad" onclick="setMode('quad')">
-                    <i class="fas fa-wave-square"></i> 二次贝塞尔 (Q)
-                </button>
+      <div class="main-layout">
+        <!-- Left Panel: Tools -->
+        <aside class="panel">
+          <div style="font-weight: 700">绘制工具</div>
+          <button class="tool-btn active" id="btn-move" onclick="setMode('move')">
+            <i class="fas fa-mouse-pointer"></i>
+            选择 / 移动 (V)
+          </button>
+          <button class="tool-btn" id="btn-line" onclick="setMode('line')">
+            <i class="fas fa-pen-nib"></i>
+            绘制直线 (L)
+          </button>
+          <button class="tool-btn" id="btn-cubic" onclick="setMode('cubic')">
+            <i class="fas fa-bezier-curve"></i>
+            三次贝塞尔 (C)
+          </button>
+          <button class="tool-btn" id="btn-quad" onclick="setMode('quad')">
+            <i class="fas fa-wave-square"></i>
+            二次贝塞尔 (Q)
+          </button>
 
-                <hr>
-                <div style="font-weight:700">常用操作</div>
-                <button class="outline secondary tool-btn" onclick="undo()">
-                    <i class="fas fa-undo"></i> 撤销 (Ctrl+Z)
-                </button>
-                <button class="outline secondary tool-btn" onclick="clearAll()">
-                    <i class="fas fa-trash-alt"></i> 清空画布
-                </button>
-                <button class="outline secondary tool-btn" onclick="toggleClosePath()">
-                    <i class="fas fa-vector-square"></i> 闭合 / 开启路径
-                </button>
+          <hr />
+          <div style="font-weight: 700">常用操作</div>
+          <button class="outline secondary tool-btn" onclick="undo()">
+            <i class="fas fa-undo"></i>
+            撤销 (Ctrl+Z)
+          </button>
+          <button class="outline secondary tool-btn" onclick="clearAll()">
+            <i class="fas fa-trash-alt"></i>
+            清空画布
+          </button>
+          <button class="outline secondary tool-btn" onclick="toggleClosePath()">
+            <i class="fas fa-vector-square"></i>
+            闭合 / 开启路径
+          </button>
 
-                <hr>
-                <div class="config-item">
-                    <label>画布大小 (ViewBox)</label>
-                    <input type="number" id="viewBoxSize" value="500" onchange="updateCanvasSize()">
-                </div>
-                <div class="config-item">
-                    <label><input type="checkbox" id="snapGrid" checked> 对齐网格 (10px)</label>
-                </div>
-            </aside>
+          <hr />
+          <div class="config-item">
+            <label>画布大小 (ViewBox)</label>
+            <input type="number" id="viewBoxSize" value="500" onchange="updateCanvasSize()" />
+          </div>
+          <div class="config-item">
+            <label>
+              <input type="checkbox" id="snapGrid" checked />
+              对齐网格 (10px)
+            </label>
+          </div>
+        </aside>
 
-            <!-- Center Panel: Canvas -->
-            <main class="panel" style="padding:0; overflow:hidden;">
-                <div class="canvas-container" id="canvasContainer">
-                    <svg class="svg-canvas" id="svgCanvas" viewBox="0 0 500 500">
-                        <defs>
-                            <pattern id="smallGrid" width="10" height="10" patternUnits="userSpaceOnUse">
-                                <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#eee" stroke-width="0.5"/>
-                            </pattern>
-                            <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
-                                <rect width="50" height="50" fill="url(#smallGrid)"/>
-                                <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#ddd" stroke-width="1"/>
-                            </pattern>
-                        </defs>
-                        <rect width="100%" height="100%" fill="url(#grid)" class="grid-layer" />
-                        <path id="pathEl" class="path-layer" d="" />
-                        <g id="handleLayer"></g>
-                    </svg>
-                    <div class="coord-display" id="coords">X: 0, Y: 0</div>
-                </div>
-            </main>
+        <!-- Center Panel: Canvas -->
+        <main class="panel" style="padding: 0; overflow: hidden">
+          <div class="canvas-container" id="canvasContainer">
+            <svg class="svg-canvas" id="svgCanvas" viewBox="0 0 500 500">
+              <defs>
+                <pattern id="smallGrid" width="10" height="10" patternUnits="userSpaceOnUse">
+                  <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#eee" stroke-width="0.5" />
+                </pattern>
+                <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+                  <rect width="50" height="50" fill="url(#smallGrid)" />
+                  <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#ddd" stroke-width="1" />
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#grid)" class="grid-layer" />
+              <path id="pathEl" class="path-layer" d="" />
+              <g id="handleLayer"></g>
+            </svg>
+            <div class="coord-display" id="coords">X: 0, Y: 0</div>
+          </div>
+        </main>
 
-            <!-- Right Panel: Export -->
-            <aside class="panel right-panel">
-                <div style="font-weight:700">导出代码</div>
-                <div class="config-item">
-                    <label>导出格式</label>
-                    <select id="exportFormat" onchange="updateExport()">
-                        <option value="svg">标准 SVG &lt;path&gt;</option>
-                        <option value="jsx">React (JSX)</option>
-                        <option value="android">Android Vector</option>
-                        <option value="raw">仅路径数据 (d=...)</option>
-                    </select>
-                </div>
-                <div class="code-preview" id="codePreview"></div>
-                <button class="primary" onclick="copyCode()"><i class="fas fa-copy"></i> 复制代码</button>
-                
-                <hr>
-                <div style="font-weight:700">路径属性</div>
-                <div class="config-item">
-                    <label>描边颜色</label>
-                    <input type="color" id="strokeColor" value="#3b82f6" onchange="updateStyle()">
-                </div>
-                <div class="config-item">
-                    <label>填充颜色</label>
-                    <div style="display:flex; gap:0.5rem">
-                        <input type="color" id="fillColor" value="#3b82f6" onchange="updateStyle()">
-                        <input type="checkbox" id="fillEnabled" onchange="updateStyle()"> 启用
-                    </div>
-                </div>
-                <div class="config-item">
-                    <label>描边宽度: <span id="strokeWidthVal">2</span>px</label>
-                    <input type="range" id="strokeWidth" min="1" max="20" value="2" oninput="updateStyle()">
-                </div>
-            </aside>
-        </div>
+        <!-- Right Panel: Export -->
+        <aside class="panel right-panel">
+          <div style="font-weight: 700">导出代码</div>
+          <div class="config-item">
+            <label>导出格式</label>
+            <select id="exportFormat" onchange="updateExport()">
+              <option value="svg">标准 SVG &lt;path&gt;</option>
+              <option value="jsx">React (JSX)</option>
+              <option value="android">Android Vector</option>
+              <option value="raw">仅路径数据 (d=...)</option>
+            </select>
+          </div>
+          <div class="code-preview" id="codePreview"></div>
+          <button class="primary" onclick="copyCode()">
+            <i class="fas fa-copy"></i>
+            复制代码
+          </button>
 
-        <article class="content-section">
-            <h2>SVG 路径编辑器：让矢量绘图变得简单</h2>
-            <p>SVG Path 是 Web 图形的核心，能够描述从简单的直线到极其复杂的图标和插画。然而，手写 `M 10 10 L 50 50 C 20 ...` 这样的路径数据对于人类来说几乎是不可能的。<strong>SVG 路径编辑器</strong> 为您提供了一个直观的视觉画布，让您可以像在专业设计软件中一样点击和拖拽，同时实时生成生产就绪的代码。</p>
+          <hr />
+          <div style="font-weight: 700">路径属性</div>
+          <div class="config-item">
+            <label>描边颜色</label>
+            <input type="color" id="strokeColor" value="#3b82f6" onchange="updateStyle()" />
+          </div>
+          <div class="config-item">
+            <label>填充颜色</label>
+            <div style="display: flex; gap: 0.5rem">
+              <input type="color" id="fillColor" value="#3b82f6" onchange="updateStyle()" />
+              <input type="checkbox" id="fillEnabled" onchange="updateStyle()" />
+              启用
+            </div>
+          </div>
+          <div class="config-item">
+            <label>
+              描边宽度:
+              <span id="strokeWidthVal">2</span>
+              px
+            </label>
+            <input
+              type="range"
+              id="strokeWidth"
+              min="1"
+              max="20"
+              value="2"
+              oninput="updateStyle()"
+            />
+          </div>
+        </aside>
+      </div>
 
-            <h3>核心绘制模式详解</h3>
-            <ul>
-                <li><strong>直线 (Line - L):</strong> 最基础的绘图模式，点击两点即可连接。</li>
-                <li><strong>三次贝塞尔曲线 (Cubic Bezier - C):</strong> 通过两个控制点来精确控制曲线的弧度，是绘制平滑曲线（如 Logo、圆润图标）的首选。</li>
-                <li><strong>二次贝塞尔曲线 (Quadratic Bezier - Q):</strong> 只有一个控制点，比三次贝塞尔更简单，适用于对称的弧线。</li>
-                <li><strong>闭合路径 (ClosePath - Z):</strong> 自动将路径的最后一个点连接回起点，形成封闭图形以支持填充（Fill）。</li>
-            </ul>
+      <article class="content-section">
+        <h2>SVG 路径编辑器：让矢量绘图变得简单</h2>
+        <p>
+          SVG Path 是 Web 图形的核心，能够描述从简单的直线到极其复杂的图标和插画。然而，手写 `M 10
+          10 L 50 50 C 20 ...` 这样的路径数据对于人类来说几乎是不可能的。
+          <strong>SVG 路径编辑器</strong>
+          为您提供了一个直观的视觉画布，让您可以像在专业设计软件中一样点击和拖拽，同时实时生成生产就绪的代码。
+        </p>
 
-            <h3>高级功能与技巧</h3>
-            <p>1. <strong>对齐网格：</strong> 开启此功能后，所有点将自动吸附到 10px 的网格交叉点上。这对于制作规范的 UI 图标非常有用。</p>
-            <p>2. <strong>多种导出支持：</strong> 
-                - <strong>JSX:</strong> 直接生成的代码可以复制到 React 组件中，自动处理属性命名（如 `strokeWidth`）。
-                - <strong>Android Vector:</strong> 为 Android 开发者生成 `pathData` 格式。
-            </p>
-            <p>3. <strong>快捷键操作：</strong> 使用 `V` 切换选择工具，`L` 切换直线工具，`Ctrl+Z` 快速撤销错误操作。</p>
+        <h3>核心绘制模式详解</h3>
+        <ul>
+          <li>
+            <strong>直线 (Line - L):</strong>
+            最基础的绘图模式，点击两点即可连接。
+          </li>
+          <li>
+            <strong>三次贝塞尔曲线 (Cubic Bezier - C):</strong>
+            通过两个控制点来精确控制曲线的弧度，是绘制平滑曲线（如 Logo、圆润图标）的首选。
+          </li>
+          <li>
+            <strong>二次贝塞尔曲线 (Quadratic Bezier - Q):</strong>
+            只有一个控制点，比三次贝塞尔更简单，适用于对称的弧线。
+          </li>
+          <li>
+            <strong>闭合路径 (ClosePath - Z):</strong>
+            自动将路径的最后一个点连接回起点，形成封闭图形以支持填充（Fill）。
+          </li>
+        </ul>
 
-            <h3>为什么选择在线编辑器？</h3>
-            <p>传统的绘图软件（如 AI 或 Figma）在导出 SVG 时往往会产生大量冗余的标签和属性。本编辑器专注于 **Path 纯净度**，生成的代码极其精简，非常适合直接嵌入到 HTML 或 CSS 变量中，从而提升网页性能。</p>
-        </article>
+        <h3>高级功能与技巧</h3>
+        <p>
+          1.
+          <strong>对齐网格：</strong>
+          开启此功能后，所有点将自动吸附到 10px 的网格交叉点上。这对于制作规范的 UI 图标非常有用。
+        </p>
+        <p>
+          2.
+          <strong>多种导出支持：</strong>
+          -
+          <strong>JSX:</strong>
+          直接生成的代码可以复制到 React 组件中，自动处理属性命名（如 `strokeWidth`）。 -
+          <strong>Android Vector:</strong>
+          为 Android 开发者生成 `pathData` 格式。
+        </p>
+        <p>
+          3.
+          <strong>快捷键操作：</strong>
+          使用 `V` 切换选择工具，`L` 切换直线工具，`Ctrl+Z` 快速撤销错误操作。
+        </p>
+
+        <h3>为什么选择在线编辑器？</h3>
+        <p>
+          传统的绘图软件（如 AI 或 Figma）在导出 SVG
+          时往往会产生大量冗余的标签和属性。本编辑器专注于 **Path
+          纯净度**，生成的代码极其精简，非常适合直接嵌入到 HTML 或 CSS 变量中，从而提升网页性能。
+        </p>
+      </article>
     </div>
 
     <div class="theme-toggle secondary" onclick="toggleTheme()">
-        <i class="fas fa-moon" id="themeIcon"></i>
+      <i class="fas fa-moon" id="themeIcon"></i>
     </div>
 
     <script>
-        let mode = 'move';
-        let points = []; // [{x, y, type, c1x, c1y, c2x, c2y}]
-        let selectedPointIndex = -1;
-        let selectedHandleType = null; // 'point', 'c1', 'c2'
-        let history = [];
-        let isClosed = false;
+      let mode = "move";
+      let points = []; // [{x, y, type, c1x, c1y, c2x, c2y}]
+      let selectedPointIndex = -1;
+      let selectedHandleType = null; // 'point', 'c1', 'c2'
+      let history = [];
+      let isClosed = false;
 
-        const canvas = document.getElementById('svgCanvas');
-        const handleLayer = document.getElementById('handleLayer');
-        const pathEl = document.getElementById('pathEl');
-        const codePreview = document.getElementById('codePreview');
-        const coords = document.getElementById('coords');
+      const canvas = document.getElementById("svgCanvas");
+      const handleLayer = document.getElementById("handleLayer");
+      const pathEl = document.getElementById("pathEl");
+      const codePreview = document.getElementById("codePreview");
+      const coords = document.getElementById("coords");
 
-        // Theme
-        function toggleTheme() {
-            const html = document.documentElement;
-            const icon = document.getElementById('themeIcon');
-            const isDark = html.getAttribute('data-theme') === 'dark';
-            const newTheme = isDark ? 'light' : 'dark';
-            html.setAttribute('data-theme', newTheme);
-            icon.className = isDark ? 'fas fa-moon' : 'fas fa-sun';
-            localStorage.setItem('theme', newTheme);
+      // Theme
+      function toggleTheme() {
+        const html = document.documentElement;
+        const icon = document.getElementById("themeIcon");
+        const isDark = html.getAttribute("data-theme") === "dark";
+        const newTheme = isDark ? "light" : "dark";
+        html.setAttribute("data-theme", newTheme);
+        icon.className = isDark ? "fas fa-moon" : "fas fa-sun";
+        localStorage.setItem("theme", newTheme);
+      }
+
+      // Init
+      (function () {
+        const savedTheme = localStorage.getItem("theme") || "light";
+        document.documentElement.setAttribute("data-theme", savedTheme);
+        document.getElementById("themeIcon").className =
+          savedTheme === "dark" ? "fas fa-sun" : "fas fa-moon";
+      })();
+
+      function setMode(newMode) {
+        mode = newMode;
+        document.querySelectorAll(".tool-btn").forEach((b) => b.classList.remove("active"));
+        document.getElementById("btn-" + newMode).classList.add("active");
+      }
+
+      function getMousePos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.viewBox.baseVal.width / rect.width;
+        const scaleY = canvas.viewBox.baseVal.height / rect.height;
+        let x = (e.clientX - rect.left) * scaleX;
+        let y = (e.clientY - rect.top) * scaleY;
+
+        if (document.getElementById("snapGrid").checked) {
+          x = Math.round(x / 10) * 10;
+          y = Math.round(y / 10) * 10;
         }
+        return { x, y };
+      }
 
-        // Init
-        (function() {
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            document.getElementById('themeIcon').className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-        })();
+      canvas.addEventListener("mousemove", (e) => {
+        const pos = getMousePos(e);
+        coords.innerText = `X: ${Math.round(pos.x)}, Y: ${Math.round(pos.y)}`;
 
-        function setMode(newMode) {
-            mode = newMode;
-            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('btn-' + newMode).classList.add('active');
-        }
-
-        function getMousePos(e) {
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.viewBox.baseVal.width / rect.width;
-            const scaleY = canvas.viewBox.baseVal.height / rect.height;
-            let x = (e.clientX - rect.left) * scaleX;
-            let y = (e.clientY - rect.top) * scaleY;
-            
-            if (document.getElementById('snapGrid').checked) {
-                x = Math.round(x / 10) * 10;
-                y = Math.round(y / 10) * 10;
+        if (mode === "move" && selectedPointIndex !== -1) {
+          const p = points[selectedPointIndex];
+          if (selectedHandleType === "point") {
+            const dx = pos.x - p.x;
+            const dy = pos.y - p.y;
+            p.x = pos.x;
+            p.y = pos.y;
+            if (p.c1x !== undefined) {
+              p.c1x += dx;
+              p.c1y += dy;
             }
-            return { x, y };
+            if (p.c2x !== undefined) {
+              p.c2x += dx;
+              p.c2y += dy;
+            }
+          } else if (selectedHandleType === "c1") {
+            p.c1x = pos.x;
+            p.c1y = pos.y;
+          } else if (selectedHandleType === "c2") {
+            p.c2x = pos.x;
+            p.c2y = pos.y;
+          }
+          updatePath();
+        }
+      });
+
+      canvas.addEventListener("mousedown", (e) => {
+        const pos = getMousePos(e);
+        saveHistory();
+
+        if (mode === "move") {
+          // Check if clicking a handle
+          for (let i = 0; i < points.length; i++) {
+            const p = points[i];
+            if (dist(pos.x, pos.y, p.x, p.y) < 10) {
+              selectedPointIndex = i;
+              selectedHandleType = "point";
+              return;
+            }
+            if (p.c1x !== undefined && dist(pos.x, pos.y, p.c1x, p.c1y) < 8) {
+              selectedPointIndex = i;
+              selectedHandleType = "c1";
+              return;
+            }
+            if (p.c2x !== undefined && dist(pos.x, pos.y, p.c2x, p.c2y) < 8) {
+              selectedPointIndex = i;
+              selectedHandleType = "c2";
+              return;
+            }
+          }
+          selectedPointIndex = -1;
+        } else {
+          // Adding a point
+          let newPoint = { x: pos.x, y: pos.y, type: mode };
+          if (mode === "cubic") {
+            newPoint.c1x = pos.x - 30;
+            newPoint.c1y = pos.y - 30;
+            newPoint.c2x = pos.x - 60;
+            newPoint.c2y = pos.y;
+          } else if (mode === "quad") {
+            newPoint.c1x = pos.x - 30;
+            newPoint.c1y = pos.y - 30;
+          }
+          points.push(newPoint);
+          updatePath();
+        }
+      });
+
+      window.addEventListener("mouseup", () => {
+        selectedPointIndex = -1;
+        selectedHandleType = null;
+      });
+
+      function dist(x1, y1, x2, y2) {
+        return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2);
+      }
+
+      function updatePath() {
+        if (points.length === 0) {
+          pathEl.setAttribute("d", "");
+          handleLayer.innerHTML = "";
+          updateExport();
+          return;
         }
 
-        canvas.addEventListener('mousemove', e => {
-            const pos = getMousePos(e);
-            coords.innerText = `X: ${Math.round(pos.x)}, Y: ${Math.round(pos.y)}`;
-            
-            if (mode === 'move' && selectedPointIndex !== -1) {
-                const p = points[selectedPointIndex];
-                if (selectedHandleType === 'point') {
-                    const dx = pos.x - p.x;
-                    const dy = pos.y - p.y;
-                    p.x = pos.x;
-                    p.y = pos.y;
-                    if (p.c1x !== undefined) { p.c1x += dx; p.c1y += dy; }
-                    if (p.c2x !== undefined) { p.c2x += dx; p.c2y += dy; }
-                } else if (selectedHandleType === 'c1') {
-                    p.c1x = pos.x; p.c1y = pos.y;
-                } else if (selectedHandleType === 'c2') {
-                    p.c2x = pos.x; p.c2y = pos.y;
-                }
-                updatePath();
-            }
+        let d = `M ${points[0].x} ${points[0].y}`;
+        for (let i = 1; i < points.length; i++) {
+          const p = points[i];
+          if (p.type === "line") d += ` L ${p.x} ${p.y}`;
+          else if (p.type === "cubic")
+            d += ` C ${p.c1x} ${p.c1y}, ${p.c2x} ${p.c2y}, ${p.x} ${p.y}`;
+          else if (p.type === "quad") d += ` Q ${p.c1x} ${p.c1y}, ${p.x} ${p.y}`;
+        }
+        if (isClosed) d += " Z";
+        pathEl.setAttribute("d", d);
+        renderHandles();
+        updateExport();
+      }
+
+      function renderHandles() {
+        handleLayer.innerHTML = "";
+        points.forEach((p, i) => {
+          // Main point
+          const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          circle.setAttribute("cx", p.x);
+          circle.setAttribute("cy", p.y);
+          circle.setAttribute("r", 6);
+          circle.setAttribute("class", "handle");
+          handleLayer.appendChild(circle);
+
+          // Control points
+          if (p.c1x !== undefined) {
+            addControlHandle(p.x, p.y, p.c1x, p.c1y);
+          }
+          if (p.c2x !== undefined) {
+            addControlHandle(p.x, p.y, p.c2x, p.c2y);
+          }
         });
+      }
 
-        canvas.addEventListener('mousedown', e => {
-            const pos = getMousePos(e);
-            saveHistory();
+      function addControlHandle(px, py, cx, cy) {
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", px);
+        line.setAttribute("y1", py);
+        line.setAttribute("x2", cx);
+        line.setAttribute("y2", cy);
+        line.setAttribute("class", "control-line");
+        handleLayer.appendChild(line);
 
-            if (mode === 'move') {
-                // Check if clicking a handle
-                for (let i = 0; i < points.length; i++) {
-                    const p = points[i];
-                    if (dist(pos.x, pos.y, p.x, p.y) < 10) {
-                        selectedPointIndex = i; selectedHandleType = 'point'; return;
-                    }
-                    if (p.c1x !== undefined && dist(pos.x, pos.y, p.c1x, p.c1y) < 8) {
-                        selectedPointIndex = i; selectedHandleType = 'c1'; return;
-                    }
-                    if (p.c2x !== undefined && dist(pos.x, pos.y, p.c2x, p.c2y) < 8) {
-                        selectedPointIndex = i; selectedHandleType = 'c2'; return;
-                    }
-                }
-                selectedPointIndex = -1;
-            } else {
-                // Adding a point
-                let newPoint = { x: pos.x, y: pos.y, type: mode };
-                if (mode === 'cubic') {
-                    newPoint.c1x = pos.x - 30; newPoint.c1y = pos.y - 30;
-                    newPoint.c2x = pos.x - 60; newPoint.c2y = pos.y;
-                } else if (mode === 'quad') {
-                    newPoint.c1x = pos.x - 30; newPoint.c1y = pos.y - 30;
-                }
-                points.push(newPoint);
-                updatePath();
-            }
-        });
+        const ctrl = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        ctrl.setAttribute("cx", cx);
+        ctrl.setAttribute("cy", cy);
+        ctrl.setAttribute("r", 5);
+        ctrl.setAttribute("class", "handle control");
+        handleLayer.appendChild(ctrl);
+      }
 
-        window.addEventListener('mouseup', () => {
-            selectedPointIndex = -1;
-            selectedHandleType = null;
-        });
+      function updateExport() {
+        const d = pathEl.getAttribute("d");
+        const format = document.getElementById("exportFormat").value;
+        const stroke = document.getElementById("strokeColor").value;
+        const fill = document.getElementById("fillEnabled").checked
+          ? document.getElementById("fillColor").value
+          : "none";
+        const width = document.getElementById("strokeWidth").value;
 
-        function dist(x1, y1, x2, y2) {
-            return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2);
+        let code = "";
+        if (format === "svg") {
+          code = `<path d="${d}" stroke="${stroke}" fill="${fill}" stroke-width="${width}" />`;
+        } else if (format === "jsx") {
+          code = `<path d="${d}" stroke="${stroke}" fill="${fill}" strokeWidth={${width}} />`;
+        } else if (format === "android") {
+          code = `<path android:fillColor="${fill}" android:strokeColor="${stroke}" android:strokeWidth="${width}" android:pathData="${d}" />`;
+        } else {
+          code = d;
         }
+        codePreview.innerText = code;
+      }
 
-        function updatePath() {
-            if (points.length === 0) {
-                pathEl.setAttribute('d', '');
-                handleLayer.innerHTML = '';
-                updateExport();
-                return;
-            }
+      function updateStyle() {
+        const stroke = document.getElementById("strokeColor").value;
+        const fill = document.getElementById("fillEnabled").checked
+          ? document.getElementById("fillColor").value
+          : "none";
+        const width = document.getElementById("strokeWidth").value;
 
-            let d = `M ${points[0].x} ${points[0].y}`;
-            for (let i = 1; i < points.length; i++) {
-                const p = points[i];
-                if (p.type === 'line') d += ` L ${p.x} ${p.y}`;
-                else if (p.type === 'cubic') d += ` C ${p.c1x} ${p.c1y}, ${p.c2x} ${p.c2y}, ${p.x} ${p.y}`;
-                else if (p.type === 'quad') d += ` Q ${p.c1x} ${p.c1y}, ${p.x} ${p.y}`;
-            }
-            if (isClosed) d += ' Z';
-            pathEl.setAttribute('d', d);
-            renderHandles();
-            updateExport();
-        }
+        pathEl.setAttribute("stroke", stroke);
+        pathEl.setAttribute("fill", fill);
+        pathEl.setAttribute("stroke-width", width);
+        document.getElementById("strokeWidthVal").innerText = width;
+        updateExport();
+      }
 
-        function renderHandles() {
-            handleLayer.innerHTML = '';
-            points.forEach((p, i) => {
-                // Main point
-                const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                circle.setAttribute('cx', p.x); circle.setAttribute('cy', p.y);
-                circle.setAttribute('r', 6); circle.setAttribute('class', 'handle');
-                handleLayer.appendChild(circle);
+      function updateCanvasSize() {
+        const size = document.getElementById("viewBoxSize").value;
+        canvas.setAttribute("viewBox", `0 0 ${size} ${size}`);
+      }
 
-                // Control points
-                if (p.c1x !== undefined) {
-                    addControlHandle(p.x, p.y, p.c1x, p.c1y);
-                }
-                if (p.c2x !== undefined) {
-                    addControlHandle(p.x, p.y, p.c2x, p.c2y);
-                }
-            });
-        }
-
-        function addControlHandle(px, py, cx, cy) {
-            const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-            line.setAttribute('x1', px); line.setAttribute('y1', py);
-            line.setAttribute('x2', cx); line.setAttribute('y2', cy);
-            line.setAttribute('class', 'control-line');
-            handleLayer.appendChild(line);
-
-            const ctrl = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            ctrl.setAttribute('cx', cx); ctrl.setAttribute('cy', cy);
-            ctrl.setAttribute('r', 5); ctrl.setAttribute('class', 'handle control');
-            handleLayer.appendChild(ctrl);
-        }
-
-        function updateExport() {
-            const d = pathEl.getAttribute('d');
-            const format = document.getElementById('exportFormat').value;
-            const stroke = document.getElementById('strokeColor').value;
-            const fill = document.getElementById('fillEnabled').checked ? document.getElementById('fillColor').value : 'none';
-            const width = document.getElementById('strokeWidth').value;
-
-            let code = "";
-            if (format === 'svg') {
-                code = `<path d="${d}" stroke="${stroke}" fill="${fill}" stroke-width="${width}" />`;
-            } else if (format === 'jsx') {
-                code = `<path d="${d}" stroke="${stroke}" fill="${fill}" strokeWidth={${width}} />`;
-            } else if (format === 'android') {
-                code = `<path android:fillColor="${fill}" android:strokeColor="${stroke}" android:strokeWidth="${width}" android:pathData="${d}" />`;
-            } else {
-                code = d;
-            }
-            codePreview.innerText = code;
-        }
-
-        function updateStyle() {
-            const stroke = document.getElementById('strokeColor').value;
-            const fill = document.getElementById('fillEnabled').checked ? document.getElementById('fillColor').value : 'none';
-            const width = document.getElementById('strokeWidth').value;
-            
-            pathEl.setAttribute('stroke', stroke);
-            pathEl.setAttribute('fill', fill);
-            pathEl.setAttribute('stroke-width', width);
-            document.getElementById('strokeWidthVal').innerText = width;
-            updateExport();
-        }
-
-        function updateCanvasSize() {
-            const size = document.getElementById('viewBoxSize').value;
-            canvas.setAttribute('viewBox', `0 0 ${size} ${size}`);
-        }
-
-        function toggleClosePath() {
-            isClosed = !isClosed;
-            updatePath();
-        }
-
-        function clearAll() {
-            if (confirm('清空画布？')) {
-                points = [];
-                isClosed = false;
-                updatePath();
-            }
-        }
-
-        function saveHistory() {
-            history.push(JSON.stringify({ points, isClosed }));
-            if (history.length > 20) history.shift();
-        }
-
-        function undo() {
-            if (history.length > 0) {
-                const state = JSON.parse(history.pop());
-                points = state.points;
-                isClosed = state.isClosed;
-                updatePath();
-            }
-        }
-
-        function copyCode() {
-            const text = codePreview.innerText;
-            navigator.clipboard.writeText(text).then(() => alert('代码已复制！'));
-        }
-
-        // Shortcuts
-        window.addEventListener('keydown', e => {
-            if (e.key === 'v' || e.key === 'V') setMode('move');
-            if (e.key === 'l' || e.key === 'L') setMode('line');
-            if (e.ctrlKey && e.key === 'z') { e.preventDefault(); undo(); }
-        });
-
-        // Initial Demo
-        points = [
-            { x: 100, y: 250, type: 'line' },
-            { x: 250, y: 100, type: 'cubic', c1x: 150, c1y: 100, c2x: 200, c2y: 50 },
-            { x: 400, y: 250, type: 'line' }
-        ];
+      function toggleClosePath() {
+        isClosed = !isClosed;
         updatePath();
-        updateStyle();
+      }
+
+      function clearAll() {
+        if (confirm("清空画布？")) {
+          points = [];
+          isClosed = false;
+          updatePath();
+        }
+      }
+
+      function saveHistory() {
+        history.push(JSON.stringify({ points, isClosed }));
+        if (history.length > 20) history.shift();
+      }
+
+      function undo() {
+        if (history.length > 0) {
+          const state = JSON.parse(history.pop());
+          points = state.points;
+          isClosed = state.isClosed;
+          updatePath();
+        }
+      }
+
+      function copyCode() {
+        const text = codePreview.innerText;
+        navigator.clipboard.writeText(text).then(() => alert("代码已复制！"));
+      }
+
+      // Shortcuts
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "v" || e.key === "V") setMode("move");
+        if (e.key === "l" || e.key === "L") setMode("line");
+        if (e.ctrlKey && e.key === "z") {
+          e.preventDefault();
+          undo();
+        }
+      });
+
+      // Initial Demo
+      points = [
+        { x: 100, y: 250, type: "line" },
+        { x: 250, y: 100, type: "cubic", c1x: 150, c1y: 100, c2x: 200, c2y: 50 },
+        { x: 400, y: 250, type: "line" }
+      ];
+      updatePath();
+      updateStyle();
     </script>
-</body>
+  </body>
 </html>

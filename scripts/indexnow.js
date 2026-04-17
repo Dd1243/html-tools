@@ -1,7 +1,7 @@
 /**
  * IndexNow Submission Script
  * This script notifies IndexNow-compatible search engines (Bing, Yandex, etc.) about website updates.
- * 
+ *
  * Usage:
  * node scripts/indexnow.js [url1] [url2] ...
  * If no URLs are provided, it notifies about the home page.
@@ -11,10 +11,7 @@ const HOST = 'essays4u.net';
 const KEY = 'e845f78234854930b593635741639f72';
 const KEY_LOCATION = `https://${HOST}/${KEY}.txt`;
 
-const SEARCH_ENGINES = [
-  'https://www.bing.com/indexnow',
-  'https://yandex.com/indexnow'
-];
+const SEARCH_ENGINES = ['https://www.bing.com/indexnow', 'https://yandex.com/indexnow'];
 
 async function submitIndexNow(urlList) {
   const payload = {
@@ -54,7 +51,9 @@ if (urls.length === 0) {
   urls = [`https://${HOST}/`];
 } else {
   // Ensure URLs are absolute
-  urls = urls.map(u => u.startsWith('http') ? u : `https://${HOST}${u.startsWith('/') ? '' : '/'}${u}`);
+  urls = urls.map((u) =>
+    u.startsWith('http') ? u : `https://${HOST}${u.startsWith('/') ? '' : '/'}${u}`
+  );
 }
 
 submitIndexNow(urls);

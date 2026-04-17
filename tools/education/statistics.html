@@ -1,77 +1,80 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>统计学计算器 - WebUtils</title>
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="统计学计算器 - WebUtils" />
-    <meta name="keywords" content="statistics,education,tools,webutils" />
+    <meta
+      name="description"
+      content="在线统计学计算器，支持快速计算均值、中位数、众数、方差、标准差、四分位数，并生成频率分布表和直方图。"
+    />
+    <meta name="keywords" content="统计学计算器,均值,方差,标准差,数据分析,statistics,直方图" />
     <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/education/statistics.html" />
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="统计学计算器 - WebUtils" />
-    <meta property="og:description" content="统计学计算器 - WebUtils" />
-    <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://essays4u.net/tools/education/statistics.html"
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600&display=swap"
+      rel="stylesheet"
     />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="640" />
-    <meta property="og:image:type" content="image/png" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="统计学计算器 - WebUtils" />
-    <meta name="twitter:description" content="统计学计算器 - WebUtils" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-
     <style>
       :root {
         --bg-deep: #0a0a0f;
         --bg-surface: #12121a;
         --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
         --text-primary: #e8e8ed;
         --text-secondary: #8888a0;
         --text-muted: #55556a;
         --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
         --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
         --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
+        --accent-blue: #4cc9f0;
+        --accent-green: #10b981;
         --radius-md: 8px;
         --radius-lg: 12px;
         --font-sans:
           "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
         --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
       }
-
       [data-theme="light"] {
         --bg-deep: #fafafa;
         --bg-surface: #fff;
         --bg-card: #fff;
-        --bg-input: #f5f5f5;
         --text-primary: #1a1a1a;
         --text-secondary: #666;
         --text-muted: #999;
         --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
         --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: var(--font-sans);
+        background: var(--bg-deep);
+        color: var(--text-primary);
+        min-height: 100vh;
+        line-height: 1.6;
+      }
+      .bg-grid {
+        position: fixed;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(77, 159, 255, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(77, 159, 255, 0.03) 1px, transparent 1px);
+        background-size: 50px 50px;
+        pointer-events: none;
+        z-index: 0;
+      }
+      .container {
+        position: relative;
+        z-index: 1;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
       }
 
       .theme-toggle {
@@ -82,7 +85,7 @@
         height: 40px;
         border-radius: 50%;
         border: 1px solid var(--border-subtle);
-        background: var(--color-bg-card);
+        background: var(--bg-card);
         cursor: pointer;
         font-size: 1.2rem;
         z-index: 100;
@@ -90,270 +93,331 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        color: var(--text-primary);
       }
-
       .theme-toggle:hover {
+        border-color: var(--accent-cyan);
         transform: scale(1.1);
       }
 
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        padding: 8px 14px;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
       }
-      :root {
-        --bg: #0a0a0f;
-        --card: #12121a;
-        --border: #2a2a3a;
-        --text: #fff;
-        --text2: #888;
-        --accent: #8b5cf6;
-        --success: #22c55e;
+      .breadcrumb a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color 0.2s;
       }
-      body {
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
-        background: var(--bg-deep);
+      .breadcrumb a:hover {
+        color: var(--accent-cyan);
+      }
+      .breadcrumb-separator {
+        color: var(--text-muted);
+      }
+      .breadcrumb-current {
         color: var(--text-primary);
-        min-height: 100vh;
-        padding: 20px;
+        font-weight: 500;
       }
-      .container {
-        max-width: 1000px;
-        margin: 0 auto;
-      }
+
       h1 {
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, var(--text-primary), var(--accent-purple));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
         text-align: center;
-        margin-bottom: 8px;
-        font-size: 1.8rem;
       }
       .subtitle {
-        text-align: center;
         color: var(--text-secondary);
-        margin-bottom: 24px;
+        margin-bottom: 2rem;
+        text-align: center;
       }
+
+      .ad-placeholder {
+        width: 100%;
+        height: 90px;
+        background: var(--bg-surface);
+        border: 1px dashed var(--border-subtle);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin: 2rem 0;
+      }
+
       .card {
         background: var(--bg-card);
         border: 1px solid var(--border-subtle);
-        border-radius: 12px;
-        padding: 24px;
-        margin-bottom: 20px;
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
       }
       .card-title {
-        font-size: 1rem;
-        color: var(--text-secondary);
-        margin-bottom: 16px;
+        font-size: 1.1rem;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        font-weight: 600;
       }
+
       .form-group {
-        margin-bottom: 16px;
+        margin-bottom: 1rem;
       }
       .form-group label {
         display: block;
-        margin-bottom: 6px;
+        margin-bottom: 0.5rem;
         font-size: 0.9rem;
         color: var(--text-secondary);
       }
       textarea {
         width: 100%;
-        padding: 12px;
+        padding: 1rem;
         border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        background: var(--bg-deep);
+        border-radius: var(--radius-md);
+        background: var(--bg-surface);
         color: var(--text-primary);
         font-size: 1rem;
         font-family: var(--font-mono);
         resize: vertical;
+        min-height: 120px;
+        line-height: 1.5;
       }
       textarea:focus {
         outline: none;
         border-color: var(--accent-cyan);
       }
+
+      .btn-group {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+      }
       .btn {
-        padding: 12px 24px;
+        padding: 0.75rem 1.5rem;
         border: none;
-        border-radius: 8px;
+        border-radius: var(--radius-md);
         cursor: pointer;
-        font-size: 1rem;
+        font-size: 0.95rem;
         transition: all 0.2s;
+        font-family: var(--font-sans);
+        font-weight: 600;
       }
       .btn-primary {
         background: var(--accent-cyan);
-        color: white;
+        color: #000;
+      }
+      .btn-primary:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
       }
       .btn-outline {
         background: transparent;
         border: 1px solid var(--border-subtle);
         color: var(--text-primary);
       }
-      .btn:hover {
-        opacity: 0.9;
+      .btn-outline:hover {
+        border-color: var(--text-secondary);
       }
-      .btn-group {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-      }
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 16px;
-        margin-top: 20px;
-      }
-      .stat-item {
-        padding: 16px;
-        background: var(--bg-deep);
-        border-radius: 8px;
-        text-align: center;
-      }
-      .stat-item .value {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--accent-cyan);
-        font-family: var(--font-mono);
-      }
-      .stat-item .label {
-        font-size: 0.85rem;
-        color: var(--text-secondary);
-        margin-top: 4px;
-      }
-      .result-hero {
-        background: linear-gradient(135deg, var(--accent-cyan), #a855f7);
-        padding: 24px;
-        border-radius: 12px;
-        text-align: center;
-        color: white;
-        margin-bottom: 20px;
-      }
-      .result-hero .big {
-        font-size: 2rem;
-        font-weight: 700;
-      }
-      .result-hero .label {
-        opacity: 0.9;
-        margin-bottom: 8px;
-      }
+
       .data-preview {
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
-        padding: 12px;
-        background: var(--bg-deep);
-        border-radius: 8px;
-        margin-top: 12px;
-        max-height: 100px;
+        gap: 0.5rem;
+        padding: 1rem;
+        background: var(--bg-surface);
+        border-radius: var(--radius-md);
+        max-height: 120px;
         overflow-y: auto;
+        border: 1px solid var(--border-subtle);
       }
       .data-item {
-        padding: 4px 10px;
+        padding: 0.25rem 0.5rem;
         background: var(--bg-card);
         border: 1px solid var(--border-subtle);
         border-radius: 4px;
         font-family: var(--font-mono);
+        font-size: 0.85rem;
+        color: var(--accent-blue);
+      }
+
+      .result-hero {
+        background: linear-gradient(135deg, rgba(0, 245, 212, 0.1), rgba(123, 44, 191, 0.1));
+        border: 1px solid var(--border-subtle);
+        padding: 1.5rem;
+        border-radius: var(--radius-lg);
+        text-align: center;
+        margin-bottom: 1.5rem;
+        display: none;
+      }
+      .result-hero .big {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--accent-cyan);
+        font-family: var(--font-mono);
+      }
+      .result-hero .label {
+        color: var(--text-secondary);
         font-size: 0.9rem;
       }
-      .chart-container {
-        margin-top: 20px;
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1rem;
       }
-      canvas {
-        width: 100%;
-        max-height: 200px;
+      .stat-item {
+        padding: 1rem;
+        background: var(--bg-surface);
+        border-radius: var(--radius-md);
+        text-align: center;
+        border: 1px solid var(--border-subtle);
       }
-      .note {
+      .stat-item .value {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        font-family: var(--font-mono);
+        margin-bottom: 0.25rem;
+      }
+      .stat-item .label {
         font-size: 0.85rem;
         color: var(--text-secondary);
-        margin-top: 12px;
-        padding: 12px;
-        background: var(--bg-deep);
-        border-radius: 8px;
-        line-height: 1.6;
       }
-      .formula {
-        font-family: "Times New Roman", serif;
-        padding: 12px;
-        background: var(--bg-deep);
-        border-radius: 8px;
-        text-align: center;
-        margin-top: 12px;
+
+      canvas {
+        width: 100%;
+        max-height: 250px;
+        margin-bottom: 1.5rem;
       }
+
       .frequency-table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 16px;
         font-size: 0.9rem;
       }
       .frequency-table th,
       .frequency-table td {
-        padding: 10px;
+        padding: 0.75rem;
         text-align: center;
         border-bottom: 1px solid var(--border-subtle);
       }
       .frequency-table th {
         color: var(--text-secondary);
         font-weight: 500;
-        background: var(--bg-deep);
+        background: var(--bg-surface);
       }
-      .back-link {
-        display: inline-block;
-        margin-bottom: 16px;
-        color: var(--accent-cyan);
-        text-decoration: none;
-        font-size: 0.9rem;
-      }
-      .back-link:hover {
-        text-decoration: underline;
+      .frequency-table td {
+        font-family: var(--font-mono);
       }
 
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      .formula {
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        padding: 1rem;
+        background: var(--bg-surface);
+        border-radius: var(--radius-md);
+        text-align: center;
+        margin-top: 1rem;
+        color: var(--accent-purple);
+        border: 1px solid var(--border-subtle);
+      }
+
+      .note {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        line-height: 1.7;
+      }
+      .note p {
+        margin-bottom: 0.5rem;
+      }
+      .note strong {
+        color: var(--text-primary);
+      }
+
+      .seo-article {
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        margin-top: 3rem;
+      }
+      .seo-article h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: var(--accent-cyan);
+      }
+      .seo-article h3 {
+        font-size: 1.2rem;
+        margin: 1.5rem 0 0.8rem;
+        color: var(--text-primary);
+      }
+      .seo-article p {
+        margin-bottom: 1rem;
+        color: var(--text-secondary);
+        line-height: 1.7;
+      }
+      .seo-article ul {
+        margin-left: 1.5rem;
+        margin-bottom: 1rem;
+        color: var(--text-secondary);
+      }
+      .seo-article li {
+        margin-bottom: 0.5rem;
+      }
+      .seo-article strong {
+        color: var(--text-primary);
+      }
+
+      footer {
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-subtle);
+        text-align: center;
+        color: var(--text-muted);
         font-size: 0.85rem;
       }
-      .breadcrumb a {
-        color: #667eea;
+      footer a {
+        color: var(--accent-blue);
         text-decoration: none;
       }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
   </head>
   <body>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
+    <div class="bg-grid"></div>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题" title="切换主题">
       <span id="theme-icon">🌙</span>
     </button>
 
-    <nav class="breadcrumb">
-      <a href="../../index.html">首页</a>
-      <span>�?/span>
-      统计学计算器
-    </nav>
     <div class="container">
-      <a href="../../index.html" class="back-link">�?返回</a>
+      <nav class="breadcrumb">
+        <a href="../../index.html">首页</a>
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-current">统计学计算器</span>
+      </nav>
+
       <h1>📊 统计学计算器</h1>
-      <p class="subtitle">计算均值、方差、标准差等统计量</p>
+      <p class="subtitle">计算均值、方差、标准差等核心统计量并生成图表</p>
+
+      <div class="ad-placeholder">Google AdSense 广告位 (728x90)</div>
 
       <div class="card">
-        <div class="card-title">输入数据</div>
+        <div class="card-title">1. 输入数据</div>
         <div class="form-group">
-          <label>数据（用逗号、空格或换行分隔�?/label>
+          <label>请输入数值序列（支持逗号、空格或换行分隔）：</label>
           <textarea
             id="dataInput"
-            rows="4"
             placeholder="例如: 85, 90, 78, 92, 88, 95, 72, 80, 85, 91"
             oninput="calculate()"
           >
@@ -362,30 +426,29 @@
         </div>
 
         <div class="btn-group">
-          <button class="btn btn-primary" onclick="calculate()">计算</button>
+          <button class="btn btn-primary" onclick="calculate()">立即计算</button>
           <button class="btn btn-outline" onclick="loadSample()">加载示例</button>
-          <button class="btn btn-outline" onclick="clearData()">清空</button>
+          <button class="btn btn-outline" onclick="clearData()">清空数据</button>
         </div>
 
         <div class="data-preview" id="dataPreview"></div>
       </div>
 
-      <div class="result-hero" id="resultHero" style="display: none">
-        <div class="label">数据个数 n</div>
+      <div class="result-hero" id="resultHero">
+        <div class="label">有效数据个数 (N)</div>
         <div class="big" id="countValue">0</div>
       </div>
 
       <div class="card" id="statsCard" style="display: none">
-        <div class="card-title">描述统计</div>
-
+        <div class="card-title">2. 描述性统计结果</div>
         <div class="stats-grid">
           <div class="stat-item">
             <div class="value" id="meanValue">-</div>
-            <div class="label">均�?(Mean)</div>
+            <div class="label">均值 (Mean)</div>
           </div>
           <div class="stat-item">
             <div class="value" id="medianValue">-</div>
-            <div class="label">中位�?(Median)</div>
+            <div class="label">中位数 (Median)</div>
           </div>
           <div class="stat-item">
             <div class="value" id="modeValue">-</div>
@@ -401,15 +464,15 @@
           </div>
           <div class="stat-item">
             <div class="value" id="stdValue">-</div>
-            <div class="label">标准�?(Std Dev)</div>
+            <div class="label">标准差 (Std Dev)</div>
           </div>
           <div class="stat-item">
             <div class="value" id="minValue">-</div>
-            <div class="label">最小�?(Min)</div>
+            <div class="label">最小值 (Min)</div>
           </div>
           <div class="stat-item">
             <div class="value" id="maxValue">-</div>
-            <div class="label">最大�?(Max)</div>
+            <div class="label">最大值 (Max)</div>
           </div>
           <div class="stat-item">
             <div class="value" id="sumValue">-</div>
@@ -428,14 +491,13 @@
             <div class="label">四分位距 (IQR)</div>
           </div>
         </div>
-
         <div class="formula">
-          均�? x̄ = Σx�?n &nbsp;&nbsp; 方差: σ² = Σ(x�?x̄)²/n &nbsp;&nbsp; 标准�? σ = √σ�?
+          均值: x̄ = Σxᵢ/n &nbsp;&nbsp; 样本方差: S² = Σ(xᵢ-x̄)²/(n-1) &nbsp;&nbsp; 标准差: S = √S²
         </div>
       </div>
 
       <div class="card" id="freqCard" style="display: none">
-        <div class="card-title">频率分布</div>
+        <div class="card-title">3. 频率分布直方图</div>
         <div class="chart-container">
           <canvas id="histChart"></canvas>
         </div>
@@ -453,136 +515,104 @@
       </div>
 
       <div class="card">
-        <div class="card-title">公式说明</div>
+        <div class="card-title">统计量说明</div>
         <div class="note">
           <p>
-            <strong>均�?(Mean)</strong>
-            : 所有数据的算术平均�?
+            <strong>均值 (Mean)</strong>
+            : 所有数据的算术平均值，反映整体水平，易受极端值影响。
           </p>
           <p>
-            <strong>中位�?(Median)</strong>
-            : 将数据排序后处于中间位置的�?
+            <strong>中位数 (Median)</strong>
+            : 数据排序后处于中间位置的值，对极端值不敏感。
           </p>
           <p>
             <strong>众数 (Mode)</strong>
-            : 出现次数最多的�?
+            : 出现次数最多的数值，可能存在多个或没有。
           </p>
           <p>
             <strong>方差 (Variance)</strong>
-            : 数据与均值差的平方的平均值，衡量离散程度
+            : 衡量数据离散程度。本工具计算的是样本方差 (除以 n-1)。
           </p>
           <p>
-            <strong>标准�?(Standard Deviation)</strong>
-            : 方差的平方根，更直观的离散度�?
+            <strong>标准差 (Standard Deviation)</strong>
+            : 方差的平方根，与原始数据单位一致，直观反映离散度。
           </p>
           <p>
             <strong>四分位数</strong>
-            : Q1�?5%分位数，Q3�?5%分位�?
+            : Q1 (25%分位数)，Q3 (75%分位数)。
           </p>
           <p>
             <strong>四分位距 (IQR)</strong>
-            : Q3 - Q1，衡量数据的中间50%的分散程�?
+            : Q3 - Q1，衡量中间50%数据的分散程度，常用于异常值检测。
           </p>
         </div>
       </div>
+
+      <div class="ad-placeholder">Google AdSense 广告位 (响应式)</div>
+
+      <div class="seo-article">
+        <h2>如何使用统计学计算器进行数据分析及常见统计量解读</h2>
+        <p>
+          在数据驱动的时代，无论是学术研究、商业分析还是日常数据处理，理解和计算基础统计量都是不可或缺的技能。我们的
+          <strong>在线统计学计算器</strong>
+          旨在为您提供一个轻量、快捷的数据分析工具，一键计算均值、方差、标准差以及频率分布。
+        </p>
+
+        <h3>1. 描述性统计量意味着什么？</h3>
+        <ul>
+          <li>
+            <strong>均值 (Mean) 与 中位数 (Median)：</strong>
+            均值反映了数据的整体水平，但极易受极端值（离群点）影响。中位数则是将数据排序后处于中间位置的数值，它对极端值具有更强的抗干扰能力。如果均值远大于中位数，说明数据存在正偏态（右偏）。
+          </li>
+          <li>
+            <strong>方差 (Variance) 与 标准差 (Standard Deviation)：</strong>
+            这两个指标用于衡量数据的离散程度。标准差是方差的平方根，由于其单位与原数据一致，因此在实际应用中更直观。标准差越小，说明数据越集中在均值附近。
+          </li>
+          <li>
+            <strong>四分位数与IQR：</strong>
+            Q1（下四分位数）和Q3（上四分位数）分别代表了数据中25%和75%的位置。它们的差值IQR（四分位距）包含了中间50%的核心数据，常用于箱线图绘制及异常值检测。
+          </li>
+        </ul>
+
+        <h3>2. 如何通过频率分布直方图洞察数据？</h3>
+        <p>
+          本工具自动根据输入数据生成频率分布表和直方图。直方图能直观展示数据的分布形态（如正态分布、双峰分布等）。通过观察哪些区间的数据最集中（即柱子最高的部分），你可以快速识别出数据的主体特征和潜在规律。
+        </p>
+
+        <h3>3. 适用场景建议</h3>
+        <p>
+          本工具非常适合学生进行统计学作业验算、教师快速批改成绩分布、研究人员对问卷数据进行初步的描述性统计分析，以及业务人员计算销售数据的集中和离散趋势。无需复杂的
+          Excel 公式或 Python 代码，只需粘贴数据即可得到专业结果。
+        </p>
+      </div>
+
+      <footer>
+        &copy; 2024
+        <a href="../../index.html">WebUtils</a>
+        - HTML Tools Collection
+      </footer>
     </div>
 
     <script>
-      var chart = null;
-
       function parseData(input) {
-        var numbers = input
+        return input
           .split(/[,\s\n]+/)
-          .map(function (s) {
-            return s.trim();
-          })
-          .filter(function (s) {
-            return s !== "";
-          })
-          .map(function (s) {
-            return parseFloat(s);
-          })
-          .filter(function (n) {
-            return !isNaN(n);
-          });
-        return numbers;
+          .map((s) => s.trim())
+          .filter((s) => s !== "")
+          .map((s) => parseFloat(s))
+          .filter((n) => !isNaN(n));
       }
 
-      function formatNum(n, digits) {
+      function formatNum(n, digits = 4) {
         if (n === undefined || n === null || isNaN(n)) return "-";
-        if (digits === undefined) digits = 4;
-        return n.toFixed(digits).replace(/\.?0+$/, "");
-      }
-
-      function mean(arr) {
-        if (arr.length === 0) return NaN;
-        var sum = arr.reduce(function (a, b) {
-          return a + b;
-        }, 0);
-        return sum / arr.length;
-      }
-
-      function median(arr) {
-        if (arr.length === 0) return NaN;
-        var sorted = arr.slice().sort(function (a, b) {
-          return a - b;
-        });
-        var mid = Math.floor(sorted.length / 2);
-        if (sorted.length % 2 === 0) {
-          return (sorted[mid - 1] + sorted[mid]) / 2;
-        }
-        return sorted[mid];
-      }
-
-      function mode(arr) {
-        if (arr.length === 0) return NaN;
-        var counts = {};
-        var maxCount = 0;
-        arr.forEach(function (n) {
-          counts[n] = (counts[n] || 0) + 1;
-          if (counts[n] > maxCount) maxCount = counts[n];
-        });
-        var modes = [];
-        for (var n in counts) {
-          if (counts[n] === maxCount) modes.push(parseFloat(n));
-        }
-        if (modes.length === arr.length) return NaN; // no mode
-        return modes;
-      }
-
-      function variance(arr) {
-        if (arr.length === 0) return NaN;
-        var m = mean(arr);
-        var sumSq = arr.reduce(function (acc, n) {
-          return acc + Math.pow(n - m, 2);
-        }, 0);
-        return sumSq / arr.length;
-      }
-
-      function stdDev(arr) {
-        return Math.sqrt(variance(arr));
-      }
-
-      function quartile(arr, q) {
-        if (arr.length === 0) return NaN;
-        var sorted = arr.slice().sort(function (a, b) {
-          return a - b;
-        });
-        var pos = (sorted.length - 1) * q;
-        var base = Math.floor(pos);
-        var rest = pos - base;
-        if (sorted[base + 1] !== undefined) {
-          return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
-        }
-        return sorted[base];
+        return Number.isInteger(n) ? n.toString() : n.toFixed(digits).replace(/\.?0+$/, "");
       }
 
       function calculate() {
-        var input = document.getElementById("dataInput").value;
-        var data = parseData(input);
-
-        var preview = document.getElementById("dataPreview");
-        preview.textContent = "";
+        const input = document.getElementById("dataInput").value;
+        const data = parseData(input);
+        const preview = document.getElementById("dataPreview");
+        preview.innerHTML = "";
 
         if (data.length === 0) {
           document.getElementById("resultHero").style.display = "none";
@@ -591,9 +621,8 @@
           return;
         }
 
-        // Show data preview
-        data.forEach(function (n) {
-          var span = document.createElement("span");
+        data.forEach((n) => {
+          const span = document.createElement("span");
           span.className = "data-item";
           span.textContent = formatNum(n, 2);
           preview.appendChild(span);
@@ -601,36 +630,68 @@
 
         document.getElementById("resultHero").style.display = "block";
         document.getElementById("statsCard").style.display = "block";
-        document.getElementById("freqCard").style.display = "block";
+        if (data.length > 1) {
+          document.getElementById("freqCard").style.display = "block";
+        } else {
+          document.getElementById("freqCard").style.display = "none";
+        }
 
         document.getElementById("countValue").textContent = data.length;
 
-        var m = mean(data);
-        var med = median(data);
-        var mod = mode(data);
-        var v = variance(data);
-        var s = stdDev(data);
-        var min = Math.min.apply(null, data);
-        var max = Math.max.apply(null, data);
-        var sum = data.reduce(function (a, b) {
-          return a + b;
-        }, 0);
-        var q1 = quartile(data, 0.25);
-        var q3 = quartile(data, 0.75);
-        var iqr = q3 - q1;
+        // Math calcs
+        const n = data.length;
+        const sum = data.reduce((a, b) => a + b, 0);
+        const mean = sum / n;
 
-        document.getElementById("meanValue").textContent = formatNum(m);
-        document.getElementById("medianValue").textContent = formatNum(med);
-        document.getElementById("modeValue").textContent = Array.isArray(mod)
-          ? mod
-              .map(function (n) {
-                return formatNum(n);
-              })
-              .join(", ")
-          : "-";
+        const sorted = [...data].sort((a, b) => a - b);
+        const min = sorted[0];
+        const max = sorted[n - 1];
+
+        // Median
+        const mid = Math.floor(n / 2);
+        const median = n % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+
+        // Mode
+        const counts = {};
+        let maxCount = 0;
+        data.forEach((val) => {
+          counts[val] = (counts[val] || 0) + 1;
+          if (counts[val] > maxCount) maxCount = counts[val];
+        });
+        const modes = Object.keys(counts)
+          .filter((k) => counts[k] === maxCount)
+          .map(Number);
+        const modeStr = modes.length === n ? "-" : modes.map((v) => formatNum(v)).join(", ");
+
+        // Variance & StdDev (Sample)
+        let variance = 0;
+        if (n > 1) {
+          const sumSq = data.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0);
+          variance = sumSq / (n - 1);
+        }
+        const stdDev = Math.sqrt(variance);
+
+        // Quartiles (Interpolation method)
+        const getQ = (q) => {
+          const pos = (n - 1) * q;
+          const base = Math.floor(pos);
+          const rest = pos - base;
+          if (sorted[base + 1] !== undefined) {
+            return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
+          }
+          return sorted[base];
+        };
+        const q1 = getQ(0.25);
+        const q3 = getQ(0.75);
+        const iqr = q3 - q1;
+
+        // Render
+        document.getElementById("meanValue").textContent = formatNum(mean);
+        document.getElementById("medianValue").textContent = formatNum(median);
+        document.getElementById("modeValue").textContent = modeStr;
         document.getElementById("rangeValue").textContent = formatNum(max - min);
-        document.getElementById("varianceValue").textContent = formatNum(v);
-        document.getElementById("stdValue").textContent = formatNum(s);
+        document.getElementById("varianceValue").textContent = formatNum(variance);
+        document.getElementById("stdValue").textContent = formatNum(stdDev);
         document.getElementById("minValue").textContent = formatNum(min);
         document.getElementById("maxValue").textContent = formatNum(max);
         document.getElementById("sumValue").textContent = formatNum(sum);
@@ -638,113 +699,92 @@
         document.getElementById("q3Value").textContent = formatNum(q3);
         document.getElementById("iqrValue").textContent = formatNum(iqr);
 
-        // Frequency distribution
-        var numBins = Math.min(10, Math.ceil(Math.sqrt(data.length)));
-        var binWidth = (max - min) / numBins;
-        if (binWidth === 0) binWidth = 1;
-
-        var bins = [];
-        for (var i = 0; i < numBins; i++) {
-          bins.push({
-            start: min + i * binWidth,
-            end: min + (i + 1) * binWidth,
-            count: 0
-          });
+        if (n > 1) {
+          drawFrequency(data, min, max);
         }
-
-        data.forEach(function (n) {
-          var binIdx = Math.min(Math.floor((n - min) / binWidth), numBins - 1);
-          bins[binIdx].count++;
-        });
-
-        var freqBody = document.getElementById("freqBody");
-        freqBody.textContent = "";
-        var cumFreq = 0;
-
-        bins.forEach(function (bin) {
-          var freq = bin.count / data.length;
-          cumFreq += freq;
-
-          var tr = document.createElement("tr");
-
-          var td1 = document.createElement("td");
-          td1.textContent = "[" + formatNum(bin.start, 2) + ", " + formatNum(bin.end, 2) + ")";
-
-          var td2 = document.createElement("td");
-          td2.textContent = bin.count;
-
-          var td3 = document.createElement("td");
-          td3.textContent = (freq * 100).toFixed(1) + "%";
-
-          var td4 = document.createElement("td");
-          td4.textContent = (cumFreq * 100).toFixed(1) + "%";
-
-          tr.appendChild(td1);
-          tr.appendChild(td2);
-          tr.appendChild(td3);
-          tr.appendChild(td4);
-          freqBody.appendChild(tr);
-        });
-
-        // Draw histogram
-        drawHistogram(bins, data.length);
       }
 
-      function drawHistogram(bins, total) {
-        var canvas = document.getElementById("histChart");
-        var ctx = canvas.getContext("2d");
+      function drawFrequency(data, min, max) {
+        const n = data.length;
+        // Sturges' formula for number of bins
+        const numBins = Math.max(3, Math.min(15, Math.ceil(1 + Math.log2(n))));
+        let binWidth = (max - min) / numBins;
+        if (binWidth === 0) binWidth = 1;
 
-        var isDark =
-          window.matchMedia("(prefers-color-scheme: dark)").matches ||
-          getComputedStyle(document.documentElement).getPropertyValue("--bg").trim() === "#0a0a0f";
+        const bins = Array.from({ length: numBins }, (_, i) => ({
+          start: min + i * binWidth,
+          end: min + (i + 1) * binWidth,
+          count: 0
+        }));
 
-        var width = canvas.parentElement.clientWidth;
-        var height = 200;
+        data.forEach((val) => {
+          let idx = Math.floor((val - min) / binWidth);
+          if (idx >= numBins) idx = numBins - 1; // handle max value
+          bins[idx].count++;
+        });
+
+        const tbody = document.getElementById("freqBody");
+        tbody.innerHTML = "";
+        let cumFreq = 0;
+
+        bins.forEach((bin) => {
+          const freq = bin.count / n;
+          cumFreq += freq;
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>[${formatNum(bin.start, 2)}, ${formatNum(bin.end, 2)}${bin.end === max ? "]" : ")"}</td>
+            <td>${bin.count}</td>
+            <td>${(freq * 100).toFixed(1)}%</td>
+            <td>${(cumFreq * 100).toFixed(1)}%</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        // Draw Canvas Chart
+        const canvas = document.getElementById("histChart");
+        const ctx = canvas.getContext("2d");
+        const isDark = document.documentElement.getAttribute("data-theme") !== "light";
+
+        // Responsive canvas
+        const width = canvas.parentElement.clientWidth;
+        const height = 250;
         canvas.width = width;
         canvas.height = height;
 
-        var padding = 40;
-        var chartWidth = width - padding * 2;
-        var chartHeight = height - padding * 2;
+        const pad = 30;
+        const cWidth = width - pad * 2;
+        const cHeight = height - pad * 2;
 
-        ctx.fillStyle = isDark ? "#0a0a0f" : "#f5f5f5";
-        ctx.fillRect(0, 0, width, height);
+        ctx.clearRect(0, 0, width, height);
 
-        var maxCount = Math.max.apply(
-          null,
-          bins.map(function (b) {
-            return b.count;
-          })
-        );
-        if (maxCount === 0) maxCount = 1;
-
-        var barWidth = chartWidth / bins.length - 4;
-
-        bins.forEach(function (bin, i) {
-          var barHeight = (bin.count / maxCount) * chartHeight;
-          var x = padding + i * (chartWidth / bins.length) + 2;
-          var y = height - padding - barHeight;
-
-          ctx.fillStyle = "#8b5cf6";
-          ctx.fillRect(x, y, barWidth, barHeight);
-        });
+        const maxCount = Math.max(...bins.map((b) => b.count), 1);
+        const barWidth = cWidth / numBins - 2;
 
         // Draw axes
-        ctx.strokeStyle = isDark ? "#2a2a3a" : "#e0e0e0";
+        ctx.strokeStyle = isDark ? "#3a3a4a" : "#e5e5e5";
         ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.moveTo(padding, padding);
-        ctx.lineTo(padding, height - padding);
-        ctx.lineTo(width - padding, height - padding);
+        ctx.moveTo(pad, pad);
+        ctx.lineTo(pad, height - pad);
+        ctx.lineTo(width - pad, height - pad);
         ctx.stroke();
 
-        // Labels
-        ctx.fillStyle = isDark ? "#888" : "#666";
-        ctx.font = "11px system-ui";
-        ctx.textAlign = "center";
+        // Draw Bars
+        ctx.fillStyle = "#7b2cbf";
+        bins.forEach((bin, i) => {
+          const barHeight = (bin.count / maxCount) * cHeight;
+          const x = pad + i * (cWidth / numBins) + 1;
+          const y = height - pad - barHeight;
+          ctx.fillRect(x, y, barWidth, barHeight);
 
-        ctx.fillText("0", padding - 15, height - padding + 4);
-        ctx.fillText(maxCount.toString(), padding - 15, padding + 4);
+          if (bin.count > 0) {
+            ctx.fillStyle = isDark ? "#e8e8ed" : "#1a1a1a";
+            ctx.font = "12px JetBrains Mono";
+            ctx.textAlign = "center";
+            ctx.fillText(bin.count, x + barWidth / 2, y - 5);
+            ctx.fillStyle = "#7b2cbf";
+          }
+        });
       }
 
       function loadSample() {
@@ -755,39 +795,32 @@
 
       function clearData() {
         document.getElementById("dataInput").value = "";
-        document.getElementById("dataPreview").textContent = "";
-        document.getElementById("resultHero").style.display = "none";
-        document.getElementById("statsCard").style.display = "none";
-        document.getElementById("freqCard").style.display = "none";
+        calculate();
       }
 
+      // Initial run
       calculate();
 
-      window.addEventListener("resize", function () {
-        var input = document.getElementById("dataInput").value;
-        var data = parseData(input);
-        if (data.length > 0) {
-          calculate();
-        }
+      window.addEventListener("resize", () => {
+        if (document.getElementById("dataInput").value.trim() !== "") calculate();
       });
 
-      // Theme toggle
+      // Theme logic
       function toggleTheme() {
         const html = document.documentElement;
         const currentTheme = html.getAttribute("data-theme");
         const newTheme = currentTheme === "light" ? "dark" : "light";
         html.setAttribute("data-theme", newTheme);
-        document.getElementById("theme-icon").textContent = newTheme === "light" ? "☀�? : "🌙";
+        document.getElementById("theme-icon").textContent = newTheme === "light" ? "☀️" : "🌙";
         localStorage.setItem("theme", newTheme);
+        calculate(); // re-draw chart
       }
 
-      // Load saved theme
       const savedTheme = localStorage.getItem("theme") || "dark";
       if (savedTheme === "light") {
         document.documentElement.setAttribute("data-theme", "light");
-        document.getElementById("theme-icon").textContent = "☀�?;
+        document.getElementById("theme-icon").textContent = "☀️";
       }
     </script>
   </body>
 </html>
-

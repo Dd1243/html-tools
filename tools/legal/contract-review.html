@@ -1,473 +1,636 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>合同条款检查器 - 自动识别法律风险与缺失项 - WebUtils</title>
-    <meta name="description" content="智能化的合同条款在线审核工具。通过关键词匹配和逻辑算法，自动识别合同中的高风险条款（如无限责任、单方解除）、缺失的核心条款（如争议解决、违约责任）并提供专业的修改建议。">
-    <meta name="keywords" content="合同审核, 条款检查, 法律风险识别, 合同自查, 法务审核工具, 风险提示">
-    <link rel="canonical" href="https://essays4u.net/tools/legal/contract-review.html">
-    
+    <meta
+      name="description"
+      content="智能化的合同条款在线审核工具。通过关键词匹配和逻辑算法，自动识别合同中的高风险条款（如无限责任、单方解除）、缺失的核心条款（如争议解决、违约责任）并提供专业的修改建议。"
+    />
+    <meta
+      name="keywords"
+      content="合同审核, 条款检查, 法律风险识别, 合同自查, 法务审核工具, 风险提示"
+    />
+    <link rel="canonical" href="https://essays4u.net/tools/legal/contract-review.html" />
+
     <!-- Open Graph -->
-    <meta property="og:title" content="合同条款检查器 - 自动识别法律风险与缺失项">
-    <meta property="og:description" content="快速分析合同文本，识别潜在的陷阱条款和合规漏洞。支持多种合同类型，提供即时反馈。">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://essays4u.net/tools/legal/contract-review.html">
-    <meta property="og:site_name" content="WebUtils">
-    
+    <meta property="og:title" content="合同条款检查器 - 自动识别法律风险与缺失项" />
+    <meta
+      property="og:description"
+      content="快速分析合同文本，识别潜在的陷阱条款和合规漏洞。支持多种合同类型，提供即时反馈。"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://essays4u.net/tools/legal/contract-review.html" />
+    <meta property="og:site_name" content="WebUtils" />
+
     <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
     <style>
-        :root {
-            --primary-color: #f43f5e;
-            --primary-hover: #e11d48;
-            --bg-deep: #0f172a;
-            --bg-surface: #1e293b;
-            --bg-card: #334155;
-            --text-primary: #f8fafc;
-            --text-secondary: #cbd5e1;
-            --text-muted: #94a3b8;
-            --border-color: #475569;
-            --accent-cyan: #22d3ee;
-            --accent-green: #10b981;
-            --accent-yellow: #fbbf24;
-            --radius: 12px;
-            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
+      :root {
+        --primary-color: #f43f5e;
+        --primary-hover: #e11d48;
+        --bg-deep: #0f172a;
+        --bg-surface: #1e293b;
+        --bg-card: #334155;
+        --text-primary: #f8fafc;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+        --border-color: #475569;
+        --accent-cyan: #22d3ee;
+        --accent-green: #10b981;
+        --accent-yellow: #fbbf24;
+        --radius: 12px;
+        --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      }
 
-        [data-theme="light"] {
-            --bg-deep: #f8fafc;
-            --bg-surface: #ffffff;
-            --bg-card: #f1f5f9;
-            --text-primary: #1e293b;
-            --text-secondary: #475569;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
+      [data-theme="light"] {
+        --bg-deep: #f8fafc;
+        --bg-surface: #ffffff;
+        --bg-card: #f1f5f9;
+        --text-primary: #1e293b;
+        --text-secondary: #475569;
+        --text-muted: #64748b;
+        --border-color: #e2e8f0;
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-        body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background-color: var(--bg-deep);
-            color: var(--text-primary);
-            line-height: 1.6;
-            transition: background-color 0.3s, color 0.3s;
-        }
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          sans-serif;
+        background-color: var(--bg-deep);
+        color: var(--text-primary);
+        line-height: 1.6;
+        transition:
+          background-color 0.3s,
+          color 0.3s;
+      }
 
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
 
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
+      header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
 
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 500;
-            margin-bottom: 20px;
-        }
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+        margin-bottom: 20px;
+      }
 
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 12px;
-            background: linear-gradient(135deg, var(--primary-color), #fb7185);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+      h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 12px;
+        background: linear-gradient(135deg, var(--primary-color), #fb7185);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
 
-        .subtitle {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-        }
+      .subtitle {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+      }
 
-        .ads-placeholder {
-            width: 100%;
-            min-height: 90px;
-            background: var(--bg-surface);
-            border: 1px dashed var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 20px 0;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            border-radius: var(--radius);
-        }
+      .ads-placeholder {
+        width: 100%;
+        min-height: 90px;
+        background: var(--bg-surface);
+        border: 1px dashed var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 20px 0;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        border-radius: var(--radius);
+      }
 
-        .main-card {
-            background: var(--bg-surface);
-            padding: 30px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
-        }
+      .main-card {
+        background: var(--bg-surface);
+        padding: 30px;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border-color);
+      }
 
-        .input-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
+      .input-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+      }
 
-        .input-title {
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: var(--text-primary);
-        }
+      .input-title {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--text-primary);
+      }
 
-        textarea {
-            width: 100%;
-            height: 400px;
-            padding: 20px;
-            background: var(--bg-deep);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-family: 'Inter', sans-serif;
-            font-size: 0.95rem;
-            resize: vertical;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
+      textarea {
+        width: 100%;
+        height: 400px;
+        padding: 20px;
+        background: var(--bg-deep);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        color: var(--text-primary);
+        font-family: "Inter", sans-serif;
+        font-size: 0.95rem;
+        resize: vertical;
+        line-height: 1.6;
+        margin-bottom: 20px;
+      }
 
-        .btn-row {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 30px;
-        }
+      .btn-row {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 30px;
+      }
 
-        .btn {
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s;
-        }
+      .btn {
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s;
+      }
 
-        .btn-primary { background: var(--primary-color); color: white; flex: 1; }
-        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
-        .btn-secondary { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); }
+      .btn-primary {
+        background: var(--primary-color);
+        color: white;
+        flex: 1;
+      }
+      .btn-primary:hover {
+        background: var(--primary-hover);
+        transform: translateY(-1px);
+      }
+      .btn-secondary {
+        background: var(--bg-card);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+      }
 
-        .results-section {
-            margin-top: 40px;
-            display: none;
-        }
+      .results-section {
+        margin-top: 40px;
+        display: none;
+      }
 
-        .summary-bar {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-        }
+      .summary-bar {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-bottom: 25px;
+      }
 
-        .summary-stat {
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-        }
+      .summary-stat {
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+      }
 
-        .stat-value { font-size: 1.5rem; font-weight: 800; display: block; }
-        .stat-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; }
+      .stat-value {
+        font-size: 1.5rem;
+        font-weight: 800;
+        display: block;
+      }
+      .stat-label {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+      }
 
-        .finding-card {
-            background: var(--bg-card);
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 5px solid var(--border-color);
-            margin-bottom: 15px;
-        }
+      .finding-card {
+        background: var(--bg-card);
+        padding: 20px;
+        border-radius: 10px;
+        border-left: 5px solid var(--border-color);
+        margin-bottom: 15px;
+      }
 
-        .finding-card.danger { border-left-color: var(--primary-color); }
-        .finding-card.warning { border-left-color: var(--accent-yellow); }
-        .finding-card.info { border-left-color: var(--accent-cyan); }
-        .finding-card.success { border-left-color: var(--accent-green); }
+      .finding-card.danger {
+        border-left-color: var(--primary-color);
+      }
+      .finding-card.warning {
+        border-left-color: var(--accent-yellow);
+      }
+      .finding-card.info {
+        border-left-color: var(--accent-cyan);
+      }
+      .finding-card.success {
+        border-left-color: var(--accent-green);
+      }
 
-        .finding-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
+      .finding-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
 
-        .finding-title { font-weight: 700; color: var(--text-primary); }
-        .finding-type { font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
+      .finding-title {
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+      .finding-type {
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 4px;
+      }
 
-        .type-danger { background: rgba(244, 63, 94, 0.1); color: var(--primary-color); }
-        .type-warning { background: rgba(251, 191, 36, 0.1); color: var(--accent-yellow); }
-        .type-info { background: rgba(34, 211, 238, 0.1); color: var(--accent-cyan); }
+      .type-danger {
+        background: rgba(244, 63, 94, 0.1);
+        color: var(--primary-color);
+      }
+      .type-warning {
+        background: rgba(251, 191, 36, 0.1);
+        color: var(--accent-yellow);
+      }
+      .type-info {
+        background: rgba(34, 211, 238, 0.1);
+        color: var(--accent-cyan);
+      }
 
-        .finding-msg { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 12px; }
+      .finding-msg {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        margin-bottom: 12px;
+      }
 
-        .finding-quote {
-            background: var(--bg-deep);
-            padding: 10px 15px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-style: italic;
-            color: var(--text-muted);
-            border: 1px dashed var(--border-color);
-        }
+      .finding-quote {
+        background: var(--bg-deep);
+        padding: 10px 15px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-style: italic;
+        color: var(--text-muted);
+        border: 1px dashed var(--border-color);
+      }
 
-        /* Article Styles */
-        .article-section {
-            background: var(--bg-surface);
-            padding: 40px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
-            margin-top: 40px;
-        }
+      /* Article Styles */
+      .article-section {
+        background: var(--bg-surface);
+        padding: 40px;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border-color);
+        margin-top: 40px;
+      }
 
-        .article-content h2 { font-size: 1.75rem; margin: 30px 0 15px; color: var(--accent-cyan); }
-        .article-content h3 { font-size: 1.25rem; margin: 20px 0 10px; color: var(--text-primary); }
-        .article-content p { margin-bottom: 18px; color: var(--text-secondary); }
-        .article-content ul { margin-bottom: 18px; margin-left: 24px; color: var(--text-secondary); }
-        .article-content li { margin-bottom: 8px; }
+      .article-content h2 {
+        font-size: 1.75rem;
+        margin: 30px 0 15px;
+        color: var(--accent-cyan);
+      }
+      .article-content h3 {
+        font-size: 1.25rem;
+        margin: 20px 0 10px;
+        color: var(--text-primary);
+      }
+      .article-content p {
+        margin-bottom: 18px;
+        color: var(--text-secondary);
+      }
+      .article-content ul {
+        margin-bottom: 18px;
+        margin-left: 24px;
+        color: var(--text-secondary);
+      }
+      .article-content li {
+        margin-bottom: 8px;
+      }
 
-        footer {
-            text-align: center;
-            margin-top: 60px;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            border-top: 1px solid var(--border-color);
-            padding-top: 30px;
-        }
+      footer {
+        text-align: center;
+        margin-top: 60px;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        border-top: 1px solid var(--border-color);
+        padding-top: 30px;
+      }
 
-        .theme-toggle {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--bg-surface);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: var(--shadow);
-            z-index: 1000;
-        }
+      .theme-toggle {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--bg-surface);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: var(--shadow);
+        z-index: 1000;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <button class="theme-toggle" id="themeToggle">🌓</button>
 
     <div class="container">
-        <header>
-            <a href="../../index.html" class="back-link">← 返回工具中心</a>
-            <h1>合同条款检查器</h1>
-            <p class="subtitle">智能识别合同文本中的高风险陷阱与合规漏洞，为您提供专业的初步审查建议。</p>
-        </header>
+      <header>
+        <a href="../../index.html" class="back-link">← 返回工具中心</a>
+        <h1>合同条款检查器</h1>
+        <p class="subtitle">
+          智能识别合同文本中的高风险陷阱与合规漏洞，为您提供专业的初步审查建议。
+        </p>
+      </header>
 
-        <div class="ads-placeholder">Google AdSense 广告位 - 顶部</div>
+      <div class="ads-placeholder">Google AdSense 广告位 - 顶部</div>
 
-        <div class="main-card">
-            <div class="input-header">
-                <span class="input-title">待审核合同文本</span>
-                <div class="input-actions">
-                    <button class="btn btn-secondary" onclick="loadSample()">加载示例</button>
-                    <button class="btn btn-secondary" onclick="clearAll()">清空</button>
-                </div>
-            </div>
-
-            <textarea id="contractText" placeholder="在此粘贴您的合同文本（支持 NDA、劳动合同、SaaS 协议等）..."></textarea>
-
-            <div class="btn-row">
-                <button class="btn btn-primary" onclick="analyzeContract()">一键智能分析</button>
-                <button class="btn btn-secondary" onclick="pasteText()">从剪贴板粘贴</button>
-            </div>
-
-            <div id="resultsSection" class="results-section">
-                <div class="summary-bar">
-                    <div class="summary-stat">
-                        <span class="stat-value" id="countDanger" style="color: var(--primary-color);">0</span>
-                        <span class="stat-label">高风险</span>
-                    </div>
-                    <div class="summary-stat">
-                        <span class="stat-value" id="countWarning" style="color: var(--accent-yellow);">0</span>
-                        <span class="stat-label">待注意</span>
-                    </div>
-                    <div class="summary-stat">
-                        <span class="stat-value" id="countInfo" style="color: var(--accent-cyan);">0</span>
-                        <span class="stat-label">合规项</span>
-                    </div>
-                    <div class="summary-stat">
-                        <span class="stat-value" id="countMissing" style="color: var(--primary-hover);">0</span>
-                        <span class="stat-label">可能缺失</span>
-                    </div>
-                </div>
-                <div id="findingsList"></div>
-            </div>
+      <div class="main-card">
+        <div class="input-header">
+          <span class="input-title">待审核合同文本</span>
+          <div class="input-actions">
+            <button class="btn btn-secondary" onclick="loadSample()">加载示例</button>
+            <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+          </div>
         </div>
 
-        <div class="ads-placeholder">Google AdSense 广告位 - 中间</div>
+        <textarea
+          id="contractText"
+          placeholder="在此粘贴您的合同文本（支持 NDA、劳动合同、SaaS 协议等）..."
+        ></textarea>
 
-        <section class="article-section">
-            <div class="article-content">
-                <h2>合同审核：如何避开那些隐蔽的法律“陷阱”？</h2>
-                <p>在商业活动中，合同是双方权利义务的终极蓝图。然而，由于合同通常篇幅冗长且充满法律术语，普通人很难在短时间内识别出其中隐藏的陷阱条款。使用智能检查工具进行初步审计，是现代商业决策中降低风险的有效手段。</p>
-                
-                <h3>1. 重点警惕“不平等”条款</h3>
-                <p>许多合同时常包含向起草方倾斜的条款。例如：</p>
-                <ul>
-                    <li><strong>无限责任：</strong> 条款中出现“承担全部责任”且没有设定明确的赔偿上限，这可能导致违约时企业面临毁灭性打击。</li>
-                    <li><strong>单方解除权：</strong> 赋予一方“随时、无理由终止”的权利，而另一方则必须提前数月通知，这会造成极大的业务不确定性。</li>
-                    <li><strong>单方修改权：</strong> 起草方保留随时修改协议的权利，而无需征得您的同意。</li>
-                </ul>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="analyzeContract()">一键智能分析</button>
+          <button class="btn btn-secondary" onclick="pasteText()">从剪贴板粘贴</button>
+        </div>
 
-                <h3>2. 核心条款的完整性</h3>
-                <p>一份合格的合同必须具备“四梁八柱”。如果缺失以下条款，合同在执行中极易产生僵局：</p>
-                <ul>
-                    <li><strong>争议解决：</strong> 发生矛盾时，是去法院起诉还是去仲裁？在哪个城市处理？如果没有约定，诉讼成本将直线上升。</li>
-                    <li><strong>违约责任：</strong> 明确违约金的计算方式，增加对方的违约成本。</li>
-                    <li><strong>不可抗力：</strong> 面对天灾、战争等极端情况，如何公平地免除责任。</li>
-                </ul>
-
-                <h3>3. 知识产权与保密义务</h3>
-                <p>对于技术型企业或创意行业，合同中的知识产权（IP）归属是重中之重。务必确认开发成果是“归属于客户”还是“授权给客户使用”。同时，保密条款应覆盖合同终止后的合理期限（通常为 3-5 年）。</p>
-
-                <h2>智能检查器的局限性说明</h2>
-                <p>本工具基于预设的关键词和法律逻辑库进行扫描，能有效捕捉 80% 的常见风险点。然而，法律问题的复杂性往往在于上下文的逻辑关系。<strong>智能工具不能替代执业律师。</strong>我们建议您在处理大额交易或长期战略合同时，在工具初审的基础上，请法务专家进行深度审阅。</p>
+        <div id="resultsSection" class="results-section">
+          <div class="summary-bar">
+            <div class="summary-stat">
+              <span class="stat-value" id="countDanger" style="color: var(--primary-color)">0</span>
+              <span class="stat-label">高风险</span>
             </div>
-        </section>
+            <div class="summary-stat">
+              <span class="stat-value" id="countWarning" style="color: var(--accent-yellow)">
+                0
+              </span>
+              <span class="stat-label">待注意</span>
+            </div>
+            <div class="summary-stat">
+              <span class="stat-value" id="countInfo" style="color: var(--accent-cyan)">0</span>
+              <span class="stat-label">合规项</span>
+            </div>
+            <div class="summary-stat">
+              <span class="stat-value" id="countMissing" style="color: var(--primary-hover)">
+                0
+              </span>
+              <span class="stat-label">可能缺失</span>
+            </div>
+          </div>
+          <div id="findingsList"></div>
+        </div>
+      </div>
 
-        <div class="ads-placeholder">Google AdSense 广告位 - 底部</div>
+      <div class="ads-placeholder">Google AdSense 广告位 - 中间</div>
 
-        <footer>
-            <p>&copy; 2024 WebUtils Legal AI. 您的数据在本地处理，不会被记录或上传。</p>
-        </footer>
+      <section class="article-section">
+        <div class="article-content">
+          <h2>合同审核：如何避开那些隐蔽的法律“陷阱”？</h2>
+          <p>
+            在商业活动中，合同是双方权利义务的终极蓝图。然而，由于合同通常篇幅冗长且充满法律术语，普通人很难在短时间内识别出其中隐藏的陷阱条款。使用智能检查工具进行初步审计，是现代商业决策中降低风险的有效手段。
+          </p>
+
+          <h3>1. 重点警惕“不平等”条款</h3>
+          <p>许多合同时常包含向起草方倾斜的条款。例如：</p>
+          <ul>
+            <li>
+              <strong>无限责任：</strong>
+              条款中出现“承担全部责任”且没有设定明确的赔偿上限，这可能导致违约时企业面临毁灭性打击。
+            </li>
+            <li>
+              <strong>单方解除权：</strong>
+              赋予一方“随时、无理由终止”的权利，而另一方则必须提前数月通知，这会造成极大的业务不确定性。
+            </li>
+            <li>
+              <strong>单方修改权：</strong>
+              起草方保留随时修改协议的权利，而无需征得您的同意。
+            </li>
+          </ul>
+
+          <h3>2. 核心条款的完整性</h3>
+          <p>一份合格的合同必须具备“四梁八柱”。如果缺失以下条款，合同在执行中极易产生僵局：</p>
+          <ul>
+            <li>
+              <strong>争议解决：</strong>
+              发生矛盾时，是去法院起诉还是去仲裁？在哪个城市处理？如果没有约定，诉讼成本将直线上升。
+            </li>
+            <li>
+              <strong>违约责任：</strong>
+              明确违约金的计算方式，增加对方的违约成本。
+            </li>
+            <li>
+              <strong>不可抗力：</strong>
+              面对天灾、战争等极端情况，如何公平地免除责任。
+            </li>
+          </ul>
+
+          <h3>3. 知识产权与保密义务</h3>
+          <p>
+            对于技术型企业或创意行业，合同中的知识产权（IP）归属是重中之重。务必确认开发成果是“归属于客户”还是“授权给客户使用”。同时，保密条款应覆盖合同终止后的合理期限（通常为
+            3-5 年）。
+          </p>
+
+          <h2>智能检查器的局限性说明</h2>
+          <p>
+            本工具基于预设的关键词和法律逻辑库进行扫描，能有效捕捉 80%
+            的常见风险点。然而，法律问题的复杂性往往在于上下文的逻辑关系。
+            <strong>智能工具不能替代执业律师。</strong>
+            我们建议您在处理大额交易或长期战略合同时，在工具初审的基础上，请法务专家进行深度审阅。
+          </p>
+        </div>
+      </section>
+
+      <div class="ads-placeholder">Google AdSense 广告位 - 底部</div>
+
+      <footer>
+        <p>&copy; 2024 WebUtils Legal AI. 您的数据在本地处理，不会被记录或上传。</p>
+      </footer>
     </div>
 
     <script>
-        const RULES = [
-            { type: "danger", title: "无限责任风险", pattern: /(承担全部责任|无限责任|全部赔偿|不设上限|承担任何损失)/, msg: "合同中包含无限责任条款，建议增加赔偿限额（如：不超过合同总金额）。" },
-            { type: "danger", title: "知识产权归属", pattern: /(归甲方所有|归乙方所有|所有权转让|著作权转让)/, msg: "涉及知识产权的转移或所有权归属，请务必确认是否符合您的商业目的。" },
-            { type: "warning", title: "单方解除权", pattern: /(单方解除|有权随时终止|无需理由终止|保留解除权)/, msg: "一方拥有较强的单方解除权，建议增加对等的解除条件或合理的通知期限。" },
-            { type: "warning", title: "自动续约", pattern: /(自动续约|自动延续|期满后续延|默认续期)/, msg: "包含自动续约条款。若不希望续约，请注意在指定日期前发出不续约通知。" },
-            { type: "warning", title: "违约金偏高", pattern: /(违约金|罚金|罚款)/, msg: "包含违约金条款。请评估金额是否过高，过高的违约金在司法实践中可能被调低。" },
-            { type: "info", title: "管辖与争议解决", pattern: /(争议解决|仲裁|管辖法院|适用法律)/, msg: "已识别出争议解决条款，请确认约定的管辖地对您是否便利。" },
-            { type: "info", title: "保密义务", pattern: /(保密义务|秘密信息|Confidential|泄露责任)/i, msg: "包含保密条款，这是保护商业机密的重要依据。" },
-            { type: "info", title: "不可抗力", pattern: /(不可抗力|Force Majeure|自然灾害|意外事件)/, msg: "已识别出不可抗力条款，用于风险规避。" }
-        ];
-
-        const ESSENTIALS = [
-            { name: "合同主体", pattern: /(甲方|乙方|合同双方|签约人)/ },
-            { name: "价格与支付", pattern: /(金额|总价|支付方式|付款|结算)/ },
-            { name: "合同期限", pattern: /(有效期|合同期限|起止日期)/ },
-            { name: "违约责任", pattern: /(违约责任|违约情形|违约赔偿)/ },
-            { name: "生效条件", pattern: /(签字|盖章|生效|签署)/ }
-        ];
-
-        // Theme Management
-        const themeToggle = document.getElementById('themeToggle');
-        const setTheme = (theme) => {
-            document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem('theme', theme);
-            themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
-        };
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = localStorage.getItem('theme') || 'dark';
-            setTheme(currentTheme === 'dark' ? 'light' : 'dark');
-        });
-        setTheme(localStorage.getItem('theme') || 'dark');
-
-        function analyzeContract() {
-            const text = document.getElementById("contractText").value.trim();
-            if (!text) return alert("请输入合同内容进行分析");
-
-            const findings = [];
-            let counts = { danger: 0, warning: 0, info: 0, missing: 0 };
-
-            // Check Rules
-            RULES.forEach(rule => {
-                const match = text.match(rule.pattern);
-                if (match) {
-                    counts[rule.type]++;
-                    const start = Math.max(0, match.index - 40);
-                    const end = Math.min(text.length, match.index + match[0].length + 40);
-                    findings.push({
-                        ...rule,
-                        quote: "..." + text.substring(start, end).replace(/\n/g, ' ') + "..."
-                    });
-                }
-            });
-
-            // Check Essentials
-            ESSENTIALS.forEach(item => {
-                if (!item.pattern.test(text)) {
-                    counts.missing++;
-                    findings.push({
-                        type: "danger",
-                        title: "缺失条款: " + item.name,
-                        msg: `在合同中未找到关于“${item.name}”的明确表述，这可能导致法律效力缺陷。`,
-                        quote: null
-                    });
-                }
-            });
-
-            renderResults(findings, counts);
+      const RULES = [
+        {
+          type: "danger",
+          title: "无限责任风险",
+          pattern: /(承担全部责任|无限责任|全部赔偿|不设上限|承担任何损失)/,
+          msg: "合同中包含无限责任条款，建议增加赔偿限额（如：不超过合同总金额）。"
+        },
+        {
+          type: "danger",
+          title: "知识产权归属",
+          pattern: /(归甲方所有|归乙方所有|所有权转让|著作权转让)/,
+          msg: "涉及知识产权的转移或所有权归属，请务必确认是否符合您的商业目的。"
+        },
+        {
+          type: "warning",
+          title: "单方解除权",
+          pattern: /(单方解除|有权随时终止|无需理由终止|保留解除权)/,
+          msg: "一方拥有较强的单方解除权，建议增加对等的解除条件或合理的通知期限。"
+        },
+        {
+          type: "warning",
+          title: "自动续约",
+          pattern: /(自动续约|自动延续|期满后续延|默认续期)/,
+          msg: "包含自动续约条款。若不希望续约，请注意在指定日期前发出不续约通知。"
+        },
+        {
+          type: "warning",
+          title: "违约金偏高",
+          pattern: /(违约金|罚金|罚款)/,
+          msg: "包含违约金条款。请评估金额是否过高，过高的违约金在司法实践中可能被调低。"
+        },
+        {
+          type: "info",
+          title: "管辖与争议解决",
+          pattern: /(争议解决|仲裁|管辖法院|适用法律)/,
+          msg: "已识别出争议解决条款，请确认约定的管辖地对您是否便利。"
+        },
+        {
+          type: "info",
+          title: "保密义务",
+          pattern: /(保密义务|秘密信息|Confidential|泄露责任)/i,
+          msg: "包含保密条款，这是保护商业机密的重要依据。"
+        },
+        {
+          type: "info",
+          title: "不可抗力",
+          pattern: /(不可抗力|Force Majeure|自然灾害|意外事件)/,
+          msg: "已识别出不可抗力条款，用于风险规避。"
         }
+      ];
 
-        function renderResults(findings, counts) {
-            document.getElementById("resultsSection").style.display = "block";
-            document.getElementById("countDanger").textContent = counts.danger;
-            document.getElementById("countWarning").textContent = counts.warning;
-            document.getElementById("countInfo").textContent = counts.info;
-            document.getElementById("countMissing").textContent = counts.missing;
+      const ESSENTIALS = [
+        { name: "合同主体", pattern: /(甲方|乙方|合同双方|签约人)/ },
+        { name: "价格与支付", pattern: /(金额|总价|支付方式|付款|结算)/ },
+        { name: "合同期限", pattern: /(有效期|合同期限|起止日期)/ },
+        { name: "违约责任", pattern: /(违约责任|违约情形|违约赔偿)/ },
+        { name: "生效条件", pattern: /(签字|盖章|生效|签署)/ }
+      ];
 
-            const list = document.getElementById("findingsList");
-            list.innerHTML = findings.map(f => `
+      // Theme Management
+      const themeToggle = document.getElementById("themeToggle");
+      const setTheme = (theme) => {
+        document.documentElement.setAttribute("data-theme", theme);
+        localStorage.setItem("theme", theme);
+        themeToggle.textContent = theme === "dark" ? "☀️" : "🌙";
+      };
+      themeToggle.addEventListener("click", () => {
+        const currentTheme = localStorage.getItem("theme") || "dark";
+        setTheme(currentTheme === "dark" ? "light" : "dark");
+      });
+      setTheme(localStorage.getItem("theme") || "dark");
+
+      function analyzeContract() {
+        const text = document.getElementById("contractText").value.trim();
+        if (!text) return alert("请输入合同内容进行分析");
+
+        const findings = [];
+        let counts = { danger: 0, warning: 0, info: 0, missing: 0 };
+
+        // Check Rules
+        RULES.forEach((rule) => {
+          const match = text.match(rule.pattern);
+          if (match) {
+            counts[rule.type]++;
+            const start = Math.max(0, match.index - 40);
+            const end = Math.min(text.length, match.index + match[0].length + 40);
+            findings.push({
+              ...rule,
+              quote: "..." + text.substring(start, end).replace(/\n/g, " ") + "..."
+            });
+          }
+        });
+
+        // Check Essentials
+        ESSENTIALS.forEach((item) => {
+          if (!item.pattern.test(text)) {
+            counts.missing++;
+            findings.push({
+              type: "danger",
+              title: "缺失条款: " + item.name,
+              msg: `在合同中未找到关于“${item.name}”的明确表述，这可能导致法律效力缺陷。`,
+              quote: null
+            });
+          }
+        });
+
+        renderResults(findings, counts);
+      }
+
+      function renderResults(findings, counts) {
+        document.getElementById("resultsSection").style.display = "block";
+        document.getElementById("countDanger").textContent = counts.danger;
+        document.getElementById("countWarning").textContent = counts.warning;
+        document.getElementById("countInfo").textContent = counts.info;
+        document.getElementById("countMissing").textContent = counts.missing;
+
+        const list = document.getElementById("findingsList");
+        list.innerHTML = findings
+          .map(
+            (f) => `
                 <div class="finding-card ${f.type}">
                     <div class="finding-header">
                         <span class="finding-title">${f.title}</span>
                         <span class="finding-type type-${f.type}">${f.type.toUpperCase()}</span>
                     </div>
                     <p class="finding-msg">${f.msg}</p>
-                    ${f.quote ? `<div class="finding-quote">${f.quote}</div>` : ''}
+                    ${f.quote ? `<div class="finding-quote">${f.quote}</div>` : ""}
                 </div>
-            `).join('');
-            
-            list.scrollIntoView({ behavior: 'smooth' });
-        }
+            `
+          )
+          .join("");
 
-        async function pasteText() {
-            try {
-                const text = await navigator.clipboard.readText();
-                document.getElementById('contractText').value = text;
-            } catch (err) {
-                alert('粘贴失败，请手动操作。');
-            }
-        }
+        list.scrollIntoView({ behavior: "smooth" });
+      }
 
-        function clearAll() {
-            document.getElementById('contractText').value = '';
-            document.getElementById('resultsSection').style.display = 'none';
+      async function pasteText() {
+        try {
+          const text = await navigator.clipboard.readText();
+          document.getElementById("contractText").value = text;
+        } catch (err) {
+          alert("粘贴失败，请手动操作。");
         }
+      }
 
-        function loadSample() {
-            document.getElementById('contractText').value = `技术服务协议
+      function clearAll() {
+        document.getElementById("contractText").value = "";
+        document.getElementById("resultsSection").style.display = "none";
+      }
+
+      function loadSample() {
+        document.getElementById("contractText").value = `技术服务协议
 
 甲方：示例互联网公司
 乙方：某技术服务团队
@@ -486,7 +649,7 @@
 
 5. 单方修改
 甲方保留随时根据业务需要修改本协议条款的权利。`;
-        }
+      }
     </script>
-</body>
+  </body>
 </html>

@@ -1,301 +1,697 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>在线 Slugify 工具 - 将标题转换为 SEO 友好的 URL Slug - WebUtils</title>
-    <meta name="description" content="一个专业的在线 Slugify 生成器。支持将中英文标题、文件名转换为小写、连字符分隔的 URL 友好格式。提供多种分隔符选项、严格模式和特殊字符映射，助您优化网站 SEO。">
-    <meta name="keywords" content="slugify, url slug, 标题转换, seo工具, 链接优化, 连字符转换, 程序员工具">
-    
+    <meta
+      name="description"
+      content="一个专业的在线 Slugify 生成器。支持将中英文标题、文件名转换为小写、连字符分隔的 URL 友好格式。提供多种分隔符选项、严格模式和特殊字符映射，助您优化网站 SEO。"
+    />
+    <meta
+      name="keywords"
+      content="slugify, url slug, 标题转换, seo工具, 链接优化, 连字符转换, 程序员工具"
+    />
+
     <!-- Open Graph -->
-    <meta property="og:title" content="在线 Slugify 生成器 - 打造完美的 SEO 链接">
-    <meta property="og:description" content="快速将任何文本转换为干净、友好的 URL Slug。支持中文字符清理和多种定制选项。">
-    <meta property="og:type" content="website">
-    <link rel="canonical" href="https://essays4u.net/tools/text/slugify.html">
+    <meta property="og:title" content="在线 Slugify 生成器 - 打造完美的 SEO 链接" />
+    <meta
+      property="og:description"
+      content="快速将任何文本转换为干净、友好的 URL Slug。支持中文字符清理和多种定制选项。"
+    />
+    <meta property="og:type" content="website" />
+    <link rel="canonical" href="https://essays4u.net/tools/text/slugify.html" />
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        :root {
-            --primary: #3b82f6;
-            --primary-dark: #2563eb;
-            --secondary: #64748b;
-            --success: #10b981;
-            --danger: #ef4444;
-            --bg-main: #f8fafc;
-            --bg-card: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --radius: 8px;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      :root {
+        --primary: #3b82f6;
+        --primary-dark: #2563eb;
+        --secondary: #64748b;
+        --success: #10b981;
+        --danger: #ef4444;
+        --bg-main: #f8fafc;
+        --bg-card: #ffffff;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --border: #e2e8f0;
+        --radius: 8px;
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+
+      [data-theme="dark"] {
+        --bg-main: #0f172a;
+        --bg-card: #1e293b;
+        --text-main: #f1f5f9;
+        --text-muted: #94a3b8;
+        --border: #334155;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Inter", system-ui, sans-serif;
+        background: var(--bg-main);
+        color: var(--text-main);
+        line-height: 1.6;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      /* Header */
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+      }
+      .logo {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--primary);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .nav-links {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+      }
+      .nav-links a {
+        text-decoration: none;
+        color: var(--text-muted);
+        font-size: 14px;
+        font-weight: 500;
+      }
+      .theme-toggle {
+        background: none;
+        border: 1px solid var(--border);
+        padding: 8px;
+        border-radius: 50%;
+        cursor: pointer;
+        color: var(--text-main);
+      }
+
+      /* Main Layout */
+      .layout {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 24px;
+      }
+      @media (max-width: 1024px) {
+        .layout {
+          grid-template-columns: 1fr;
         }
+      }
 
-        [data-theme="dark"] {
-            --bg-main: #0f172a;
-            --bg-card: #1e293b;
-            --text-main: #f1f5f9;
-            --text-muted: #94a3b8;
-            --border: #334155;
-        }
+      /* Tool Card */
+      .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px;
+        box-shadow: var(--shadow);
+      }
+      .tool-header {
+        margin-bottom: 24px;
+      }
+      .tool-header h1 {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--primary);
+      }
+      .tool-header p {
+        color: var(--text-muted);
+        font-size: 15px;
+      }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg-main); color: var(--text-main); line-height: 1.6; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        
-        /* Header */
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .logo { font-size: 24px; font-weight: 700; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 8px; }
-        .nav-links { display: flex; gap: 20px; align-items: center; }
-        .nav-links a { text-decoration: none; color: var(--text-muted); font-size: 14px; font-weight: 500; }
-        .theme-toggle { background: none; border: 1px solid var(--border); padding: 8px; border-radius: 50%; cursor: pointer; color: var(--text-main); }
+      .form-section {
+        margin-bottom: 20px;
+      }
+      .form-section label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--text-main);
+      }
 
-        /* Main Layout */
-        .layout { display: grid; grid-template-columns: 1fr 320px; gap: 24px; }
-        @media (max-width: 1024px) { .layout { grid-template-columns: 1fr; } }
+      input[type="text"] {
+        width: 100%;
+        padding: 14px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: var(--bg-main);
+        color: var(--text-main);
+        font-size: 16px;
+        transition: all 0.2s;
+      }
+      input[type="text"]:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
 
-        /* Tool Card */
-        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); }
-        .tool-header { margin-bottom: 24px; }
-        .tool-header h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: var(--primary); }
-        .tool-header p { color: var(--text-muted); font-size: 15px; }
+      .options-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 16px;
+        margin: 20px 0;
+        padding: 20px;
+        background: var(--bg-main);
+        border-radius: 6px;
+        border: 1px solid var(--border);
+      }
+      .option-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .option-item input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: var(--primary);
+      }
 
-        .form-section { margin-bottom: 20px; }
-        .form-section label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--text-main); }
-        
-        input[type="text"] { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-main); color: var(--text-main); font-size: 16px; transition: all 0.2s; }
-        input[type="text"]:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+      .separator-select {
+        padding: 6px 12px;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        background: var(--bg-card);
+        font-size: 14px;
+      }
 
-        .options-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin: 20px 0; padding: 20px; background: var(--bg-main); border-radius: 6px; border: 1px solid var(--border); }
-        .option-item { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 14px; }
-        .option-item input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
-        
-        .separator-select { padding: 6px 12px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg-card); font-size: 14px; }
+      .result-panel {
+        margin-top: 30px;
+        padding: 24px;
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 8px;
+        position: relative;
+      }
+      .result-panel label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #1d4ed8;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+        display: block;
+      }
+      .result-value {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 20px;
+        color: #1e40af;
+        word-break: break-all;
+        min-height: 1.5em;
+        display: flex;
+        align-items: center;
+      }
 
-        .result-panel { margin-top: 30px; padding: 24px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; position: relative; }
-        .result-panel label { font-size: 12px; font-weight: 700; color: #1d4ed8; text-transform: uppercase; margin-bottom: 12px; display: block; }
-        .result-value { font-family: 'JetBrains Mono', monospace; font-size: 20px; color: #1e40af; word-break: break-all; min-height: 1.5em; display: flex; align-items: center; }
-        
-        .stats-bar { display: flex; gap: 24px; margin-top: 16px; font-size: 13px; color: var(--text-muted); }
-        .stats-bar strong { color: var(--text-main); }
+      .stats-bar {
+        display: flex;
+        gap: 24px;
+        margin-top: 16px;
+        font-size: 13px;
+        color: var(--text-muted);
+      }
+      .stats-bar strong {
+        color: var(--text-main);
+      }
 
-        .btn-group { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
-        button.btn { padding: 12px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; font-size: 14px; display: flex; align-items: center; gap: 8px; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-dark); }
-        .btn-secondary { background: var(--bg-main); color: var(--text-main); border: 1px solid var(--border); }
-        .btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
+      .btn-group {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 24px;
+      }
+      button.btn {
+        padding: 12px 24px;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+      }
+      .btn-primary:hover {
+        background: var(--primary-dark);
+      }
+      .btn-secondary {
+        background: var(--bg-main);
+        color: var(--text-main);
+        border: 1px solid var(--border);
+      }
+      .btn-secondary:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
 
-        /* Sidebar */
-        .sidebar-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
-        .sidebar-section h3 { font-size: 16px; font-weight: 700; margin-bottom: 12px; border-left: 4px solid var(--primary); padding-left: 10px; }
-        .sidebar-section ul { list-style: none; }
-        .sidebar-section li { margin-bottom: 8px; font-size: 14px; color: var(--text-muted); }
-        .sidebar-section a { color: var(--primary); text-decoration: none; }
-        .sidebar-section a:hover { text-decoration: underline; }
+      /* Sidebar */
+      .sidebar-section {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      .sidebar-section h3 {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        border-left: 4px solid var(--primary);
+        padding-left: 10px;
+      }
+      .sidebar-section ul {
+        list-style: none;
+      }
+      .sidebar-section li {
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: var(--text-muted);
+      }
+      .sidebar-section a {
+        color: var(--primary);
+        text-decoration: none;
+      }
+      .sidebar-section a:hover {
+        text-decoration: underline;
+      }
 
-        .ad-placeholder { background: #f1f5f9; border: 2px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 12px; margin: 20px 0; min-height: 250px; border-radius: var(--radius); }
+      .ad-placeholder {
+        background: #f1f5f9;
+        border: 2px dashed #cbd5e1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #94a3b8;
+        font-size: 12px;
+        margin: 20px 0;
+        min-height: 250px;
+        border-radius: var(--radius);
+      }
 
-        /* Content Article */
-        .article { margin-top: 40px; }
-        .article section { margin-bottom: 30px; }
-        .article h2 { font-size: 22px; font-weight: 700; margin-bottom: 16px; color: var(--primary); }
-        .article p { margin-bottom: 12px; color: var(--text-muted); font-size: 16px; }
-        .article ul { margin-left: 20px; margin-bottom: 12px; color: var(--text-muted); }
-        
-        .faq-item { margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
-        .faq-item h4 { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: var(--text-main); }
-        
-        footer { border-top: 1px solid var(--border); margin-top: 60px; padding: 40px 0; text-align: center; color: var(--text-muted); font-size: 14px; }
+      /* Content Article */
+      .article {
+        margin-top: 40px;
+      }
+      .article section {
+        margin-bottom: 30px;
+      }
+      .article h2 {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 16px;
+        color: var(--primary);
+      }
+      .article p {
+        margin-bottom: 12px;
+        color: var(--text-muted);
+        font-size: 16px;
+      }
+      .article ul {
+        margin-left: 20px;
+        margin-bottom: 12px;
+        color: var(--text-muted);
+      }
+
+      .faq-item {
+        margin-bottom: 16px;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 16px;
+      }
+      .faq-item h4 {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--text-main);
+      }
+
+      footer {
+        border-top: 1px solid var(--border);
+        margin-top: 60px;
+        padding: 40px 0;
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 14px;
+      }
     </style>
-</head>
-<body>
-
-<div class="container">
-    <header>
+  </head>
+  <body>
+    <div class="container">
+      <header>
         <a href="../../index.html" class="logo">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-            WebUtils
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+          </svg>
+          WebUtils
         </a>
         <div class="nav-links">
-            <a href="../../index.html">全部工具</a>
-            <a href="https://github.com/chicogong/html-tools" target="_blank">GitHub</a>
-            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
+          <a href="../../index.html">全部工具</a>
+          <a href="https://github.com/chicogong/html-tools" target="_blank">GitHub</a>
+          <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
         </div>
-    </header>
+      </header>
 
-    <div class="layout">
+      <div class="layout">
         <main>
-            <div class="card">
-                <div class="tool-header">
-                    <h1>URL Slugify 生成器</h1>
-                    <p>将中文标题、特殊字符或冗长的文字转换为规范化、全小写的 URL 友好字符串。</p>
-                </div>
-
-                <div class="form-section">
-                    <label>输入文字标题</label>
-                    <input type="text" id="inputTitle" placeholder="例如: 10 个必学的 JavaScript 技巧 (2024 更新)!" autofocus>
-                </div>
-
-                <div class="options-grid">
-                    <label class="option-item">
-                        <input type="checkbox" id="optLower" checked>
-                        <span>转换为小写</span>
-                    </label>
-                    <label class="option-item">
-                        <span>分隔符:</span>
-                        <select id="optSeparator" class="separator-select">
-                            <option value="-">连字符 (-)</option>
-                            <option value="_">下划线 (_)</option>
-                            <option value=".">点号 (.)</option>
-                            <option value="">无间隔</option>
-                        </select>
-                    </label>
-                    <label class="option-item">
-                        <input type="checkbox" id="optTrim" checked>
-                        <span>去除首尾空白</span>
-                    </label>
-                    <label class="option-item">
-                        <input type="checkbox" id="optStrict">
-                        <span>严格模式 (仅 a-z 0-9)</span>
-                    </label>
-                </div>
-
-                <div class="result-panel">
-                    <label>生成的 Slug</label>
-                    <div id="slugValue" class="result-value">-</div>
-                    
-                    <div class="stats-bar">
-                        <span>原文长度: <strong id="origLen">0</strong></span>
-                        <span>Slug 长度: <strong id="slugLen">0</strong></span>
-                    </div>
-                </div>
-
-                <div class="btn-group">
-                    <button class="btn btn-primary" id="copyBtn">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                        复制结果
-                    </button>
-                    <button class="btn btn-secondary" onclick="clearInput()">清空</button>
-                    <button class="btn btn-secondary" onclick="pasteFromClipboard()">从剪贴板粘贴</button>
-                </div>
+          <div class="card">
+            <div class="tool-header">
+              <h1>URL Slugify 生成器</h1>
+              <p>将中文标题、特殊字符或冗长的文字转换为规范化、全小写的 URL 友好字符串。</p>
             </div>
 
-            <!-- SEO Content Section -->
-            <article class="article">
-                <section>
-                    <h2>什么是 URL Slug？</h2>
-                    <p>Slug 是 URL（统一资源定位符）中最后一部分，通常是可理解的文字，用于标识特定的页面。例如，在网址 `https://example.com/blog/how-to-slugify` 中，`how-to-slugify` 就是该页面的 Slug。</p>
-                    <p>一个好的 Slug 应该是简短的、描述性的，并且只包含小写字母、数字和连字符。它不仅帮助用户理解页面内容，更是搜索引擎优化（SEO）的关键组成部分。</p>
-                </section>
+            <div class="form-section">
+              <label>输入文字标题</label>
+              <input
+                type="text"
+                id="inputTitle"
+                placeholder="例如: 10 个必学的 JavaScript 技巧 (2024 更新)!"
+                autofocus
+              />
+            </div>
 
-                <section>
-                    <h2>为什么 Slugify 对 SEO 至关重要？</h2>
-                    <ul>
-                        <li><strong>关键词相关性:</strong> 在 URL 中包含关键词可以向搜索引擎发送明确的信号，提高页面在特定搜索请求下的排名。</li>
-                        <li><strong>提升用户点击率 (CTR):</strong> 简洁、易读的链接比包含乱码字符（如 `%E4%BD%A0%E5%A5%BD`）的链接更具吸引力，用户更愿意在社交平台或搜索结果中点击它们。</li>
-                        <li><strong>可读性与分享:</strong> 良好的 Slug 在被复制粘贴时保持清晰。如果 URL 包含未编码的中文字符，粘贴到某些应用中会变成冗长的百分号编码，非常不美观。</li>
-                        <li><strong>层次结构展示:</strong> 规范化的 Slug 能够帮助建立清晰的网站路径，让用户一眼看出当前所处的位置。</li>
-                    </ul>
-                </section>
+            <div class="options-grid">
+              <label class="option-item">
+                <input type="checkbox" id="optLower" checked />
+                <span>转换为小写</span>
+              </label>
+              <label class="option-item">
+                <span>分隔符:</span>
+                <select id="optSeparator" class="separator-select">
+                  <option value="-">连字符 (-)</option>
+                  <option value="_">下划线 (_)</option>
+                  <option value=".">点号 (.)</option>
+                  <option value="">无间隔</option>
+                </select>
+              </label>
+              <label class="option-item">
+                <input type="checkbox" id="optTrim" checked />
+                <span>去除首尾空白</span>
+              </label>
+              <label class="option-item">
+                <input type="checkbox" id="optStrict" />
+                <span>严格模式 (仅 a-z 0-9)</span>
+              </label>
+            </div>
 
-                <section>
-                    <h2>本工具的特殊功能</h2>
-                    <p>市面上有很多 Slug 生成器，但我们的工具针对中文用户和开发者进行了特别优化：</p>
-                    <ul>
-                        <li><strong>智能字符映射:</strong> 自动将带重音的拉丁字母（如 à, é）转换为其基本形式（a, e）。</li>
-                        <li><strong>中文清理:</strong> 自动过滤中文标点符号和不可见字符。由于 Slug 通常只使用英文字符，本工具会移除中文部分以便您手动填入对应的英文词汇（SEO 的最佳实践）。</li>
-                        <li><strong>多分隔符支持:</strong> 虽然连字符 (-) 是 SEO 的首选，但某些开发环境可能需要下划线 (_) 或点号 (.)，我们都提供了支持。</li>
-                        <li><strong>实时生成:</strong> 边输入边查看结果，极大提升了生产力。</li>
-                    </ul>
-                </section>
+            <div class="result-panel">
+              <label>生成的 Slug</label>
+              <div id="slugValue" class="result-value">-</div>
 
-                <section>
-                    <h2>Slug 优化的最佳实践</h2>
-                    <ul>
-                        <li><strong>保持简短:</strong> 尽量将 Slug 控制在 3-5 个单词以内。移除“的”、“了”、“和”等无意义的虚词。</li>
-                        <li><strong>不要使用日期:</strong> 除非是新闻类内容，否则在 Slug 中包含日期会使内容在未来看起来已过时，且修改 URL 会导致原有权重丢失。</li>
-                        <li><strong>使用连字符 (-):</strong> 连字符被搜索引擎视为单词的分隔符，而下划线则不是。因此，`best-tools` 优于 `best_tools`。</li>
-                        <li><strong>全小写:</strong> 大写字母在某些服务器（如 Linux）上是区分大小写的，统一小写可以避免产生重复内容的问题。</li>
-                    </ul>
-                </section>
+              <div class="stats-bar">
+                <span>
+                  原文长度:
+                  <strong id="origLen">0</strong>
+                </span>
+                <span>
+                  Slug 长度:
+                  <strong id="slugLen">0</strong>
+                </span>
+              </div>
+            </div>
 
-                <section>
-                    <h2>常见问题 (FAQ)</h2>
-                    <div class="faq-item">
-                        <h4>Q: 为什么中文没有被翻译成英文？</h4>
-                        <p>A: 自动翻译通常不准确，且对于 SEO 来说，手动选择最合适的关键词作为 Slug 是更好的做法。本工具会将中文过滤，您可以输入该文章的英文核心关键词。</p>
-                    </div>
-                    <div class="faq-item">
-                        <h4>Q: 什么是“严格模式”？</h4>
-                        <p>A: 开启严格模式后，系统会移除除了小写字母 (a-z) 和数字 (0-9) 之外的所有内容。这对于某些对文件名要求极高的服务器系统非常有用。</p>
-                    </div>
-                    <div class="faq-item">
-                        <h4>Q: 这个工具可以处理特殊字符吗？</h4>
-                        <p>A: 是的。例如 `&` 会被自动转换为 `and`，`@` 会转换为 `at`。这些都是为了让 URL 更加语义化。</p>
-                    </div>
-                </section>
-            </article>
+            <div class="btn-group">
+              <button class="btn btn-primary" id="copyBtn">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                复制结果
+              </button>
+              <button class="btn btn-secondary" onclick="clearInput()">清空</button>
+              <button class="btn btn-secondary" onclick="pasteFromClipboard()">从剪贴板粘贴</button>
+            </div>
+          </div>
+
+          <!-- SEO Content Section -->
+          <article class="article">
+            <section>
+              <h2>什么是 URL Slug？</h2>
+              <p>
+                Slug 是
+                URL（统一资源定位符）中最后一部分，通常是可理解的文字，用于标识特定的页面。例如，在网址
+                `https://example.com/blog/how-to-slugify` 中，`how-to-slugify` 就是该页面的 Slug。
+              </p>
+              <p>
+                一个好的 Slug
+                应该是简短的、描述性的，并且只包含小写字母、数字和连字符。它不仅帮助用户理解页面内容，更是搜索引擎优化（SEO）的关键组成部分。
+              </p>
+            </section>
+
+            <section>
+              <h2>为什么 Slugify 对 SEO 至关重要？</h2>
+              <ul>
+                <li>
+                  <strong>关键词相关性:</strong>
+                  在 URL 中包含关键词可以向搜索引擎发送明确的信号，提高页面在特定搜索请求下的排名。
+                </li>
+                <li>
+                  <strong>提升用户点击率 (CTR):</strong>
+                  简洁、易读的链接比包含乱码字符（如
+                  `%E4%BD%A0%E5%A5%BD`）的链接更具吸引力，用户更愿意在社交平台或搜索结果中点击它们。
+                </li>
+                <li>
+                  <strong>可读性与分享:</strong>
+                  良好的 Slug 在被复制粘贴时保持清晰。如果 URL
+                  包含未编码的中文字符，粘贴到某些应用中会变成冗长的百分号编码，非常不美观。
+                </li>
+                <li>
+                  <strong>层次结构展示:</strong>
+                  规范化的 Slug 能够帮助建立清晰的网站路径，让用户一眼看出当前所处的位置。
+                </li>
+              </ul>
+            </section>
+
+            <section>
+              <h2>本工具的特殊功能</h2>
+              <p>市面上有很多 Slug 生成器，但我们的工具针对中文用户和开发者进行了特别优化：</p>
+              <ul>
+                <li>
+                  <strong>智能字符映射:</strong>
+                  自动将带重音的拉丁字母（如 à, é）转换为其基本形式（a, e）。
+                </li>
+                <li>
+                  <strong>中文清理:</strong>
+                  自动过滤中文标点符号和不可见字符。由于 Slug
+                  通常只使用英文字符，本工具会移除中文部分以便您手动填入对应的英文词汇（SEO
+                  的最佳实践）。
+                </li>
+                <li>
+                  <strong>多分隔符支持:</strong>
+                  虽然连字符 (-) 是 SEO 的首选，但某些开发环境可能需要下划线 (_) 或点号
+                  (.)，我们都提供了支持。
+                </li>
+                <li>
+                  <strong>实时生成:</strong>
+                  边输入边查看结果，极大提升了生产力。
+                </li>
+              </ul>
+            </section>
+
+            <section>
+              <h2>Slug 优化的最佳实践</h2>
+              <ul>
+                <li>
+                  <strong>保持简短:</strong>
+                  尽量将 Slug 控制在 3-5 个单词以内。移除“的”、“了”、“和”等无意义的虚词。
+                </li>
+                <li>
+                  <strong>不要使用日期:</strong>
+                  除非是新闻类内容，否则在 Slug 中包含日期会使内容在未来看起来已过时，且修改 URL
+                  会导致原有权重丢失。
+                </li>
+                <li>
+                  <strong>使用连字符 (-):</strong>
+                  连字符被搜索引擎视为单词的分隔符，而下划线则不是。因此，`best-tools` 优于
+                  `best_tools`。
+                </li>
+                <li>
+                  <strong>全小写:</strong>
+                  大写字母在某些服务器（如
+                  Linux）上是区分大小写的，统一小写可以避免产生重复内容的问题。
+                </li>
+              </ul>
+            </section>
+
+            <section>
+              <h2>常见问题 (FAQ)</h2>
+              <div class="faq-item">
+                <h4>Q: 为什么中文没有被翻译成英文？</h4>
+                <p>
+                  A: 自动翻译通常不准确，且对于 SEO 来说，手动选择最合适的关键词作为 Slug
+                  是更好的做法。本工具会将中文过滤，您可以输入该文章的英文核心关键词。
+                </p>
+              </div>
+              <div class="faq-item">
+                <h4>Q: 什么是“严格模式”？</h4>
+                <p>
+                  A: 开启严格模式后，系统会移除除了小写字母 (a-z) 和数字 (0-9)
+                  之外的所有内容。这对于某些对文件名要求极高的服务器系统非常有用。
+                </p>
+              </div>
+              <div class="faq-item">
+                <h4>Q: 这个工具可以处理特殊字符吗？</h4>
+                <p>
+                  A: 是的。例如 `&` 会被自动转换为 `and`，`@` 会转换为 `at`。这些都是为了让 URL
+                  更加语义化。
+                </p>
+              </div>
+            </section>
+          </article>
         </main>
 
         <aside>
-            <div class="ad-placeholder">
-                广告占位符<br>(Google AdSense)
-            </div>
+          <div class="ad-placeholder">
+            广告占位符
+            <br />
+            (Google AdSense)
+          </div>
 
-            <div class="sidebar-section">
-                <h3>Slug 检查清单</h3>
-                <ul>
-                    <li>✅ 是否使用了连字符 (-)?</li>
-                    <li>✅ 是否已全部转换为小写?</li>
-                    <li>✅ 是否移除了所有虚词 (Stop Words)?</li>
-                    <li>✅ 长度是否保持在 5 个词以内?</li>
-                    <li>✅ 是否包含了核心关键词?</li>
-                </ul>
-            </div>
+          <div class="sidebar-section">
+            <h3>Slug 检查清单</h3>
+            <ul>
+              <li>✅ 是否使用了连字符 (-)?</li>
+              <li>✅ 是否已全部转换为小写?</li>
+              <li>✅ 是否移除了所有虚词 (Stop Words)?</li>
+              <li>✅ 长度是否保持在 5 个词以内?</li>
+              <li>✅ 是否包含了核心关键词?</li>
+            </ul>
+          </div>
 
-            <div class="sidebar-section">
-                <h3>相关工具</h3>
-                <ul>
-                    <li><a href="case-converter.html">大小写转换</a></li>
-                    <li><a href="word-counter.html">在线字数统计</a></li>
-                    <li><a href="whitespace-cleaner.html">空白字符清理</a></li>
-                    <li><a href="template-filler.html">模板填充器</a></li>
-                </ul>
-            </div>
+          <div class="sidebar-section">
+            <h3>相关工具</h3>
+            <ul>
+              <li><a href="case-converter.html">大小写转换</a></li>
+              <li><a href="word-counter.html">在线字数统计</a></li>
+              <li><a href="whitespace-cleaner.html">空白字符清理</a></li>
+              <li><a href="template-filler.html">模板填充器</a></li>
+            </ul>
+          </div>
 
-            <div class="ad-placeholder">
-                广告占位符<br>(Google AdSense)
-            </div>
+          <div class="ad-placeholder">
+            广告占位符
+            <br />
+            (Google AdSense)
+          </div>
         </aside>
+      </div>
+
+      <footer>
+        <p>
+          &copy; 2024 WebUtils. All rights reserved. |
+          <a href="../../index.html">返回首页</a>
+        </p>
+      </footer>
     </div>
 
-    <footer>
-        <p>&copy; 2024 WebUtils. All rights reserved. | <a href="../../index.html">返回首页</a></p>
-    </footer>
-</div>
+    <script>
+      const inputTitle = document.getElementById("inputTitle");
+      const slugValue = document.getElementById("slugValue");
+      const origLen = document.getElementById("origLen");
+      const slugLen = document.getElementById("slugLen");
+      const optLower = document.getElementById("optLower");
+      const optSeparator = document.getElementById("optSeparator");
+      const optTrim = document.getElementById("optTrim");
+      const optStrict = document.getElementById("optStrict");
+      const copyBtn = document.getElementById("copyBtn");
 
-<script>
-    const inputTitle = document.getElementById('inputTitle');
-    const slugValue = document.getElementById('slugValue');
-    const origLen = document.getElementById('origLen');
-    const slugLen = document.getElementById('slugLen');
-    const optLower = document.getElementById('optLower');
-    const optSeparator = document.getElementById('optSeparator');
-    const optTrim = document.getElementById('optTrim');
-    const optStrict = document.getElementById('optStrict');
-    const copyBtn = document.getElementById('copyBtn');
+      const charMap = {
+        à: "a",
+        á: "a",
+        â: "a",
+        ã: "a",
+        ä: "a",
+        å: "a",
+        æ: "ae",
+        ç: "c",
+        è: "e",
+        é: "e",
+        ê: "e",
+        ë: "e",
+        ì: "i",
+        í: "i",
+        î: "i",
+        ï: "i",
+        ð: "d",
+        ñ: "n",
+        ò: "o",
+        ó: "o",
+        ô: "o",
+        õ: "o",
+        ö: "o",
+        ø: "o",
+        ù: "u",
+        ú: "u",
+        û: "u",
+        ü: "u",
+        ý: "y",
+        þ: "th",
+        ÿ: "y",
+        ß: "ss",
+        ł: "l",
+        ő: "o",
+        ű: "u",
+        ţ: "t",
+        ą: "a",
+        ę: "e",
+        ś: "s",
+        ź: "z",
+        ż: "z",
+        ń: "n",
+        ć: "c",
+        ĺ: "l",
+        ŕ: "r",
+        ď: "d",
+        ť: "t",
+        ň: "n",
+        ľ: "l",
+        "&": "and",
+        "@": "at",
+        "©": "c",
+        "®": "r",
+        "™": "tm"
+      };
 
-    const charMap = {
-        'à': 'a', 'á': 'a', 'â': 'a', 'ã': 'a', 'ä': 'a', 'å': 'a', 'æ': 'ae', 'ç': 'c',
-        'è': 'e', 'é': 'e', 'ê': 'e', 'ë': 'e', 'ì': 'i', 'í': 'i', 'î': 'i', 'ï': 'i',
-        'ð': 'd', 'ñ': 'n', 'ò': 'o', 'ó': 'o', 'ô': 'o', 'õ': 'o', 'ö': 'o', 'ø': 'o',
-        'ù': 'u', 'ú': 'u', 'û': 'u', 'ü': 'u', 'ý': 'y', 'þ': 'th', 'ÿ': 'y', 'ß': 'ss',
-        'ł': 'l', 'ő': 'o', 'ű': 'u', 'ţ': 't', 'ą': 'a', 'ę': 'e', 'ś': 's', 'ź': 'z',
-        'ż': 'z', 'ń': 'n', 'ć': 'c', 'ĺ': 'l', 'ŕ': 'r', 'ď': 'd', 'ť': 't', 'ň': 'n',
-        'ľ': 'l', '&': 'and', '@': 'at', '©': 'c', '®': 'r', '™': 'tm'
-    };
-
-    function generateSlug(text) {
+      function generateSlug(text) {
         let separator = optSeparator.value;
         let result = text;
 
@@ -303,96 +699,101 @@
         if (optLower.checked) result = result.toLowerCase();
 
         // Mapping characters
-        result = result.split('').map(char => charMap[char] || char).join('');
+        result = result
+          .split("")
+          .map((char) => charMap[char] || char)
+          .join("");
 
         if (optStrict.checked) {
-            result = result.replace(/[^a-z0-9\s]/gi, '');
+          result = result.replace(/[^a-z0-9\s]/gi, "");
         } else {
-            // Remove common Chinese punctuation and non-slug characters
-            result = result.replace(/[^\w\s\-.]/gi, '');
+          // Remove common Chinese punctuation and non-slug characters
+          result = result.replace(/[^\w\s\-.]/gi, "");
         }
 
         // Replace spaces and multiple separators
-        const sep = separator || ' ';
+        const sep = separator || " ";
         result = result.replace(/\s+/g, sep);
 
         if (separator) {
-            // Escape separator for regex
-            const escapedSep = separator.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const re = new RegExp(escapedSep + '+', 'g');
-            result = result.replace(re, separator);
-            // Trim separators from ends
-            const startEndRe = new RegExp(`^${escapedSep}|${escapedSep}$`, 'g');
-            result = result.replace(startEndRe, '');
+          // Escape separator for regex
+          const escapedSep = separator.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+          const re = new RegExp(escapedSep + "+", "g");
+          result = result.replace(re, separator);
+          // Trim separators from ends
+          const startEndRe = new RegExp(`^${escapedSep}|${escapedSep}$`, "g");
+          result = result.replace(startEndRe, "");
         }
 
         return result;
-    }
+      }
 
-    function update() {
+      function update() {
         const text = inputTitle.value;
         const slug = generateSlug(text);
-        
-        slugValue.textContent = slug || '-';
+
+        slugValue.textContent = slug || "-";
         origLen.textContent = text.length;
         slugLen.textContent = slug.length;
-    }
+      }
 
-    function clearInput() {
-        inputTitle.value = '';
+      function clearInput() {
+        inputTitle.value = "";
         update();
         inputTitle.focus();
-    }
+      }
 
-    async function pasteFromClipboard() {
+      async function pasteFromClipboard() {
         try {
-            const text = await navigator.clipboard.readText();
-            inputTitle.value = text;
-            update();
+          const text = await navigator.clipboard.readText();
+          inputTitle.value = text;
+          update();
         } catch (err) {
-            alert('无法读取剪贴板内容，请手动粘贴。');
+          alert("无法读取剪贴板内容，请手动粘贴。");
         }
-    }
+      }
 
-    copyBtn.addEventListener('click', () => {
+      copyBtn.addEventListener("click", () => {
         const val = slugValue.textContent;
-        if (!val || val === '-') return;
+        if (!val || val === "-") return;
         navigator.clipboard.writeText(val).then(() => {
-            const originalText = copyBtn.textContent;
-            copyBtn.innerHTML = `
+          const originalText = copyBtn.textContent;
+          copyBtn.innerHTML = `
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
                 已复制
             `;
-            setTimeout(() => { copyBtn.innerHTML = `
+          setTimeout(() => {
+            copyBtn.innerHTML = `
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                 复制结果
-            `; }, 2000);
+            `;
+          }, 2000);
         });
-    });
+      });
 
-    // Events
-    inputTitle.addEventListener('input', update);
-    [optLower, optSeparator, optTrim, optStrict].forEach(el => {
-        el.addEventListener('change', update);
-    });
+      // Events
+      inputTitle.addEventListener("input", update);
+      [optLower, optSeparator, optTrim, optStrict].forEach((el) => {
+        el.addEventListener("change", update);
+      });
 
-    // Theme Toggle
-    function toggleTheme() {
-        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-        const newTheme = isDark ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', newTheme);
-        document.getElementById('themeBtn').textContent = newTheme === 'dark' ? '☀️' : '🌙';
-        localStorage.setItem('tool_theme', newTheme);
-    }
+      // Theme Toggle
+      function toggleTheme() {
+        const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+        const newTheme = isDark ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", newTheme);
+        document.getElementById("themeBtn").textContent = newTheme === "dark" ? "☀️" : "🌙";
+        localStorage.setItem("tool_theme", newTheme);
+      }
 
-    const savedTheme = localStorage.getItem('tool_theme') || 'light';
-    if (savedTheme === 'dark') {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        document.getElementById('themeBtn').textContent = '☀️';
-    }
+      const savedTheme = localStorage.getItem("tool_theme") || "light";
+      if (savedTheme === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+        document.getElementById("themeBtn").textContent = "☀️";
+      }
 
-    // Initial run
-    update();
-</script>
-</body>
+      // Initial run
+      update();
+    </script>
+  </body>
 </html>

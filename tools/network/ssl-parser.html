@@ -5,15 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SSL 证书解析器 - 在线 PEM 证书查看与 X.509 格式分析工具 | WebUtils</title>
     <!-- SEO Meta Tags -->
-    <meta name="description" content="免费在线 SSL 证书解析工具。支持解析 PEM 格式证书，提取颁发者、使用者、有效期、指纹、加密算法及扩展字段。帮助系统管理员验证证书正确性并排查 HTTPS 配置问题。" />
-    <meta name="keywords" content="SSL证书解析,PEM解码,X.509分析,证书有效期查询,公钥提取,在线工具" />
+    <meta
+      name="description"
+      content="免费在线 SSL 证书解析工具。支持解析 PEM 格式证书，提取颁发者、使用者、有效期、指纹、加密算法及扩展字段。帮助系统管理员验证证书正确性并排查 HTTPS 配置问题。"
+    />
+    <meta
+      name="keywords"
+      content="SSL证书解析,PEM解码,X.509分析,证书有效期查询,公钥提取,在线工具"
+    />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/network/ssl-parser.html" />
 
     <!-- Open Graph -->
     <meta property="og:title" content="SSL 证书解析器 - 在线 PEM 证书查看与 X.509 格式分析工具" />
-    <meta property="og:description" content="深入解析 SSL/TLS 证书内容，支持 PEM 格式解码与详细字段提取。" />
+    <meta
+      property="og:description"
+      content="深入解析 SSL/TLS 证书内容，支持 PEM 格式解码与详细字段提取。"
+    />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://essays4u.net/tools/network/ssl-parser.html" />
     <meta property="og:site_name" content="WebUtils" />
@@ -23,7 +32,10 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
 
     <style>
       :root {
@@ -61,7 +73,11 @@
         --accent-hover: #059669;
       }
 
-      * { box-sizing: border-box; margin: 0; padding: 0; }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
       body {
         font-family: var(--font-sans);
         background: var(--bg-body);
@@ -70,59 +86,197 @@
         min-height: 100vh;
       }
 
-      .container { max-width: 1000px; margin: 0 auto; padding: 40px 20px; }
-      
-      .breadcrumb {
-        display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 24px;
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 40px 20px;
       }
-      .breadcrumb a { color: var(--text-secondary); text-decoration: none; }
-      .breadcrumb a:hover { color: var(--accent); }
 
-      .header { margin-bottom: 32px; text-align: center; }
-      .header h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.02em; }
-      .header p { color: var(--text-secondary); font-size: 1.1rem; }
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-bottom: 24px;
+      }
+      .breadcrumb a {
+        color: var(--text-secondary);
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        color: var(--accent);
+      }
+
+      .header {
+        margin-bottom: 32px;
+        text-align: center;
+      }
+      .header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+        letter-spacing: -0.02em;
+      }
+      .header p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+      }
 
       .adsense-placeholder {
-        min-height: 90px; background: rgba(128,128,128,0.03); margin: 32px 0; border: 1px dashed var(--border-color); border-radius: var(--radius-md);
-        display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem;
+        min-height: 90px;
+        background: rgba(128, 128, 128, 0.03);
+        margin: 32px 0;
+        border: 1px dashed var(--border-color);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        font-size: 0.8rem;
       }
 
       .main-card {
-        background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 32px; margin-bottom: 40px; box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 32px;
+        margin-bottom: 40px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
       }
 
-      .input-group { margin-bottom: 24px; }
-      .input-group label { display: block; margin-bottom: 12px; font-weight: 600; color: var(--text-secondary); }
-      textarea {
-        width: 100%; min-height: 200px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; color: var(--text-primary); font-family: var(--font-mono); font-size: 0.85rem; resize: vertical;
+      .input-group {
+        margin-bottom: 24px;
       }
-      textarea:focus { outline: none; border-color: var(--accent); }
+      .input-group label {
+        display: block;
+        margin-bottom: 12px;
+        font-weight: 600;
+        color: var(--text-secondary);
+      }
+      textarea {
+        width: 100%;
+        min-height: 200px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 16px;
+        color: var(--text-primary);
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        resize: vertical;
+      }
+      textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
 
       .btn-primary {
-        background: var(--accent); color: #000; border: none; border-radius: var(--radius-sm); padding: 12px 32px; font-weight: 700; cursor: pointer; transition: all 0.2s; width: 100%;
+        background: var(--accent);
+        color: #000;
+        border: none;
+        border-radius: var(--radius-sm);
+        padding: 12px 32px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        width: 100%;
       }
-      .btn-primary:hover { background: var(--accent-hover); box-shadow: 0 0 15px var(--accent-glow); }
+      .btn-primary:hover {
+        background: var(--accent-hover);
+        box-shadow: 0 0 15px var(--accent-glow);
+      }
 
-      .results-area { margin-top: 40px; display: none; }
-      .results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-      .result-card { background: var(--bg-input); padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color); }
-      .result-card h3 { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
-      
-      .info-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; }
-      .info-label { color: var(--text-secondary); min-width: 100px; }
-      .info-value { font-family: var(--font-mono); font-weight: 500; text-align: right; word-break: break-all; }
-      .info-value.success { color: var(--success); }
-      .info-value.error { color: var(--error); }
+      .results-area {
+        margin-top: 40px;
+        display: none;
+      }
+      .results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+      }
+      .result-card {
+        background: var(--bg-input);
+        padding: 20px;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-color);
+      }
+      .result-card h3 {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 16px;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 8px;
+      }
 
-      .article-section { margin-top: 64px; border-top: 1px solid var(--border-color); padding-top: 48px; }
-      .article-section h2 { font-size: 1.75rem; margin-bottom: 24px; color: var(--text-primary); }
-      .article-section h3 { font-size: 1.25rem; margin-top: 32px; margin-bottom: 16px; color: var(--text-primary); }
-      .article-section p { margin-bottom: 16px; color: var(--text-secondary); line-height: 1.8; }
-      .article-section ul { margin-bottom: 24px; padding-left: 20px; color: var(--text-secondary); }
-      .article-section li { margin-bottom: 12px; }
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+      }
+      .info-label {
+        color: var(--text-secondary);
+        min-width: 100px;
+      }
+      .info-value {
+        font-family: var(--font-mono);
+        font-weight: 500;
+        text-align: right;
+        word-break: break-all;
+      }
+      .info-value.success {
+        color: var(--success);
+      }
+      .info-value.error {
+        color: var(--error);
+      }
+
+      .article-section {
+        margin-top: 64px;
+        border-top: 1px solid var(--border-color);
+        padding-top: 48px;
+      }
+      .article-section h2 {
+        font-size: 1.75rem;
+        margin-bottom: 24px;
+        color: var(--text-primary);
+      }
+      .article-section h3 {
+        font-size: 1.25rem;
+        margin-top: 32px;
+        margin-bottom: 16px;
+        color: var(--text-primary);
+      }
+      .article-section p {
+        margin-bottom: 16px;
+        color: var(--text-secondary);
+        line-height: 1.8;
+      }
+      .article-section ul {
+        margin-bottom: 24px;
+        padding-left: 20px;
+        color: var(--text-secondary);
+      }
+      .article-section li {
+        margin-bottom: 12px;
+      }
 
       .theme-toggle {
-        position: fixed; top: 20px; right: 20px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 8px 12px; cursor: pointer; color: var(--text-secondary); font-size: 0.8rem; z-index: 100;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 8px 12px;
+        cursor: pointer;
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        z-index: 100;
       }
     </style>
   </head>
@@ -151,7 +305,10 @@
       <main class="main-card">
         <div class="input-group">
           <label for="pemInput">粘贴 PEM 格式证书 (需包含 BEGIN/END CERTIFICATE 标记)</label>
-          <textarea id="pemInput" placeholder="-----BEGIN CERTIFICATE-----&#10;...&#10;-----END CERTIFICATE-----"></textarea>
+          <textarea
+            id="pemInput"
+            placeholder="-----BEGIN CERTIFICATE-----&#10;...&#10;-----END CERTIFICATE-----"
+          ></textarea>
         </div>
         <button class="btn-primary" id="parseBtn">立即解析分析</button>
 
@@ -184,22 +341,60 @@
 
       <section class="article-section">
         <h2>深度解析：SSL 证书在 HTTPS 加密中的核心作用</h2>
-        <p>SSL（Secure Sockets Layer）证书是建立安全 HTTPS 连接的电子凭证。它通过非对称加密技术，确保了用户浏览器与服务器之间传输数据的机密性、完整性和真实性。一个典型的 X.509 格式证书包含了大量的技术细节，理解这些细节对于保障网站安全至关重要。</p>
-        
+        <p>
+          SSL（Secure Sockets Layer）证书是建立安全 HTTPS
+          连接的电子凭证。它通过非对称加密技术，确保了用户浏览器与服务器之间传输数据的机密性、完整性和真实性。一个典型的
+          X.509 格式证书包含了大量的技术细节，理解这些细节对于保障网站安全至关重要。
+        </p>
+
         <h3>SSL 证书中的关键字段解析</h3>
         <ul>
-          <li><strong>Common Name (CN)：</strong> 证书绑定的主域名。例如 <code>*.essays4u.net</code>。如果 CN 与用户访问的域名不匹配，浏览器会提示安全警告。</li>
-          <li><strong>Subject Alternative Name (SAN)：</strong> 备用名称字段。现代证书允许在一个证书中绑定多个域名或 IP 地址，均列在此字段中。</li>
-          <li><strong>Fingerprint (指纹)：</strong> 证书内容的唯一哈希值（通常为 SHA-256）。用于验证证书是否在传输过程中被篡改。</li>
-          <li><strong>Signature Algorithm：</strong> 签名算法。目前主流且安全的是 <code>sha256WithRSAEncryption</code> 或 <code>ecdsa-with-SHA256</code>。</li>
+          <li>
+            <strong>Common Name (CN)：</strong>
+            证书绑定的主域名。例如
+            <code>*.essays4u.net</code>
+            。如果 CN 与用户访问的域名不匹配，浏览器会提示安全警告。
+          </li>
+          <li>
+            <strong>Subject Alternative Name (SAN)：</strong>
+            备用名称字段。现代证书允许在一个证书中绑定多个域名或 IP 地址，均列在此字段中。
+          </li>
+          <li>
+            <strong>Fingerprint (指纹)：</strong>
+            证书内容的唯一哈希值（通常为 SHA-256）。用于验证证书是否在传输过程中被篡改。
+          </li>
+          <li>
+            <strong>Signature Algorithm：</strong>
+            签名算法。目前主流且安全的是
+            <code>sha256WithRSAEncryption</code>
+            或
+            <code>ecdsa-with-SHA256</code>
+            。
+          </li>
         </ul>
 
         <h3>如何解决证书配置与部署中的常见问题？</h3>
-        <p><strong>场景一：网站提示“证书已过期”。</strong> 使用本工具解析您的 PEM 文件，检查 <code>Not After</code> 字段。如果证书确实过期，您需要向 CA 机构（如 Let's Encrypt）申请续期并更新服务器配置。</p>
-        <p><strong>场景二：中间证书缺失。</strong> 有时服务器只部署了叶子证书，导致某些客户端提示“不安全”。本工具可以帮助您确认证书的颁发者链（Issuer），从而判断是否需要补全 CA 证书链（Bundle）。</p>
+        <p>
+          <strong>场景一：网站提示“证书已过期”。</strong>
+          使用本工具解析您的 PEM 文件，检查
+          <code>Not After</code>
+          字段。如果证书确实过期，您需要向 CA 机构（如 Let's Encrypt）申请续期并更新服务器配置。
+        </p>
+        <p>
+          <strong>场景二：中间证书缺失。</strong>
+          有时服务器只部署了叶子证书，导致某些客户端提示“不安全”。本工具可以帮助您确认证书的颁发者链（Issuer），从而判断是否需要补全
+          CA 证书链（Bundle）。
+        </p>
 
         <h3>PEM 格式说明</h3>
-        <p>PEM（Privacy Enhanced Mail）是 SSL 证书最常见的存储格式。它以 <code>-----BEGIN CERTIFICATE-----</code> 开头，以 <code>-----END CERTIFICATE-----</code> 结尾，中间部分是经过 Base64 编码的二进制数据。本工具通过本地 JavaScript 解码这些数据，无需将您的敏感证书上传到任何服务器。</p>
+        <p>
+          PEM（Privacy Enhanced Mail）是 SSL 证书最常见的存储格式。它以
+          <code>-----BEGIN CERTIFICATE-----</code>
+          开头，以
+          <code>-----END CERTIFICATE-----</code>
+          结尾，中间部分是经过 Base64 编码的二进制数据。本工具通过本地 JavaScript
+          解码这些数据，无需将您的敏感证书上传到任何服务器。
+        </p>
       </section>
 
       <!-- Google AdSense Placeholder - Bottom -->
@@ -210,25 +405,25 @@
 
     <script>
       // 主题切换逻辑
-      const themeToggle = document.getElementById('themeToggle');
+      const themeToggle = document.getElementById("themeToggle");
       const html = document.documentElement;
-      const savedTheme = localStorage.getItem('theme') || 'dark';
-      html.setAttribute('data-theme', savedTheme);
-      themeToggle.textContent = savedTheme === 'dark' ? '切换到亮色' : '切换到暗色';
-      themeToggle.addEventListener('click', () => {
-        const currentTheme = html.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        html.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-        themeToggle.textContent = newTheme === 'dark' ? '切换到亮色' : '切换到暗色';
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      html.setAttribute("data-theme", savedTheme);
+      themeToggle.textContent = savedTheme === "dark" ? "切换到亮色" : "切换到暗色";
+      themeToggle.addEventListener("click", () => {
+        const currentTheme = html.getAttribute("data-theme");
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+        html.setAttribute("data-theme", newTheme);
+        localStorage.setItem("theme", newTheme);
+        themeToggle.textContent = newTheme === "dark" ? "切换到亮色" : "切换到暗色";
       });
 
       // 解析逻辑 (演示版 - 实际解析 X509 需要 ASN.1 库，这里做模拟展示核心逻辑)
-      const pemInput = document.getElementById('pemInput');
-      const parseBtn = document.getElementById('parseBtn');
-      const resultsArea = document.getElementById('resultsArea');
+      const pemInput = document.getElementById("pemInput");
+      const parseBtn = document.getElementById("parseBtn");
+      const resultsArea = document.getElementById("resultsArea");
 
-      function renderRow(label, value, extraClass = '') {
+      function renderRow(label, value, extraClass = "") {
         return `
           <div class="info-row">
             <span class="info-label">${label}</span>
@@ -239,31 +434,31 @@
 
       function parseCert() {
         const pem = pemInput.value.trim();
-        if (!pem.includes('BEGIN CERTIFICATE')) return alert('无效的 PEM 格式证书');
+        if (!pem.includes("BEGIN CERTIFICATE")) return alert("无效的 PEM 格式证书");
 
         // 模拟解析过程 (实际项目中建议引入 forge 或 pkjs 库)
-        resultsArea.style.display = 'block';
-        
-        document.getElementById('subjectInfo').innerHTML = 
-          renderRow('Common Name', 'essays4u.net') +
-          renderRow('Organization', 'WebUtils Security') +
-          renderRow('Country', 'CN');
+        resultsArea.style.display = "block";
 
-        document.getElementById('issuerInfo').innerHTML = 
-          renderRow('Common Name', 'Let\'s Encrypt Authority R3') +
-          renderRow('Organization', 'Let\'s Encrypt') +
-          renderRow('Country', 'US');
+        document.getElementById("subjectInfo").innerHTML =
+          renderRow("Common Name", "essays4u.net") +
+          renderRow("Organization", "WebUtils Security") +
+          renderRow("Country", "CN");
 
-        document.getElementById('validityInfo').innerHTML = 
-          renderRow('Not Before', '2026-01-01 00:00:00') +
-          renderRow('Not After', '2026-12-31 23:59:59') +
-          renderRow('状态', '✅ 仍在有效期内', 'success');
+        document.getElementById("issuerInfo").innerHTML =
+          renderRow("Common Name", "Let's Encrypt Authority R3") +
+          renderRow("Organization", "Let's Encrypt") +
+          renderRow("Country", "US");
 
-        document.getElementById('metaInfo').innerHTML = 
-          renderRow('版本', 'X.509 v3') +
-          renderRow('序列号', '03:AF:B2:...') +
-          renderRow('签名算法', 'sha256WithRSAEncryption') +
-          renderRow('指纹 (SHA256)', 'E3:B0:C4:...');
+        document.getElementById("validityInfo").innerHTML =
+          renderRow("Not Before", "2026-01-01 00:00:00") +
+          renderRow("Not After", "2026-12-31 23:59:59") +
+          renderRow("状态", "✅ 仍在有效期内", "success");
+
+        document.getElementById("metaInfo").innerHTML =
+          renderRow("版本", "X.509 v3") +
+          renderRow("序列号", "03:AF:B2:...") +
+          renderRow("签名算法", "sha256WithRSAEncryption") +
+          renderRow("指纹 (SHA256)", "E3:B0:C4:...");
       }
 
       parseBtn.onclick = parseCert;
