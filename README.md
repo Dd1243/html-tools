@@ -102,7 +102,7 @@
 | 平台              | 链接                                    | 状态    |
 | ----------------- | --------------------------------------- | ------- |
 | **🌐 自定义域名** | https://essays4u.net                    | ✅      |
-| GitHub Pages      | https://chicogong.github.io/html-tools/ | ✅      |
+| GitHub Pages      | https://essays4u.net/                   | ✅      |
 | Cloudflare Pages  | https://htmltools-bkt.pages.dev         | ✅      |
 | Vercel            | https://html-tools-jade.vercel.app      | ✅      |
 | Render            | https://webutils-uj15.onrender.com      | ✅      |
@@ -383,7 +383,7 @@
 
 ### 在线使用
 
-访问 GitHub Pages: https://chicogong.github.io/html-tools/
+访问 GitHub Pages: https://essays4u.net/
 
 ### 本地使用
 
@@ -461,7 +461,7 @@ npm install
 
 ### 本地预览
 
-无需任何构建步骤，直接用浏览器打开 HTML 文件即可：
+无需 any 构建步骤，直接用浏览器打开 HTML 文件即可：
 
 ```bash
 # macOS
