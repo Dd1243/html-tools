@@ -1,513 +1,242 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>利润率计算器 - WebUtils</title>
-    <meta
-      name="description"
-      content="在线计算毛利率、净利率等利润指标，帮助企业分析盈利能力和经营效�?
-    />
-    <meta name="keywords" content="利润�? 毛利�? 净利率, 盈利分析, 财务指标, 企业盈利" />
-    <meta property="og:title" content="利润率计算器 - WebUtils" />
-    <meta
-      property="og:description"
-      content="在线计算毛利率、净利率等利润指标，帮助企业分析盈利能力和经营效�?
-    />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/business/profit-margin" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <link rel="canonical" href="https://essays4u.net/tools/business/profit-margin" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>企业利润率分析计算器 - 毛利与净利精准测算 - WebUtils</title>
+    
+    <meta name="description" content="在线分析企业利润率，支持毛利率、营业利润率及净利率计算。通过输入销售收入、成本及各项运营费用，生成直观的盈利能力看板和健康度仪表盘，助您优化财务结构。">
+    <meta name="keywords" content="利润率计算器,毛利率分析,净利率计算,营业利润,企业财务工具,WebUtils">
+    <meta name="author" content="WebUtils">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://essays4u.net/tools/business/profit-margin">
+    <meta property="og:title" content="企业利润率分析计算器 - WebUtils">
+    <meta property="og:description" content="全方位测算企业盈利指标，洞察经营效益。">
+    <meta property="og:image" content="https://essays4u.net/assets/img/og-business.png">
+
+    <link rel="canonical" href="https://essays4u.net/tools/business/profit-margin">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "利润率分析计算器",
+      "url": "https://essays4u.net/tools/business/profit-margin",
+      "description": "计算毛利、净利及各项利润率的综合财务分析工具。",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "All"
+    }
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
+        :root {
+            --bg-deep: #0a0a0f;
+            --bg-surface: #12121a;
+            --bg-card: #1a1a24;
+            --text-primary: #e8e8ed;
+            --text-secondary: #8888a0;
+            --accent-cyan: #00f5d4;
+            --accent-magenta: #f72585;
+            --accent-green: #10b981;
+            --accent-red: #f43f5e;
+            --border-subtle: #2a2a3a;
+            --radius-lg: 12px;
+            --font-sans: 'Space Grotesk', system-ui, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
 
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
+        [data-theme="light"] {
+            --bg-deep: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --border-subtle: #e2e8f0;
+        }
 
-      body {
-        font-family: var(--font-sans);
-        font-size: 16px;
-        line-height: 1.6;
-        background: var(--bg-deep);
-        color: var(--text-primary);
-        min-height: 100vh;
-        padding: 20px;
-      }
-      .container {
-        max-width: 800px;
-        margin: 0 auto;
-      }
-      .back-link {
-        display: inline-block;
-        margin-bottom: 16px;
-        color: var(--accent-cyan);
-        text-decoration: none;
-        font-size: 0.9rem;
-      }
-      .back-link:hover {
-        text-decoration: underline;
-      }
-      h1 {
-        text-align: center;
-        margin-bottom: 8px;
-        font-size: 1.8rem;
-      }
-      .subtitle {
-        text-align: center;
-        color: var(--text-secondary);
-        margin-bottom: 24px;
-      }
-      .card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 16px;
-      }
-      .card-title {
-        font-weight: 600;
-        margin-bottom: 16px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 16px;
-      }
-      .form-group {
-        margin-bottom: 16px;
-      }
-      .form-group label {
-        display: block;
-        margin-bottom: 6px;
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-      }
-      input {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        background: var(--bg-deep);
-        color: var(--text-primary);
-        font-size: 1rem;
-      }
-      input:focus {
-        outline: none;
-        border-color: var(--accent-cyan);
-      }
-      .btn {
-        padding: 12px 24px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 1rem;
-        transition: all 0.2s;
-      }
-      .btn-primary {
-        background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
-        color: white;
-        width: 100%;
-      }
-      .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
-      }
-      .result-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 16px;
-      }
-      .result-item {
-        background: var(--bg-deep);
-        border-radius: 12px;
-        padding: 20px;
-        text-align: center;
-      }
-      .result-icon {
-        font-size: 2rem;
-        margin-bottom: 8px;
-      }
-      .result-label {
-        font-size: 0.85rem;
-        color: var(--text-secondary);
-        margin-bottom: 8px;
-      }
-      .result-value {
-        font-size: 1.8rem;
-        font-weight: 700;
-      }
-      .result-value.green {
-        color: var(--accent-green);
-      }
-      .result-value.red {
-        color: var(--accent-red);
-      }
-      .result-value.orange {
-        color: var(--orange);
-      }
-      .gauge-container {
-        margin: 20px 0;
-        text-align: center;
-      }
-      .gauge {
-        width: 200px;
-        height: 100px;
-        margin: 0 auto;
-        position: relative;
-        overflow: hidden;
-      }
-      .gauge-bg {
-        width: 200px;
-        height: 100px;
-        border-radius: 100px 100px 0 0;
-        background: var(--border-subtle);
-        position: absolute;
-      }
-      .gauge-fill {
-        width: 200px;
-        height: 100px;
-        border-radius: 100px 100px 0 0;
-        background: linear-gradient(90deg, var(--accent-red), var(--orange), var(--accent-green));
-        position: absolute;
-        transform-origin: bottom center;
-        transform: rotate(-90deg);
-        transition: transform 0.5s;
-      }
-      .gauge-cover {
-        width: 160px;
-        height: 80px;
-        border-radius: 80px 80px 0 0;
-        background: var(--bg-card);
-        position: absolute;
-        top: 20px;
-        left: 20px;
-      }
-      .gauge-value {
-        position: absolute;
-        bottom: 10px;
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: 1.5rem;
-        font-weight: 700;
-      }
-      .formula-box {
-        background: var(--bg-deep);
-        border-radius: 8px;
-        padding: 16px;
-        margin-top: 16px;
-      }
-      .formula-title {
-        font-size: 0.9rem;
-        color: var(--accent-cyan);
-        margin-bottom: 8px;
-      }
-      .formula {
-        font-family: var(--font-mono);
-        color: var(--text-secondary);
-        line-height: 1.8;
-      }
-      .hidden {
-        display: none;
-      }
-      .theme-toggle {
-        position: fixed;
-        top: 16px;
-        right: 16px;
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        padding: 8px 12px;
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-      }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--font-sans); background-color: var(--bg-deep); color: var(--text-primary); line-height: 1.6; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        
+        .ad-slot { background: rgba(128, 128, 128, 0.05); border: 1px dashed var(--border-subtle); margin: 20px 0; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); font-size: 0.8rem; min-height: 90px; }
+
+        header { text-align: center; margin-bottom: 40px; }
+        h1 { font-size: 2.5rem; margin-bottom: 10px; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .tool-grid { display: grid; grid-template-columns: 1fr 380px; gap: 24px; margin-bottom: 40px; }
+        @media (max-width: 1024px) { .tool-grid { grid-template-columns: 1fr; } }
+
+        .card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 24px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+
+        .input-group { margin-bottom: 18px; }
+        label { display: block; margin-bottom: 8px; color: var(--text-secondary); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; }
+        input { width: 100%; padding: 12px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 8px; color: var(--text-primary); font-family: var(--font-mono); }
+        input:focus { border-color: var(--accent-cyan); outline: none; }
+
+        .dashboard-item { background: var(--bg-surface); padding: 16px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid var(--accent-cyan); }
+        .dashboard-label { font-size: 0.75rem; color: var(--text-secondary); }
+        .dashboard-value { font-size: 1.4rem; font-weight: 700; font-family: var(--font-mono); }
+
+        /* Gauge */
+        .gauge-wrap { margin-top: 20px; text-align: center; }
+        .gauge { width: 200px; height: 100px; margin: 0 auto; position: relative; overflow: hidden; }
+        .gauge-bg { width: 200px; height: 100px; border-radius: 100px 100px 0 0; background: var(--border-subtle); position: absolute; }
+        .gauge-fill { width: 200px; height: 100px; border-radius: 100px 100px 0 0; background: linear-gradient(90deg, var(--accent-red), #fbbf24, var(--accent-green)); position: absolute; transform-origin: bottom center; transform: rotate(-90deg); transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .gauge-cover { width: 160px; height: 80px; border-radius: 80px 80px 0 0; background: var(--bg-card); position: absolute; top: 20px; left: 20px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 10px; font-weight: 700; font-size: 1.2rem; }
+
+        article { margin-top: 60px; padding: 40px; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); }
+        article h2 { margin: 30px 0 20px; color: var(--accent-green); }
+        article h3 { margin: 25px 0 15px; color: var(--text-primary); }
+        article p { margin-bottom: 15px; color: var(--text-secondary); }
+
+        .theme-toggle { position: fixed; top: 20px; right: 20px; cursor: pointer; z-index: 100; background: var(--bg-card); padding: 10px; border-radius: 50%; border: 1px solid var(--border-subtle); width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
     <div class="container">
-      <a href="../../index.html" class="back-link">�?返回</a>
-      <button class="theme-toggle" onclick="toggleTheme()" title="切换主题" aria-label="🌓">
-        🌓
-      </button>
-      <h1>📊 利润率计算器</h1>
-      <p class="subtitle">计算毛利率、净利率等关键盈利指�?/p>
+        <header>
+            <a href="../../index.html" style="color: var(--accent-cyan); text-decoration: none; margin-bottom: 20px; display: inline-block;">← 返回首页</a>
+            <h1>企业利润率分析计算器</h1>
+            <p style="color: var(--text-secondary);">全维度透视盈利结构，优化业务毛利空间</p>
+        </header>
 
-      <div class="card">
-        <div class="card-title">💰 收入信息</div>
-        <div class="grid">
-          <div class="form-group">
-            <label for="input---------">销售收�?(�?</label>
-            <input
-              type="number"
-              id="revenue"
-              value="100000"
-              min="0"
-              aria-label="数字输入�?
-              placeholder="请输入数字输入框"
-            />
-          </div>
-          <div class="form-group">
-            <label for="input---------">销售成�?(�?</label>
-            <input
-              type="number"
-              id="cogs"
-              value="60000"
-              min="0"
-              aria-label="数字输入�?
-              placeholder="请输入数字输入框"
-            />
-          </div>
-        </div>
-      </div>
+        <div class="ad-slot">Google AdSense - Header</div>
 
-      <div class="card">
-        <div class="card-title">📋 运营费用</div>
-        <div class="grid">
-          <div class="form-group">
-            <label for="input---------">管理费用 (�?</label>
-            <input
-              type="number"
-              id="adminExpense"
-              value="10000"
-              min="0"
-              aria-label="数字输入�?
-              placeholder="请输入数字输入框"
-            />
-          </div>
-          <div class="form-group">
-            <label for="input---------">销售费�?(�?</label>
-            <input
-              type="number"
-              id="salesExpense"
-              value="8000"
-              min="0"
-              aria-label="数字输入�?
-              placeholder="请输入数字输入框"
-            />
-          </div>
-          <div class="form-group">
-            <label for="input---------">财务费用 (�?</label>
-            <input
-              type="number"
-              id="financeExpense"
-              value="2000"
-              min="0"
-              aria-label="数字输入�?
-              placeholder="请输入数字输入框"
-            />
-          </div>
-          <div class="form-group">
-            <label for="input-------">税费 (�?</label>
-            <input
-              type="number"
-              id="tax"
-              value="5000"
-              min="0"
-              aria-label="数字输入�?
-              placeholder="请输入数字输入框"
-            />
-          </div>
-        </div>
-        <button class="btn btn-primary" onclick="calculate()" aria-label="计算利润�?>
-          计算利润�?
-        </button>
-      </div>
+        <main class="tool-grid">
+            <section>
+                <div class="card" style="margin-bottom: 24px;">
+                    <h3 style="margin-bottom: 20px; font-size: 1rem; color: var(--accent-cyan);">💰 核心收入与成本</h3>
+                    <div class="grid-2">
+                        <div class="input-group">
+                            <label>年度销售收入 (¥)</label>
+                            <input type="number" id="revenue" value="100000" oninput="calculate()">
+                        </div>
+                        <div class="input-group">
+                            <label>销售直接成本 (¥)</label>
+                            <input type="number" id="cogs" value="60000" oninput="calculate()">
+                        </div>
+                    </div>
+                </div>
 
-      <div id="resultSection" class="hidden">
-        <div class="card">
-          <div class="card-title">📈 利润分析</div>
-          <div class="result-grid">
-            <div class="result-item">
-              <div class="result-icon">💵</div>
-              <div class="result-label">毛利�?/div>
-              <div class="result-value green" id="grossProfit"></div>
-            </div>
-            <div class="result-item">
-              <div class="result-icon">📊</div>
-              <div class="result-label">毛利�?/div>
-              <div class="result-value" id="grossMargin"></div>
-            </div>
-            <div class="result-item">
-              <div class="result-icon">💰</div>
-              <div class="result-label">营业利润</div>
-              <div class="result-value" id="operatingProfit"></div>
-            </div>
-            <div class="result-item">
-              <div class="result-icon">📈</div>
-              <div class="result-label">营业利润�?/div>
-              <div class="result-value" id="operatingMargin"></div>
-            </div>
-            <div class="result-item">
-              <div class="result-icon">🏆</div>
-              <div class="result-label">净利润</div>
-              <div class="result-value" id="netProfit"></div>
-            </div>
-            <div class="result-item">
-              <div class="result-icon">�?/div>
-              <div class="result-label">净利率</div>
-              <div class="result-value" id="netMargin"></div>
-            </div>
-          </div>
+                <div class="card">
+                    <h3 style="margin-bottom: 20px; font-size: 1rem; color: var(--accent-magenta);">📋 运营与税收费用</h3>
+                    <div class="grid-2">
+                        <div class="input-group">
+                            <label>管理费用 (¥)</label>
+                            <input type="number" id="adminExpense" value="10000" oninput="calculate()">
+                        </div>
+                        <div class="input-group">
+                            <label>销售及市场费用 (¥)</label>
+                            <input type="number" id="salesExpense" value="8000" oninput="calculate()">
+                        </div>
+                        <div class="input-group">
+                            <label>财务费用/利息 (¥)</label>
+                            <input type="number" id="financeExpense" value="2000" oninput="calculate()">
+                        </div>
+                        <div class="input-group">
+                            <label>所得税费用 (¥)</label>
+                            <input type="number" id="tax" value="5000" oninput="calculate()">
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-          <div class="gauge-container">
-            <p style="color: var(--text-secondary); margin-bottom: 10px">净利率健康�?/p>
-            <div class="gauge">
-              <div class="gauge-bg"></div>
-              <div class="gauge-fill" id="gaugeFill"></div>
-              <div class="gauge-cover"></div>
-              <div class="gauge-value" id="gaugeValue"></div>
-            </div>
-          </div>
+            <aside>
+                <div class="card">
+                    <h3 style="margin-bottom: 24px; font-size: 1rem;">📊 实时盈利看板</h3>
+                    
+                    <div class="dashboard-item" style="border-left-color: var(--accent-cyan);">
+                        <div class="dashboard-label">毛利额 (Gross Profit)</div>
+                        <div class="dashboard-value" id="grossProfit" style="color: var(--accent-cyan);">¥--</div>
+                    </div>
 
-          <div class="formula-box">
-            <div class="formula-title">计算公式</div>
-            <div class="formula">
-              毛利�?= 销售收�?- 销售成�?
-              <br />
-              毛利�?= 毛利�?/ 销售收�?× 100%
-              <br />
-              营业利润 = 毛利�?- 管理费用 - 销售费�?- 财务费用
-              <br />
-              净利润 = 营业利润 - 税费
-              <br />
-              净利率 = 净利润 / 销售收�?× 100%
-            </div>
-          </div>
-        </div>
-      </div>
+                    <div class="dashboard-item" style="border-left-color: var(--accent-magenta);">
+                        <div class="dashboard-label">营业利润 (Operating Profit)</div>
+                        <div class="dashboard-value" id="operatingProfit" style="color: var(--accent-magenta);">¥--</div>
+                    </div>
+
+                    <div class="dashboard-item" style="border-left-color: var(--accent-green);">
+                        <div class="dashboard-label">净利润 (Net Income)</div>
+                        <div class="dashboard-value" id="netProfit" style="color: var(--accent-green);">¥--</div>
+                    </div>
+
+                    <div class="gauge-wrap">
+                        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 10px;">净利率健康度 (Net Margin)</p>
+                        <div class="gauge">
+                            <div class="gauge-bg"></div>
+                            <div class="gauge-fill" id="gaugeFill"></div>
+                            <div class="gauge-cover" id="netMarginValue">0%</div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-item" style="margin-top: 20px; border-left-color: var(--text-primary);">
+                        <div class="dashboard-label">毛利率 (Gross Margin)</div>
+                        <div class="dashboard-value" id="grossMargin">--%</div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <article>
+            <h2>财务健康的核心：毛利率与净利率的深度解析</h2>
+            <p>在企业管理中，<strong>利润率</strong>不仅是一个数字，更是业务竞争力和运营效率的风向标。通过本工具，您可以清晰地看到每一分钱是如何流向各个环节的。</p>
+            
+            <h3>1. 毛利率：产品竞争力的天花板</h3>
+            <p>毛利率反映了产品或服务的核心盈利能力。如果毛利率过低，意味着即便销售规模再大，也很难覆盖后续的运营成本。提升毛利的方法通常包括优化供应链、提高定价权或引入高附加值产品。</p>
+            
+            <h3>2. 营业利润率：精细化运营的体现</h3>
+            <p>营业利润是在毛利基础上扣除了租金、人工、广告等“三费”后的结果。高毛利但低营业利润通常意味着公司内部管理效率低下或获客成本极高，这在初创企业中非常普遍。</p>
+
+            <h3>3. 净利率：投资者的最终考量</h3>
+            <p>净利率是扣除税费后的“落袋为安”比例。它是衡量企业抗风险能力和最终生存价值的关键指标。对于大多数行业，15% 以上的净利率被视为非常健康的状态。</p>
+        </article>
+
+        <footer style="text-align: center; margin-top: 60px; padding-bottom: 40px; color: var(--text-secondary); font-size: 0.9rem;">
+            <p>© 2026 WebUtils - 专业财务决策工具</p>
+        </footer>
     </div>
 
     <script>
-      function toggleTheme() {
-        var theme = document.body.getAttribute("data-theme") === "light" ? "dark" : "light";
-        document.body.setAttribute("data-theme", theme);
-        localStorage.setItem("theme", theme);
-      }
-      (function () {
-        var saved = localStorage.getItem("theme");
-        if (saved) {
-          document.body.setAttribute("data-theme", saved);
-        } else if (window.matchMedia("(prefers-color-scheme: light)").matches) {
-          document.body.setAttribute("data-theme", "light");
+        function toggleTheme() {
+            const body = document.body;
+            const current = body.getAttribute('data-theme');
+            body.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
         }
-      })();
 
-      function formatMoney(num) {
-        if (Math.abs(num) >= 10000) {
-          return (num / 10000).toFixed(2) + "�?;
+        function calculate() {
+            const revenue = parseFloat(document.getElementById("revenue").value) || 0;
+            const cogs = parseFloat(document.getElementById("cogs").value) || 0;
+            const admin = parseFloat(document.getElementById("adminExpense").value) || 0;
+            const sales = parseFloat(document.getElementById("salesExpense").value) || 0;
+            const finance = parseFloat(document.getElementById("financeExpense").value) || 0;
+            const tax = parseFloat(document.getElementById("tax").value) || 0;
+
+            const grossProfit = revenue - cogs;
+            const grossMargin = revenue > 0 ? (grossProfit / revenue) * 100 : 0;
+            const opProfit = grossProfit - (admin + sales + finance);
+            const netProfit = opProfit - tax;
+            const netMargin = revenue > 0 ? (netProfit / revenue) * 100 : 0;
+
+            const format = (num) => "¥" + num.toLocaleString('zh-CN', { maximumFractionDigits: 0 });
+            
+            document.getElementById("grossProfit").textContent = format(grossProfit);
+            document.getElementById("operatingProfit").textContent = format(opProfit);
+            document.getElementById("netProfit").textContent = format(netProfit);
+            document.getElementById("grossMargin").textContent = grossMargin.toFixed(2) + "%";
+            
+            // Update Gauge
+            document.getElementById("netMarginValue").textContent = netMargin.toFixed(1) + "%";
+            const rotation = (Math.min(Math.max(netMargin, -10), 30) / 40) * 180 - 90;
+            document.getElementById("gaugeFill").style.transform = `rotate(${rotation}deg)`;
         }
-        return num.toFixed(2) + "�?;
-      }
 
-      function getMarginColor(margin) {
-        if (margin >= 20) return "green";
-        if (margin >= 10) return "orange";
-        return "red";
-      }
-
-      function calculate() {
-        var revenue = parseFloat(document.getElementById("revenue").value) || 0;
-        var cogs = parseFloat(document.getElementById("cogs").value) || 0;
-        var adminExpense = parseFloat(document.getElementById("adminExpense").value) || 0;
-        var salesExpense = parseFloat(document.getElementById("salesExpense").value) || 0;
-        var financeExpense = parseFloat(document.getElementById("financeExpense").value) || 0;
-        var tax = parseFloat(document.getElementById("tax").value) || 0;
-
-        var grossProfit = revenue - cogs;
-        var grossMargin = revenue > 0 ? (grossProfit / revenue) * 100 : 0;
-        var operatingExpenses = adminExpense + salesExpense + financeExpense;
-        var operatingProfit = grossProfit - operatingExpenses;
-        var operatingMargin = revenue > 0 ? (operatingProfit / revenue) * 100 : 0;
-        var netProfit = operatingProfit - tax;
-        var netMargin = revenue > 0 ? (netProfit / revenue) * 100 : 0;
-
-        document.getElementById("resultSection").classList.remove("hidden");
-
-        var grossProfitEl = document.getElementById("grossProfit");
-        grossProfitEl.textContent = formatMoney(grossProfit);
-        grossProfitEl.className = "result-value " + (grossProfit >= 0 ? "green" : "red");
-
-        var grossMarginEl = document.getElementById("grossMargin");
-        grossMarginEl.textContent = grossMargin.toFixed(2) + "%";
-        grossMarginEl.className = "result-value " + getMarginColor(grossMargin);
-
-        var operatingProfitEl = document.getElementById("operatingProfit");
-        operatingProfitEl.textContent = formatMoney(operatingProfit);
-        operatingProfitEl.className = "result-value " + (operatingProfit >= 0 ? "green" : "red");
-
-        var operatingMarginEl = document.getElementById("operatingMargin");
-        operatingMarginEl.textContent = operatingMargin.toFixed(2) + "%";
-        operatingMarginEl.className = "result-value " + getMarginColor(operatingMargin);
-
-        var netProfitEl = document.getElementById("netProfit");
-        netProfitEl.textContent = formatMoney(netProfit);
-        netProfitEl.className = "result-value " + (netProfit >= 0 ? "green" : "red");
-
-        var netMarginEl = document.getElementById("netMargin");
-        netMarginEl.textContent = netMargin.toFixed(2) + "%";
-        netMarginEl.className = "result-value " + getMarginColor(netMargin);
-
-        // 更新仪表�?
-        var gaugeRotation = (Math.min(Math.max(netMargin, -10), 30) / 40) * 180 - 90;
-        document.getElementById("gaugeFill").style.transform = "rotate(" + gaugeRotation + "deg)";
-        document.getElementById("gaugeValue").textContent = netMargin.toFixed(1) + "%";
-      }
-
-      calculate();
+        calculate();
     </script>
-  </body>
+</body>
 </html>
-
-

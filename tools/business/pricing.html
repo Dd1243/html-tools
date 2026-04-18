@@ -1,609 +1,304 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>定价策略计算�?- WebUtils</title>
-    <meta
-      name="description"
-      content="在线计算产品定价，支持成本加成法、竞争定价等多种定价策略，帮助企业制定合理价�?
-    />
-    <meta name="keywords" content="定价策略, 产品定价, 成本加成, 价格计算, 利润定价, 市场定价" />
-    <meta property="og:title" content="定价策略计算�?- WebUtils" />
-    <meta
-      property="og:description"
-      content="在线计算产品定价，支持成本加成法、竞争定价等多种定价策略，帮助企业制定合理价�?
-    />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/business/pricing" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <link rel="canonical" href="https://essays4u.net/tools/business/pricing" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>定价策略计算器 - 专业产品定价与市场竞争力分析工具 - WebUtils</title>
+    <meta name="description" content="专业在线定价策略工具，集成成本加成法(Cost-Plus)、竞争导向法、价值导向法及心理定价等多种模型。帮助企业精准测算产品售价、分析利润空间及市场价格优势，制定最优定价方案。">
+    <meta name="keywords" content="定价策略计算器,产品定价模型,成本加成法,心理定价,价格分析工具,利润率计算,市场定价法">
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://chicogong.github.io/html-tools/tools/business/pricing.html">
+    <meta property="og:title" content="定价策略计算器 - 专业产品定价与利润分析工具">
+    <meta property="og:description" content="基于成本与市场数据，科学制定产品售价，实时对比不同策略下的盈利能力。">
+    <meta property="og:image" content="../../apple-touch-icon.png">
+
+    <link rel="canonical" href="https://chicogong.github.io/html-tools/tools/business/pricing.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
+        :root {
+            --bg-deep: #0a0a0f;
+            --bg-surface: #12121a;
+            --bg-card: #1a1a24;
+            --bg-input: #0e0e14;
+            --text-primary: #e8e8ed;
+            --text-secondary: #8888a0;
+            --accent-cyan: #00f5d4;
+            --accent-magenta: #f72585;
+            --accent-yellow: #fbbf24;
+            --accent-green: #10b981;
+            --border-subtle: #2a2a3a;
+            --border-strong: #3a3a4a;
+            --font-sans: 'Space Grotesk', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --shadow-neo: 4px 4px 0px rgba(0, 0, 0, 0.8);
+        }
 
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-      body {
-        font-family: var(--font-sans);
-        font-size: 16px;
-        line-height: 1.6;
-        background: var(--bg-deep);
-        color: var(--text-primary);
-        min-height: 100vh;
-        padding: 20px;
-      }
-      .container {
-        max-width: 800px;
-        margin: 0 auto;
-      }
-      .back-link {
-        display: inline-block;
-        margin-bottom: 16px;
-        color: var(--accent-cyan);
-        text-decoration: none;
-        font-size: 0.9rem;
-      }
-      .back-link:hover {
-        text-decoration: underline;
-      }
-      h1 {
-        text-align: center;
-        margin-bottom: 8px;
-        font-size: 1.8rem;
-      }
-      .subtitle {
-        text-align: center;
-        color: var(--text-secondary);
-        margin-bottom: 24px;
-      }
-      .card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 16px;
-      }
-      .card-title {
-        font-weight: 600;
-        margin-bottom: 16px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 16px;
-      }
-      .form-group {
-        margin-bottom: 16px;
-      }
-      .form-group label {
-        display: block;
-        margin-bottom: 6px;
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-      }
-      input,
-      select {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        background: var(--bg-deep);
-        color: var(--text-primary);
-        font-size: 1rem;
-      }
-      input:focus,
-      select:focus {
-        outline: none;
-        border-color: var(--accent-cyan);
-      }
-      .btn {
-        padding: 12px 24px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 1rem;
-        transition: all 0.2s;
-      }
-      .btn-primary {
-        background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
-        color: white;
-        width: 100%;
-      }
-      .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
-      }
-      .strategy-cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 16px;
-      }
-      .strategy-card {
-        background: var(--bg-deep);
-        border: 2px solid var(--border-subtle);
-        border-radius: 12px;
-        padding: 20px;
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-      .strategy-card.active {
-        border-color: var(--accent-cyan);
-        background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
-      }
-      .strategy-card:hover {
-        border-color: var(--accent-cyan);
-      }
-      .strategy-icon {
-        font-size: 2rem;
-        margin-bottom: 8px;
-      }
-      .strategy-name {
-        font-weight: 600;
-        margin-bottom: 8px;
-      }
-      .strategy-desc {
-        font-size: 0.85rem;
-        color: var(--text-secondary);
-      }
-      .price-result {
-        background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
-        border-radius: 12px;
-        padding: 24px;
-        color: white;
-        text-align: center;
-        margin-bottom: 16px;
-      }
-      .price-label {
-        font-size: 0.9rem;
-        opacity: 0.9;
-        margin-bottom: 8px;
-      }
-      .price-value {
-        font-size: 3rem;
-        font-weight: 700;
-      }
-      .price-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
-      }
-      .price-option {
-        background: var(--bg-deep);
-        border-radius: 12px;
-        padding: 20px;
-        text-align: center;
-      }
-      .price-option-name {
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-        margin-bottom: 8px;
-      }
-      .price-option-value {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--accent-cyan);
-      }
-      .price-option-margin {
-        font-size: 0.85rem;
-        color: var(--accent-green);
-        margin-top: 4px;
-      }
-      .analysis {
-        margin-top: 16px;
-        padding: 16px;
-        background: var(--bg-deep);
-        border-radius: 8px;
-      }
-      .analysis-title {
-        font-weight: 600;
-        margin-bottom: 8px;
-        color: var(--orange);
-      }
-      .analysis-text {
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-        line-height: 1.8;
-      }
-      .hidden {
-        display: none;
-      }
-      .theme-toggle {
-        position: fixed;
-        top: 16px;
-        right: 16px;
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        padding: 8px 12px;
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-      }
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            line-height: 1.6;
+        }
+
+        .bg-grid {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 50px 50px; z-index: -1;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+
+        .back-link { color: var(--accent-cyan); text-decoration: none; font-size: 0.9rem; margin-bottom: 24px; display: inline-block; }
+
+        h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 12px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-yellow)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .description { color: var(--text-secondary); margin-bottom: 40px; }
+
+        .tool-grid { display: grid; grid-template-columns: 1fr 380px; gap: 24px; }
+        @media (max-width: 1024px) { .tool-grid { grid-template-columns: 1fr; } }
+
+        .main-panel { background: var(--bg-surface); border: 2px solid var(--border-strong); border-radius: 12px; padding: 32px; box-shadow: var(--shadow-neo); }
+
+        .section-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 24px; color: var(--accent-cyan); display: flex; align-items: center; gap: 8px; }
+
+        .input-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 32px; }
+
+        .input-box { display: flex; flex-direction: column; gap: 8px; }
+        .input-box label { font-size: 0.85rem; color: var(--text-secondary); }
+        .input-box input { background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 12px; color: var(--text-primary); font-family: var(--font-mono); }
+        .input-box input:focus { border-color: var(--accent-cyan); outline: none; }
+
+        .strategy-picker { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 32px; }
+        .strategy-btn { 
+            background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 16px; cursor: pointer; text-align: center;
+            transition: all 0.2s; color: var(--text-secondary);
+        }
+        .strategy-btn:hover { border-color: var(--accent-cyan); }
+        .strategy-btn.active { border-color: var(--accent-cyan); background: rgba(0, 245, 212, 0.1); color: var(--accent-cyan); font-weight: 600; }
+        .strategy-icon { font-size: 1.5rem; margin-bottom: 8px; display: block; }
+
+        .sidebar { display: flex; flex-direction: column; gap: 24px; }
+
+        .result-card { background: var(--bg-card); border: 2px solid var(--accent-cyan); border-radius: 12px; padding: 24px; box-shadow: var(--shadow-neo); position: sticky; top: 24px; }
+        .res-main { text-align: center; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border-subtle); }
+        .res-price { font-family: var(--font-mono); font-size: 2.5rem; font-weight: 700; color: var(--accent-yellow); }
+
+        .metrics-list { display: flex; flex-direction: column; gap: 16px; }
+        .metric-item { display: flex; justify-content: space-between; font-size: 0.9rem; }
+        .met-label { color: var(--text-secondary); }
+        .met-val { font-family: var(--font-mono); color: var(--text-primary); font-weight: 600; }
+
+        .competitiveness { 
+            margin-top: 20px; padding: 12px; border-radius: 6px; text-align: center; font-size: 0.85rem; font-weight: 600;
+        }
+
+        .ad-slot { background: var(--bg-surface); border: 1px dashed var(--border-subtle); border-radius: 8px; min-height: 90px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem; margin: 20px 0; }
+
+        .content-section { margin-top: 60px; background: var(--bg-surface); border-radius: 12px; padding: 40px; border: 1px solid var(--border-subtle); }
+        .content-section h2 { font-size: 1.8rem; margin-bottom: 24px; color: var(--accent-cyan); }
+        .content-section h3 { font-size: 1.3rem; margin: 32px 0 16px; }
+        .content-section p { color: var(--text-secondary); margin-bottom: 16px; }
+        .content-section ul { padding-left: 20px; color: var(--text-secondary); margin-bottom: 24px; }
+        .content-section li { margin-bottom: 10px; }
+
+        footer { margin-top: 80px; text-align: center; padding: 40px; color: var(--text-muted); border-top: 1px solid var(--border-subtle); }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
+</head>
+<body>
+    <div class="bg-grid"></div>
+
     <div class="container">
-      <a href="../../index.html" class="back-link">�?返回</a>
-      <button class="theme-toggle" onclick="toggleTheme()" title="切换主题" aria-label="🌓">
-        🌓
-      </button>
-      <h1>💰 定价策略计算�?/h1>
-      <p class="subtitle">根据不同策略计算最优定价方�?/p>
+        <a href="../../index.html" class="back-link">← 返回首页</a>
+        
+        <header>
+            <h1>💰 定价策略计算器</h1>
+            <p class="description">结合产品成本、市场竞争及心理学，多维度寻找最优定价方案。适用于电商卖家、初创企业及产品经理。</p>
+        </header>
 
-      <div class="card">
-        <div class="card-title">📦 产品成本</div>
-        <div class="grid">
-          <div class="form-group">
-            <label for="input---------">单位成本 (�?</label>
-            <input
-              type="number"
-              id="unitCost"
-              value="80"
-              min="0"
-              step="0.01"
-              aria-label="数字输入�?
-              placeholder="请输入数字输入框"
-            />
-          </div>
-          <div class="form-group">
-            <label for="input----------">目标利润�?(%)</label>
-            <input
-              type="number"
-              id="targetMargin"
-              value="30"
-              min="0"
-              max="100"
-              aria-label="数字输入�?
-              placeholder="请输入数字输入框"
-            />
-          </div>
-        </div>
-      </div>
+        <div class="ad-slot">广告占位符 - 顶部</div>
 
-      <div class="card">
-        <div class="card-title">📊 市场信息</div>
-        <div class="grid">
-          <div class="form-group">
-            <label for="input----------">竞品最低价 (�?</label>
-            <input
-              type="number"
-              id="competitorLow"
-              value="100"
-              min="0"
-              aria-label="数字输入�?
-              placeholder="请输入数字输入框"
-            />
-          </div>
-          <div class="form-group">
-            <label for="input----------">竞品最高价 (�?</label>
-            <input
-              type="number"
-              id="competitorHigh"
-              value="150"
-              min="0"
-              aria-label="数字输入�?
-              placeholder="请输入数字输入框"
-            />
-          </div>
-          <div class="form-group">
-            <label for="input---------">市场均价 (�?</label>
-            <input
-              type="number"
-              id="marketAvg"
-              value="120"
-              min="0"
-              aria-label="数字输入�?
-              placeholder="请输入数字输入框"
-            />
-          </div>
-          <div class="form-group">
-            <label for="input-----------">顾客心理价位 (�?</label>
-            <input
-              type="number"
-              id="customerExpect"
-              value="99"
-              min="0"
-              aria-label="数字输入�?
-              placeholder="请输入数字输入框"
-            />
-          </div>
-        </div>
-      </div>
+        <div class="tool-grid">
+            <main class="main-panel">
+                <div class="section-title">📦 第一步：基础成本与目标</div>
+                <div class="input-row">
+                    <div class="input-box">
+                        <label>单位总成本 (元)</label>
+                        <input type="number" id="unitCost" value="80" step="0.1">
+                    </div>
+                    <div class="input-box">
+                        <label>期望利润率 (%)</label>
+                        <input type="number" id="targetMargin" value="30">
+                    </div>
+                </div>
 
-      <div class="card">
-        <div class="card-title">🎯 选择定价策略</div>
-        <div class="strategy-cards">
-          <div class="strategy-card active" data-strategy="cost" onclick="selectStrategy('cost')">
-            <div class="strategy-icon">🧮</div>
-            <div class="strategy-name">成本加成定价</div>
-            <div class="strategy-desc">基于成本加上目标利润�?/div>
-          </div>
-          <div
-            class="strategy-card"
-            data-strategy="competition"
-            onclick="selectStrategy('competition')"
-          >
-            <div class="strategy-icon">⚔️</div>
-            <div class="strategy-name">竞争导向定价</div>
-            <div class="strategy-desc">参考竞品价格区间定�?/div>
-          </div>
-          <div class="strategy-card" data-strategy="value" onclick="selectStrategy('value')">
-            <div class="strategy-icon">💎</div>
-            <div class="strategy-name">价值导向定�?/div>
-            <div class="strategy-desc">基于顾客感知价值定�?/div>
-          </div>
-          <div
-            class="strategy-card"
-            data-strategy="psychological"
-            onclick="selectStrategy('psychological')"
-          >
-            <div class="strategy-icon">🧠</div>
-            <div class="strategy-name">心理定价</div>
-            <div class="strategy-desc">运用价格心理学技�?/div>
-          </div>
-        </div>
-        <button class="btn btn-primary" style="margin-top: 16px" onclick="calculate()">
-          计算定价
-        </button>
-      </div>
+                <div class="section-title">📊 第二步：市场参考数据</div>
+                <div class="input-row">
+                    <div class="input-box">
+                        <label>市场竞品均价 (元)</label>
+                        <input type="number" id="marketAvg" value="120">
+                    </div>
+                    <div class="input-box">
+                        <label>顾客心理预期价 (元)</label>
+                        <input type="number" id="customerExpect" value="100">
+                    </div>
+                </div>
 
-      <div id="resultSection" class="hidden">
-        <div class="price-result">
-          <div class="price-label">推荐定价</div>
-          <div class="price-value" id="recommendedPrice"></div>
+                <div class="section-title">🎯 第三步：选择定价逻辑</div>
+                <div class="strategy-picker">
+                    <button class="strategy-btn active" onclick="setStrategy('cost')">
+                        <span class="strategy-icon">🧮</span>
+                        成本加成
+                    </button>
+                    <button class="strategy-btn" onclick="setStrategy('market')">
+                        <span class="strategy-icon">⚖️</span>
+                        市场导向
+                    </button>
+                    <button class="strategy-btn" onclick="setStrategy('psych')">
+                        <span class="strategy-icon">🧠</span>
+                        心理定价
+                    </button>
+                    <button class="strategy-btn" onclick="setStrategy('value')">
+                        <span class="strategy-icon">💎</span>
+                        价值定价
+                    </button>
+                </div>
+            </main>
+
+            <aside class="sidebar">
+                <div class="result-card">
+                    <div class="res-main">
+                        <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 8px;">推荐零售价</div>
+                        <div id="resPrice" class="res-price">--</div>
+                    </div>
+
+                    <div class="metrics-list">
+                        <div class="metric-item">
+                            <span class="met-label">实际毛利率</span>
+                            <span id="metMargin" class="met-val">--</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="met-label">单位产品利润</span>
+                            <span id="metProfit" class="met-val">--</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="met-label">相对市场偏移</span>
+                            <span id="metOffset" class="met-val">--</span>
+                        </div>
+                    </div>
+
+                    <div id="compBadge" class="competitiveness">--</div>
+                </div>
+                <div class="ad-slot">广告 - 侧边</div>
+            </aside>
         </div>
 
-        <div class="card">
-          <div class="card-title">📈 价格方案对比</div>
-          <div class="price-grid">
-            <div class="price-option">
-              <div class="price-option-name">低价策略</div>
-              <div class="price-option-value" id="lowPrice"></div>
-              <div class="price-option-margin" id="lowMargin"></div>
-            </div>
-            <div class="price-option">
-              <div class="price-option-name">中价策略</div>
-              <div class="price-option-value" id="midPrice"></div>
-              <div class="price-option-margin" id="midMargin"></div>
-            </div>
-            <div class="price-option">
-              <div class="price-option-name">高价策略</div>
-              <div class="price-option-value" id="highPrice"></div>
-              <div class="price-option-margin" id="highMargin"></div>
-            </div>
-          </div>
-        </div>
+        <section class="content-section">
+            <h2>定价策略深度解析：如何最大化利润与销量？</h2>
+            <p>定价（Pricing）是营销组合中最灵活但也最具挑战性的要素。一个好的价格不仅要能覆盖成本，更要反映产品在消费者心智中的价值，并根据竞争环境动态调整。</p>
 
-        <div class="card">
-          <div class="card-title">📊 定价分析</div>
-          <div class="grid">
-            <div class="form-group">
-              <label style="color: var(--text-primary)">实际利润�?/label>
-              <div
-                style="font-size: 1.5rem; font-weight: 700; color: var(--accent-green)"
-                id="actualMargin"
-              ></div>
-            </div>
-            <div class="form-group">
-              <label style="color: var(--text-primary)">单位利润</label>
-              <div
-                style="font-size: 1.5rem; font-weight: 700; color: var(--accent-cyan)"
-                id="unitProfit"
-              ></div>
-            </div>
-            <div class="form-group">
-              <label style="color: var(--text-primary)">相对市场均价</label>
-              <div style="font-size: 1.5rem; font-weight: 700" id="vsMarket"></div>
-            </div>
-            <div class="form-group">
-              <label style="color: var(--text-primary)">价格竞争�?/label>
-              <div style="font-size: 1.5rem; font-weight: 700" id="competitiveness"></div>
-            </div>
-          </div>
+            <h3>1. 四大经典定价策略</h3>
+            <ul>
+                <li><strong>成本加成法 (Cost-Plus)</strong>：最稳健的方法。计算公式为：成本 ÷ (1 - 目标利润率)。优点是确保盈利，缺点是完全忽略了市场接受度。</li>
+                <li><strong>市场/竞争导向法</strong>：参考同类产品的价格。如果你的产品具有显著差异化，可以溢价 10%-20%；如果是进入红海市场，则通常需要低于均价 5%-10% 来获取份额。</li>
+                <li><strong>价值导向法 (Value-Based)</strong>：基于顾客感受到的好处。如果你的产品能帮顾客节省 1000 元时间成本，那么定价 200 元对顾客来说依然是极具性价比的，即便你的成本只有 10 元。</li>
+                <li><strong>心理定价 (Psychological Pricing)</strong>：利用尾数定价（如 9.9、99、199）让价格看起来比实际更低。这种策略在零售和 C 端服务中极为有效。</li>
+            </ul>
 
-          <div class="analysis">
-            <div class="analysis-title">💡 定价建议</div>
-            <div class="analysis-text" id="analysisText"></div>
-          </div>
-        </div>
-      </div>
+            <div class="ad-slot">广告 - 内部</div>
+
+            <h3>2. 利润率 vs 销量的平衡</h3>
+            <p>高毛利往往意味着较低的转化率，而低价跑量则对运营成本提出了极高要求。在定价时，建议测算**盈亏平衡点**：在不同价格水平下，你需要卖出多少件产品才能保本？本工具提供的利润分析可以帮助你直观评估不同策略的风险。</p>
+
+            <h3>3. 动态定价与价格歧视</h3>
+            <p>专业卖家通常会建立价格梯度：</p>
+            <ul>
+                <li><strong>锚点价</strong>：设置一个极高价位的产品，衬托出主销产品的“高性价比”。</li>
+                <li><strong>促销价</strong>：利用限时折扣激活潜在用户，但这必须建立在健康的基础定价之上。</li>
+            </ul>
+
+            <h3>4. 常见的定价陷阱</h3>
+            <p>最危险的行为是“盲目价格战”。如果你的核心竞争力仅仅是价格，那么当对手成本比你更低时，你将无路可退。始终尝试在功能、品牌或服务上寻找溢价空间。</p>
+        </section>
+
+        <footer>
+            <p>© 2026 WebUtils 商业工具集 · 商业决策辅助 · 建议多维度综合考量</p>
+        </footer>
     </div>
 
     <script>
-      function toggleTheme() {
-        var theme = document.body.getAttribute("data-theme") === "light" ? "dark" : "light";
-        document.body.setAttribute("data-theme", theme);
-        localStorage.setItem("theme", theme);
-      }
-      (function () {
-        var saved = localStorage.getItem("theme");
-        if (saved) {
-          document.body.setAttribute("data-theme", saved);
-        } else if (window.matchMedia("(prefers-color-scheme: light)").matches) {
-          document.body.setAttribute("data-theme", "light");
-        }
-      })();
+        let currentStrategy = 'cost';
 
-      var selectedStrategy = "cost";
-
-      function selectStrategy(strategy) {
-        selectedStrategy = strategy;
-        var cards = document.querySelectorAll(".strategy-card");
-        cards.forEach(function (card) {
-          card.classList.remove("active");
-          if (card.dataset.strategy === strategy) {
-            card.classList.add("active");
-          }
-        });
-      }
-
-      function formatPrice(num) {
-        return "¥" + num.toFixed(2);
-      }
-
-      function psychologicalPrice(price) {
-        if (price < 10) return Math.floor(price) - 0.1 + 0.9;
-        if (price < 100) return Math.floor(price / 10) * 10 + 9;
-        if (price < 1000) return Math.floor(price / 100) * 100 + 99;
-        return Math.floor(price / 1000) * 1000 + 999;
-      }
-
-      function calculate() {
-        var unitCost = parseFloat(document.getElementById("unitCost").value) || 0;
-        var targetMargin = parseFloat(document.getElementById("targetMargin").value) / 100 || 0.3;
-        var competitorLow = parseFloat(document.getElementById("competitorLow").value) || 0;
-        var competitorHigh = parseFloat(document.getElementById("competitorHigh").value) || 0;
-        var marketAvg = parseFloat(document.getElementById("marketAvg").value) || 0;
-        var customerExpect = parseFloat(document.getElementById("customerExpect").value) || 0;
-
-        var recommendedPrice = 0;
-        var analysis = "";
-
-        switch (selectedStrategy) {
-          case "cost":
-            recommendedPrice = unitCost / (1 - targetMargin);
-            analysis =
-              "成本加成定价法以成本为基础，加上预期利润来确定价格。当前成�?" +
-              formatPrice(unitCost) +
-              "，目标利润率 " +
-              (targetMargin * 100).toFixed(0) +
-              "%，建议定�?" +
-              formatPrice(recommendedPrice) +
-              "。此方法简单直接，但需关注市场接受度�?;
-            break;
-          case "competition":
-            recommendedPrice = (competitorLow + competitorHigh) / 2;
-            analysis =
-              "竞争导向定价参考市场竞品价格。当前竞品价格区�?" +
-              formatPrice(competitorLow) +
-              " - " +
-              formatPrice(competitorHigh) +
-              "，建议定价在区间中位。可根据产品差异化程度调整，差异化高可定价偏上，同质化严重则偏下�?;
-            break;
-          case "value":
-            recommendedPrice = customerExpect * 1.1;
-            analysis =
-              "价值导向定价以顾客感知价值为基础。顾客心理价�?" +
-              formatPrice(customerExpect) +
-              "，建议略高于心理价位定价，体现产品价值。同时需要加强价值传达，让顾客认可产品值这个价�?;
-            break;
-          case "psychological":
-            recommendedPrice = psychologicalPrice(unitCost / (1 - targetMargin));
-            analysis =
-              '心理定价运用消费心理学原理。价格尾数为9会让顾客感觉更便宜。例�?9元比100元更有吸引力。建议配合促销标语�?不到百元"等增强效果�?;
-            break;
+        function setStrategy(s) {
+            currentStrategy = s;
+            document.querySelectorAll('.strategy-btn').forEach(b => {
+                b.classList.toggle('active', b.getAttribute('onclick').includes(s));
+            });
+            calculate();
         }
 
-        // 显示结果
-        document.getElementById("resultSection").classList.remove("hidden");
-        document.getElementById("recommendedPrice").textContent = formatPrice(recommendedPrice);
-
-        // 三档价格
-        var lowPrice = Math.max(unitCost * 1.1, competitorLow * 0.95);
-        var midPrice = recommendedPrice;
-        var highPrice = Math.min(unitCost * 2, competitorHigh * 1.05);
-
-        document.getElementById("lowPrice").textContent = formatPrice(lowPrice);
-        document.getElementById("midPrice").textContent = formatPrice(midPrice);
-        document.getElementById("highPrice").textContent = formatPrice(highPrice);
-
-        var lowMarginPct = (((lowPrice - unitCost) / lowPrice) * 100).toFixed(1);
-        var midMarginPct = (((midPrice - unitCost) / midPrice) * 100).toFixed(1);
-        var highMarginPct = (((highPrice - unitCost) / highPrice) * 100).toFixed(1);
-
-        document.getElementById("lowMargin").textContent = "利润�?" + lowMarginPct + "%";
-        document.getElementById("midMargin").textContent = "利润�?" + midMarginPct + "%";
-        document.getElementById("highMargin").textContent = "利润�?" + highMarginPct + "%";
-
-        // 分析数据
-        var actualMargin = ((recommendedPrice - unitCost) / recommendedPrice) * 100;
-        var unitProfit = recommendedPrice - unitCost;
-        var vsMarket = ((recommendedPrice - marketAvg) / marketAvg) * 100;
-
-        document.getElementById("actualMargin").textContent = actualMargin.toFixed(1) + "%";
-        document.getElementById("unitProfit").textContent = formatPrice(unitProfit);
-
-        var vsMarketEl = document.getElementById("vsMarket");
-        vsMarketEl.textContent = (vsMarket >= 0 ? "+" : "") + vsMarket.toFixed(1) + "%";
-        vsMarketEl.style.color =
-          vsMarket > 10
-            ? "var(--orange)"
-            : vsMarket < -10
-              ? "var(--accent-green)"
-              : "var(--accent-cyan)";
-
-        var competitiveness = "";
-        if (recommendedPrice < competitorLow) {
-          competitiveness = "价格优势";
-          document.getElementById("competitiveness").style.color = "var(--accent-green)";
-        } else if (recommendedPrice > competitorHigh) {
-          competitiveness = "高端定位";
-          document.getElementById("competitiveness").style.color = "var(--orange)";
-        } else {
-          competitiveness = "中等水平";
-          document.getElementById("competitiveness").style.color = "var(--accent-cyan)";
+        function format(v) {
+            return new Intl.NumberFormat('zh-CN', { style: 'currency', currency: 'CNY' }).format(v);
         }
-        document.getElementById("competitiveness").textContent = competitiveness;
 
-        document.getElementById("analysisText").textContent = analysis;
-      }
+        function calculate() {
+            const cost = parseFloat(document.getElementById('unitCost').value) || 0;
+            const margin = (parseFloat(document.getElementById('targetMargin').value) || 0) / 100;
+            const market = parseFloat(document.getElementById('marketAvg').value) || 0;
+            const expect = parseFloat(document.getElementById('customerExpect').value) || 0;
 
-      calculate();
+            let price = 0;
+            switch(currentStrategy) {
+                case 'cost': 
+                    price = cost / (1 - margin); 
+                    break;
+                case 'market': 
+                    price = market * 0.98; // 略低于市场均价获取竞争优势
+                    break;
+                case 'psych':
+                    let base = cost / (1 - margin);
+                    price = Math.floor(base / 10) * 10 + 9; // 自动尾数9
+                    if (price < cost) price = base; // 保护利润
+                    break;
+                case 'value':
+                    price = expect * 1.1; // 溢价定价
+                    break;
+            }
+
+            const actMargin = ((price - cost) / price) * 100;
+            const profit = price - cost;
+            const offset = market > 0 ? ((price - market) / market) * 100 : 0;
+
+            // UI Update
+            document.getElementById('resPrice').textContent = format(price);
+            document.getElementById('metMargin').textContent = actMargin.toFixed(1) + '%';
+            document.getElementById('metProfit').textContent = format(profit);
+            document.getElementById('metOffset').textContent = (offset > 0 ? '+' : '') + offset.toFixed(1) + '%';
+
+            const badge = document.getElementById('compBadge');
+            if (offset < -10) {
+                badge.textContent = '价格杀手 (强竞争力)';
+                badge.style.background = 'rgba(16, 185, 129, 0.2)';
+                badge.style.color = 'var(--accent-green)';
+            } else if (offset > 15) {
+                badge.textContent = '高端定位 (需品牌支持)';
+                badge.style.background = 'rgba(247, 37, 133, 0.2)';
+                badge.style.color = 'var(--accent-magenta)';
+            } else {
+                badge.textContent = '市场主流价格区间';
+                badge.style.background = 'rgba(0, 245, 212, 0.2)';
+                badge.style.color = 'var(--accent-cyan)';
+            }
+        }
+
+        document.querySelectorAll('input').forEach(i => i.addEventListener('input', calculate));
+        calculate();
     </script>
-  </body>
+</body>
 </html>
-
-

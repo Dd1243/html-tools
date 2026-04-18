@@ -1,609 +1,478 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>应收账款账龄分析 - WebUtils</title>
-    <meta
-      name="description"
-      content="在线分析应收账款账龄，帮助企业监控账款回收情况，降低坏账风险"
-    />
-    <meta name="keywords" content="应收账款, 账龄分析, 账款管理, 资金回收, 财务管理, 坏账风险" />
-    <meta property="og:title" content="应收账款账龄分析 - WebUtils" />
-    <meta
-      property="og:description"
-      content="在线分析应收账款账龄，帮助企业监控账款回收情况，降低坏账风险"
-    />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/business/receivables" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <link rel="canonical" href="https://essays4u.net/tools/business/receivables" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>应收账款账龄分析工具 - 企业坏账风险评估与回款管理 - WebUtils</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="专业在线应收账款账龄分析器。计算平均账龄、坏账准备计提及综合坏账风险。支持 6 级账龄区间自定义，助您优化信用管理，提升企业现金回笼速度。">
+    <meta name="keywords" content="应收账款分析,账龄分析表,坏账准备计提,回款风险评估,财务管理工具,DSO计算,信用控制,WebUtils">
+    <meta name="author" content="WebUtils">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://chicogong.github.io/html-tools/tools/business/receivables.html">
+    <meta property="og:title" content="应收账款账龄分析工具 - 穿透财务风险">
+    <meta property="og:description" content="全方位评估企业应收账款结构，精准预判坏账风险，优化财务健康度。">
+    <meta property="og:image" content="https://chicogong.github.io/html-tools/assets/og-business.png">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="企业回款风险实时监测器">
+    <meta name="twitter:description" content="科学计算坏账计提比例，助力企业构建高效的信用管理体系。">
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "应收账款账龄分析工具",
+        "url": "https://chicogong.github.io/html-tools/tools/business/receivables.html",
+        "description": "提供分级账龄管理、坏账准备测算及财务风险评级的商业分析工具。",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "All",
+        "author": {
+            "@type": "Organization",
+            "name": "WebUtils"
+        }
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
+        :root {
+            --bg-deep: #0a0a0f;
+            --bg-card: #12121a;
+            --bg-input: #0e0e14;
+            --accent-cyan: #00f5d4;
+            --accent-purple: #bf5af2;
+            --text-primary: #e8e8ed;
+            --text-secondary: #a0a0b0;
+            --border-color: #2a2a3a;
+            --success: #30d158;
+            --warning: #ff9f0a;
+            --error: #ff453a;
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-ui: 'Space Grotesk', sans-serif;
+        }
 
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
-      body {
-        font-family: var(--font-sans);
-        font-size: 16px;
-        line-height: 1.6;
-        background: var(--bg-deep);
-        color: var(--text-primary);
-        min-height: 100vh;
-        padding: 20px;
-      }
-      .container {
-        max-width: 800px;
-        margin: 0 auto;
-      }
-      .back-link {
-        display: inline-block;
-        margin-bottom: 16px;
-        color: var(--accent-cyan);
-        text-decoration: none;
-        font-size: 0.9rem;
-      }
-      .back-link:hover {
-        text-decoration: underline;
-      }
-      h1 {
-        text-align: center;
-        margin-bottom: 8px;
-        font-size: 1.8rem;
-      }
-      .subtitle {
-        text-align: center;
-        color: var(--text-secondary);
-        margin-bottom: 24px;
-      }
-      .card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 16px;
-      }
-      .card-title {
-        font-weight: 600;
-        margin-bottom: 16px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .aging-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 12px;
-        margin-bottom: 12px;
-        align-items: center;
-      }
-      .aging-row label {
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-      }
-      input {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        background: var(--bg-deep);
-        color: var(--text-primary);
-        font-size: 1rem;
-      }
-      input:focus {
-        outline: none;
-        border-color: var(--accent-cyan);
-      }
-      .btn {
-        padding: 12px 24px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 1rem;
-        transition: all 0.2s;
-      }
-      .btn-primary {
-        background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
-        color: white;
-        width: 100%;
-      }
-      .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
-      }
-      .result-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 16px;
-      }
-      .result-item {
-        background: var(--bg-deep);
-        border-radius: 12px;
-        padding: 16px;
-        text-align: center;
-      }
-      .result-label {
-        font-size: 0.85rem;
-        color: var(--text-secondary);
-        margin-bottom: 8px;
-      }
-      .result-value {
-        font-size: 1.3rem;
-        font-weight: 700;
-      }
-      .aging-bar {
-        margin: 20px 0;
-      }
-      .aging-bar-container {
-        height: 24px;
-        background: var(--border-subtle);
-        border-radius: 12px;
-        overflow: hidden;
-        display: flex;
-      }
-      .aging-segment {
-        height: 100%;
-        transition: width 0.3s;
-      }
-      .aging-legend {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 16px;
-        margin-top: 12px;
-      }
-      .legend-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 0.85rem;
-      }
-      .legend-color {
-        width: 16px;
-        height: 16px;
-        border-radius: 4px;
-      }
-      .risk-indicator {
-        padding: 20px;
-        border-radius: 12px;
-        text-align: center;
-        margin-top: 16px;
-      }
-      .risk-low {
-        background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
-        border: 2px solid var(--accent-green);
-      }
-      .risk-medium {
-        background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.1));
-        border: 2px solid var(--orange);
-      }
-      .risk-high {
-        background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1));
-        border: 2px solid var(--accent-red);
-      }
-      .risk-icon {
-        font-size: 2rem;
-        margin-bottom: 8px;
-      }
-      .risk-text {
-        font-weight: 600;
-      }
-      .hidden {
-        display: none;
-      }
-      .theme-toggle {
-        position: fixed;
-        top: 16px;
-        right: 16px;
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        padding: 8px 12px;
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-      }
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-primary);
+            font-family: var(--font-ui);
+            line-height: 1.6;
+        }
+
+        .bg-grid {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(to right, rgba(0, 245, 212, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 245, 212, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: var(--accent-cyan);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            transition: transform 0.2s;
+        }
+        .back-link:hover { transform: translateX(-5px); }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+        .subtitle { color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 3rem; }
+
+        .tool-grid {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .tool-grid { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .aging-header {
+            display: grid;
+            grid-template-columns: 140px 1fr 120px;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+            padding: 0 1rem;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .aging-row {
+            display: grid;
+            grid-template-columns: 140px 1fr 120px;
+            gap: 1.5rem;
+            align-items: center;
+            background: var(--bg-input);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+        }
+        .aging-row:focus-within { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0, 245, 212, 0.1); }
+
+        .aging-label { font-size: 0.9rem; font-weight: 600; color: var(--text-secondary); }
+        
+        .input-wrapper { display: flex; align-items: center; gap: 0.5rem; }
+        .prefix, .suffix { color: var(--text-secondary); font-family: var(--font-mono); font-size: 0.85rem; }
+        
+        input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
+            font-weight: 600;
+            outline: none;
+        }
+
+        /* Visualization */
+        .chart-container {
+            margin-top: 1rem;
+            background: var(--bg-input);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+        .progress-stack {
+            height: 24px;
+            background: var(--bg-deep);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            margin-bottom: 1.5rem;
+        }
+        .progress-segment { height: 100%; transition: width 0.5s ease; }
+        
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+        }
+        .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-secondary); }
+        .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+        /* Sidebar Stats */
+        .sidebar {
+            position: sticky;
+            top: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+        .main-res { text-align: center; border: 2px solid var(--accent-cyan); }
+        .main-res-val { font-size: 2.5rem; font-weight: 800; color: var(--accent-cyan); font-family: var(--font-mono); margin: 0.5rem 0; }
+        .main-res-label { font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; }
+
+        .sub-res {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+            font-size: 0.9rem;
+        }
+        .sub-res:last-child { margin-bottom: 0; }
+        .sub-res-label { color: var(--text-secondary); }
+        .sub-res-val { font-family: var(--font-mono); font-weight: 600; }
+
+        /* Risk Indicator */
+        .risk-card {
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 1rem;
+        }
+        .risk-low { background: rgba(48, 209, 88, 0.1); color: var(--success); border: 1px solid var(--success); }
+        .risk-med { background: rgba(255, 159, 10, 0.1); color: var(--warning); border: 1px solid var(--warning); }
+        .risk-high { background: rgba(255, 69, 58, 0.1); color: var(--error); border: 1px solid var(--error); }
+
+        /* Article content */
+        .article { margin-top: 4rem; max-width: 850px; }
+        .article h2 { font-size: 2.2rem; color: var(--accent-cyan); margin-bottom: 1.5rem; }
+        .article h3 { font-size: 1.5rem; color: var(--text-primary); margin: 2.5rem 0 1rem; }
+        .article p { color: var(--text-secondary); margin-bottom: 1.2rem; line-height: 1.8; }
+        .article ul { margin-bottom: 1.5rem; padding-left: 1.5rem; }
+        .article li { color: var(--text-secondary); margin-bottom: 0.6rem; }
+
+        .ad-slot {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px dashed var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin: 2rem 0;
+        }
+        .ad-top { height: 90px; }
+
+        footer {
+            margin-top: 5rem;
+            padding: 3rem 0;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
+</head>
+<body>
+    <div class="bg-grid"></div>
+
     <div class="container">
-      <a href="../../index.html" class="back-link">�?返回</a>
-      <button class="theme-toggle" onclick="toggleTheme()" title="切换主题" aria-label="🌓">
-        🌓
-      </button>
-      <h1>📋 应收账款账龄分析</h1>
-      <p class="subtitle">分析应收账款账龄结构，评估回款风�?/p>
+        <a href="../../index.html" class="back-link">← 返回工具主页</a>
 
-      <div class="card">
-        <div class="card-title">💰 账龄分布</div>
-        <div class="aging-row" style="font-weight: 600; margin-bottom: 16px">
-          <span>账龄区间</span>
-          <span>金额 (万元)</span>
-          <span>坏账计提比例 (%)</span>
-        </div>
-        <div class="aging-row">
-          <label for="input-1---">1年以�?/label>
-          <input
-            type="number"
-            id="age1"
-            value="100"
-            min="0"
-            aria-label="数字输入�?
-            placeholder="请输入数字输入框"
-          />
-          <input
-            type="number"
-            id="rate1"
-            value="5"
-            min="0"
-            max="100"
-            aria-label="数字输入�?
-            placeholder="请输入数字输入框"
-          />
-        </div>
-        <div class="aging-row">
-          <label for="input-1-2-">1-2�?/label>
-          <input
-            type="number"
-            id="age2"
-            value="30"
-            min="0"
-            aria-label="数字输入�?
-            placeholder="请输入数字输入框"
-          />
-          <input
-            type="number"
-            id="rate2"
-            value="10"
-            min="0"
-            max="100"
-            aria-label="数字输入�?
-            placeholder="请输入数字输入框"
-          />
-        </div>
-        <div class="aging-row">
-          <label for="input-2-3-">2-3�?/label>
-          <input
-            type="number"
-            id="age3"
-            value="15"
-            min="0"
-            aria-label="数字输入�?
-            placeholder="请输入数字输入框"
-          />
-          <input
-            type="number"
-            id="rate3"
-            value="30"
-            min="0"
-            max="100"
-            aria-label="数字输入�?
-            placeholder="请输入数字输入框"
-          />
-        </div>
-        <div class="aging-row">
-          <label for="input-3-4-">3-4�?/label>
-          <input
-            type="number"
-            id="age4"
-            value="5"
-            min="0"
-            aria-label="数字输入�?
-            placeholder="请输入数字输入框"
-          />
-          <input
-            type="number"
-            id="rate4"
-            value="50"
-            min="0"
-            max="100"
-            aria-label="数字输入�?
-            placeholder="请输入数字输入框"
-          />
-        </div>
-        <div class="aging-row">
-          <label for="input-4-5-">4-5�?/label>
-          <input
-            type="number"
-            id="age5"
-            value="3"
-            min="0"
-            aria-label="数字输入�?
-            placeholder="请输入数字输入框"
-          />
-          <input
-            type="number"
-            id="rate5"
-            value="80"
-            min="0"
-            max="100"
-            aria-label="数字输入�?
-            placeholder="请输入数字输入框"
-          />
-        </div>
-        <div class="aging-row">
-          <label for="input-5---">5年以�?/label>
-          <input
-            type="number"
-            id="age6"
-            value="2"
-            min="0"
-            aria-label="数字输入�?
-            placeholder="请输入数字输入框"
-          />
-          <input
-            type="number"
-            id="rate6"
-            value="100"
-            min="0"
-            max="100"
-            aria-label="数字输入�?
-            placeholder="请输入数字输入框"
-          />
-        </div>
-        <button class="btn btn-primary" style="margin-top: 16px" onclick="calculate()">
-          分析账龄
-        </button>
-      </div>
+        <header>
+            <h1>应收账款账龄分析</h1>
+            <p class="subtitle">穿透财务迷雾，精准识别坏账风险，优化企业现金回笼周期</p>
+        </header>
 
-      <div id="resultSection" class="hidden">
-        <div class="card">
-          <div class="card-title">📊 账龄分析结果</div>
-          <div class="result-grid">
-            <div class="result-item">
-              <div class="result-label">应收账款总额</div>
-              <div
-                class="result-value"
-                style="color: var(--accent-cyan)"
-                id="totalReceivables"
-              ></div>
-            </div>
-            <div class="result-item">
-              <div class="result-label">坏账准备</div>
-              <div
-                class="result-value"
-                style="color: var(--accent-red)"
-                id="badDebtProvision"
-              ></div>
-            </div>
-            <div class="result-item">
-              <div class="result-label">坏账�?/div>
-              <div class="result-value" id="badDebtRate"></div>
-            </div>
-            <div class="result-item">
-              <div class="result-label">平均账龄</div>
-              <div class="result-value" id="avgAge"></div>
-            </div>
-          </div>
+        <div class="ad-slot ad-top">广告占位符 - Google AdSense (顶部)</div>
 
-          <div class="aging-bar">
-            <div class="aging-bar-container" id="agingBar"></div>
-            <div class="aging-legend" id="agingLegend"></div>
-          </div>
+        <div class="tool-grid">
+            <main>
+                <div class="card">
+                    <div class="aging-header">
+                        <span>账龄区间</span>
+                        <span>金额 (万元)</span>
+                        <span>预估坏账率</span>
+                    </div>
 
-          <div class="risk-indicator" id="riskIndicator">
-            <div class="risk-icon" id="riskIcon"></div>
-            <div class="risk-text" id="riskText"></div>
-          </div>
+                    <div id="agingRows">
+                        <!-- Rows injected by JS -->
+                    </div>
+
+                    <div class="chart-container">
+                        <div class="progress-stack" id="progressStack">
+                            <!-- Segments injected by JS -->
+                        </div>
+                        <div class="legend-grid" id="legendGrid">
+                            <!-- Legend injected by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ad-slot ad-top">广告占位符 - 内容间广告</div>
+
+                <article class="article">
+                    <h2>为什么要进行账龄分析？</h2>
+                    <p>应收账款账龄分析（Accounts Receivable Aging Analysis）是财务管理中衡量客户付款及时性和评估信用风险的核心工具。通过将所有欠款按发生时间进行分类，企业可以清晰地看到哪些款项正在逾期，从而采取针对性的催收措施。</p>
+                    
+                    <h3>账龄分析的核心价值</h3>
+                    <p>1. <strong>预估潜在损失</strong>：根据“欠得越久越难收回”的原则，账龄分析是计提坏账准备的金标准。通过分级计提，利润表能更真实地反映企业盈亏。<br>
+                    2. <strong>优化客户信用政策</strong>：如果某类客户长期处于“1年以上”账龄区，说明原有的信用额度或账期设置过于宽松，需要及时调紧。<br>
+                    3. <strong>改善现金流预测</strong>：明确了回收周期的分布，财务团队可以更精准地估算下月可支配的现金流入，避免资金链断裂。</p>
+
+                    <h3>三个关键绩效指标 (KPIs)</h3>
+                    <ul>
+                        <li><strong>DSO (应收账款周转天数)</strong>：衡量从开票到收到货款平均需要多少天。DSO 越低，资金效率越高。</li>
+                        <li><strong>坏账准备覆盖率</strong>：坏账准备总额与总欠款的比率。它反映了企业抵御财务坏账冲击的防火墙厚度。</li>
+                        <li><strong>加权平均账龄</strong>：将所有欠款按其金额和天数加权后的平均值，比单一的 DSO 能更深层反映结构性风险。</li>
+                    </ul>
+
+                    <h3>如何加速回款并降低风险？</h3>
+                    <p><strong>建立信用分级体系</strong>：对回款信用记录良好的客户给予价格折扣或延长账期；对经常逾期的客户实施款到发货（COD）。</p>
+                    <p><strong>引入第三方工具</strong>：对于账龄超过 2 年的顽固债务，考虑转让债权或委托专业的法律/催收机构处理，尽管这会产生费用，但能换回宝贵的流动资金。</p>
+                </article>
+            </main>
+
+            <aside class="sidebar">
+                <div class="stat-card main-res">
+                    <div class="main-res-label">应收账款总额</div>
+                    <div id="totalAmount" class="main-res-val">¥ 0.00</div>
+                    <div id="riskLevel" class="risk-card">分析中...</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="sub-res">
+                        <span class="sub-res-label">坏账准备计提额</span>
+                        <span id="badDebtTotal" class="sub-res-val" style="color: var(--error);">¥ 0</span>
+                    </div>
+                    <div class="sub-res">
+                        <span class="sub-res-label">综合坏账率</span>
+                        <span id="avgDebtRate" class="sub-res-val">0.00%</span>
+                    </div>
+                    <div class="sub-res" style="border-top: 1px solid var(--border-color); padding-top: 0.8rem; margin-top: 0.5rem;">
+                        <span class="sub-res-label">平均账龄 (加权)</span>
+                        <span id="weightedAge" class="sub-res-val" style="color: var(--accent-cyan);">0.0 个月</span>
+                    </div>
+                </div>
+
+                <div class="stat-card" style="border-color: var(--accent-purple);">
+                    <div style="font-size: 0.8rem; font-weight: 700; color: var(--accent-purple); margin-bottom: 1rem; text-transform: uppercase;">回款结构预警</div>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.4;">
+                        您的应收账款中有 <span id="overYearRatio" style="color: var(--text-primary); font-weight: 600;">0%</span> 的款项账龄已超过 1 年，存在较高的违约风险。
+                    </p>
+                </div>
+
+                <div class="ad-slot" style="height: 250px;">侧边栏广告</div>
+            </aside>
         </div>
-      </div>
+
+        <footer>
+            <p>© 2026 WebUtils - 专业的在线商业财务分析工具集合</p>
+        </footer>
     </div>
 
     <script>
-      function toggleTheme() {
-        var theme = document.body.getAttribute("data-theme") === "light" ? "dark" : "light";
-        document.body.setAttribute("data-theme", theme);
-        localStorage.setItem("theme", theme);
-      }
-      (function () {
-        var saved = localStorage.getItem("theme");
-        if (saved) {
-          document.body.setAttribute("data-theme", saved);
-        } else if (window.matchMedia("(prefers-color-scheme: light)").matches) {
-          document.body.setAttribute("data-theme", "light");
-        }
-      })();
-
-      function formatMoney(num) {
-        if (num >= 10000) {
-          return (num / 10000).toFixed(2) + "�?;
-        }
-        return num.toFixed(2) + "�?;
-      }
-
-      function calculate() {
-        var ages = [
-          {
-            label: "1年以�?,
-            amount: parseFloat(document.getElementById("age1").value) || 0,
-            rate: parseFloat(document.getElementById("rate1").value) / 100,
-            color: "#10b981",
-            midAge: 0.5
-          },
-          {
-            label: "1-2�?,
-            amount: parseFloat(document.getElementById("age2").value) || 0,
-            rate: parseFloat(document.getElementById("rate2").value) / 100,
-            color: "#22c55e",
-            midAge: 1.5
-          },
-          {
-            label: "2-3�?,
-            amount: parseFloat(document.getElementById("age3").value) || 0,
-            rate: parseFloat(document.getElementById("rate3").value) / 100,
-            color: "#f59e0b",
-            midAge: 2.5
-          },
-          {
-            label: "3-4�?,
-            amount: parseFloat(document.getElementById("age4").value) || 0,
-            rate: parseFloat(document.getElementById("rate4").value) / 100,
-            color: "#f97316",
-            midAge: 3.5
-          },
-          {
-            label: "4-5�?,
-            amount: parseFloat(document.getElementById("age5").value) || 0,
-            rate: parseFloat(document.getElementById("rate5").value) / 100,
-            color: "#ef4444",
-            midAge: 4.5
-          },
-          {
-            label: "5年以�?,
-            amount: parseFloat(document.getElementById("age6").value) || 0,
-            rate: parseFloat(document.getElementById("rate6").value) / 100,
-            color: "#dc2626",
-            midAge: 6
-          }
+        const agingConfig = [
+            { id: 1, label: '1年以内', defaultRate: 5, color: '#00f5d4', weight: 0.5 },
+            { id: 2, label: '1-2年', defaultRate: 15, color: '#30d158', weight: 1.5 },
+            { id: 3, label: '2-3年', defaultRate: 30, color: '#ff9f0a', weight: 2.5 },
+            { id: 4, label: '3-4年', defaultRate: 50, color: '#ff453a', weight: 3.5 },
+            { id: 5, label: '4-5年', defaultRate: 80, color: '#bf5af2', weight: 4.5 },
+            { id: 6, label: '5年以上', defaultRate: 100, color: '#606070', weight: 6.0 }
         ];
 
-        var totalReceivables = ages.reduce(function (sum, a) {
-          return sum + a.amount;
-        }, 0);
-        var badDebtProvision = ages.reduce(function (sum, a) {
-          return sum + a.amount * a.rate;
-        }, 0);
-        var badDebtRate = totalReceivables > 0 ? (badDebtProvision / totalReceivables) * 100 : 0;
-        var avgAge =
-          totalReceivables > 0
-            ? ages.reduce(function (sum, a) {
-                return sum + a.amount * a.midAge;
-              }, 0) / totalReceivables
-            : 0;
-
-        document.getElementById("resultSection").classList.remove("hidden");
-
-        document.getElementById("totalReceivables").textContent = formatMoney(totalReceivables);
-        document.getElementById("badDebtProvision").textContent = formatMoney(badDebtProvision);
-
-        var badDebtRateEl = document.getElementById("badDebtRate");
-        badDebtRateEl.textContent = badDebtRate.toFixed(2) + "%";
-        badDebtRateEl.style.color =
-          badDebtRate > 20
-            ? "var(--accent-red)"
-            : badDebtRate > 10
-              ? "var(--orange)"
-              : "var(--accent-green)";
-
-        document.getElementById("avgAge").textContent = avgAge.toFixed(1) + "�?;
-
-        // 账龄�?
-        var agingBar = document.getElementById("agingBar");
-        while (agingBar.firstChild) {
-          agingBar.removeChild(agingBar.firstChild);
+        function init() {
+            const container = document.getElementById('agingRows');
+            const defaultAmounts = [100, 30, 15, 5, 3, 2];
+            
+            agingConfig.forEach((cfg, idx) => {
+                const row = document.createElement('div');
+                row.className = 'aging-row';
+                row.innerHTML = `
+                    <div class="aging-label">${cfg.label}</div>
+                    <div class="input-wrapper">
+                        <span class="prefix">¥</span>
+                        <input type="number" id="amt-${cfg.id}" value="${defaultAmounts[idx]}" oninput="calculate()">
+                        <span class="suffix">万</span>
+                    </div>
+                    <div class="input-wrapper">
+                        <input type="number" id="rate-${cfg.id}" value="${cfg.defaultRate}" oninput="calculate()">
+                        <span class="suffix">%</span>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+            calculate();
         }
 
-        ages.forEach(function (age) {
-          if (age.amount > 0) {
-            var segment = document.createElement("div");
-            segment.className = "aging-segment";
-            segment.style.width = (age.amount / totalReceivables) * 100 + "%";
-            segment.style.background = age.color;
-            agingBar.appendChild(segment);
-          }
-        });
+        function calculate() {
+            let totalAmt = 0;
+            let totalBadDebt = 0;
+            let totalWeightedAge = 0;
+            let overYearAmt = 0;
 
-        // 图例
-        var agingLegend = document.getElementById("agingLegend");
-        while (agingLegend.firstChild) {
-          agingLegend.removeChild(agingLegend.firstChild);
+            const segments = [];
+
+            agingConfig.forEach(cfg => {
+                const amt = parseFloat(document.getElementById(`amt-${cfg.id}`).value) || 0;
+                const rate = (parseFloat(document.getElementById(`rate-${cfg.id}`).value) || 0) / 100;
+                
+                totalAmt += amt;
+                totalBadDebt += (amt * rate);
+                totalWeightedAge += (amt * cfg.weight);
+                
+                if (cfg.id > 1) overYearAmt += amt;
+
+                segments.push({ amt, color: cfg.color, label: cfg.label });
+            });
+
+            const avgRate = totalAmt > 0 ? (totalBadDebt / totalAmt) : 0;
+            const weightedAge = totalAmt > 0 ? (totalWeightedAge / totalAmt) : 0;
+            const overYearRatio = totalAmt > 0 ? (overYearAmt / totalAmt) : 0;
+
+            updateUI(totalAmt, totalBadDebt, avgRate, weightedAge, overYearRatio, segments);
         }
 
-        ages.forEach(function (age) {
-          if (age.amount > 0) {
-            var item = document.createElement("div");
-            item.className = "legend-item";
-            var color = document.createElement("div");
-            color.className = "legend-color";
-            color.style.background = age.color;
-            var text = document.createElement("span");
-            text.textContent =
-              age.label + " " + ((age.amount / totalReceivables) * 100).toFixed(1) + "%";
-            item.appendChild(color);
-            item.appendChild(text);
-            agingLegend.appendChild(item);
-          }
-        });
+        function updateUI(total, badDebt, rate, age, overYear, segments) {
+            document.getElementById('totalAmount').textContent = '¥' + total.toLocaleString() + '万';
+            document.getElementById('badDebtTotal').textContent = '¥' + badDebt.toLocaleString(undefined, {minimumFractionDigits: 2}) + '万';
+            document.getElementById('avgDebtRate').textContent = (rate * 100).toFixed(2) + '%';
+            document.getElementById('weightedAge').textContent = age.toFixed(1) + ' 年';
+            document.getElementById('overYearRatio').textContent = (overYear * 100).toFixed(1) + '%';
 
-        // 风险评估
-        var riskIndicator = document.getElementById("riskIndicator");
-        var riskIcon = document.getElementById("riskIcon");
-        var riskText = document.getElementById("riskText");
+            // Risk Level
+            const risk = document.getElementById('riskLevel');
+            if (rate > 0.25 || overYear > 0.4) {
+                risk.textContent = "高风险 (High Risk)";
+                risk.className = "risk-card risk-high";
+            } else if (rate > 0.1 || overYear > 0.2) {
+                risk.textContent = "中等风险 (Medium)";
+                risk.className = "risk-card risk-med";
+            } else {
+                risk.textContent = "低风险 (Safe)";
+                risk.className = "risk-card risk-low";
+            }
 
-        var overYearRatio =
-          (ages.slice(1).reduce(function (sum, a) {
-            return sum + a.amount;
-          }, 0) /
-            totalReceivables) *
-          100;
+            // Charts
+            const stack = document.getElementById('progressStack');
+            const legend = document.getElementById('legendGrid');
+            stack.innerHTML = '';
+            legend.innerHTML = '';
 
-        if (badDebtRate > 20 || overYearRatio > 40) {
-          riskIndicator.className = "risk-indicator risk-high";
-          riskIcon.textContent = "⚠️";
-          riskText.textContent = "高风险：账龄结构不健康，建议加强催收";
-        } else if (badDebtRate > 10 || overYearRatio > 25) {
-          riskIndicator.className = "risk-indicator risk-medium";
-          riskIcon.textContent = "�?;
-          riskText.textContent = "中等风险：部分账款账龄较长，需关注";
-        } else {
-          riskIndicator.className = "risk-indicator risk-low";
-          riskIcon.textContent = "�?;
-          riskText.textContent = "低风险：账龄结构健康，回款情况良�?;
+            segments.forEach(seg => {
+                if (total > 0 && seg.amt > 0) {
+                    const percent = (seg.amt / total * 100).toFixed(1);
+                    const div = document.createElement('div');
+                    div.className = 'progress-segment';
+                    div.style.width = percent + '%';
+                    div.style.background = seg.color;
+                    div.title = `${seg.label}: ${percent}%`;
+                    stack.appendChild(div);
+
+                    const leg = document.createElement('div');
+                    leg.className = 'legend-item';
+                    leg.innerHTML = `<span class="dot" style="background: ${seg.color}"></span> ${seg.label} (${percent}%)`;
+                    legend.appendChild(leg);
+                }
+            });
         }
-      }
 
-      calculate();
+        init();
     </script>
-  </body>
+</body>
 </html>
-
-

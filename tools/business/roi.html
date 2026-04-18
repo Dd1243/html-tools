@@ -1,392 +1,288 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>投资回报率计算器 - WebUtils</title>
-    <meta
-      name="description"
-      content="在线计算投资回报率ROI，帮助评估投资效益和项目收益，支持多种计算方�?
-    />
-    <meta name="keywords" content="投资回报�? ROI计算, 投资收益, 项目评估, 投资分析, 收益�? />
-    <meta property="og:title" content="投资回报率计算器 - WebUtils" />
-    <meta
-      property="og:description"
-      content="在线计算投资回报率ROI，帮助评估投资效益和项目收益，支持多种计算方�?
-    />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/business/roi" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <link rel="canonical" href="https://essays4u.net/tools/business/roi" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>项目投资收益评估器 (ROI基础版) - WebUtils</title>
+    
+    <meta name="description" content="专业在线ROI计算工具，支持投资回收期、投资倍数及年化ROI分析。通过总收益与年均收益多维度评估投资项目价值，帮助企业主与投资者量化收益。">
+    <meta name="keywords" content="ROI计算,投资收益率,投资回收期,投资倍数,财务分析工具,WebUtils">
+    <meta name="author" content="WebUtils">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://essays4u.net/tools/business/roi">
+    <meta property="og:title" content="项目投资收益评估器 - WebUtils">
+    <meta property="og:description" content="简单高效的项目投资收益量化评估工具。">
+    <meta property="og:image" content="https://essays4u.net/assets/img/og-business.png">
+
+    <link rel="canonical" href="https://essays4u.net/tools/business/roi">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "项目投资收益评估器",
+      "url": "https://essays4u.net/tools/business/roi",
+      "description": "多维度计算投资回报率(ROI)、投资倍数及回收期的专业财务工具。",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "All",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" }
+    }
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
+        :root {
+            --bg-deep: #0a0a0f;
+            --bg-surface: #12121a;
+            --bg-card: #1a1a24;
+            --text-primary: #e8e8ed;
+            --text-secondary: #8888a0;
+            --accent-cyan: #00f5d4;
+            --accent-magenta: #f72585;
+            --accent-green: #10b981;
+            --accent-red: #f43f5e;
+            --border-subtle: #2a2a3a;
+            --radius-lg: 12px;
+            --font-sans: 'Space Grotesk', system-ui, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
 
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
+        [data-theme="light"] {
+            --bg-deep: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --border-subtle: #e2e8f0;
+        }
 
-      body {
-        font-family: var(--font-sans);
-        font-size: 16px;
-        line-height: 1.6;
-        background: var(--bg-deep);
-        color: var(--text-primary);
-        min-height: 100vh;
-        padding: 20px;
-      }
-      .container {
-        max-width: 700px;
-        margin: 0 auto;
-      }
-      .back-link {
-        display: inline-block;
-        margin-bottom: 16px;
-        color: var(--accent-cyan);
-        text-decoration: none;
-        font-size: 0.9rem;
-      }
-      .back-link:hover {
-        text-decoration: underline;
-      }
-      h1 {
-        text-align: center;
-        margin-bottom: 8px;
-        font-size: 1.8rem;
-      }
-      .subtitle {
-        text-align: center;
-        color: var(--text-secondary);
-        margin-bottom: 24px;
-      }
-      .card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 16px;
-      }
-      .card-title {
-        font-weight: 600;
-        margin-bottom: 16px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 16px;
-      }
-      .form-group {
-        margin-bottom: 16px;
-      }
-      .form-group label {
-        display: block;
-        margin-bottom: 6px;
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-      }
-      input {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        background: var(--bg-deep);
-        color: var(--text-primary);
-        font-size: 1rem;
-      }
-      input:focus {
-        outline: none;
-        border-color: var(--accent-cyan);
-      }
-      .btn {
-        padding: 12px 24px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 1rem;
-        transition: all 0.2s;
-      }
-      .btn-primary {
-        background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
-        color: white;
-        width: 100%;
-      }
-      .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
-      }
-      .highlight {
-        background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
-        border-radius: 12px;
-        padding: 24px;
-        color: white;
-        text-align: center;
-        margin-bottom: 16px;
-      }
-      .highlight-label {
-        font-size: 0.9rem;
-        opacity: 0.9;
-        margin-bottom: 8px;
-      }
-      .highlight-value {
-        font-size: 3rem;
-        font-weight: 700;
-      }
-      .result-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 16px;
-      }
-      .result-item {
-        background: var(--bg-deep);
-        border-radius: 12px;
-        padding: 16px;
-        text-align: center;
-      }
-      .result-label {
-        font-size: 0.85rem;
-        color: var(--text-secondary);
-        margin-bottom: 8px;
-      }
-      .result-value {
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: var(--accent-cyan);
-      }
-      .result-value.green {
-        color: var(--accent-green);
-      }
-      .result-value.red {
-        color: var(--accent-red);
-      }
-      .formula {
-        background: var(--bg-deep);
-        border-radius: 8px;
-        padding: 16px;
-        margin-top: 16px;
-        font-family: var(--font-mono);
-        color: var(--text-secondary);
-        text-align: center;
-      }
-      .hidden {
-        display: none;
-      }
-      .theme-toggle {
-        position: fixed;
-        top: 16px;
-        right: 16px;
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        padding: 8px 12px;
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-      }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-deep);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        
+        .ad-slot {
+            background: rgba(128, 128, 128, 0.05);
+            border: 1px dashed var(--border-subtle);
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            min-height: 90px;
+        }
+
+        header { text-align: center; margin-bottom: 40px; }
+        h1 { font-size: 2.5rem; margin-bottom: 10px; background: linear-gradient(135deg, var(--accent-magenta), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { color: var(--text-secondary); font-size: 1.1rem; }
+
+        .tool-grid {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 1024px) {
+            .tool-grid { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+        }
+
+        .input-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: var(--text-secondary); font-weight: 500; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        input {
+            width: 100%;
+            padding: 14px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
+            transition: border-color 0.2s;
+        }
+        input:focus { border-color: var(--accent-magenta); outline: none; }
+
+        .dashboard-item {
+            background: var(--bg-surface);
+            padding: 18px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border-right: 4px solid var(--accent-magenta);
+            text-align: right;
+        }
+        .dashboard-label { font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 4px; }
+        .dashboard-value { font-size: 1.8rem; font-weight: 700; font-family: var(--font-mono); color: var(--accent-magenta); }
+
+        article {
+            margin-top: 60px;
+            padding: 40px;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-subtle);
+        }
+        article h2 { margin: 40px 0 20px; color: var(--accent-magenta); font-size: 1.8rem; }
+        article p { margin-bottom: 18px; color: var(--text-secondary); }
+        article ul { margin: 15px 0 25px 25px; color: var(--text-secondary); }
+        article li { margin-bottom: 12px; }
+
+        .back-link { display: inline-flex; align-items: center; margin-bottom: 20px; color: var(--accent-magenta); text-decoration: none; font-weight: 500; }
+        
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            z-index: 100;
+            background: var(--bg-card);
+            padding: 10px;
+            border-radius: 50%;
+            border: 1px solid var(--border-subtle);
+            width: 44px; height: 44px;
+            display: flex; align-items: center; justify-content: center;
+        }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">🌓</button>
     <div class="container">
-      <a href="../../index.html" class="back-link">�?返回</a>
-      <button class="theme-toggle" onclick="toggleTheme()" title="切换主题" aria-label="🌓">
-        🌓
-      </button>
-      <h1>📈 投资回报率计算器</h1>
-      <p class="subtitle">计算投资项目的ROI和投资回收期</p>
+        <a href="../../index.html" class="back-link">← 返回工具库</a>
+        
+        <div class="ad-slot">Google AdSense - Top Banner</div>
 
-      <div class="card">
-        <div class="card-title">💰 投资信息</div>
-        <div class="grid">
-          <div class="form-group">
-            <label for="input-----------">初始投资金额 (�?</label>
-            <input
-              type="number"
-              id="initialInvestment"
-              value="100000"
-              min="0"
-              aria-label="数字输入�?
-              placeholder="请输入数字输入框"
-            />
-          </div>
-          <div class="form-group">
-            <label for="input---------">投资期限 (�?</label>
-            <input
-              type="number"
-              id="investmentPeriod"
-              value="3"
-              min="1"
-              aria-label="数字输入�?
-              placeholder="请输入数字输入框"
-            />
-          </div>
-        </div>
-      </div>
+        <header>
+            <h1>项目投资收益评估器</h1>
+            <p class="subtitle">基于预期收益与回本周期，多维度量化您的商业项目价值</p>
+        </header>
 
-      <div class="card">
-        <div class="card-title">📊 收益信息</div>
-        <div class="grid">
-          <div class="form-group">
-            <label for="input----------">预期总收�?(�?</label>
-            <input
-              type="number"
-              id="totalReturn"
-              value="150000"
-              min="0"
-              aria-label="数字输入�?
-              placeholder="请输入数字输入框"
-            />
-          </div>
-          <div class="form-group">
-            <label for="input---------">年均收益 (�?</label>
-            <input
-              type="number"
-              id="annualReturn"
-              value="50000"
-              min="0"
-              aria-label="数字输入�?
-              placeholder="请输入数字输入框"
-            />
-          </div>
-        </div>
-        <button class="btn btn-primary" onclick="calculate()" aria-label="计算ROI">计算ROI</button>
-      </div>
+        <main class="tool-grid">
+            <section class="card">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="input-group">
+                        <label for="initialInvestment">初始投资金额 (¥)</label>
+                        <input type="number" id="initialInvestment" value="100000" oninput="calculate()">
+                    </div>
+                    <div class="input-group">
+                        <label for="investmentPeriod">投资预期年限 (年)</label>
+                        <input type="number" id="investmentPeriod" value="3" oninput="calculate()">
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
+                    <div class="input-group">
+                        <label for="totalReturn">预期总收益 (¥)</label>
+                        <input type="number" id="totalReturn" value="150000" oninput="calculate()">
+                    </div>
+                    <div class="input-group">
+                        <label for="annualReturn">预估年均收益 (¥)</label>
+                        <input type="number" id="annualReturn" value="50000" oninput="calculate()">
+                    </div>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 20px; font-style: italic;">
+                    提示：年均收益用于计算投资回收期，总收益用于计算核心 ROI。
+                </p>
+            </section>
 
-      <div id="resultSection" class="hidden">
-        <div class="highlight">
-          <div class="highlight-label">投资回报�?(ROI)</div>
-          <div class="highlight-value" id="roi"></div>
-        </div>
+            <aside>
+                <div class="card">
+                    <h2 style="font-size: 1.1rem; margin-bottom: 24px; color: var(--accent-magenta);">🎯 核心评估指标</h2>
+                    
+                    <div class="dashboard-item">
+                        <div class="dashboard-label">总投资回报率 (ROI)</div>
+                        <div class="dashboard-value" id="roi">--%</div>
+                    </div>
 
-        <div class="card">
-          <div class="card-title">📈 投资分析</div>
-          <div class="result-grid">
-            <div class="result-item">
-              <div class="result-label">净收益</div>
-              <div class="result-value" id="netProfit"></div>
-            </div>
-            <div class="result-item">
-              <div class="result-label">年化ROI</div>
-              <div class="result-value" id="annualRoi"></div>
-            </div>
-            <div class="result-item">
-              <div class="result-label">投资回收�?/div>
-              <div class="result-value" id="paybackPeriod"></div>
-            </div>
-            <div class="result-item">
-              <div class="result-label">投资倍数</div>
-              <div class="result-value" id="multiple"></div>
-            </div>
-          </div>
+                    <div class="dashboard-item" style="border-right-color: var(--accent-cyan);">
+                        <div class="dashboard-label">年化 ROI (简单平均)</div>
+                        <div class="dashboard-value" id="annualRoi" style="color: var(--accent-cyan);">--%</div>
+                    </div>
 
-          <div class="formula">ROI = (总收�?- 初始投资) / 初始投资 × 100%</div>
-        </div>
-      </div>
+                    <div class="dashboard-item" style="border-right-color: var(--accent-green);">
+                        <div class="dashboard-label">投资回收期</div>
+                        <div class="dashboard-value" id="paybackPeriod" style="color: var(--accent-green);">--年</div>
+                    </div>
+
+                    <div class="dashboard-item" style="border-right-color: var(--text-primary);">
+                        <div class="dashboard-label">投资倍数 (Multiple)</div>
+                        <div class="dashboard-value" id="multiple" style="color: var(--text-primary);">--x</div>
+                    </div>
+
+                    <div class="ad-slot" style="min-height: 200px;">Google AdSense - Aside</div>
+                </div>
+            </aside>
+        </main>
+
+        <div class="ad-slot">Google AdSense - Mid</div>
+
+        <article>
+            <h2>财务决策必备：投资倍数与 ROI 的深度对比</h2>
+            <p>在评估商业机会时，单一指标往往会产生误导。本工具通过<strong>ROI、年化收益率、投资倍数、回收期</strong>四个维度，为您构建全方位的财务画像。</p>
+            
+            <h3>1. 为什么关注“投资倍数”？</h3>
+            <p><strong>投资倍数 (Multiple of Money, MoM)</strong> 直接告诉您投出的每一块钱最后变成了几块钱。在风险投资和私募股权中，这是衡量绝对收益规模的首选指标。如果倍数低于 1.0x，意味着您的本金正在缩水。</p>
+            
+            <h3>2. 投资回收期的风险信号</h3>
+            <p><strong>投资回收期 (Payback Period)</strong> 指收回初始本金所需的时间。在快速变化的市场（如餐饮或电子消费品），较短的回收期代表更高的安全性。如果回收期超过了您的预期经营寿命，该项目应被高度警惕。</p>
+
+            <h3>3. 如何科学设置“年均收益”？</h3>
+            <ul>
+                <li><strong>稳健型：</strong> 取过去三年实际收益的平均值。</li>
+                <li><strong>增长型：</strong> 考虑市场扩张因素，通常设定 5%-15% 的年增长斜率。</li>
+                <li><strong>保守型：</strong> 扣除可能的设备折旧和财务成本后的净现金流。</li>
+            </ul>
+        </article>
+
+        <div class="ad-slot">Google AdSense - Bottom</div>
+
+        <footer style="text-align: center; margin-top: 60px; padding-bottom: 40px; color: var(--text-secondary); font-size: 0.9rem;">
+            <p>© 2026 WebUtils - 专业商业工具集合</p>
+        </footer>
     </div>
 
     <script>
-      function toggleTheme() {
-        var theme = document.body.getAttribute("data-theme") === "light" ? "dark" : "light";
-        document.body.setAttribute("data-theme", theme);
-        localStorage.setItem("theme", theme);
-      }
-      (function () {
-        var saved = localStorage.getItem("theme");
-        if (saved) {
-          document.body.setAttribute("data-theme", saved);
-        } else if (window.matchMedia("(prefers-color-scheme: light)").matches) {
-          document.body.setAttribute("data-theme", "light");
+        function toggleTheme() {
+            const body = document.body;
+            const current = body.getAttribute('data-theme');
+            body.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+            localStorage.setItem('theme', current === 'light' ? 'dark' : 'light');
         }
-      })();
 
-      function formatMoney(num) {
-        if (Math.abs(num) >= 10000) {
-          return (num / 10000).toFixed(2) + "�?;
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.body.setAttribute('data-theme', savedTheme);
+
+        function calculate() {
+            const initialInvestment = parseFloat(document.getElementById("initialInvestment").value) || 0;
+            const investmentPeriod = parseFloat(document.getElementById("investmentPeriod").value) || 1;
+            const totalReturn = parseFloat(document.getElementById("totalReturn").value) || 0;
+            const annualReturn = parseFloat(document.getElementById("annualReturn").value) || 0;
+
+            const netProfit = totalReturn - initialInvestment;
+            const roi = initialInvestment > 0 ? (netProfit / initialInvestment) * 100 : 0;
+            const annualRoi = roi / investmentPeriod;
+            const paybackPeriod = annualReturn > 0 ? initialInvestment / annualReturn : 0;
+            const multiple = initialInvestment > 0 ? totalReturn / initialInvestment : 0;
+
+            document.getElementById("roi").textContent = roi.toFixed(2) + "%";
+            document.getElementById("annualRoi").textContent = annualRoi.toFixed(2) + "%";
+            document.getElementById("paybackPeriod").textContent = paybackPeriod > 0 ? paybackPeriod.toFixed(1) + "年" : "N/A";
+            document.getElementById("multiple").textContent = multiple.toFixed(2) + "x";
         }
-        return num.toFixed(0) + "�?;
-      }
 
-      function calculate() {
-        var initialInvestment = parseFloat(document.getElementById("initialInvestment").value) || 0;
-        var investmentPeriod = parseInt(document.getElementById("investmentPeriod").value) || 1;
-        var totalReturn = parseFloat(document.getElementById("totalReturn").value) || 0;
-        var annualReturn = parseFloat(document.getElementById("annualReturn").value) || 0;
-
-        var netProfit = totalReturn - initialInvestment;
-        var roi = initialInvestment > 0 ? (netProfit / initialInvestment) * 100 : 0;
-        var annualRoi = roi / investmentPeriod;
-        var paybackPeriod = annualReturn > 0 ? initialInvestment / annualReturn : 0;
-        var multiple = initialInvestment > 0 ? totalReturn / initialInvestment : 0;
-
-        document.getElementById("resultSection").classList.remove("hidden");
-
-        var roiEl = document.getElementById("roi");
-        roiEl.textContent = roi.toFixed(2) + "%";
-
-        var netProfitEl = document.getElementById("netProfit");
-        netProfitEl.textContent = formatMoney(netProfit);
-        netProfitEl.className = "result-value " + (netProfit >= 0 ? "green" : "red");
-
-        var annualRoiEl = document.getElementById("annualRoi");
-        annualRoiEl.textContent = annualRoi.toFixed(2) + "%";
-        annualRoiEl.className =
-          "result-value " + (annualRoi >= 10 ? "green" : annualRoi >= 0 ? "" : "red");
-
-        document.getElementById("paybackPeriod").textContent = paybackPeriod.toFixed(1) + "�?;
-        document.getElementById("multiple").textContent = multiple.toFixed(2) + "x";
-      }
-
-      calculate();
+        calculate();
     </script>
-  </body>
+</body>
 </html>
-
-

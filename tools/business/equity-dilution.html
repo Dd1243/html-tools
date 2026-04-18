@@ -1,591 +1,297 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>股权稀释计算器 - WebUtils</title>
-    <meta
-      name="description"
-      content="在线计算融资后股权稀释比例，帮助创业者和投资者评估股权变化和持股比例"
-    />
-    <meta name="keywords" content="股权稀�? 融资计算, 股权比例, 投资估�? 创业融资, 股权结构" />
-    <meta property="og:title" content="股权稀释计算器 - WebUtils" />
-    <meta
-      property="og:description"
-      content="在线计算融资后股权稀释比例，帮助创业者和投资者评估股权变化和持股比例"
-    />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/business/equity-dilution" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <link rel="canonical" href="https://essays4u.net/tools/business/equity-dilution" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>股权稀释计算器 - 融资预测与 Cap Table 管理工具 - WebUtils</title>
+    <meta name="description" content="专业在线股权稀释计算器，帮助创业者和投资人模拟融资后的股权结构变化。支持投前投后估值计算、新增期权池稀释测算及各股东持股价值动态分析。">
+    <meta name="keywords" content="股权稀释计算器,融资稀释比例,投前估值,投后估值,股权结构表,Cap Table,创业融资计算">
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://chicogong.github.io/html-tools/tools/business/equity-dilution.html">
+    <meta property="og:title" content="股权稀释计算器 - 融资预测与股权结构分析">
+    <meta property="og:description" content="模拟融资方案，实时查看创始人、投资人及期权池的股权比例变动。">
+    <meta property="og:image" content="../../apple-touch-icon.png">
+
+    <link rel="canonical" href="https://chicogong.github.io/html-tools/tools/business/equity-dilution.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      body {
-        font-family: var(--font-sans);
-        font-size: 16px;
-        line-height: 1.6;
-        background: var(--bg-deep);
-        color: var(--text-primary);
-        min-height: 100vh;
-        padding: 20px;
-      }
-      .container {
-        max-width: 800px;
-        margin: 0 auto;
-      }
-      .back-link {
-        display: inline-block;
-        margin-bottom: 16px;
-        color: var(--accent-cyan);
-        text-decoration: none;
-        font-size: 0.9rem;
-      }
-      .back-link:hover {
-        text-decoration: underline;
-      }
-      h1 {
-        text-align: center;
-        margin-bottom: 8px;
-        font-size: 1.8rem;
-      }
-      .subtitle {
-        text-align: center;
-        color: var(--text-secondary);
-        margin-bottom: 24px;
-      }
-      .card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 16px;
-      }
-      .card-title {
-        font-weight: 600;
-        margin-bottom: 16px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 16px;
-      }
-      .form-group {
-        margin-bottom: 16px;
-      }
-      .form-group label {
-        display: block;
-        margin-bottom: 6px;
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-      }
-      input {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        background: var(--bg-deep);
-        color: var(--text-primary);
-        font-size: 1rem;
-      }
-      input:focus {
-        outline: none;
-        border-color: var(--accent-cyan);
-      }
-      .btn {
-        padding: 12px 24px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 1rem;
-        transition: all 0.2s;
-      }
-      .btn-primary {
-        background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
-        color: white;
-        width: 100%;
-      }
-      .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
-      }
-      .result-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 16px;
-      }
-      .result-item {
-        background: var(--bg-deep);
-        border-radius: 12px;
-        padding: 16px;
-        text-align: center;
-      }
-      .result-label {
-        font-size: 0.85rem;
-        color: var(--text-secondary);
-        margin-bottom: 8px;
-      }
-      .result-value {
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: var(--accent-cyan);
-      }
-      .result-value.green {
-        color: var(--accent-green);
-      }
-      .result-value.red {
-        color: var(--accent-red);
-      }
-      .compare-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-        margin-top: 16px;
-      }
-      .compare-card {
-        padding: 20px;
-        border-radius: 12px;
-        text-align: center;
-      }
-      .compare-card.before {
-        background: linear-gradient(135deg, rgba(100, 116, 139, 0.2), rgba(100, 116, 139, 0.1));
-        border: 1px solid #64748b44;
-      }
-      .compare-card.after {
-        background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(99, 102, 241, 0.1));
-        border: 1px solid var(--accent-cyan);
-      }
-      .compare-title {
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-        margin-bottom: 12px;
-      }
-      .compare-value {
-        font-size: 2rem;
-        font-weight: 700;
-      }
-      .pie-container {
-        display: flex;
-        justify-content: center;
-        gap: 40px;
-        margin: 20px 0;
-        flex-wrap: wrap;
-      }
-      .pie-chart {
-        width: 150px;
-        height: 150px;
-        border-radius: 50%;
-        position: relative;
-      }
-      .pie-label {
-        text-align: center;
-        margin-top: 10px;
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-      }
-      .legend {
-        display: flex;
-        gap: 20px;
-        justify-content: center;
-        margin-top: 16px;
-        flex-wrap: wrap;
-      }
-      .legend-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 0.85rem;
-      }
-      .legend-color {
-        width: 16px;
-        height: 16px;
-        border-radius: 4px;
-      }
-      .hidden {
-        display: none;
-      }
-      @media (max-width: 600px) {
-        .compare-grid {
-          grid-template-columns: 1fr;
+        :root {
+            --bg-deep: #0a0a0f;
+            --bg-surface: #12121a;
+            --bg-card: #1a1a24;
+            --bg-input: #0e0e14;
+            --text-primary: #e8e8ed;
+            --text-secondary: #8888a0;
+            --accent-cyan: #00f5d4;
+            --accent-magenta: #f72585;
+            --accent-purple: #7b2cbf;
+            --accent-green: #10b981;
+            --border-subtle: #2a2a3a;
+            --border-strong: #3a3a4a;
+            --font-sans: 'Space Grotesk', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --shadow-neo: 4px 4px 0px rgba(0, 0, 0, 0.8);
         }
-      }
-      .theme-toggle {
-        position: fixed;
-        top: 16px;
-        right: 16px;
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        padding: 8px 12px;
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-      }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            line-height: 1.6;
+        }
+
+        .bg-grid {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 50px 50px; z-index: -1;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+
+        .back-link { color: var(--accent-cyan); text-decoration: none; font-size: 0.9rem; margin-bottom: 24px; display: inline-block; }
+
+        h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 12px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .description { color: var(--text-secondary); margin-bottom: 40px; }
+
+        .tool-grid { display: grid; grid-template-columns: 1fr 400px; gap: 24px; }
+        @media (max-width: 1024px) { .tool-grid { grid-template-columns: 1fr; } }
+
+        .main-panel { background: var(--bg-surface); border: 2px solid var(--border-strong); border-radius: 12px; padding: 32px; box-shadow: var(--shadow-neo); }
+
+        .section-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 24px; color: var(--accent-cyan); display: flex; align-items: center; gap: 8px; }
+
+        .input-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 32px; }
+
+        .input-box { display: flex; flex-direction: column; gap: 8px; }
+        .input-box label { font-size: 0.85rem; color: var(--text-secondary); }
+        .input-box input { background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 12px; color: var(--text-primary); font-family: var(--font-mono); }
+        .input-box input:focus { border-color: var(--accent-cyan); outline: none; }
+
+        .sidebar { display: flex; flex-direction: column; gap: 24px; }
+
+        .result-card { background: var(--bg-card); border: 2px solid var(--accent-cyan); border-radius: 12px; padding: 24px; box-shadow: var(--shadow-neo); }
+        .result-main { text-align: center; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border-subtle); }
+        .post-val { font-family: var(--font-mono); font-size: 2rem; font-weight: 700; color: var(--accent-green); }
+
+        .share-list { margin-top: 20px; }
+        .share-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-subtle); }
+        .share-label { font-size: 0.9rem; color: var(--text-secondary); }
+        .share-values { text-align: right; }
+        .old-pct { font-size: 0.8rem; text-decoration: line-through; color: var(--text-muted); margin-right: 8px; }
+        .new-pct { font-family: var(--font-mono); font-weight: 600; color: var(--accent-cyan); }
+
+        .viz-container { margin-top: 24px; height: 32px; background: var(--bg-input); border-radius: 16px; overflow: hidden; display: flex; border: 1px solid var(--border-strong); }
+        .viz-segment { height: 100%; transition: width 0.3s ease; }
+        .viz-founder { background: var(--accent-cyan); }
+        .viz-others { background: var(--accent-purple); }
+        .viz-pool { background: var(--accent-green); }
+        .viz-investor { background: var(--accent-magenta); }
+
+        .ad-slot { background: var(--bg-surface); border: 1px dashed var(--border-subtle); border-radius: 8px; min-height: 90px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem; margin: 20px 0; }
+
+        .content-section { margin-top: 60px; background: var(--bg-surface); border-radius: 12px; padding: 40px; border: 1px solid var(--border-subtle); }
+        .content-section h2 { font-size: 1.8rem; margin-bottom: 24px; color: var(--accent-cyan); }
+        .content-section h3 { font-size: 1.3rem; margin: 32px 0 16px; }
+        .content-section p { color: var(--text-secondary); margin-bottom: 16px; }
+        .content-section ul { padding-left: 20px; color: var(--text-secondary); margin-bottom: 24px; }
+        .content-section li { margin-bottom: 10px; }
+
+        footer { margin-top: 80px; text-align: center; padding: 40px; color: var(--text-muted); border-top: 1px solid var(--border-subtle); }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
+</head>
+<body>
+    <div class="bg-grid"></div>
+
     <div class="container">
-      <a href="../../index.html" class="back-link">�?返回</a>
-      <button class="theme-toggle" onclick="toggleTheme()" title="切换主题" aria-label="🌓">
-        🌓
-      </button>
-      <h1>📊 股权稀释计算器</h1>
-      <p class="subtitle">计算融资后的股权变化和稀释比�?/p>
+        <a href="../../index.html" class="back-link">← 返回首页</a>
+        
+        <header>
+            <h1>📊 股权稀释计算器</h1>
+            <p class="description">模拟新一轮融资方案，实时掌握 Cap Table（股权结构表）的变化及创始人持股价值的账面增量。</p>
+        </header>
 
-      <div class="card">
-        <div class="card-title">🏢 融资前信�?/div>
-        <div class="grid">
-          <div class="form-group">
-            <label for="input----------">投前估�?(万元)</label>
-            <input
-              type="number"
-              id="preValuation"
-              value="1000"
-              min="0"
-              aria-label="数字输入�?
-              placeholder="请输入数字输入框"
-            />
-          </div>
-          <div class="form-group">
-            <label for="input------------">创始人持股比�?(%)</label>
-            <input
-              type="number"
-              id="founderShares"
-              value="70"
-              min="0"
-              max="100"
-              aria-label="数字输入�?
-              placeholder="请输入数字输入框"
-            />
-          </div>
-          <div class="form-group">
-            <label for="input-------------">其他股东持股比例 (%)</label>
-            <input
-              type="number"
-              id="otherShares"
-              value="20"
-              min="0"
-              max="100"
-              aria-label="数字输入�?
-              placeholder="请输入数字输入框"
-            />
-          </div>
-          <div class="form-group">
-            <label for="input----------">期权池比�?(%)</label>
-            <input
-              type="number"
-              id="optionPool"
-              value="10"
-              min="0"
-              max="100"
-              aria-label="数字输入�?
-              placeholder="请输入数字输入框"
-            />
-          </div>
-        </div>
-      </div>
+        <div class="ad-slot">广告占位符 - 顶部</div>
 
-      <div class="card">
-        <div class="card-title">💰 融资信息</div>
-        <div class="grid">
-          <div class="form-group">
-            <label for="input----------">融资金额 (万元)</label>
-            <input
-              type="number"
-              id="investmentAmount"
-              value="200"
-              min="0"
-              aria-label="数字输入�?
-              placeholder="请输入数字输入框"
-            />
-          </div>
-          <div class="form-group">
-            <label for="input----------">新增期权�?(%)</label>
-            <input
-              type="number"
-              id="newOptionPool"
-              value="5"
-              min="0"
-              max="50"
-              aria-label="数字输入�?
-              placeholder="请输入数字输入框"
-            />
-          </div>
-        </div>
-        <button class="btn btn-primary" onclick="calculate()" aria-label="计算稀�?>
-          计算稀�?
-        </button>
-      </div>
+        <div class="tool-grid">
+            <main class="main-panel">
+                <div class="section-title">🏢 融资前 (Pre-Money) 结构</div>
+                <div class="input-row">
+                    <div class="input-box">
+                        <label>投前估值 (万元)</label>
+                        <input type="number" id="preVal" value="1000">
+                    </div>
+                    <div class="input-box">
+                        <label>创始人持股 (%)</label>
+                        <input type="number" id="founderPct" value="70">
+                    </div>
+                    <div class="input-box">
+                        <label>其他老股东 (%)</label>
+                        <input type="number" id="otherPct" value="20">
+                    </div>
+                    <div class="input-box">
+                        <label>已有期权池 (%)</label>
+                        <input type="number" id="poolPct" value="10">
+                    </div>
+                </div>
 
-      <div id="resultSection" class="hidden">
-        <div class="card">
-          <div class="card-title">📈 估值变�?/div>
-          <div class="result-grid">
-            <div class="result-item">
-              <div class="result-label">投前估�?/div>
-              <div class="result-value" id="preVal"></div>
-            </div>
-            <div class="result-item">
-              <div class="result-label">融资金额</div>
-              <div class="result-value" id="investment"></div>
-            </div>
-            <div class="result-item">
-              <div class="result-label">投后估�?/div>
-              <div class="result-value green" id="postVal"></div>
-            </div>
-            <div class="result-item">
-              <div class="result-label">投资人获得股�?/div>
-              <div class="result-value" id="investorShares"></div>
-            </div>
-          </div>
+                <div class="section-title">💰 本轮融资 (Funding Round)</div>
+                <div class="input-row">
+                    <div class="input-box">
+                        <label>本轮融资金额 (万元)</label>
+                        <input type="number" id="fundingAmount" value="200">
+                    </div>
+                    <div class="input-box">
+                        <label>新增期权池比例 (%)</label>
+                        <input type="number" id="newPoolPct" value="5">
+                    </div>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: -10px;">
+                    注：新增期权池通常由老股东按比例同比例稀释，新投资人占比基于投后估值计算。
+                </p>
+            </main>
+
+            <aside class="sidebar">
+                <div class="result-card">
+                    <div class="result-main">
+                        <div class="result-label">投后估值 (Post-Money)</div>
+                        <div id="postValDisplay" class="post-val">--</div>
+                    </div>
+
+                    <div class="share-list">
+                        <div class="share-item">
+                            <span class="share-label">创始人股权</span>
+                            <div class="share-values">
+                                <span class="old-pct" id="founderOld">--</span>
+                                <span class="new-pct" id="founderNew">--</span>
+                            </div>
+                        </div>
+                        <div class="share-item">
+                            <span class="share-label">新进入投资者</span>
+                            <div class="share-values">
+                                <span class="new-pct" id="investorPct">--</span>
+                            </div>
+                        </div>
+                        <div class="share-item">
+                            <span class="share-label">期权池 (总计)</span>
+                            <div class="share-values">
+                                <span class="old-pct" id="poolOld">--</span>
+                                <span class="new-pct" id="poolNew">--</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="viz-container">
+                        <div id="vizFounder" class="viz-segment viz-founder"></div>
+                        <div id="vizOthers" class="viz-segment viz-others"></div>
+                        <div id="vizPool" class="viz-segment viz-pool"></div>
+                        <div id="vizInvestor" class="viz-segment viz-investor"></div>
+                    </div>
+
+                    <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-subtle);">
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">创始人持股价值变动</div>
+                        <div id="valueChange" style="font-family: var(--font-mono); font-weight: 700; margin-top: 4px;">--</div>
+                    </div>
+                </div>
+                <div class="ad-slot">广告 - 侧边</div>
+            </aside>
         </div>
 
-        <div class="card">
-          <div class="card-title">👤 创始人股权变�?/div>
-          <div class="compare-grid">
-            <div class="compare-card before">
-              <div class="compare-title">融资前持�?/div>
-              <div class="compare-value" id="founderBefore"></div>
-            </div>
-            <div class="compare-card after">
-              <div class="compare-title">融资后持�?/div>
-              <div class="compare-value" id="founderAfter"></div>
-            </div>
-          </div>
-          <div class="result-grid" style="margin-top: 16px">
-            <div class="result-item">
-              <div class="result-label">稀释比�?/div>
-              <div class="result-value red" id="dilutionRate"></div>
-            </div>
-            <div class="result-item">
-              <div class="result-label">股权价值变�?/div>
-              <div class="result-value green" id="valueChange"></div>
-            </div>
-          </div>
-        </div>
+        <section class="content-section">
+            <h2>深入理解股权稀释：创业者的融资必修课</h2>
+            <p>在创业公司的成长过程中，股权稀释是一个不可避免的过程。它意味着当公司引入新资金或增设期权池时，原有股东持有的股权百分比会下降。但这通常被视为“把饼做大”的过程——持有的比例虽然变小了，但其对应的资产价值（估值）通常会大幅提升。</p>
 
-        <div class="card">
-          <div class="card-title">🥧 股权结构对比</div>
-          <div class="pie-container">
-            <div>
-              <div class="pie-chart" id="pieBefore"></div>
-              <div class="pie-label">融资�?/div>
-            </div>
-            <div>
-              <div class="pie-chart" id="pieAfter"></div>
-              <div class="pie-label">融资�?/div>
-            </div>
-          </div>
-          <div class="legend" id="legend"></div>
-        </div>
+            <h3>1. 核心概念：投前估值与投后估值</h3>
+            <p>理解稀释的第一步是分清两个基本术语：</p>
+            <ul>
+                <li><strong>投前估值 (Pre-Money Valuation)</strong>：在这一轮资金注入之前，公司所约定的价值。</li>
+                <li><strong>投后估值 (Post-Money Valuation)</strong>：投前估值 + 融资金额。</li>
+                <li><strong>投资人占比</strong>：融资金额 ÷ 投后估值。例如，投前 800 万，融资 200 万，则投后 1000 万，投资人占比 20%。</li>
+            </ul>
 
-        <div class="card">
-          <div class="card-title">📋 详细股权结构</div>
-          <div id="detailTable"></div>
-        </div>
-      </div>
+            <div class="ad-slot">广告 - 内部</div>
+
+            <h3>2. 为什么会有“二次稀释”？</h3>
+            <p>除了投资人带来的稀释外，新一轮融资往往伴随着**期权池（ESOP Pool）**的扩大。投资人通常要求在他们入股前或入股时，公司必须留出一定比例（如 10%-15%）的股权用于激励未来的核心团队。如果这部分期权是在融资时新增的，它会进一步稀释原有股东的份额。</p>
+
+            <h3>3. 如何通过计算保护自己？</h3>
+            <p>作为创始人，在拿到 Term Sheet（投资意向书）时，应重点测算：</p>
+            <ul>
+                <li><strong>稀释后的控制权</strong>：是否还能保持对董事会的控制或重大事项的一票否决权？</li>
+                <li><strong>反稀释条款</strong>：在未来可能的“下调融资”（Down Round）中，原有的股权如何受到保护。</li>
+                <li><strong>账面增值</strong>：虽然持股从 80% 降到了 60%，但如果公司估值从 1000 万涨到了 1 亿，你的财富其实增长了 7.5 倍。</li>
+            </ul>
+
+            <h3>4. Cap Table（股权结构表）的重要性</h3>
+            <p>一份清晰的 Cap Table 不仅是给投资人看的，更是创始人实时了解公司利益分配、投票权和退出价值地图的关键工具。建议在每轮融资细节敲定前，反复使用计算器进行多种场景（Scenarios）的模拟。</p>
+        </section>
+
+        <footer>
+            <p>© 2026 WebUtils 商业工具集 · 融资方案模拟 · 仅供战略决策参考</p>
+        </footer>
     </div>
 
     <script>
-      function toggleTheme() {
-        var theme = document.body.getAttribute("data-theme") === "light" ? "dark" : "light";
-        document.body.setAttribute("data-theme", theme);
-        localStorage.setItem("theme", theme);
-      }
-      (function () {
-        var saved = localStorage.getItem("theme");
-        if (saved) {
-          document.body.setAttribute("data-theme", saved);
-        } else if (window.matchMedia("(prefers-color-scheme: light)").matches) {
-          document.body.setAttribute("data-theme", "light");
-        }
-      })();
-
-      function formatMoney(num) {
-        if (num >= 10000) {
-          return (num / 10000).toFixed(2) + "�?;
-        }
-        return num.toFixed(0) + "�?;
-      }
-
-      function createPieChart(container, data) {
-        var total = data.reduce(function (sum, d) {
-          return sum + d.value;
-        }, 0);
-        var cumulativePercent = 0;
-        var gradients = [];
-
-        data.forEach(function (d) {
-          var percent = (d.value / total) * 100;
-          var startPercent = cumulativePercent;
-          cumulativePercent += percent;
-          gradients.push(d.color + " " + startPercent + "% " + cumulativePercent + "%");
-        });
-
-        container.style.background = "conic-gradient(" + gradients.join(", ") + ")";
-      }
-
-      function calculate() {
-        var preValuation = parseFloat(document.getElementById("preValuation").value) || 0;
-        var founderShares = parseFloat(document.getElementById("founderShares").value) || 0;
-        var otherShares = parseFloat(document.getElementById("otherShares").value) || 0;
-        var optionPool = parseFloat(document.getElementById("optionPool").value) || 0;
-        var investmentAmount = parseFloat(document.getElementById("investmentAmount").value) || 0;
-        var newOptionPool = parseFloat(document.getElementById("newOptionPool").value) || 0;
-
-        var postValuation = preValuation + investmentAmount;
-        var investorSharesPct = (investmentAmount / postValuation) * 100;
-
-        // 计算融资后各方持股（考虑新期权池从现有股东稀释）
-        var dilutionFactor = (100 - investorSharesPct - newOptionPool) / 100;
-        var founderAfter = founderShares * dilutionFactor;
-        var otherAfter = otherShares * dilutionFactor;
-        var optionAfter = optionPool * dilutionFactor + newOptionPool;
-
-        var dilutionRate = ((founderShares - founderAfter) / founderShares) * 100;
-        var founderValueBefore = (preValuation * founderShares) / 100;
-        var founderValueAfter = (postValuation * founderAfter) / 100;
-        var valueChange = founderValueAfter - founderValueBefore;
-
-        document.getElementById("resultSection").classList.remove("hidden");
-
-        document.getElementById("preVal").textContent = formatMoney(preValuation);
-        document.getElementById("investment").textContent = formatMoney(investmentAmount);
-        document.getElementById("postVal").textContent = formatMoney(postValuation);
-        document.getElementById("investorShares").textContent = investorSharesPct.toFixed(2) + "%";
-
-        document.getElementById("founderBefore").textContent = founderShares.toFixed(2) + "%";
-        document.getElementById("founderAfter").textContent = founderAfter.toFixed(2) + "%";
-        document.getElementById("dilutionRate").textContent = dilutionRate.toFixed(2) + "%";
-
-        var valueChangeEl = document.getElementById("valueChange");
-        valueChangeEl.textContent = (valueChange >= 0 ? "+" : "") + formatMoney(valueChange);
-        valueChangeEl.className = "result-value " + (valueChange >= 0 ? "green" : "red");
-
-        // 饼图
-        var beforeData = [
-          { name: "创始�?, value: founderShares, color: "#6366f1" },
-          { name: "其他股东", value: otherShares, color: "#8b5cf6" },
-          { name: "期权�?, value: optionPool, color: "#10b981" }
-        ];
-
-        var afterData = [
-          { name: "创始�?, value: founderAfter, color: "#6366f1" },
-          { name: "其他股东", value: otherAfter, color: "#8b5cf6" },
-          { name: "期权�?, value: optionAfter, color: "#10b981" },
-          { name: "投资�?, value: investorSharesPct, color: "#f59e0b" }
-        ];
-
-        createPieChart(document.getElementById("pieBefore"), beforeData);
-        createPieChart(document.getElementById("pieAfter"), afterData);
-
-        // 图例
-        var legend = document.getElementById("legend");
-        while (legend.firstChild) {
-          legend.removeChild(legend.firstChild);
-        }
-        afterData.forEach(function (d) {
-          var item = document.createElement("div");
-          item.className = "legend-item";
-          var color = document.createElement("div");
-          color.className = "legend-color";
-          color.style.background = d.color;
-          var text = document.createElement("span");
-          text.textContent = d.name;
-          item.appendChild(color);
-          item.appendChild(text);
-          legend.appendChild(item);
-        });
-
-        // 详细表格
-        var detailTable = document.getElementById("detailTable");
-        while (detailTable.firstChild) {
-          detailTable.removeChild(detailTable.firstChild);
+        function format(n) {
+            if (n >= 10000) return (n / 10000).toFixed(2) + ' 亿';
+            return n.toFixed(0) + ' 万';
         }
 
-        var tableData = [
-          { name: "创始�?, before: founderShares, after: founderAfter },
-          { name: "其他股东", before: otherShares, after: otherAfter },
-          { name: "期权�?, before: optionPool, after: optionAfter },
-          { name: "投资�?, before: 0, after: investorSharesPct }
-        ];
+        function run() {
+            const preVal = parseFloat(document.getElementById('preVal').value) || 0;
+            const fPct = parseFloat(document.getElementById('founderPct').value) || 0;
+            const oPct = parseFloat(document.getElementById('otherPct').value) || 0;
+            const pPct = parseFloat(document.getElementById('poolPct').value) || 0;
+            
+            const investAmount = parseFloat(document.getElementById('fundingAmount').value) || 0;
+            const newPool = parseFloat(document.getElementById('newPoolPct').value) || 0;
 
-        tableData.forEach(function (row) {
-          var div = document.createElement("div");
-          div.style.cssText =
-            "display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border-subtle);";
+            // 1. 投后估值
+            const postVal = preVal + investAmount;
+            
+            // 2. 投资人占比
+            const investorPct = (investAmount / postVal) * 100;
 
-          var nameSpan = document.createElement("span");
-          nameSpan.textContent = row.name;
+            // 3. 稀释系数 (原有股东需要腾出空间给投资人和新增期权池)
+            // 假设新增期权池是在投后比例中占据 X%，老股东同比例缩减
+            const dilutionFactor = (100 - investorPct - newPool) / 100;
 
-          var valueSpan = document.createElement("span");
-          valueSpan.textContent = row.before.toFixed(2) + "% �?" + row.after.toFixed(2) + "%";
-          valueSpan.style.color = "var(--accent-cyan)";
+            const fNew = fPct * dilutionFactor;
+            const oNew = oPct * dilutionFactor;
+            const pNew = pPct * dilutionFactor + newPool; // 旧池被稀释后加上新增部分
 
-          div.appendChild(nameSpan);
-          div.appendChild(valueSpan);
-          detailTable.appendChild(div);
-        });
-      }
+            // 4. 创始人价值变动
+            const vBefore = (preVal * fPct) / 100;
+            const vAfter = (postVal * fNew) / 100;
+            const vDiff = vAfter - vBefore;
 
-      calculate();
+            // Update UI
+            document.getElementById('postValDisplay').textContent = format(postVal);
+            document.getElementById('founderOld').textContent = fPct.toFixed(1) + '%';
+            document.getElementById('founderNew').textContent = fNew.toFixed(2) + '%';
+            document.getElementById('investorPct').textContent = investorPct.toFixed(2) + '%';
+            document.getElementById('poolOld').textContent = pPct.toFixed(1) + '%';
+            document.getElementById('poolNew').textContent = pNew.toFixed(2) + '%';
+
+            document.getElementById('vizFounder').style.width = fNew + '%';
+            document.getElementById('vizOthers').style.width = oNew + '%';
+            document.getElementById('vizPool').style.width = pNew + '%';
+            document.getElementById('vizInvestor').style.width = investorPct + '%';
+
+            const diffEl = document.getElementById('valueChange');
+            diffEl.textContent = (vDiff >= 0 ? '+' : '') + format(vDiff);
+            diffEl.style.color = vDiff >= 0 ? 'var(--accent-green)' : 'var(--accent-red)';
+        }
+
+        document.querySelectorAll('input').forEach(i => i.addEventListener('input', run));
+        run();
     </script>
-  </body>
+</body>
 </html>
-
-
