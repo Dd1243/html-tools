@@ -1,983 +1,411 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>会议议程生成器 - WebUtils</title>
-    <meta name="description" content="会议议程生成器：在线实用工具，免费在线使用，无需安装" />
-    <meta name="keywords" content="会议议程生成器, 工具, 在线, 实用" />
-    <meta property="og:title" content="会议议程生成器 - WebUtils" />
-    <meta
-      property="og:description"
-      content="会议议程生成器：在线实用工具，免费在线使用，无需安装"
-    />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/team-tools/meeting-agenda" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <link rel="canonical" href="https://essays4u.net/tools/team-tools/meeting-agenda" />
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线会议议程生成器 - 打造高效专业的会议安排与时间管理工具 | WebUtils</title>
+    <meta name="description" content="WebUtils 免费在线会议议程生成器。内置每日站会、冲刺规划、头脑风暴、项目启动等专业模板。支持自动计算总时长、指定议题负责人及议题分类。可导出 Markdown、纯文本或 HTML 格式。让每一场会议都有始有终，告别低效。">
+    <meta name="keywords" content="会议议程生成器,会议安排模板,每日站会流程,议程管理工具,高效会议指南,会议时间控制,Markdown会议记录,项目启动会议程,1:1会议模板">
+    <link rel="canonical" href="https://chicogong.github.io/html-tools/tools/team-tools/meeting-agenda.html">
 
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
+    <!-- Open Graph -->
+    <meta property="og:title" content="在线会议议程生成器 - 让每一分钟都有价值">
+    <meta property="og:description" content="专业的会议议程设计工具，支持多种行业标准模板，自动计算时长并支持多格式导出。">
+    <meta property="og:url" content="https://chicogong.github.io/html-tools/tools/team-tools/meeting-agenda.html">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://essays4u.net/social-preview.png">
 
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="会议议程生成器 - 告别无准备的会议">
+    <meta name="twitter:description" content="一键生成结构清晰的会议议程，提升团队协作专业度。">
+    <meta name="twitter:image" content="https://essays4u.net/social-preview.png">
 
-      body {
-        font-family: var(--font-sans);
-        background: var(--bg-color);
-        color: var(--text-color);
-        min-height: 100vh;
-        padding: 20px;
-      }
-
-      .container {
-        max-width: 900px;
-        margin: 0 auto;
-      }
-
-      .header {
-        text-align: center;
-        margin-bottom: 30px;
-        position: relative;
-      }
-
-      .header h1 {
-        font-size: 2rem;
-        margin-bottom: 10px;
-        background: linear-gradient(135deg, var(--accent-color), #a855f7);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      .theme-toggle {
-        position: absolute;
-        right: 0;
-        top: 0;
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        color: var(--text-color);
-        padding: 8px 16px;
-        border-radius: 8px;
-        cursor: pointer;
-      }
-
-      .back-link {
-        position: absolute;
-        left: 0;
-        top: 0;
-        color: var(--accent-color);
-        text-decoration: none;
-        font-size: 14px;
-      }
-
-      .back-link:hover {
-        text-decoration: underline;
-      }
-
-      .panel {
-        background: var(--bg-card);
-        border-radius: 16px;
-        padding: 25px;
-        border: 1px solid var(--border-subtle);
-        margin-bottom: 20px;
-      }
-
-      .panel-title {
-        font-size: 1rem;
-        margin-bottom: 15px;
-        color: var(--accent-color);
-      }
-
-      .form-group {
-        margin-bottom: 15px;
-      }
-
-      .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-size: 14px;
-        opacity: 0.9;
-      }
-
-      .form-group input,
-      .form-group textarea,
-      .form-group select {
-        width: 100%;
-        padding: 12px;
-        background: var(--bg-input);
-        border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        color: var(--text-color);
-        font-size: 14px;
-      }
-
-      .form-group input:focus,
-      .form-group textarea:focus,
-      .form-group select:focus {
-        outline: none;
-        border-color: var(--accent-color);
-      }
-
-      .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
-      }
-
-      @media (max-width: 600px) {
-        .form-row {
-          grid-template-columns: 1fr;
+    <!-- JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "在线会议议程生成器",
+        "url": "https://chicogong.github.io/html-tools/tools/team-tools/meeting-agenda.html",
+        "description": "提供标准化的会议议程模板，支持自定义议程项与导出功能。",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "All",
+        "author": {
+            "@type": "Organization",
+            "name": "WebUtils"
         }
-      }
+    }
+    </script>
 
-      .agenda-item {
-        display: flex;
-        gap: 10px;
-        align-items: flex-start;
-        padding: 15px;
-        background: var(--bg-input);
-        border-radius: 8px;
-        margin-bottom: 10px;
-      }
+    <style>
+        :root {
+            --primary-color: #007acc;
+            --primary-hover: #005f99;
+            --bg-color: #f9f9f9;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --border-color: #dddddd;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            --radius: 6px;
+            --accent-blue: #3498db;
+        }
 
-      .agenda-item-number {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        background: var(--accent-color);
-        color: #000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 12px;
-        flex-shrink: 0;
-      }
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-main: #e0e0e0;
+            --text-muted: #aaaaaa;
+            --border-color: #333333;
+        }
 
-      .agenda-item-content {
-        flex: 1;
-      }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Segoe UI", system-ui, -apple-system, sans-serif; line-height: 1.6; color: var(--text-main); background: var(--bg-color); }
+        .container { width: 95%; max-width: 1200px; margin: 0 auto; }
 
-      .agenda-item input {
-        width: 100%;
-        padding: 8px;
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: 6px;
-        color: var(--text-color);
-        font-size: 14px;
-        margin-bottom: 8px;
-      }
+        .site-header { background: var(--card-bg); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); position: sticky; top: 0; z-index: 100; }
+        .site-header .container { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
+        .logo a { font-size: 1.4rem; font-weight: 700; color: var(--primary-color); text-decoration: none; }
+        .theme-toggle { background: none; border: none; cursor: pointer; font-size: 1.2rem; }
 
-      .agenda-item input:focus {
-        outline: none;
-        border-color: var(--accent-color);
-      }
+        main.container { display: flex; flex-direction: column; gap: 25px; padding: 30px 0; }
+        @media (min-width: 992px) { main.container { flex-direction: row; align-items: flex-start; } }
 
-      .agenda-item-row {
-        display: flex;
-        gap: 10px;
-      }
+        .tool-section { flex: 3; background: var(--card-bg); padding: 25px; border-radius: var(--radius); box-shadow: var(--shadow); }
+        .tool-header { margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+        .tool-header h1 { font-size: 1.8rem; margin-bottom: 8px; }
+        .tool-header p { color: var(--text-muted); font-size: 0.95rem; }
 
-      .agenda-item-row input,
-      .agenda-item-row select {
-        flex: 1;
-        padding: 8px;
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: 6px;
-        color: var(--text-color);
-        font-size: 13px;
-      }
+        .panel { margin-bottom: 30px; }
+        .panel-title { font-size: 1rem; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
+        
+        .field { margin-bottom: 12px; }
+        .field label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; }
+        .input-text { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--bg-color); color: var(--text-main); font-size: 0.9rem; }
 
-      .btn {
-        padding: 10px 20px;
-        border-radius: 8px;
-        border: none;
-        cursor: pointer;
-        font-size: 14px;
-        transition: all 0.3s ease;
-      }
+        .template-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+        .tmp-btn { background: var(--bg-color); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; color: var(--text-main); transition: 0.2s; }
+        .tmp-btn:hover { border-color: var(--primary-color); color: var(--primary-color); }
 
-      .btn-primary {
-        background: var(--accent-color);
-        color: #000;
-      }
+        /* Agenda Items */
+        .agenda-item { background: var(--bg-color); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 15px; margin-bottom: 10px; display: flex; gap: 12px; align-items: flex-start; }
+        .item-num { background: var(--primary-color); color: #fff; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0; margin-top: 5px; }
+        .item-fields { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+        .item-row { display: grid; grid-template-columns: 80px 1fr 100px 30px; gap: 10px; }
+        @media (max-width: 600px) { .item-row { grid-template-columns: 1fr 1fr; } }
+        
+        .btn-del { color: #ff4d4f; border: none; background: none; cursor: pointer; font-size: 1.2rem; }
 
-      .btn-primary:hover {
-        transform: translateY(-2px);
-      }
+        .total-info { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding: 10px; background: rgba(0, 122, 204, 0.05); border-radius: var(--radius); border: 1px solid var(--primary-color); }
 
-      .btn-secondary {
-        background: var(--primary-color);
-        color: var(--text-color);
-      }
+        /* Output View */
+        .tabs { display: flex; gap: 5px; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); }
+        .tab { padding: 8px 16px; border: none; background: none; cursor: pointer; font-weight: 600; color: var(--text-muted); }
+        .tab.active { color: var(--primary-color); border-bottom: 2px solid var(--primary-color); }
+        .output-box { background: #282c34; color: #abb2bf; padding: 20px; border-radius: var(--radius); font-family: monospace; font-size: 0.85rem; height: 350px; overflow-y: auto; white-space: pre-wrap; }
 
-      .btn-danger {
-        background: transparent;
-        color: var(--danger-color);
-        padding: 6px 10px;
-      }
+        .action-bar { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+        .btn { padding: 10px 20px; border-radius: var(--radius); border: none; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .btn-primary { background: var(--primary-color); color: #fff; }
+        .btn-outline { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
 
-      .btn-group {
-        display: flex;
-        gap: 10px;
-        margin-top: 15px;
-        flex-wrap: wrap;
-      }
+        /* Sidebar & Content */
+        .sidebar-section { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+        .article-card { background: var(--card-bg); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); }
+        .article-card h2 { font-size: 1.1rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .article-card h2::before { content: ""; display: inline-block; width: 4px; height: 18px; background: var(--primary-color); border-radius: 2px; }
+        .article-card p, .article-card li { font-size: 0.85rem; line-height: 1.6; margin-bottom: 10px; }
 
-      .preview-area {
-        background: var(--bg-input);
-        border-radius: 8px;
-        padding: 20px;
-        min-height: 300px;
-        white-space: pre-wrap;
-        font-family: var(--font-mono);
-        font-size: 13px;
-        line-height: 1.6;
-      }
+        .ad-placeholder { background: #f0f2f5; border: 1px dashed #ccc; color: #999; text-align: center; padding: 20px; border-radius: var(--radius); font-size: 0.8rem; display: flex; align-items: center; justify-content: center; min-height: 100px; }
 
-      .template-btn {
-        display: inline-block;
-        padding: 8px 15px;
-        background: var(--primary-color);
-        border: 1px solid var(--border-subtle);
-        border-radius: 20px;
-        color: var(--text-color);
-        font-size: 12px;
-        cursor: pointer;
-        margin: 5px;
-        transition: all 0.3s ease;
-      }
-
-      .template-btn:hover {
-        border-color: var(--accent-color);
-        color: var(--accent-color);
-      }
-
-      .total-time {
-        background: var(--accent-color);
-        color: #000;
-        padding: 10px 20px;
-        border-radius: 8px;
-        display: inline-block;
-        font-weight: bold;
-      }
-
-      .tabs {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 15px;
-      }
-
-      .tab {
-        padding: 10px 20px;
-        background: var(--bg-input);
-        border: 1px solid var(--border-subtle);
-        border-radius: 8px 8px 0 0;
-        cursor: pointer;
-        font-size: 14px;
-      }
-
-      .tab.active {
-        background: var(--accent-color);
-        color: #000;
-        border-color: var(--accent-color);
-      }
+        .site-footer { background: #2c3e50; color: #bdc3c7; padding: 40px 0 20px; margin-top: 50px; text-align: center; }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <a href="../../index.html" class="back-link">← 返回工具列表</a>
-        <h1>会议议程生成器</h1>
-        <p>快速创建专业的会议议程</p>
-        <button class="theme-toggle" onclick="toggleTheme()">🌓 切换主题</button>
-      </div>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="logo"><a href="../../index.html">WebUtils</a></div>
+            <button class="theme-toggle" id="themeToggle">🌓</button>
+        </div>
+    </header>
 
-      <div class="panel">
-        <div class="panel-title">📋 会议基本信息</div>
-        <div class="form-group">
-          <label>会议主题</label>
-          <input type="text" id="meetingTitle" placeholder="例如：Q4 产品规划会议" />
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>会议日期</label>
-            <input type="date" id="meetingDate" />
-          </div>
-          <div class="form-group">
-            <label>开始时间</label>
-            <input type="time" id="meetingTime" value="14:00" />
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>会议地点/链接</label>
-            <input type="text" id="meetingLocation" placeholder="会议室名称或在线会议链接" />
-          </div>
-          <div class="form-group">
-            <label>主持人</label>
-            <input type="text" id="meetingHost" placeholder="主持人姓名" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label>参会人员</label>
-          <input
-            type="text"
-            id="meetingAttendees"
-            placeholder="用逗号分隔，例如：张三, 李四, 王五"
-          />
-        </div>
-      </div>
+    <main class="container">
+        <div class="tool-section">
+            <div class="ad-placeholder" style="margin-bottom: 20px;">广告位 - 顶部横幅 (AdSense Placeholder)</div>
 
-      <div class="panel">
-        <div class="panel-title">🎯 快速模板</div>
-        <div>
-          <button class="template-btn" onclick="loadTemplate('standup')">每日站会</button>
-          <button class="template-btn" onclick="loadTemplate('sprint')">冲刺规划</button>
-          <button class="template-btn" onclick="loadTemplate('review')">评审会议</button>
-          <button class="template-btn" onclick="loadTemplate('retro')">回顾会议</button>
-          <button class="template-btn" onclick="loadTemplate('brainstorm')">头脑风暴</button>
-          <button class="template-btn" onclick="loadTemplate('oneonone')">1:1 会议</button>
-          <button class="template-btn" onclick="loadTemplate('kickoff')">项目启动</button>
-        </div>
-      </div>
+            <div class="tool-header">
+                <h1>会议议程生成器</h1>
+                <p>规划会议结构，掌控讨论节奏。一键生成专业的议程文档。</p>
+            </div>
 
-      <div class="panel">
-        <div class="panel-title">📝 议程项目</div>
-        <div id="agendaList"></div>
-        <div class="btn-group">
-          <button class="btn btn-secondary" onclick="addAgendaItem()">+ 添加议程项</button>
-          <span class="total-time">
-            总时长:
-            <span id="totalTime">0</span>
-            分钟
-          </span>
-        </div>
-      </div>
+            <div class="panel">
+                <div class="panel-title">📅 会议基本信息</div>
+                <div class="field"><label>会议主题</label><input type="text" id="meetTitle" class="input-text" placeholder="例如：Q1 产品复盘与 Q2 规划"></div>
+                <div class="form-row">
+                    <div class="field"><label>日期</label><input type="date" id="meetDate" class="input-text"></div>
+                    <div class="field"><label>开始时间</label><input type="time" id="meetTime" class="input-text" value="10:00"></div>
+                </div>
+                <div class="form-row">
+                    <div class="field"><label>地点/链接</label><input type="text" id="meetLoc" class="input-text" placeholder="会议室或 Zoom 链接"></div>
+                    <div class="field"><label>主持人</label><input type="text" id="meetHost" class="input-text" placeholder="姓名"></div>
+                </div>
+                <div class="field"><label>参会人员</label><input type="text" id="meetAtt" class="input-text" placeholder="张三, 李四 (用逗号分隔)"></div>
+            </div>
 
-      <div class="panel">
-        <div class="panel-title">👁️ 预览与导出</div>
-        <div class="tabs">
-          <button class="tab active" onclick="switchTab('markdown', this)">Markdown</button>
-          <button class="tab" onclick="switchTab('text', this)">纯文本</button>
-          <button class="tab" onclick="switchTab('html', this)">HTML</button>
+            <div class="panel">
+                <div class="panel-title">⚡ 快速模板</div>
+                <div class="template-row">
+                    <button class="tmp-btn" onclick="loadTpl('standup')">每日站会</button>
+                    <button class="tmp-btn" onclick="loadTpl('sprint')">冲刺规划</button>
+                    <button class="tmp-btn" onclick="loadTpl('retro')">项目回顾</button>
+                    <button class="tmp-btn" onclick="loadTpl('brain')">头脑风暴</button>
+                    <button class="tmp-btn" onclick="loadTpl('kickoff')">项目启动</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-title">📝 议程项目清单</div>
+                <div id="itemsList"></div>
+                <button class="btn btn-outline" style="width:100%; border-style:dashed; margin-top:10px;" onclick="addItem()">+ 添加议程项目</button>
+                <div class="total-info">
+                    <span style="font-size:0.9rem; font-weight:600;">会议总时长:</span>
+                    <span style="font-size:1.1rem; font-weight:800; color:var(--primary-color);"><span id="totalMin">0</span> 分钟</span>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-title">👁️ 预览与导出</div>
+                <div class="tabs">
+                    <button class="tab active" data-format="markdown">Markdown</button>
+                    <button class="tab" data-format="text">纯文本</button>
+                    <button class="tab" data-format="html">HTML</button>
+                </div>
+                <div id="output" class="output-box"></div>
+                <div class="action-bar">
+                    <button class="btn btn-primary" onclick="copyResult()">复制到剪贴板</button>
+                    <button class="btn btn-outline" onclick="downloadResult()">下载文件</button>
+                    <button class="btn btn-outline" onclick="shareState()">获取分享链接</button>
+                </div>
+            </div>
+
+            <section style="margin-top: 40px; border-top: 1px solid var(--border-color); padding-top: 30px">
+                <h2 style="font-size: 1.5rem; margin-bottom: 20px">深度解析：如何通过一份好的议程告别“低效会议”？</h2>
+                <article style="font-size: 0.95rem; color: var(--text-main); line-height: 1.8">
+                    <p>管理学大师彼得·德鲁克曾言：“会议是组织存在的一种缺陷。”虽然会议不可或缺，但<strong>低效会议</strong>却是团队生产力的头号杀手。而终结这种杀手的最有力武器，就是一份结构严谨、目标明确的<strong>会议议程</strong>（Meeting Agenda）。</p>
+                    
+                    <h3 style="margin: 20px 0 10px;">1. 议程的三大支柱</h3>
+                    <ul>
+                        <li><strong>时间分配 (Time Allocation):</strong> 为每个议题设置“硬上限”。如果没有时间限制，最重要的讨论往往会被琐事挤占。</li>
+                        <li><strong>责任到人 (Ownership):</strong> 每个议题必须有明确的主讲人。这不仅是为了汇报，更是为了确保后续行动项（Action Items）能够落地。</li>
+                        <li><strong>明确目标 (Goal Orientation):</strong> 会议是来做“决策”的，还是来“同步信息”的？在议程中明确分类，能调整参与者的心态。</li>
+                    </ul>
+
+                    <h3 style="margin: 20px 0 10px;">2. 黄金法则：议程先行</h3>
+                    <p>没有议程的会议不应召开。建议在会议开始前 24 小时将议程发给参会者。这能让大家有时间阅读背景资料，带着方案而非空着脑袋进会议室。</p>
+                    
+                    <div class="ad-placeholder" style="margin: 25px 0">广告位 - 文章中部内嵌 (AdSense Placeholder)</div>
+
+                    <h3 style="margin: 20px 0 10px;">3. 常用会议类型的议程建议</h3>
+                    <ul>
+                        <li><strong>每日站会:</strong> 严格控制在 15 分钟内。每个人回答：昨天做了什么？今天计划做什么？遇到了什么阻碍？</li>
+                        <li><strong>头脑风暴:</strong> 前 1/3 时间用于发散思维（不予评判），中间 1/3 用于收敛想法，最后 1/3 用于投票和行动分配。</li>
+                    </ul>
+
+                    <h3 style="margin: 20px 0 10px;">4. FAQ</h3>
+                    <div style="background: var(--bg-color); padding: 15px; border-left: 4px solid var(--primary-color); margin-bottom: 15px;">
+                        <strong>问：议程太长没人看怎么办？</strong><br>
+                        答：保持精简。使用 Markdown 格式导出，并利用我们的工具自动生成的“总时长”来检查是否有超支风险。
+                    </div>
+                </article>
+            </section>
         </div>
-        <div class="preview-area" id="preview"></div>
-        <div class="btn-group">
-          <button class="btn btn-primary" onclick="copyToClipboard()">📋 复制</button>
-          <button class="btn btn-secondary" onclick="downloadFile()">💾 下载</button>
-          <button class="btn btn-secondary" onclick="shareLink()">🔗 分享链接</button>
+
+        <aside class="sidebar-section">
+            <div class="article-card">
+                <h2>💡 会议小贴士</h2>
+                <ul>
+                    <li><strong>留白:</strong> 为意外的讨论预留 10% 的缓冲时间。</li>
+                    <li><strong>准时:</strong> 按照议程时间表准时开始和结束。</li>
+                    <li><strong>记录:</strong> 配合我们的“反馈表单”工具收集团会后的意见。</li>
+                </ul>
+            </div>
+            <div class="ad-placeholder" style="min-height: 250px;">广告位 - 侧边栏 (AdSense Placeholder)</div>
+            <div class="article-card">
+                <h2>相关团队工具</h2>
+                <ul>
+                    <li><a href="standup-timer.html">站会时间管理</a></li>
+                    <li><a href="decision-matrix.html">加权决策分析</a></li>
+                    <li><a href="raci-chart.html">职责分配表</a></li>
+                </ul>
+            </div>
+        </aside>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p style="margin-bottom: 15px;">WebUtils - 赋能高效团队协作</p>
+            <div class="footer-bottom">&copy; 2026 WebUtils - 专业的会议管理助手.</div>
         </div>
-      </div>
-    </div>
+    </footer>
 
     <script>
-      const LS_KEY = "meeting-agenda-data";
-      let agendaItems = [];
-      let currentFormat = "markdown";
+        const LS_KEY = "meet-agenda-data";
+        let items = [];
+        let curFmt = "markdown";
 
-      function init() {
-        const savedTheme = localStorage.getItem("theme") || "dark";
-        if (savedTheme === "light") {
-          document.body.setAttribute("data-theme", "light");
-        }
-
-        loadFromUrl() || loadFromStorage();
-
-        if (agendaItems.length === 0) {
-          addAgendaItem();
-        }
-
-        document.getElementById("meetingDate").valueAsDate = new Date();
-
-        document.querySelectorAll("input").forEach(function (input) {
-          input.addEventListener("input", function () {
-            updatePreview();
-            saveToStorage();
-          });
-        });
-
-        renderAgendaItems();
-        updatePreview();
-      }
-
-      function generateId() {
-        return Date.now() + Math.random().toString(36).substr(2, 9);
-      }
-
-      function addAgendaItem(title, duration, owner, type) {
-        agendaItems.push({
-          id: generateId(),
-          title: title || "",
-          duration: duration || 10,
-          owner: owner || "",
-          type: type || "discussion"
-        });
-        renderAgendaItems();
-        updatePreview();
-        saveToStorage();
-      }
-
-      function removeAgendaItem(id) {
-        agendaItems = agendaItems.filter(function (item) {
-          return item.id !== id;
-        });
-        renderAgendaItems();
-        updatePreview();
-        saveToStorage();
-      }
-
-      function createTypeSelect(selectedType) {
-        var select = document.createElement("select");
-        var types = [
-          { value: "discussion", label: "讨论" },
-          { value: "decision", label: "决策" },
-          { value: "info", label: "信息同步" },
-          { value: "action", label: "行动项" },
-          { value: "break", label: "休息" }
-        ];
-        types.forEach(function (t) {
-          var option = document.createElement("option");
-          option.value = t.value;
-          option.textContent = t.label;
-          if (t.value === selectedType) {
-            option.selected = true;
-          }
-          select.appendChild(option);
-        });
-        return select;
-      }
-
-      function renderAgendaItems() {
-        var container = document.getElementById("agendaList");
-        container.textContent = "";
-
-        agendaItems.forEach(function (item, index) {
-          var div = document.createElement("div");
-          div.className = "agenda-item";
-
-          var number = document.createElement("div");
-          number.className = "agenda-item-number";
-          number.textContent = index + 1;
-
-          var content = document.createElement("div");
-          content.className = "agenda-item-content";
-
-          var titleInput = document.createElement("input");
-          titleInput.type = "text";
-          titleInput.placeholder = "议程标题";
-          titleInput.value = item.title;
-          titleInput.addEventListener("input", function (e) {
-            item.title = e.target.value;
-            updatePreview();
-            saveToStorage();
-          });
-
-          var row = document.createElement("div");
-          row.className = "agenda-item-row";
-
-          var durationInput = document.createElement("input");
-          durationInput.type = "number";
-          durationInput.placeholder = "时长(分钟)";
-          durationInput.value = item.duration;
-          durationInput.min = "1";
-          durationInput.style.maxWidth = "100px";
-          durationInput.addEventListener("input", function (e) {
-            item.duration = parseInt(e.target.value) || 0;
-            updateTotalTime();
-            updatePreview();
-            saveToStorage();
-          });
-
-          var ownerInput = document.createElement("input");
-          ownerInput.type = "text";
-          ownerInput.placeholder = "负责人";
-          ownerInput.value = item.owner;
-          ownerInput.addEventListener("input", function (e) {
-            item.owner = e.target.value;
-            updatePreview();
-            saveToStorage();
-          });
-
-          var typeSelect = createTypeSelect(item.type);
-          typeSelect.addEventListener("change", function (e) {
-            item.type = e.target.value;
-            updatePreview();
-            saveToStorage();
-          });
-
-          var deleteBtn = document.createElement("button");
-          deleteBtn.className = "btn btn-danger";
-          deleteBtn.textContent = "×";
-          deleteBtn.onclick = function () {
-            removeAgendaItem(item.id);
-          };
-
-          row.appendChild(durationInput);
-          row.appendChild(ownerInput);
-          row.appendChild(typeSelect);
-          row.appendChild(deleteBtn);
-
-          content.appendChild(titleInput);
-          content.appendChild(row);
-
-          div.appendChild(number);
-          div.appendChild(content);
-          container.appendChild(div);
-        });
-
-        updateTotalTime();
-      }
-
-      function updateTotalTime() {
-        var total = agendaItems.reduce(function (sum, item) {
-          return sum + (item.duration || 0);
-        }, 0);
-        document.getElementById("totalTime").textContent = total;
-      }
-
-      function loadTemplate(type) {
-        var templates = {
-          standup: [
-            { title: "昨日完成", duration: 5, type: "info" },
-            { title: "今日计划", duration: 5, type: "info" },
-            { title: "阻碍问题", duration: 5, type: "discussion" }
-          ],
-          sprint: [
-            { title: "上个冲刺回顾", duration: 10, type: "info" },
-            { title: "产品待办清单评审", duration: 20, type: "discussion" },
-            { title: "任务评估与分配", duration: 30, type: "decision" },
-            { title: "确认冲刺目标", duration: 10, type: "decision" }
-          ],
-          review: [
-            { title: "成果演示", duration: 30, type: "info" },
-            { title: "反馈收集", duration: 15, type: "discussion" },
-            { title: "后续计划", duration: 10, type: "action" }
-          ],
-          retro: [
-            { title: "做得好的地方", duration: 15, type: "discussion" },
-            { title: "需要改进的地方", duration: 15, type: "discussion" },
-            { title: "行动计划", duration: 15, type: "action" }
-          ],
-          brainstorm: [
-            { title: "问题定义", duration: 10, type: "info" },
-            { title: "自由讨论", duration: 30, type: "discussion" },
-            { title: "想法整理", duration: 15, type: "discussion" },
-            { title: "投票选择", duration: 10, type: "decision" }
-          ],
-          oneonone: [
-            { title: "近期工作进展", duration: 15, type: "discussion" },
-            { title: "遇到的挑战", duration: 10, type: "discussion" },
-            { title: "职业发展", duration: 10, type: "discussion" },
-            { title: "反馈与支持", duration: 10, type: "discussion" }
-          ],
-          kickoff: [
-            { title: "项目背景介绍", duration: 15, type: "info" },
-            { title: "目标与范围", duration: 15, type: "info" },
-            { title: "团队角色与职责", duration: 10, type: "info" },
-            { title: "时间线与里程碑", duration: 15, type: "info" },
-            { title: "Q&A", duration: 15, type: "discussion" }
-          ]
-        };
-
-        if (templates[type]) {
-          agendaItems = templates[type].map(function (item) {
-            return {
-              id: generateId(),
-              title: item.title,
-              duration: item.duration,
-              owner: "",
-              type: item.type
+        function init() {
+            const saved = localStorage.getItem("theme") || "light";
+            document.body.setAttribute("data-theme", saved);
+            document.getElementById('themeToggle').onclick = () => {
+                const n = document.body.getAttribute("data-theme") === "light" ? "dark" : "light";
+                document.body.setAttribute("data-theme", n);
+                localStorage.setItem("theme", n);
             };
-          });
-          renderAgendaItems();
-          updatePreview();
-          saveToStorage();
-          showToast("已加载模板");
+
+            loadState();
+            if (items.length === 0) addItem("开场致辞", 5);
+            
+            document.querySelectorAll('input').forEach(i => i.oninput = updateUI);
+            document.querySelectorAll('.tab').forEach(t => t.onclick = (e) => {
+                document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+                e.target.classList.add('active');
+                curFmt = e.target.dataset.format;
+                updateUI();
+            });
+
+            updateUI();
         }
-      }
 
-      function getTypeLabel(type) {
-        var labels = {
-          discussion: "💬 讨论",
-          decision: "✅ 决策",
-          info: "📢 信息同步",
-          action: "🎯 行动项",
-          break: "☕ 休息"
-        };
-        return labels[type] || type;
-      }
-
-      function getMeetingInfo() {
-        return {
-          title: document.getElementById("meetingTitle").value || "会议议程",
-          date: document.getElementById("meetingDate").value,
-          time: document.getElementById("meetingTime").value,
-          location: document.getElementById("meetingLocation").value,
-          host: document.getElementById("meetingHost").value,
-          attendees: document.getElementById("meetingAttendees").value
-        };
-      }
-
-      function generateMarkdown() {
-        var info = getMeetingInfo();
-        var startTime = parseTime(info.time);
-
-        var md = "# " + info.title + "\n\n";
-        md += "| 项目 | 内容 |\n";
-        md += "|------|------|\n";
-        if (info.date) md += "| 日期 | " + info.date + " |\n";
-        if (info.time) md += "| 时间 | " + info.time + " |\n";
-        if (info.location) md += "| 地点 | " + info.location + " |\n";
-        if (info.host) md += "| 主持人 | " + info.host + " |\n";
-        if (info.attendees) md += "| 参会人员 | " + info.attendees + " |\n";
-
-        md += "\n## 议程\n\n";
-        md += "| 序号 | 时间 | 议题 | 负责人 | 类型 |\n";
-        md += "|------|------|------|--------|------|\n";
-
-        agendaItems.forEach(function (item, index) {
-          var timeStr = formatTimeRange(startTime, item.duration);
-          md +=
-            "| " +
-            (index + 1) +
-            " | " +
-            timeStr +
-            " | " +
-            (item.title || "-") +
-            " | " +
-            (item.owner || "-") +
-            " | " +
-            getTypeLabel(item.type) +
-            " |\n";
-          startTime += item.duration;
-        });
-
-        var totalMinutes = agendaItems.reduce(function (sum, item) {
-          return sum + (item.duration || 0);
-        }, 0);
-        md += "\n**总时长:** " + totalMinutes + " 分钟\n";
-
-        return md;
-      }
-
-      function generateText() {
-        var info = getMeetingInfo();
-        var startTime = parseTime(info.time);
-
-        var text = "══════════════════════════════════════════════════\n";
-        text += "      " + info.title + "\n";
-        text += "══════════════════════════════════════════════════\n\n";
-
-        if (info.date) text += "📅 日期: " + info.date + "\n";
-        if (info.time) text += "🕐 时间: " + info.time + "\n";
-        if (info.location) text += "📍 地点: " + info.location + "\n";
-        if (info.host) text += "👤 主持人: " + info.host + "\n";
-        if (info.attendees) text += "👥 参会人员: " + info.attendees + "\n";
-
-        text += "\n──────────────────────────────────────────────────\n";
-        text += "议程安排\n";
-        text += "──────────────────────────────────────────────────\n\n";
-
-        agendaItems.forEach(function (item, index) {
-          var timeStr = formatTimeRange(startTime, item.duration);
-          text += index + 1 + ". [" + timeStr + "] " + (item.title || "待定") + "\n";
-          if (item.owner) text += "   负责人: " + item.owner + "\n";
-          text += "   类型: " + getTypeLabel(item.type) + "\n\n";
-          startTime += item.duration;
-        });
-
-        var totalMinutes = agendaItems.reduce(function (sum, item) {
-          return sum + (item.duration || 0);
-        }, 0);
-        text += "──────────────────────────────────────────────────\n";
-        text += "总时长: " + totalMinutes + " 分钟\n";
-
-        return text;
-      }
-
-      function generateHTML() {
-        var info = getMeetingInfo();
-        var startTime = parseTime(info.time);
-
-        var lines = [];
-        lines.push("<!DOCTYPE html>");
-        lines.push('<html lang="zh-CN">');
-        lines.push("<head>");
-        lines.push('<meta charset="UTF-8">');
-        lines.push("<title>" + escapeHtml(info.title) + "</title>");
-        lines.push(
-          "<style>body{font-family:sans-serif;max-width:800px;margin:0 auto;padding:20px}h1{color:#333}table{width:100%;border-collapse:collapse;margin:20px 0}th,td{border:1px solid #ddd;padding:12px;text-align:left}th{background:#f5f5f5}.info{margin:10px 0}</style>"
-        );
-        lines.push("</head>");
-        lines.push("<body>");
-        lines.push("<h1>" + escapeHtml(info.title) + "</h1>");
-
-        lines.push('<div class="info">');
-        if (info.date) lines.push("<p><strong>日期:</strong> " + escapeHtml(info.date) + "</p>");
-        if (info.time) lines.push("<p><strong>时间:</strong> " + escapeHtml(info.time) + "</p>");
-        if (info.location)
-          lines.push("<p><strong>地点:</strong> " + escapeHtml(info.location) + "</p>");
-        if (info.host) lines.push("<p><strong>主持人:</strong> " + escapeHtml(info.host) + "</p>");
-        if (info.attendees)
-          lines.push("<p><strong>参会人员:</strong> " + escapeHtml(info.attendees) + "</p>");
-        lines.push("</div>");
-
-        lines.push("<h2>议程</h2>");
-        lines.push("<table>");
-        lines.push("<tr><th>序号</th><th>时间</th><th>议题</th><th>负责人</th><th>类型</th></tr>");
-
-        agendaItems.forEach(function (item, index) {
-          var timeStr = formatTimeRange(startTime, item.duration);
-          lines.push(
-            "<tr><td>" +
-              (index + 1) +
-              "</td><td>" +
-              escapeHtml(timeStr) +
-              "</td><td>" +
-              escapeHtml(item.title || "-") +
-              "</td><td>" +
-              escapeHtml(item.owner || "-") +
-              "</td><td>" +
-              escapeHtml(getTypeLabel(item.type)) +
-              "</td></tr>"
-          );
-          startTime += item.duration;
-        });
-
-        lines.push("</table>");
-        var totalMinutes = agendaItems.reduce(function (sum, item) {
-          return sum + (item.duration || 0);
-        }, 0);
-        lines.push("<p><strong>总时长:</strong> " + totalMinutes + " 分钟</p>");
-        lines.push("</body>");
-        lines.push("</html>");
-
-        return lines.join("\n");
-      }
-
-      function escapeHtml(text) {
-        var div = document.createElement("div");
-        div.textContent = text;
-        return div.innerHTML;
-      }
-
-      function parseTime(timeStr) {
-        if (!timeStr) return 0;
-        var parts = timeStr.split(":");
-        return parseInt(parts[0]) * 60 + parseInt(parts[1]);
-      }
-
-      function formatTimeRange(startMinutes, duration) {
-        var startHour = Math.floor(startMinutes / 60) % 24;
-        var startMin = startMinutes % 60;
-        var endMinutes = startMinutes + duration;
-        var endHour = Math.floor(endMinutes / 60) % 24;
-        var endMin = endMinutes % 60;
-
-        return (
-          String(startHour).padStart(2, "0") +
-          ":" +
-          String(startMin).padStart(2, "0") +
-          "-" +
-          String(endHour).padStart(2, "0") +
-          ":" +
-          String(endMin).padStart(2, "0")
-        );
-      }
-
-      function switchTab(format, btn) {
-        currentFormat = format;
-        document.querySelectorAll(".tab").forEach(function (tab) {
-          tab.classList.remove("active");
-        });
-        btn.classList.add("active");
-        updatePreview();
-      }
-
-      function updatePreview() {
-        var content = "";
-        switch (currentFormat) {
-          case "markdown":
-            content = generateMarkdown();
-            break;
-          case "text":
-            content = generateText();
-            break;
-          case "html":
-            content = generateHTML();
-            break;
+        function addItem(t="", d=10, o="", type="discussion") {
+            items.push({ id: Date.now()+Math.random(), t, d, o, type });
+            renderItems(); updateUI();
         }
-        document.getElementById("preview").textContent = content;
-      }
 
-      function copyToClipboard() {
-        var content = document.getElementById("preview").textContent;
-        navigator.clipboard
-          .writeText(content)
-          .then(function () {
-            showToast("已复制到剪贴板");
-          })
-          .catch(function () {
-            showToast("复制失败");
-          });
-      }
-
-      function downloadFile() {
-        var content = document.getElementById("preview").textContent;
-        var info = getMeetingInfo();
-        var extensions = { markdown: "md", text: "txt", html: "html" };
-        var blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement("a");
-        a.href = url;
-        a.download = (info.title || "会议议程") + "." + extensions[currentFormat];
-        a.click();
-        URL.revokeObjectURL(url);
-      }
-
-      function shareLink() {
-        var data = {
-          title: document.getElementById("meetingTitle").value,
-          date: document.getElementById("meetingDate").value,
-          time: document.getElementById("meetingTime").value,
-          location: document.getElementById("meetingLocation").value,
-          host: document.getElementById("meetingHost").value,
-          attendees: document.getElementById("meetingAttendees").value,
-          items: agendaItems
-        };
-
-        try {
-          var encoded = btoa(encodeURIComponent(JSON.stringify(data)));
-          var url = location.origin + location.pathname + "#" + encoded;
-          navigator.clipboard.writeText(url);
-          showToast("分享链接已复制");
-        } catch (e) {
-          showToast("生成链接失败");
+        function renderItems() {
+            const list = document.getElementById("itemsList");
+            list.innerHTML = "";
+            items.forEach((it, idx) => {
+                const div = document.createElement("div");
+                div.className = "agenda-item";
+                div.innerHTML = `
+                    <div class="item-num">${idx+1}</div>
+                    <div class="item-fields">
+                        <input type="text" class="input-text" placeholder="议题标题" value="${it.t}" oninput="updateIt('${it.id}','t',this.value)">
+                        <div class="item-row">
+                            <input type="number" class="input-text" placeholder="分钟" value="${it.d}" oninput="updateIt('${it.id}','d',parseInt(this.value)||0)">
+                            <input type="text" class="input-text" placeholder="负责人" value="${it.o}" oninput="updateIt('${it.id}','o',this.value)">
+                            <select class="input-text" onchange="updateIt('${it.id}','type',this.value)">
+                                <option value="discussion" ${it.type==='discussion'?'selected':''}>讨论</option>
+                                <option value="decision" ${it.type==='decision'?'selected':''}>决策</option>
+                                <option value="info" ${it.type==='info'?'selected':''}>同步</option>
+                                <option value="break" ${it.type==='break'?'selected':''}>休息</option>
+                            </select>
+                            <button class="btn-del" onclick="delItem('${it.id}')">×</button>
+                        </div>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
         }
-      }
 
-      function loadFromUrl() {
-        var hash = location.hash.slice(1);
-        if (!hash) return false;
-        try {
-          var data = JSON.parse(decodeURIComponent(atob(hash)));
-          document.getElementById("meetingTitle").value = data.title || "";
-          document.getElementById("meetingDate").value = data.date || "";
-          document.getElementById("meetingTime").value = data.time || "14:00";
-          document.getElementById("meetingLocation").value = data.location || "";
-          document.getElementById("meetingHost").value = data.host || "";
-          document.getElementById("meetingAttendees").value = data.attendees || "";
-          if (data.items) agendaItems = data.items;
-          return true;
-        } catch (e) {
-          return false;
+        function updateIt(id, k, v) { const it = items.find(x => x.id == id); it[k] = v; updateUI(); }
+        function delItem(id) { items = items.filter(x => x.id != id); renderItems(); updateUI(); }
+
+        function updateUI() {
+            const total = items.reduce((s, x) => s + x.d, 0);
+            document.getElementById("totalMin").textContent = total;
+            
+            const out = document.getElementById("output");
+            if (curFmt === "markdown") out.textContent = genMD();
+            else if (curFmt === "text") out.textContent = genTxt();
+            else out.textContent = genHTML();
+            saveState();
         }
-      }
 
-      function saveToStorage() {
-        var data = {
-          title: document.getElementById("meetingTitle").value,
-          date: document.getElementById("meetingDate").value,
-          time: document.getElementById("meetingTime").value,
-          location: document.getElementById("meetingLocation").value,
-          host: document.getElementById("meetingHost").value,
-          attendees: document.getElementById("meetingAttendees").value,
-          items: agendaItems
-        };
-        localStorage.setItem(LS_KEY, JSON.stringify(data));
-      }
-
-      function loadFromStorage() {
-        var saved = localStorage.getItem(LS_KEY);
-        if (saved) {
-          try {
-            var data = JSON.parse(saved);
-            document.getElementById("meetingTitle").value = data.title || "";
-            document.getElementById("meetingDate").value = data.date || "";
-            document.getElementById("meetingTime").value = data.time || "14:00";
-            document.getElementById("meetingLocation").value = data.location || "";
-            document.getElementById("meetingHost").value = data.host || "";
-            document.getElementById("meetingAttendees").value = data.attendees || "";
-            if (data.items) agendaItems = data.items;
-          } catch (e) {
-            console.error("Failed to load from storage");
-          }
+        function genMD() {
+            let m = `# ${document.getElementById('meetTitle').value || '会议议程'}\n\n`;
+            m += `**日期:** ${document.getElementById('meetDate').value} | **时间:** ${document.getElementById('meetTime').value}\n`;
+            m += `**地点:** ${document.getElementById('meetLoc').value} | **主持人:** ${document.getElementById('meetHost').value}\n\n`;
+            m += `## 议程安排\n\n| # | 议题 | 时长 | 负责人 | 类型 |\n|---|---|---|---|---|\n`;
+            items.forEach((it, i) => m += `| ${i+1} | ${it.t} | ${it.d}m | ${it.o} | ${it.type} |\n`);
+            return m;
         }
-      }
 
-      function showToast(message) {
-        var toast = document.createElement("div");
-        toast.style.cssText =
-          "position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--accent-color);color:#000;padding:12px 24px;border-radius:8px;z-index:1000;font-size:14px;";
-        toast.textContent = message;
-        document.body.appendChild(toast);
-        setTimeout(function () {
-          toast.remove();
-        }, 2000);
-      }
+        function genTxt() {
+            let t = `会议议程: ${document.getElementById('meetTitle').value}\n` + "=".repeat(30) + "\n";
+            t += `时间: ${document.getElementById('meetDate').value} ${document.getElementById('meetTime').value}\n`;
+            t += `地点: ${document.getElementById('meetLoc').value}\n主持人: ${document.getElementById('meetHost').value}\n\n议程:\n`;
+            items.forEach((it, i) => t += `${i+1}. ${it.t} (${it.d}min) - ${it.o} [${it.type}]\n`);
+            return t;
+        }
 
-      window.toggleTheme = function () {
-        var body = document.body;
-        var currentTheme = body.getAttribute("data-theme");
-        var newTheme = currentTheme === "light" ? "dark" : "light";
-        body.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
-      };
+        function genHTML() {
+            const title = document.getElementById('meetTitle').value || '会议议程';
+            let h = `<h1>${title}</h1><ul><li>日期: ${document.getElementById('meetDate').value}</li><li>时间: ${document.getElementById('meetTime').value}</li></ul>`;
+            h += `<table border="1"><tr><th>议题</th><th>时长</th><th>负责人</th></tr>`;
+            items.forEach(it => h += `<tr><td>${it.t}</td><td>${it.d}m</td><td>${it.o}</td></tr>`);
+            h += `</table>`;
+            return h;
+        }
 
-      init();
+        function loadTpl(type) {
+            const tpls = {
+                standup: [{t:"昨日回顾", d:5, type:"info"}, {t:"今日计划", d:5, type:"info"}, {t:"风险同步", d:5, type:"discussion"}],
+                sprint: [{t:"回顾上期", d:15}, {t:"需求讲解", d:30}, {t:"任务拆解", d:45}],
+                brain: [{t:"背景介绍", d:10}, {t:"自由发散", d:40}, {t:"方案整理", d:20}]
+            };
+            items = (tpls[type] || tpls.standup).map(x => ({ ...x, id: Date.now()+Math.random(), o: "" }));
+            renderItems(); updateUI();
+        }
+
+        function saveState() {
+            localStorage.setItem(LS_KEY, JSON.stringify({ 
+                t: document.getElementById('meetTitle').value,
+                d: document.getElementById('meetDate').value,
+                tm: document.getElementById('meetTime').value,
+                l: document.getElementById('meetLoc').value,
+                h: document.getElementById('meetHost').value,
+                a: document.getElementById('meetAtt').value,
+                items 
+            }));
+        }
+
+        function loadState() {
+            const s = localStorage.getItem(LS_KEY);
+            if (s) {
+                const d = JSON.parse(s);
+                document.getElementById('meetTitle').value = d.t || "";
+                document.getElementById('meetDate').value = d.d || "";
+                document.getElementById('meetTime').value = d.tm || "10:00";
+                document.getElementById('meetLoc').value = d.l || "";
+                document.getElementById('meetHost').value = d.h || "";
+                document.getElementById('meetAtt').value = d.a || "";
+                items = d.items || [];
+                renderItems();
+            }
+        }
+
+        function shareState() {
+            const data = btoa(encodeURIComponent(localStorage.getItem(LS_KEY)));
+            const url = window.location.href.split('#')[0] + '#' + data;
+            navigator.clipboard.writeText(url).then(() => alert("分享链接已复制！"));
+        }
+
+        function copyResult() { navigator.clipboard.writeText(document.getElementById("output").textContent).then(() => alert("已复制到剪贴板！")); }
+        function downloadResult() {
+            const blob = new Blob([document.getElementById("output").textContent], { type: "text/plain" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = `meeting_agenda.${curFmt==='html'?'html':(curFmt==='markdown'?'md':'txt')}`;
+            a.click();
+        }
+
+        init();
     </script>
-  </body>
+</body>
 </html>

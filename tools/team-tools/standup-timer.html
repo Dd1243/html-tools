@@ -1,1011 +1,475 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>站会计时器 - WebUtils</title>
-    <meta name="description" content="站会计时器：在线实用工具，免费在线使用，无需安装" />
-    <meta name="keywords" content="站会计时器, 工具, 在线, 实用" />
-    <meta property="og:title" content="站会计时器 - WebUtils" />
-    <meta property="og:description" content="站会计时器：在线实用工具，免费在线使用，无需安装" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/team-tools/standup-timer" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <link rel="canonical" href="https://essays4u.net/tools/team-tools/standup-timer" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线敏捷站会计时器 - 掌控每日站会节奏，拒绝会议冗长 | WebUtils</title>
+    <meta name="description" content="WebUtils 免费在线每日站会（Daily Stand-up）计时器。支持自定义每人发言时长、预警提醒、成员随机排序及自动统计。帮助 Scrum 团队严格遵守 15 分钟站会规则，提升团队沟通效率，确保站会聚焦核心。">
+    <meta name="keywords" content="站会计时器,每日站会工具,敏捷开发工具,Scrum工具,会议时间管理,15分钟站会,团队沟通工具,发言计时器,敏捷教练工具">
+    <link rel="canonical" href="https://chicogong.github.io/html-tools/tools/team-tools/standup-timer.html">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="在线敏捷站会计时器 - 让站会回归高效">
+    <meta property="og:description" content="专为敏捷团队设计的发言计时工具，实时监控会议进度，杜绝站会超时。">
+    <meta property="og:url" content="https://chicogong.github.io/html-tools/tools/team-tools/standup-timer.html">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://essays4u.net/social-preview.png">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="每日站会计时器 - 15 分钟改变团队效率">
+    <meta name="twitter:description" content="可视化发言时间，自动轮换成员，让每个人的工作同步都简洁明了。">
+    <meta name="twitter:image" content="https://essays4u.net/social-preview.png">
+
+    <!-- JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "在线敏捷站会计时器",
+        "url": "https://chicogong.github.io/html-tools/tools/team-tools/standup-timer.html",
+        "description": "辅助敏捷团队进行每日站会的时间管理工具，支持发言倒计时、成员管理与会议统计。",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "All",
+        "author": {
+            "@type": "Organization",
+            "name": "WebUtils"
+        }
+    }
+    </script>
+
     <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        font-size: 16px;
-        line-height: 1.6;
-        font-family: var(--font-sans);
-        background: var(--bg-color);
-        color: var(--text-color);
-        min-height: 100vh;
-        padding: 20px;
-      }
-
-      .container {
-        max-width: 800px;
-        margin: 0 auto;
-      }
-
-      .header {
-        text-align: center;
-        margin-bottom: 30px;
-        position: relative;
-      }
-
-      .header h1 {
-        font-size: 2rem;
-        margin-bottom: 10px;
-        background: linear-gradient(135deg, var(--accent-color), #a855f7);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      .theme-toggle {
-        position: absolute;
-        right: 0;
-        top: 0;
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        color: var(--text-color);
-        padding: 8px 16px;
-        border-radius: 8px;
-        cursor: pointer;
-      }
-
-      .back-link {
-        position: absolute;
-        left: 0;
-        top: 0;
-        color: var(--accent-color);
-        text-decoration: none;
-        font-size: 14px;
-      }
-
-      .back-link:hover {
-        text-decoration: underline;
-      }
-
-      .panel {
-        background: var(--bg-card);
-        border-radius: 16px;
-        padding: 25px;
-        border: 1px solid var(--border-subtle);
-        margin-bottom: 20px;
-      }
-
-      .panel-title {
-        font-size: 1rem;
-        margin-bottom: 15px;
-        color: var(--accent-color);
-      }
-
-      .timer-display {
-        text-align: center;
-        padding: 40px 20px;
-      }
-
-      .current-speaker {
-        font-size: 1.5rem;
-        margin-bottom: 20px;
-        color: var(--accent-color);
-      }
-
-      .timer-circle {
-        position: relative;
-        width: 250px;
-        height: 250px;
-        margin: 0 auto 30px;
-      }
-
-      .timer-circle svg {
-        transform: rotate(-90deg);
-      }
-
-      .timer-circle-bg {
-        fill: none;
-        stroke: var(--border-subtle);
-        stroke-width: 10;
-      }
-
-      .timer-circle-progress {
-        fill: none;
-        stroke: var(--success-color);
-        stroke-width: 10;
-        stroke-linecap: round;
-        transition:
-          stroke-dashoffset 1s linear,
-          stroke 0.3s ease;
-      }
-
-      .timer-circle-progress.warning {
-        stroke: var(--warning-color);
-      }
-
-      .timer-circle-progress.danger {
-        stroke: var(--danger-color);
-      }
-
-      .timer-text {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-      }
-
-      .timer-time {
-        font-size: 4rem;
-        font-weight: 300;
-        font-family: var(--font-mono);
-      }
-
-      .timer-status {
-        font-size: 14px;
-        opacity: 0.7;
-        margin-top: 5px;
-      }
-
-      .controls {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        flex-wrap: wrap;
-      }
-
-      .control-btn {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        border: none;
-        cursor: pointer;
-        font-size: 24px;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .control-btn.primary {
-        background: var(--accent-color);
-        color: #000;
-        width: 80px;
-        height: 80px;
-        font-size: 28px;
-      }
-
-      .control-btn.primary:hover {
-        transform: scale(1.05);
-      }
-
-      .control-btn.secondary {
-        background: var(--primary-color);
-        color: var(--text-color);
-      }
-
-      .control-btn.secondary:hover {
-        background: var(--border-subtle);
-      }
-
-      .settings-row {
-        display: flex;
-        gap: 15px;
-        margin-bottom: 15px;
-        align-items: center;
-      }
-
-      .settings-row label {
-        font-size: 14px;
-        min-width: 100px;
-      }
-
-      .settings-row input {
-        flex: 1;
-        padding: 10px;
-        background: var(--bg-input);
-        border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        color: var(--text-color);
-        font-size: 14px;
-      }
-
-      .settings-row input:focus {
-        outline: none;
-        border-color: var(--accent-color);
-      }
-
-      .member-list {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
-
-      .member-item {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        padding: 12px;
-        background: var(--bg-input);
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-      }
-
-      .member-item:hover {
-        background: var(--primary-color);
-      }
-
-      .member-item.active {
-        border-left: 3px solid var(--accent-color);
-        background: var(--primary-color);
-      }
-
-      .member-item.done {
-        opacity: 0.5;
-      }
-
-      .member-item.done .member-name {
-        text-decoration: line-through;
-      }
-
-      .member-number {
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        background: var(--border-subtle);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 12px;
-        font-weight: bold;
-      }
-
-      .member-item.active .member-number {
-        background: var(--accent-color);
-        color: #000;
-      }
-
-      .member-item.done .member-number {
-        background: var(--success-color);
-        color: #000;
-      }
-
-      .member-name {
-        flex: 1;
-      }
-
-      .member-time {
-        font-size: 12px;
-        opacity: 0.7;
-        font-family: var(--font-mono);
-      }
-
-      .member-input {
-        flex: 1;
-        padding: 8px;
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: 6px;
-        color: var(--text-color);
-        font-size: 14px;
-      }
-
-      .member-input:focus {
-        outline: none;
-        border-color: var(--accent-color);
-      }
-
-      .btn {
-        padding: 10px 20px;
-        border-radius: 8px;
-        border: none;
-        cursor: pointer;
-        font-size: 14px;
-        transition: all 0.3s ease;
-      }
-
-      .btn-primary {
-        background: var(--accent-color);
-        color: #000;
-      }
-
-      .btn-secondary {
-        background: var(--primary-color);
-        color: var(--text-color);
-      }
-
-      .btn-danger {
-        background: transparent;
-        color: var(--danger-color);
-        padding: 8px 12px;
-      }
-
-      .btn-group {
-        display: flex;
-        gap: 10px;
-        margin-top: 15px;
-        flex-wrap: wrap;
-      }
-
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 15px;
-        margin-top: 20px;
-      }
-
-      .stat-card {
-        background: var(--bg-input);
-        padding: 15px;
-        border-radius: 12px;
-        text-align: center;
-      }
-
-      .stat-value {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: var(--accent-color);
-      }
-
-      .stat-label {
-        font-size: 11px;
-        opacity: 0.7;
-        margin-top: 5px;
-      }
-
-      .progress-bar {
-        height: 8px;
-        background: var(--bg-input);
-        border-radius: 4px;
-        overflow: hidden;
-        margin-top: 15px;
-      }
-
-      .progress-fill {
-        height: 100%;
-        background: var(--accent-color);
-        transition: width 0.3s ease;
-      }
-
-      @keyframes pulse {
-        0%,
-        100% {
-          transform: scale(1);
+        :root {
+            --primary-color: #007acc;
+            --primary-hover: #005f99;
+            --bg-color: #ffffff;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --border-color: #dddddd;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            --radius: 6px;
+            --color-success: #27ae60;
+            --color-warning: #f39c12;
+            --color-danger: #e74c3c;
         }
-        50% {
-          transform: scale(1.02);
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-main: #e0e0e0;
+            --text-muted: #aaaaaa;
+            --border-color: #333333;
         }
-      }
 
-      .timer-display.running .timer-circle {
-        animation: pulse 2s ease-in-out infinite;
-      }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Segoe UI", system-ui, -apple-system, sans-serif; line-height: 1.6; color: var(--text-main); background: var(--bg-color); }
+        .container { width: 95%; max-width: 1200px; margin: 0 auto; }
 
-      .shuffle-btn {
-        font-size: 16px !important;
-      }
+        .site-header { background: var(--card-bg); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); position: sticky; top: 0; z-index: 100; }
+        .site-header .container { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
+        .logo a { font-size: 1.4rem; font-weight: 700; color: var(--primary-color); text-decoration: none; }
+        .theme-toggle { background: none; border: none; cursor: pointer; font-size: 1.2rem; }
+
+        main.container { display: flex; flex-direction: column; gap: 25px; padding: 30px 0; }
+        @media (min-width: 992px) { main.container { flex-direction: row; align-items: flex-start; } }
+
+        .tool-section { flex: 3; background: var(--card-bg); padding: 25px; border-radius: var(--radius); box-shadow: var(--shadow); }
+        .tool-header { margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+        .tool-header h1 { font-size: 1.8rem; margin-bottom: 8px; }
+        .tool-header p { color: var(--text-muted); font-size: 0.95rem; }
+
+        .panel { margin-bottom: 30px; }
+        .panel-title { font-size: 1rem; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+
+        /* Timer Display */
+        .timer-hero { text-align: center; padding: 30px 0; border-radius: var(--radius); background: rgba(0, 122, 204, 0.02); margin-bottom: 25px; }
+        .speaker-name { font-size: 1.4rem; font-weight: 700; color: var(--primary-color); margin-bottom: 20px; }
+        
+        .timer-circle { position: relative; width: 220px; height: 220px; margin: 0 auto 25px; }
+        .timer-circle svg { transform: rotate(-90deg); }
+        .t-bg { fill: none; stroke: var(--border-color); stroke-width: 10; }
+        .t-progress { fill: none; stroke: var(--color-success); stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 1s linear, stroke 0.3s; }
+        .t-progress.warning { stroke: var(--color-warning); }
+        .t-progress.danger { stroke: var(--color-danger); }
+        
+        .t-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .t-clock { font-size: 3.5rem; font-weight: 800; font-family: monospace; }
+        .t-status { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+
+        .controls { display: flex; justify-content: center; gap: 15px; }
+        .btn-round { width: 50px; height: 50px; border-radius: 50%; border: 1px solid var(--border-color); background: var(--bg-color); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: 0.2s; }
+        .btn-round:hover { transform: scale(1.1); border-color: var(--primary-color); color: var(--primary-color); }
+        .btn-play { width: 70px; height: 70px; font-size: 1.8rem; background: var(--primary-color); color: #fff; border: none; }
+
+        /* Settings */
+        .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
+        .field { display: flex; flex-direction: column; gap: 5px; }
+        .field label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
+        .input-text { width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--bg-color); color: var(--text-main); font-size: 0.9rem; }
+
+        /* Member List */
+        .member-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        .member-item { display: grid; grid-template-columns: 30px 1fr 60px 30px; gap: 10px; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--bg-color); }
+        .member-item.active { border-color: var(--primary-color); background: rgba(0, 122, 204, 0.05); }
+        .member-item.done { opacity: 0.6; }
+        .m-num { width: 22px; height: 22px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; }
+        .active .m-num { background: var(--primary-color); color: #fff; }
+        .done .m-num { background: var(--color-success); color: #fff; }
+
+        /* Dashboard */
+        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; }
+        .dash-card { text-align: center; padding: 15px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: var(--radius); }
+        .dash-val { font-size: 1.4rem; font-weight: 800; color: var(--primary-color); display: block; }
+        .dash-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+
+        .progress-container { margin: 20px 0; }
+        .progress-outer { height: 10px; background: #eee; border-radius: 5px; overflow: hidden; }
+        .progress-inner { height: 100%; background: var(--primary-color); transition: 0.4s; }
+
+        /* Sidebar & SEO */
+        .sidebar-section { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+        .article-card { background: var(--card-bg); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); }
+        .article-card h2 { font-size: 1.1rem; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .article-card h2::before { content: ""; display: inline-block; width: 4px; height: 18px; background: var(--primary-color); border-radius: 2px; }
+        .article-card p, .article-card li { font-size: 0.85rem; line-height: 1.6; margin-bottom: 10px; }
+
+        .ad-placeholder { background: #f0f2f5; border: 1px dashed #ccc; color: #999; text-align: center; padding: 20px; border-radius: var(--radius); font-size: 0.8rem; display: flex; align-items: center; justify-content: center; min-height: 100px; }
+
+        .site-footer { background: #2c3e50; color: #bdc3c7; padding: 40px 0 20px; margin-top: 50px; text-align: center; }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <a href="../../index.html" class="back-link">← 返回工具列表</a>
-        <h1>站会计时器</h1>
-        <p>每日站会时间管理</p>
-        <button class="theme-toggle" onclick="toggleTheme()" aria-label="🌓 切换主题">
-          🌓 切换主题
-        </button>
-      </div>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="logo"><a href="../../index.html">WebUtils</a></div>
+            <button class="theme-toggle" id="themeToggle">🌓</button>
+        </div>
+    </header>
 
-      <div class="panel">
-        <div class="timer-display" id="timerDisplay">
-          <div class="current-speaker" id="currentSpeaker">准备开始</div>
-          <div class="timer-circle">
-            <svg width="250" height="250">
-              <circle class="timer-circle-bg" cx="125" cy="125" r="110"></circle>
-              <circle
-                class="timer-circle-progress"
-                id="progressCircle"
-                cx="125"
-                cy="125"
-                r="110"
-                stroke-dasharray="691"
-                stroke-dashoffset="0"
-              ></circle>
-            </svg>
-            <div class="timer-text">
-              <div class="timer-time" id="timerTime">02:00</div>
-              <div class="timer-status" id="timerStatus">点击开始</div>
+    <main class="container">
+        <div class="tool-section">
+            <div class="ad-placeholder" style="margin-bottom: 20px;">广告位 - 顶部横幅 (AdSense Placeholder)</div>
+
+            <div class="tool-header">
+                <h1>敏捷站会计时器</h1>
+                <p>严格控制站会时长，确保每个人都能高效同步，让团队保持敏捷节奏。</p>
             </div>
-          </div>
-          <div class="controls">
-            <button
-              class="control-btn secondary"
-              onclick="prevPerson()"
-              title="上一位"
-              aria-label="⏮"
-            >
-              ⏮
-            </button>
-            <button class="control-btn primary" id="playBtn" onclick="toggleTimer()" aria-label="▶">
-              ▶
-            </button>
-            <button
-              class="control-btn secondary"
-              onclick="nextPerson()"
-              title="下一位"
-              aria-label="⏭"
-            >
-              ⏭
-            </button>
-            <button
-              class="control-btn secondary"
-              onclick="resetTimer()"
-              title="重置"
-              aria-label="🔄"
-            >
-              🔄
-            </button>
-          </div>
-        </div>
-      </div>
 
-      <div class="panel">
-        <div class="panel-title">⚙️ 设置</div>
-        <div class="settings-row">
-          <label for="input-----">每人时长</label>
-          <input
-            type="number"
-            id="timePerPerson"
-            value="120"
-            min="30"
-            max="600"
-            aria-label="数字输入框"
-            placeholder="请输入数字输入框"
-          />
-          秒
-        </div>
-        <div class="settings-row">
-          <label for="input-----">预警时间</label>
-          <input
-            type="number"
-            id="warningTime"
-            value="30"
-            min="5"
-            max="120"
-            aria-label="数字输入框"
-            placeholder="请输入数字输入框"
-          />
-          秒 (剩余时变黄)
-        </div>
-      </div>
+            <!-- Timer Area -->
+            <div class="timer-hero">
+                <div id="speaker" class="speaker-name">准备开始站会</div>
+                <div class="timer-circle">
+                    <svg width="220" height="220">
+                        <circle class="t-bg" cx="110" cy="110" r="100"></circle>
+                        <circle id="tProgress" class="t-progress" cx="110" cy="110" r="100" stroke-dasharray="628" stroke-dashoffset="0"></circle>
+                    </svg>
+                    <div class="t-text">
+                        <div id="tClock" class="t-clock">02:00</div>
+                        <div id="tStatus" class="t-status">Ready</div>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button class="btn-round" onclick="prevMember()">⏮</button>
+                    <button id="playBtn" class="btn-round btn-play" onclick="toggleTimer()">▶</button>
+                    <button class="btn-round" onclick="nextMember()">⏭</button>
+                    <button class="btn-round" onclick="resetTimer()">🔄</button>
+                </div>
+            </div>
 
-      <div class="panel">
-        <div class="panel-title">👥 参会人员</div>
-        <div class="member-list" id="memberList"></div>
-        <div class="btn-group">
-          <button class="btn btn-secondary" onclick="addMember()" aria-label="+ 添加成员">
-            + 添加成员
-          </button>
-          <button class="btn btn-secondary shuffle-btn" onclick="shuffleMembers()">
-            🔀 随机排序
-          </button>
-          <button class="btn btn-secondary" onclick="resetAll()" aria-label="🗑️ 重置全部">
-            🗑️ 重置全部
-          </button>
-        </div>
-      </div>
+            <!-- Settings -->
+            <div class="panel">
+                <div class="panel-title">⚙️ 会议参数设置</div>
+                <div class="settings-grid">
+                    <div class="field"><label>每人时长 (秒)</label><input type="number" id="timePerPerson" class="input-text" value="120" min="30"></div>
+                    <div class="field"><label>预警时间 (秒)</label><input type="number" id="warnTime" class="input-text" value="30" min="5"></div>
+                </div>
+            </div>
 
-      <div class="panel">
-        <div class="panel-title">📊 统计</div>
-        <div class="progress-bar">
-          <div class="progress-fill" id="overallProgress" style="width: 0%"></div>
+            <!-- Member Management -->
+            <div class="panel">
+                <div class="panel-title">👥 参会人员管理</div>
+                <div id="memberList" class="member-list"></div>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn btn-primary" style="flex:1" onclick="addMember()">+ 添加成员</button>
+                    <button class="btn btn-outline" style="flex:1" onclick="shuffleMembers()">🔀 随机排序</button>
+                    <button class="btn btn-outline" style="color:var(--color-danger)" onclick="clearAll()">🗑️ 清空</button>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="panel">
+                <div class="panel-title">📊 站会数据统计</div>
+                <div class="progress-container">
+                    <div class="progress-outer"><div id="progressBar" class="progress-inner" style="width:0%"></div></div>
+                    <p style="text-align:center; font-size:0.75rem; margin-top:8px;">完成进度: <span id="progressText">0 / 0</span></p>
+                </div>
+                <div class="dashboard">
+                    <div class="dash-card"><span id="statCount" class="dash-val">0</span><span class="dash-label">参会人数</span></div>
+                    <div class="dash-card"><span id="statDone" class="dash-val">0</span><span class="dash-label">已完成</span></div>
+                    <div class="dash-card"><span id="statTotalTime" class="dash-val">0:00</span><span class="dash-label">总时长</span></div>
+                    <div class="dash-card"><span id="statAvg" class="dash-val">0:00</span><span class="dash-label">平均用时</span></div>
+                </div>
+            </div>
+
+            <!-- SEO Article -->
+            <section style="margin-top: 40px; border-top: 1px solid var(--border-color); padding-top: 30px">
+                <h2 style="font-size: 1.5rem; margin-bottom: 20px">为什么 15 分钟站会是敏捷团队的“心脏”？</h2>
+                <article style="font-size: 0.95rem; color: var(--text-main); line-height: 1.8">
+                    <p>每日站会（Daily Stand-up）是 Scrum 框架中最核心的仪式。它不是为了让老板监控员工，而是为了让团队成员<strong>互相同步、识别阻碍、对齐目标</strong>。然而，很多团队的站会最终变成了长达一小时的详细技术讨论。这正是本计时器要解决的问题。</p>
+                    
+                    <h3 style="margin: 20px 0 10px;">1. 严格遵守“三问题”规则</h3>
+                    <p>高效站会的精髓在于每个人只回答三个问题：</p>
+                    <ul>
+                        <li><strong>昨天我完成了什么？</strong></li>
+                        <li><strong>今天我计划做什么？</strong></li>
+                        <li><strong>我遇到了什么阻碍（障碍）？</strong></li>
+                    </ul>
+                    <p>如果讨论进入了具体的 Bug 修复或方案设计，主持人（Scrum Master）应立即介入，将其标记为“会后讨论”。</p>
+
+                    <div class="ad-placeholder" style="margin: 25px 0">广告位 - 文章中部内嵌 (AdSense Placeholder)</div>
+
+                    <h3 style="margin: 20px 0 10px;">2. 为什么需要计时器？</h3>
+                    <p>时间盒（Time-boxing）是敏捷的核心原则。通过限制每人 1-2 分钟的发言时间：</p>
+                    <ul>
+                        <li><strong>强制提炼：</strong> 促使发言者只讲核心重点。</li>
+                        <li><strong>维持专注：</strong> 避免其他听众因冗长的讨论而走神。</li>
+                        <li><strong>尊重时间：</strong> 确保会议在 15 分钟内结束，不耽误后续开发工作。</li>
+                    </ul>
+
+                    <h3 style="margin: 20px 0 10px;">3. 提升站会效率的 3 个锦囊</h3>
+                    <ol>
+                        <li><strong>随机发言顺序：</strong> 利用本工具的“随机排序”功能，打破固定的发言节奏，让每个人都保持警觉。</li>
+                        <li><strong>站着开会：</strong> “站会”顾名思义要站着，身体的不适感会提醒大家缩短讨论时间。</li>
+                        <li><strong>可视化看板：</strong> 站会应围绕着 Jira 或物理看板进行，让任务状态一目了然。</li>
+                    </ol>
+                </article>
+            </section>
         </div>
-        <p style="text-align: center; margin-top: 10px; font-size: 13px">
-          进度:
-          <span id="progressText">0 / 0</span>
-        </p>
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-value" id="totalMembers">0</div>
-            <div class="stat-label">总人数</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="completedCount">0</div>
-            <div class="stat-label">已完成</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="totalTime">0:00</div>
-            <div class="stat-label">总耗时</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="avgTime">0:00</div>
-            <div class="stat-label">平均时长</div>
-          </div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar-section">
+            <div class="article-card">
+                <h2>💡 会议贴士</h2>
+                <ul>
+                    <li><strong>早 5 分钟：</strong> 确保设备和计时器已就绪。</li>
+                    <li><strong>停车位：</strong> 复杂问题移入“停车场”，等站会结束后相关人员再讨论。</li>
+                    <li><strong>声音反馈：</strong> 计时结束会有提示音，温柔提醒超时。</li>
+                </ul>
+            </div>
+            <div class="ad-placeholder" style="min-height: 250px;">广告位 - 侧边栏 (AdSense Placeholder)</div>
+            <div class="article-card">
+                <h2>相关管理工具</h2>
+                <ul>
+                    <li><a href="meeting-agenda.html">会议议程工具</a></li>
+                    <li><a href="icebreaker.html">破冰游戏大全</a></li>
+                    <li><a href="retrospective.html">回顾会议模板</a></li>
+                </ul>
+            </div>
+        </aside>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p style="margin-bottom: 15px;">WebUtils - 让每一分钟协作都产生价值</p>
+            <div class="footer-bottom">&copy; 2026 WebUtils - 专业的敏捷效能辅助工具.</div>
         </div>
-      </div>
-    </div>
+    </footer>
 
     <script>
-      const LS_KEY = "standup-timer-data";
+        const LS_KEY = "standup-timer-v2-data";
+        let members = [];
+        let curIdx = -1;
+        let timeLeft = 120;
+        let running = false;
+        let timer = null;
 
-      let members = [];
-      let currentIndex = -1;
-      let timeLeft = 120;
-      let totalTimePerPerson = 120;
-      let isRunning = false;
-      let timerInterval = null;
-      let totalElapsed = 0;
+        function init() {
+            const savedTheme = localStorage.getItem("theme") || "light";
+            document.body.setAttribute("data-theme", savedTheme);
+            document.getElementById('themeToggle').onclick = () => {
+                const n = document.body.getAttribute("data-theme") === "light" ? "dark" : "light";
+                document.body.setAttribute("data-theme", n);
+                localStorage.setItem("theme", n);
+            };
 
-      function init() {
-        const savedTheme = localStorage.getItem("theme") || "dark";
-        if (savedTheme === "light") {
-          document.body.setAttribute("data-theme", "light");
-        }
-
-        loadFromStorage();
-
-        if (members.length === 0) {
-          members = [
-            { id: 1, name: "成员 1", done: false, time: 0 },
-            { id: 2, name: "成员 2", done: false, time: 0 },
-            { id: 3, name: "成员 3", done: false, time: 0 }
-          ];
-        }
-
-        document.getElementById("timePerPerson").addEventListener("change", (e) => {
-          totalTimePerPerson = parseInt(e.target.value) || 120;
-          if (!isRunning && currentIndex === -1) {
-            timeLeft = totalTimePerPerson;
-            updateDisplay();
-          }
-          saveToStorage();
-        });
-
-        document.getElementById("warningTime").addEventListener("change", saveToStorage);
-
-        renderMembers();
-        updateDisplay();
-        updateStats();
-      }
-
-      function generateId() {
-        return Date.now() + Math.random().toString(36).substr(2, 9);
-      }
-
-      function addMember(name = "") {
-        members.push({
-          id: generateId(),
-          name: name || "成员 " + (members.length + 1),
-          done: false,
-          time: 0
-        });
-        renderMembers();
-        updateStats();
-        saveToStorage();
-      }
-
-      function removeMember(id) {
-        const index = members.findIndex((m) => m.id === id);
-        if (index === currentIndex) {
-          pauseTimer();
-          currentIndex = -1;
-        } else if (index < currentIndex) {
-          currentIndex--;
-        }
-        members = members.filter((m) => m.id !== id);
-        renderMembers();
-        updateStats();
-        saveToStorage();
-      }
-
-      function renderMembers() {
-        const container = document.getElementById("memberList");
-        container.textContent = "";
-
-        members.forEach((member, index) => {
-          const div = document.createElement("div");
-          div.className = "member-item";
-          if (index === currentIndex) div.classList.add("active");
-          if (member.done) div.classList.add("done");
-
-          const number = document.createElement("div");
-          number.className = "member-number";
-          number.textContent = member.done ? "✓" : index + 1;
-
-          const nameInput = document.createElement("input");
-          nameInput.type = "text";
-          nameInput.className = "member-input";
-          nameInput.value = member.name;
-          nameInput.addEventListener("input", (e) => {
-            member.name = e.target.value;
-            if (index === currentIndex) {
-              document.getElementById("currentSpeaker").textContent =
-                member.name || "成员 " + (index + 1);
+            loadState();
+            if(members.length === 0) {
+                ["开发 A", "开发 B", "测试 C", "产品 D"].forEach(n => members.push({ id: Date.now()+Math.random(), name: n, done: false, time: 0 }));
             }
-            saveToStorage();
-          });
-          nameInput.addEventListener("click", (e) => e.stopPropagation());
 
-          const time = document.createElement("div");
-          time.className = "member-time";
-          time.textContent = formatTime(member.time);
+            renderMembers();
+            updateStats();
+            updateClock();
 
-          const deleteBtn = document.createElement("button");
-          deleteBtn.className = "btn btn-danger";
-          deleteBtn.textContent = "×";
-          deleteBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            removeMember(member.id);
-          });
+            document.getElementById('timePerPerson').onchange = (e) => {
+                if(!running) { timeLeft = parseInt(e.target.value) || 120; updateClock(); }
+                saveState();
+            };
+        }
 
-          div.appendChild(number);
-          div.appendChild(nameInput);
-          div.appendChild(time);
-          div.appendChild(deleteBtn);
+        function addMember() {
+            members.push({ id: Date.now(), name: "新成员", done: false, time: 0 });
+            renderMembers();
+            updateStats();
+            saveState();
+        }
 
-          div.addEventListener("click", () => {
-            if (!member.done) {
-              selectMember(index);
+        function renderMembers() {
+            const list = document.getElementById("memberList");
+            list.innerHTML = "";
+            members.forEach((m, idx) => {
+                const div = document.createElement("div");
+                div.className = `member-item ${idx === curIdx ? 'active' : ''} ${m.done ? 'done' : ''}`;
+                div.innerHTML = `
+                    <div class="m-num">${m.done ? '✓' : idx+1}</div>
+                    <input type="text" class="input-text" value="${m.name}" style="padding:4px 8px; font-size:0.85rem;" oninput="updateMember(${m.id}, this.value)">
+                    <span style="font-size:0.75rem; font-family:monospace; text-align:right;">${formatTime(m.time)}</span>
+                    <button class="btn-del" onclick="delMember(${m.id})">×</button>
+                `;
+                div.onclick = (e) => { if(e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') startMember(idx); };
+                list.appendChild(div);
+            });
+        }
+
+        function updateMember(id, val) { members.find(x => x.id === id).name = val; saveState(); }
+        function delMember(id) { members = members.filter(x => x.id !== id); renderMembers(); updateStats(); saveState(); }
+
+        function startMember(idx) {
+            pauseTimer();
+            curIdx = idx;
+            timeLeft = parseInt(document.getElementById('timePerPerson').value) || 120;
+            document.getElementById('speaker').textContent = members[idx].name;
+            renderMembers();
+            updateClock();
+        }
+
+        function toggleTimer() {
+            if(running) pauseTimer();
+            else {
+                if(curIdx === -1) {
+                    const first = members.findIndex(m => !m.done);
+                    if(first === -1) return alert("所有人已发言完毕！");
+                    startMember(first);
+                }
+                startTimer();
             }
-          });
-
-          container.appendChild(div);
-        });
-      }
-
-      function selectMember(index) {
-        if (isRunning) {
-          pauseTimer();
-        }
-        currentIndex = index;
-        timeLeft = totalTimePerPerson;
-        renderMembers();
-        updateDisplay();
-        document.getElementById("currentSpeaker").textContent =
-          members[index]?.name || "成员 " + (index + 1);
-        document.getElementById("timerStatus").textContent = "准备就绪";
-      }
-
-      function toggleTimer() {
-        if (isRunning) {
-          pauseTimer();
-        } else {
-          startTimer();
-        }
-      }
-
-      function startTimer() {
-        if (currentIndex === -1) {
-          // Find first undone member
-          const firstUndone = members.findIndex((m) => !m.done);
-          if (firstUndone === -1) {
-            showToast("所有成员已完成");
-            return;
-          }
-          selectMember(firstUndone);
         }
 
-        isRunning = true;
-        document.getElementById("playBtn").textContent = "⏸";
-        document.getElementById("timerStatus").textContent = "发言中...";
-        document.getElementById("timerDisplay").classList.add("running");
-
-        timerInterval = setInterval(() => {
-          timeLeft--;
-          totalElapsed++;
-
-          if (currentIndex >= 0 && currentIndex < members.length) {
-            members[currentIndex].time++;
-          }
-
-          updateDisplay();
-          updateProgress();
-
-          if (timeLeft <= 0) {
-            markCurrentDone();
-            nextPerson();
-          }
-        }, 1000);
-      }
-
-      function pauseTimer() {
-        isRunning = false;
-        document.getElementById("playBtn").textContent = "▶";
-        document.getElementById("timerStatus").textContent = "已暂停";
-        document.getElementById("timerDisplay").classList.remove("running");
-
-        if (timerInterval) {
-          clearInterval(timerInterval);
-          timerInterval = null;
-        }
-      }
-
-      function resetTimer() {
-        pauseTimer();
-        timeLeft = totalTimePerPerson;
-        updateDisplay();
-        document.getElementById("timerStatus").textContent = "已重置";
-      }
-
-      function markCurrentDone() {
-        if (currentIndex >= 0 && currentIndex < members.length) {
-          members[currentIndex].done = true;
-          playSound();
-          saveToStorage();
-        }
-      }
-
-      function nextPerson() {
-        markCurrentDone();
-
-        // Find next undone member
-        let nextIndex = -1;
-        for (let i = currentIndex + 1; i < members.length; i++) {
-          if (!members[i].done) {
-            nextIndex = i;
-            break;
-          }
+        function startTimer() {
+            running = true;
+            document.getElementById('playBtn').textContent = "⏸";
+            document.getElementById('tStatus').textContent = "Speaking";
+            timer = setInterval(() => {
+                timeLeft--;
+                if(curIdx >= 0) members[curIdx].time++;
+                updateClock();
+                if(timeLeft <= 0) {
+                    finishCurrent();
+                    const next = members.findIndex((m, i) => i > curIdx && !m.done);
+                    if(next === -1) { pauseTimer(); document.getElementById('speaker').textContent = "站会结束"; }
+                    else startMember(next);
+                }
+            }, 1000);
         }
 
-        if (nextIndex === -1) {
-          // All done
-          pauseTimer();
-          currentIndex = -1;
-          document.getElementById("currentSpeaker").textContent = "会议结束!";
-          document.getElementById("timerStatus").textContent = "全部完成";
-          showToast("站会结束!");
-        } else {
-          selectMember(nextIndex);
-          if (isRunning) {
-            startTimer();
-          }
+        function pauseTimer() {
+            running = false;
+            document.getElementById('playBtn').textContent = "▶";
+            document.getElementById('tStatus').textContent = "Paused";
+            clearInterval(timer);
         }
 
-        renderMembers();
-        updateStats();
-      }
+        function finishCurrent() { if(curIdx >= 0) members[curIdx].done = true; playAlert(); renderMembers(); updateStats(); saveState(); }
 
-      function prevPerson() {
-        if (currentIndex > 0) {
-          pauseTimer();
-          // Reset current person
-          if (currentIndex >= 0 && currentIndex < members.length) {
-            members[currentIndex].done = false;
-            members[currentIndex].time = 0;
-          }
-          currentIndex--;
-          members[currentIndex].done = false;
-          timeLeft = totalTimePerPerson - members[currentIndex].time;
-          if (timeLeft < 0) timeLeft = totalTimePerPerson;
-          renderMembers();
-          updateDisplay();
-          document.getElementById("currentSpeaker").textContent =
-            members[currentIndex]?.name || "成员";
-        }
-      }
+        function nextMember() { finishCurrent(); const next = members.findIndex((m, i) => i > curIdx && !m.done); if(next !== -1) startMember(next); }
+        function prevMember() { if(curIdx > 0) startMember(curIdx - 1); }
 
-      function updateDisplay() {
-        document.getElementById("timerTime").textContent = formatTime(timeLeft);
-
-        const circumference = 2 * Math.PI * 110;
-        const progress = timeLeft / totalTimePerPerson;
-        const offset = circumference * (1 - progress);
-
-        const progressCircle = document.getElementById("progressCircle");
-        progressCircle.style.strokeDashoffset = offset;
-
-        const warningTime = parseInt(document.getElementById("warningTime").value) || 30;
-        progressCircle.classList.remove("warning", "danger");
-        if (timeLeft <= 10) {
-          progressCircle.classList.add("danger");
-        } else if (timeLeft <= warningTime) {
-          progressCircle.classList.add("warning");
-        }
-      }
-
-      function updateProgress() {
-        const completed = members.filter((m) => m.done).length;
-        const total = members.length;
-        const percent = total > 0 ? (completed / total) * 100 : 0;
-
-        document.getElementById("overallProgress").style.width = percent + "%";
-        document.getElementById("progressText").textContent = completed + " / " + total;
-      }
-
-      function updateStats() {
-        const completed = members.filter((m) => m.done).length;
-        const totalTime = members.reduce((sum, m) => sum + m.time, 0);
-        const avgTime = completed > 0 ? Math.round(totalTime / completed) : 0;
-
-        document.getElementById("totalMembers").textContent = members.length;
-        document.getElementById("completedCount").textContent = completed;
-        document.getElementById("totalTime").textContent = formatTime(totalTime);
-        document.getElementById("avgTime").textContent = formatTime(avgTime);
-
-        updateProgress();
-      }
-
-      function formatTime(seconds) {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return mins + ":" + String(secs).padStart(2, "0");
-      }
-
-      function shuffleMembers() {
-        pauseTimer();
-        currentIndex = -1;
-
-        // Reset all
-        members.forEach((m) => {
-          m.done = false;
-          m.time = 0;
-        });
-
-        // Fisher-Yates shuffle
-        for (let i = members.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [members[i], members[j]] = [members[j], members[i]];
+        function resetTimer() {
+            pauseTimer();
+            curIdx = -1;
+            timeLeft = parseInt(document.getElementById('timePerPerson').value) || 120;
+            members.forEach(m => { m.done = false; m.time = 0; });
+            document.getElementById('speaker').textContent = "准备开始站会";
+            renderMembers();
+            updateStats();
+            updateClock();
         }
 
-        timeLeft = totalTimePerPerson;
-        totalElapsed = 0;
-        renderMembers();
-        updateDisplay();
-        updateStats();
-        saveToStorage();
-
-        document.getElementById("currentSpeaker").textContent = "已随机排序";
-        document.getElementById("timerStatus").textContent = "点击开始";
-      }
-
-      function resetAll() {
-        if (confirm("确定要重置所有数据吗？")) {
-          pauseTimer();
-          currentIndex = -1;
-          totalElapsed = 0;
-
-          members.forEach((m) => {
-            m.done = false;
-            m.time = 0;
-          });
-
-          timeLeft = totalTimePerPerson;
-          renderMembers();
-          updateDisplay();
-          updateStats();
-          saveToStorage();
-
-          document.getElementById("currentSpeaker").textContent = "准备开始";
-          document.getElementById("timerStatus").textContent = "点击开始";
+        function updateClock() {
+            document.getElementById('tClock').textContent = formatTime(timeLeft);
+            const circ = 628;
+            const total = parseInt(document.getElementById('timePerPerson').value) || 120;
+            const offset = circ * (1 - timeLeft/total);
+            const prog = document.getElementById('tProgress');
+            prog.style.strokeDashoffset = offset;
+            
+            const warn = parseInt(document.getElementById('warnTime').value) || 30;
+            prog.classList.remove('warning', 'danger');
+            if(timeLeft <= 10) prog.classList.add('danger');
+            else if(timeLeft <= warn) prog.classList.add('warning');
         }
-      }
 
-      function playSound() {
-        try {
-          const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-          const oscillator = audioCtx.createOscillator();
-          const gainNode = audioCtx.createGain();
-
-          oscillator.connect(gainNode);
-          gainNode.connect(audioCtx.destination);
-
-          oscillator.frequency.value = 800;
-          oscillator.type = "sine";
-          gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
-          gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-
-          oscillator.start(audioCtx.currentTime);
-          oscillator.stop(audioCtx.currentTime + 0.3);
-        } catch (e) {
-          console.log("Sound not supported");
+        function updateStats() {
+            const done = members.filter(m => m.done).length;
+            const totalTime = members.reduce((s, x) => s + x.time, 0);
+            document.getElementById('statCount').textContent = members.length;
+            document.getElementById('statDone').textContent = done;
+            document.getElementById('statTotalTime').textContent = formatTime(totalTime);
+            document.getElementById('statAvg').textContent = formatTime(done > 0 ? totalTime/done : 0);
+            
+            const per = members.length > 0 ? (done / members.length) * 100 : 0;
+            document.getElementById('progressBar').style.width = `${per}%`;
+            document.getElementById('progressText').textContent = `${done} / ${members.length}`;
         }
-      }
 
-      function saveToStorage() {
-        const data = {
-          members: members,
-          timePerPerson: parseInt(document.getElementById("timePerPerson").value) || 120,
-          warningTime: parseInt(document.getElementById("warningTime").value) || 30
-        };
-        localStorage.setItem(LS_KEY, JSON.stringify(data));
-      }
+        function formatTime(s) {
+            const m = Math.floor(s/60);
+            const rs = Math.round(s%60);
+            return `${m}:${rs.toString().padStart(2, '0')}`;
+        }
 
-      function loadFromStorage() {
-        const saved = localStorage.getItem(LS_KEY);
-        if (saved) {
-          try {
-            const data = JSON.parse(saved);
-            if (data.members) members = data.members;
-            if (data.timePerPerson) {
-              totalTimePerPerson = data.timePerPerson;
-              document.getElementById("timePerPerson").value = data.timePerPerson;
-              timeLeft = data.timePerPerson;
+        function shuffleMembers() {
+            pauseTimer();
+            curIdx = -1;
+            for(let i = members.length - 1; i > 0; i--){
+                const j = Math.floor(Math.random() * (i + 1));
+                [members[i], members[j]] = [members[j], members[i]];
             }
-            if (data.warningTime) {
-              document.getElementById("warningTime").value = data.warningTime;
-            }
-          } catch (e) {
-            console.error("Failed to load from storage:", e);
-          }
+            renderMembers();
+            saveState();
         }
-      }
 
-      function showToast(message) {
-        const toast = document.createElement("div");
-        toast.style.cssText =
-          "position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--accent-color);color:#000;padding:12px 24px;border-radius:8px;z-index:1000;font-size:14px;";
-        toast.textContent = message;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 2000);
-      }
+        function playAlert() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gn = ctx.createGain();
+                osc.connect(gn); gn.connect(ctx.destination);
+                osc.frequency.value = 800; gn.gain.setValueAtTime(0.1, ctx.currentTime);
+                gn.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+                osc.start(); osc.stop(ctx.currentTime + 0.5);
+            } catch(e) {}
+        }
 
-      window.toggleTheme = function () {
-        const body = document.body;
-        const currentTheme = body.getAttribute("data-theme");
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-        body.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
-      };
+        function saveState() {
+            localStorage.setItem(LS_KEY, JSON.stringify({ members, time: document.getElementById('timePerPerson').value, warn: document.getElementById('warnTime').value }));
+        }
 
-      init();
+        function loadState() {
+            const s = localStorage.getItem(LS_KEY);
+            if(s) {
+                const d = JSON.parse(s);
+                members = d.members || [];
+                document.getElementById('timePerPerson').value = d.time || 120;
+                document.getElementById('warnTime').value = d.warn || 30;
+                timeLeft = parseInt(d.time) || 120;
+            }
+        }
+
+        function clearAll() { if(confirm("清空吗？")){ members = []; renderMembers(); updateStats(); saveState(); } }
+
+        init();
     </script>
-  </body>
+</body>
 </html>

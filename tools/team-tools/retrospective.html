@@ -1,844 +1,439 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>回顾会议模板 - WebUtils</title>
-    <meta name="description" content="回顾会议模板：在线实用工具，免费在线使用，无需安装" />
-    <meta name="keywords" content="回顾会议模板, 工具, 在线, 实用" />
-    <meta property="og:title" content="回顾会议模板 - WebUtils" />
-    <meta property="og:description" content="回顾会议模板：在线实用工具，免费在线使用，无需安装" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/team-tools/retrospective" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <link rel="canonical" href="https://essays4u.net/tools/team-tools/retrospective" />
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线敏捷回顾会议工具 - 提升团队持续改进能力的利器 | WebUtils</title>
+    <meta name="description" content="WebUtils 免费在线回顾会议模板工具。内置 Mad Sad Glad, Start Stop Continue, 4Ls, Sailboat 等多种经典回顾模型。支持在线投票、条目统计、一键导出报告与链接分享。帮助敏捷团队高效进行复盘与持续改进。">
+    <meta name="keywords" content="回顾会议模板,敏捷回顾,复盘工具,持续改进,Mad Sad Glad,4Ls回顾,Sailboat回顾,团队协作,敏捷开发工具">
+    <link rel="canonical" href="https://chicogong.github.io/html-tools/tools/team-tools/retrospective.html">
 
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
+    <!-- Open Graph -->
+    <meta property="og:title" content="在线敏捷回顾会议工具 - 让团队复盘更有深度">
+    <meta property="og:description" content="多模版支持，在线实时互动，助力团队发现问题并转化为实际行动。">
+    <meta property="og:url" content="https://chicogong.github.io/html-tools/tools/team-tools/retrospective.html">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://essays4u.net/social-preview.png">
 
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="敏捷回顾会议 - 团队进化的加速器">
+    <meta name="twitter:description" content="可视化你的团队反馈，将讨论转化为可落地的行动项。">
+    <meta name="twitter:image" content="https://essays4u.net/social-preview.png">
 
-      body {
-        font-family: var(--font-sans);
-        background: var(--bg-color);
-        color: var(--text-color);
-        min-height: 100vh;
-        padding: 20px;
-      }
-
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-
-      .header {
-        text-align: center;
-        margin-bottom: 30px;
-        position: relative;
-      }
-
-      .header h1 {
-        font-size: 2rem;
-        margin-bottom: 10px;
-        background: linear-gradient(135deg, var(--accent-color), #a855f7);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      .theme-toggle {
-        position: absolute;
-        right: 0;
-        top: 0;
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        color: var(--text-color);
-        padding: 8px 16px;
-        border-radius: 8px;
-        cursor: pointer;
-      }
-
-      .back-link {
-        position: absolute;
-        left: 0;
-        top: 0;
-        color: var(--accent-color);
-        text-decoration: none;
-        font-size: 14px;
-      }
-
-      .back-link:hover {
-        text-decoration: underline;
-      }
-
-      .panel {
-        background: var(--bg-card);
-        border-radius: 16px;
-        padding: 25px;
-        border: 1px solid var(--border-subtle);
-        margin-bottom: 20px;
-      }
-
-      .panel-title {
-        font-size: 1rem;
-        margin-bottom: 15px;
-        color: var(--accent-color);
-      }
-
-      .template-select {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        margin-bottom: 20px;
-      }
-
-      .template-btn {
-        padding: 10px 20px;
-        background: var(--bg-input);
-        border: 2px solid var(--border-subtle);
-        border-radius: 10px;
-        color: var(--text-color);
-        cursor: pointer;
-        font-size: 14px;
-        transition: all 0.3s ease;
-      }
-
-      .template-btn:hover,
-      .template-btn.active {
-        border-color: var(--accent-color);
-        color: var(--accent-color);
-      }
-
-      .retro-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 20px;
-      }
-
-      .retro-column {
-        background: var(--bg-input);
-        border-radius: 12px;
-        padding: 20px;
-        min-height: 300px;
-      }
-
-      .column-header {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 15px;
-        padding-bottom: 10px;
-        border-bottom: 2px solid var(--border-subtle);
-      }
-
-      .column-icon {
-        font-size: 24px;
-      }
-
-      .column-title {
-        font-weight: 600;
-        font-size: 16px;
-      }
-
-      .column-count {
-        margin-left: auto;
-        background: var(--primary-color);
-        padding: 2px 8px;
-        border-radius: 10px;
-        font-size: 12px;
-      }
-
-      .column-good .column-header {
-        border-color: var(--success-color);
-      }
-      .column-improve .column-header {
-        border-color: var(--warning-color);
-      }
-      .column-action .column-header {
-        border-color: var(--info-color);
-      }
-      .column-question .column-header {
-        border-color: var(--danger-color);
-      }
-
-      .item-list {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-      }
-
-      .retro-item {
-        background: var(--bg-card);
-        border-radius: 8px;
-        padding: 12px;
-        position: relative;
-      }
-
-      .retro-item-content {
-        font-size: 14px;
-        line-height: 1.5;
-        margin-bottom: 8px;
-        overflow-wrap: break-word;
-      }
-
-      .retro-item-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 12px;
-        opacity: 0.7;
-      }
-
-      .vote-btn {
-        background: var(--primary-color);
-        border: none;
-        color: var(--text-color);
-        padding: 4px 12px;
-        border-radius: 12px;
-        cursor: pointer;
-        font-size: 12px;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-      }
-
-      .vote-btn:hover {
-        background: var(--accent-color);
-        color: #000;
-      }
-
-      .delete-item {
-        background: none;
-        border: none;
-        color: var(--danger-color);
-        cursor: pointer;
-        padding: 4px;
-        opacity: 0.5;
-      }
-
-      .delete-item:hover {
-        opacity: 1;
-      }
-
-      .add-item-form {
-        margin-top: 15px;
-      }
-
-      .add-item-input {
-        width: 100%;
-        padding: 10px;
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        color: var(--text-color);
-        font-size: 14px;
-        resize: none;
-      }
-
-      .add-item-input:focus {
-        outline: none;
-        border-color: var(--accent-color);
-      }
-
-      .add-item-btn {
-        margin-top: 8px;
-        width: 100%;
-        padding: 8px;
-        background: var(--primary-color);
-        border: none;
-        border-radius: 8px;
-        color: var(--text-color);
-        cursor: pointer;
-        font-size: 13px;
-      }
-
-      .add-item-btn:hover {
-        background: var(--accent-color);
-        color: #000;
-      }
-
-      .sprint-info {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px;
-        margin-bottom: 20px;
-      }
-
-      .sprint-info input {
-        width: 100%;
-        padding: 10px;
-        background: var(--bg-input);
-        border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        color: var(--text-color);
-        font-size: 14px;
-      }
-
-      .sprint-info input:focus {
-        outline: none;
-        border-color: var(--accent-color);
-      }
-
-      .btn {
-        padding: 10px 20px;
-        border-radius: 8px;
-        border: none;
-        cursor: pointer;
-        font-size: 14px;
-        transition: all 0.3s ease;
-      }
-
-      .btn-primary {
-        background: var(--accent-color);
-        color: #000;
-      }
-
-      .btn-secondary {
-        background: var(--primary-color);
-        color: var(--text-color);
-      }
-
-      .btn-group {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-
-      .stats-row {
-        display: flex;
-        gap: 20px;
-        justify-content: center;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-      }
-
-      .stat-item {
-        text-align: center;
-      }
-
-      .stat-value {
-        font-size: 2rem;
-        font-weight: bold;
-        color: var(--accent-color);
-      }
-
-      .stat-label {
-        font-size: 12px;
-        opacity: 0.7;
-      }
-
-      @media (max-width: 768px) {
-        .retro-grid {
-          grid-template-columns: 1fr;
+    <!-- JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "在线敏捷回顾会议工具",
+        "url": "https://chicogong.github.io/html-tools/tools/team-tools/retrospective.html",
+        "description": "提供多种敏捷回顾会议模版，支持团队在线收集反馈、投票表决并生成行动报告。",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "All",
+        "author": {
+            "@type": "Organization",
+            "name": "WebUtils"
         }
-      }
+    }
+    </script>
+
+    <style>
+        :root {
+            --primary-color: #007acc;
+            --primary-hover: #005f99;
+            --bg-color: #ffffff;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --border-color: #dddddd;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            --radius: 6px;
+            --color-success: #27ae60;
+            --color-warning: #f39c12;
+            --color-danger: #e74c3c;
+            --color-info: #3498db;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-main: #e0e0e0;
+            --text-muted: #aaaaaa;
+            --border-color: #333333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Segoe UI", system-ui, -apple-system, sans-serif; line-height: 1.6; color: var(--text-main); background: var(--bg-color); }
+        .container { width: 95%; max-width: 1200px; margin: 0 auto; }
+
+        .site-header { background: var(--card-bg); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); position: sticky; top: 0; z-index: 100; }
+        .site-header .container { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
+        .logo a { font-size: 1.4rem; font-weight: 700; color: var(--primary-color); text-decoration: none; }
+        .theme-toggle { background: none; border: none; cursor: pointer; font-size: 1.2rem; }
+
+        main.container { display: flex; flex-direction: column; gap: 25px; padding: 30px 0; }
+        @media (min-width: 992px) { main.container { flex-direction: row; align-items: flex-start; } }
+
+        .tool-section { flex: 3; background: var(--card-bg); padding: 25px; border-radius: var(--radius); box-shadow: var(--shadow); }
+        .tool-header { margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+        .tool-header h1 { font-size: 1.8rem; margin-bottom: 8px; }
+        .tool-header p { color: var(--text-muted); font-size: 0.95rem; }
+
+        .panel { margin-bottom: 30px; }
+        .panel-title { font-size: 1rem; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+
+        /* Template Selector */
+        .template-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 25px; }
+        .t-tab { padding: 6px 15px; border: 1px solid var(--border-color); border-radius: 20px; font-size: 0.85rem; cursor: pointer; transition: 0.2s; background: var(--bg-color); }
+        .t-tab.active { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
+
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .input-text { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--bg-color); color: var(--text-main); font-size: 0.9rem; }
+
+        /* Stats Bar */
+        .stats-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .stat-box { text-align: center; padding: 15px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: var(--radius); }
+        .stat-num { font-size: 1.4rem; font-weight: 800; color: var(--primary-color); display: block; }
+        .stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+
+        /* Retro Board */
+        .retro-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .retro-col { background: var(--bg-color); border: 1px solid var(--border-color); border-radius: var(--radius); display: flex; flex-direction: column; min-height: 400px; }
+        .col-header { padding: 15px; border-bottom: 2px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .col-title { font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; }
+        .col-badge { font-size: 0.75rem; background: var(--border-color); padding: 2px 8px; border-radius: 10px; }
+        
+        .item-list { padding: 12px; flex: 1; display: flex; flex-direction: column; gap: 12px; }
+        .retro-item { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .item-text { font-size: 0.9rem; margin-bottom: 10px; word-break: break-word; }
+        .item-footer { display: flex; justify-content: space-between; align-items: center; }
+        
+        .vote-btn { background: rgba(0, 122, 204, 0.05); border: 1px solid rgba(0, 122, 204, 0.2); color: var(--primary-color); padding: 4px 10px; border-radius: 15px; font-size: 0.75rem; cursor: pointer; font-weight: 700; }
+        .vote-btn:hover { background: rgba(0, 122, 204, 0.1); }
+        .del-btn { color: var(--color-danger); background: none; border: none; cursor: pointer; font-size: 1rem; opacity: 0.5; }
+        .del-btn:hover { opacity: 1; }
+
+        .add-area { padding: 12px; border-top: 1px solid var(--border-color); }
+        .item-input { width: 100%; border: 1px solid var(--border-color); border-radius: var(--radius); padding: 8px; min-height: 60px; font-size: 0.85rem; margin-bottom: 8px; resize: vertical; }
+
+        /* Action Bar */
+        .action-bar { display: flex; gap: 10px; margin-top: 30px; flex-wrap: wrap; }
+        .btn { padding: 10px 20px; border-radius: var(--radius); border: none; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .btn-primary { background: var(--primary-color); color: #fff; }
+        .btn-outline { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        /* Sidebar & SEO Section */
+        .sidebar-section { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+        .article-card { background: var(--card-bg); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); }
+        .article-card h2 { font-size: 1.1rem; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .article-card h2::before { content: ""; display: inline-block; width: 4px; height: 18px; background: var(--primary-color); border-radius: 2px; }
+        .article-card p, .article-card li { font-size: 0.85rem; line-height: 1.6; margin-bottom: 10px; }
+
+        .ad-placeholder { background: #f0f2f5; border: 1px dashed #ccc; color: #999; text-align: center; padding: 20px; border-radius: var(--radius); font-size: 0.8rem; display: flex; align-items: center; justify-content: center; min-height: 100px; }
+
+        .site-footer { background: #2c3e50; color: #bdc3c7; padding: 40px 0 20px; margin-top: 50px; text-align: center; }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <a href="../../index.html" class="back-link">← 返回工具列表</a>
-        <h1>回顾会议模板</h1>
-        <p>敏捷团队回顾会议工具</p>
-        <button class="theme-toggle" onclick="toggleTheme()">🌓 切换主题</button>
-      </div>
-
-      <div class="panel">
-        <div class="panel-title">📋 选择模板</div>
-        <div class="template-select" id="templateSelect"></div>
-        <div class="sprint-info">
-          <input type="text" id="sprintName" placeholder="冲刺/迭代名称" />
-          <input type="date" id="retroDate" />
-          <input type="text" id="facilitator" placeholder="主持人" />
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="logo"><a href="../../index.html">WebUtils</a></div>
+            <button class="theme-toggle" id="themeToggle">🌓</button>
         </div>
-      </div>
+    </header>
 
-      <div class="retro-grid" id="retroGrid"></div>
+    <main class="container">
+        <div class="tool-section">
+            <div class="ad-placeholder" style="margin-bottom: 20px;">广告位 - 顶部横幅 (AdSense Placeholder)</div>
 
-      <div class="panel">
-        <div class="stats-row">
-          <div class="stat-item">
-            <div class="stat-value" id="totalItems">0</div>
-            <div class="stat-label">总条目</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value" id="totalVotes">0</div>
-            <div class="stat-label">总投票</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value" id="actionItems">0</div>
-            <div class="stat-label">行动项</div>
-          </div>
+            <div class="tool-header">
+                <h1>敏捷回顾会议模板</h1>
+                <p>团队复盘利器：收集反馈、发现阻力、转化为实际行动项，驱动团队持续进化。</p>
+            </div>
+
+            <!-- Configuration -->
+            <div class="panel">
+                <div class="panel-title">⚙️ 会议设置</div>
+                <div class="template-tabs" id="templateTabs"></div>
+                <div class="form-row">
+                    <input type="text" id="sprintTitle" class="input-text" placeholder="冲刺名称，如：Sprint 24">
+                    <input type="text" id="facilitator" class="input-text" placeholder="主持人姓名">
+                    <input type="date" id="retroDate" class="input-text">
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-bar">
+                <div class="stat-box"><span id="totalItems" class="stat-num">0</span><span class="stat-label">总条目</span></div>
+                <div class="stat-box"><span id="totalVotes" class="stat-num">0</span><span class="stat-label">总得票</span></div>
+                <div class="stat-box"><span id="actionCount" class="stat-num">0</span><span class="stat-label">行动项</span></div>
+            </div>
+
+            <!-- Board -->
+            <div id="retroBoard" class="retro-board"></div>
+
+            <div class="action-bar">
+                <button class="btn btn-primary" onclick="exportMarkdown()">导出 Markdown 报告</button>
+                <button class="btn btn-outline" onclick="shareRetro()">获取分享链接</button>
+                <button class="btn btn-outline" style="color:var(--color-danger)" onclick="clearBoard()">清空看板</button>
+            </div>
+
+            <!-- SEO Content -->
+            <section style="margin-top: 40px; border-top: 1px solid var(--border-color); padding-top: 30px">
+                <h2 style="font-size: 1.5rem; margin-bottom: 20px">深度解析：如何主持一场真正有效的敏捷回顾会议？</h2>
+                <article style="font-size: 0.95rem; color: var(--text-main); line-height: 1.8">
+                    <p>回顾会议（Retrospective）是敏捷开发中最重要的活动，没有之一。它是团队暂停下来、审视过去、优化未来的唯一窗口。如果回顾会议流于形式，团队就会在同一个坑里反复跌倒。</p>
+                    
+                    <h3 style="margin: 20px 0 10px;">1. 选择合适的模版</h3>
+                    <p>不同的模版能激发团队从不同的维度进行思考：</p>
+                    <ul>
+                        <li><strong>Mad Sad Glad:</strong> 关注情绪与心理安全，适合团队压力较大或协作出现裂痕时。</li>
+                        <li><strong>4Ls (Liked, Learned, Lacked, Longed for):</strong> 综合评估，关注知识沉淀与未来愿景。</li>
+                        <li><strong>Start Stop Continue:</strong> 极其务实，直接导向具体行为的改变。</li>
+                        <li><strong>Sailboat (帆船):</strong> 隐喻式思考，推动力（风）与阻力（锚）清晰可见。</li>
+                    </ul>
+
+                    <div class="ad-placeholder" style="margin: 25px 0">广告位 - 文章中部内嵌 (AdSense Placeholder)</div>
+
+                    <h3 style="margin: 20px 0 10px;">2. 回顾会议的五步法</h3>
+                    <p>为了保证效果，建议按照以下节奏进行：</p>
+                    <ol>
+                        <li><strong>开场 (Set the stage):</strong> 确认会议目标，强调“无论发现什么，我们都相信每个人都尽了最大努力”。</li>
+                        <li><strong>收集数据 (Gather data):</strong> 利用本工具，让每个人静默书写自己的反馈。</li>
+                        <li><strong>产生见解 (Generate insights):</strong> 对条目进行归类，并利用<strong>点投票</strong>选出最关键的问题。</li>
+                        <li><strong>决定行动 (Decide what to do):</strong> 针对高票问题，讨论出可执行的“行动项”。</li>
+                        <li><strong>结束会议 (Close):</strong> 简要总结并确认负责人。</li>
+                    </ol>
+
+                    <h3 style="margin: 20px 0 10px;">3. 避坑指南：为什么你的回顾会没效果？</h3>
+                    <p>最常见的原因是<strong>“只有讨论，没有行动”</strong>。如果回顾会产生的行动项在下个冲刺没有被跟进，团队就会失去对会议的信心。务必确保行动项是具体的（SMART原则），且有人负责跟进。</p>
+                </article>
+            </section>
         </div>
-        <div class="btn-group">
-          <button class="btn btn-primary" onclick="exportRetro()">📋 导出报告</button>
-          <button class="btn btn-secondary" onclick="shareRetro()">🔗 分享</button>
-          <button class="btn btn-secondary" onclick="clearAll()">🗑️ 清空</button>
+
+        <!-- Sidebar -->
+        <aside class="sidebar-section">
+            <div class="article-card">
+                <h2>💡 主持小贴士</h2>
+                <ul>
+                    <li><strong>点投票:</strong> 如果条目过多，限制每人 3-5 票。</li>
+                    <li><strong>时间盒:</strong> 每个环节设定明确的时间限制。</li>
+                    <li><strong>关注过程:</strong> 讨论“如何改进流程”，而不是“谁做错了”。</li>
+                </ul>
+            </div>
+            <div class="ad-placeholder" style="min-height: 250px;">广告位 - 侧边栏 (AdSense Placeholder)</div>
+            <div class="article-card">
+                <h2>相关管理工具</h2>
+                <ul>
+                    <li><a href="icebreaker.html">破冰游戏大全</a></li>
+                    <li><a href="meeting-agenda.html">会议议程工具</a></li>
+                    <li><a href="standup-timer.html">站会计时器</a></li>
+                </ul>
+            </div>
+        </aside>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p style="margin-bottom: 15px;">WebUtils - 让团队在反馈中快速成长</p>
+            <div class="footer-bottom">&copy; 2026 WebUtils - 敏捷效能提升专家.</div>
         </div>
-      </div>
-    </div>
+    </footer>
 
     <script>
-      const LS_KEY = "retrospective-data";
+        const LS_KEY = "retro-tool-data-v2";
+        const TEMPLATES = {
+            "mad-sad-glad": { name: "Mad Sad Glad", cols: [
+                { id: "mad", t: "Mad (愤怒)", icon: "😤", color: "danger" },
+                { id: "sad", t: "Sad (难过)", icon: "😢", color: "warning" },
+                { id: "glad", t: "Glad (高兴)", icon: "😊", color: "success" }
+            ]},
+            "4ls": { name: "4Ls", cols: [
+                { id: "liked", t: "Liked (喜欢)", icon: "❤️", color: "success" },
+                { id: "learned", t: "Learned (学到)", icon: "📚", color: "info" },
+                { id: "lacked", t: "Lacked (缺少)", icon: "❓", color: "warning" },
+                { id: "longed", t: "Longed for (期望)", icon: "🌟", color: "primary" }
+            ]},
+            "start-stop-continue": { name: "Start Stop Continue", cols: [
+                { id: "start", t: "Start (开始)", icon: "🚀", color: "success" },
+                { id: "stop", t: "Stop (停止)", icon: "🛑", color: "danger" },
+                { id: "continue", t: "Continue (继续)", icon: "🔄", color: "info" }
+            ]},
+            "went-well": { name: "Went Well", cols: [
+                { id: "well", t: "做得好的", icon: "👍", color: "success" },
+                { id: "improve", t: "待改进的", icon: "📈", color: "warning" },
+                { id: "action", t: "行动计划", icon: "🎯", color: "info", isAction: true }
+            ]},
+            "sailboat": { name: "Sailboat (帆船)", cols: [
+                { id: "wind", t: "Wind (推动力)", icon: "💨", color: "success" },
+                { id: "anchor", t: "Anchor (阻力)", icon: "⚓", color: "danger" },
+                { id: "island", t: "Island (目标)", icon: "🏝️", color: "info" },
+                { id: "rocks", t: "Rocks (风险)", icon: "🪨", color: "warning" }
+            ]}
+        };
 
-      const TEMPLATES = {
-        "mad-sad-glad": {
-          name: "Mad Sad Glad",
-          columns: [
-            { id: "mad", icon: "😤", title: "Mad (愤怒)", type: "improve", color: "danger" },
-            { id: "sad", icon: "😢", title: "Sad (难过)", type: "improve", color: "warning" },
-            { id: "glad", icon: "😊", title: "Glad (高兴)", type: "good", color: "success" }
-          ]
-        },
-        "start-stop-continue": {
-          name: "Start Stop Continue",
-          columns: [
-            { id: "start", icon: "🚀", title: "Start (开始做)", type: "action", color: "success" },
-            { id: "stop", icon: "🛑", title: "Stop (停止做)", type: "improve", color: "danger" },
-            { id: "continue", icon: "✅", title: "Continue (继续做)", type: "good", color: "info" }
-          ]
-        },
-        "4ls": {
-          name: "4Ls",
-          columns: [
-            { id: "liked", icon: "❤️", title: "Liked (喜欢的)", type: "good", color: "success" },
-            { id: "learned", icon: "📚", title: "Learned (学到的)", type: "good", color: "info" },
-            {
-              id: "lacked",
-              icon: "❌",
-              title: "Lacked (缺少的)",
-              type: "improve",
-              color: "warning"
-            },
-            {
-              id: "longed",
-              icon: "🌟",
-              title: "Longed For (期望的)",
-              type: "action",
-              color: "danger"
-            }
-          ]
-        },
-        "went-well": {
-          name: "Went Well / To Improve",
-          columns: [
-            { id: "well", icon: "👍", title: "做得好的", type: "good", color: "success" },
-            { id: "improve", icon: "📈", title: "待改进的", type: "improve", color: "warning" },
-            { id: "actions", icon: "🎯", title: "行动计划", type: "action", color: "info" }
-          ]
-        },
-        sailboat: {
-          name: "Sailboat 帆船",
-          columns: [
-            { id: "wind", icon: "💨", title: "Wind (推动力)", type: "good", color: "success" },
-            { id: "anchor", icon: "⚓", title: "Anchor (阻力)", type: "improve", color: "danger" },
-            { id: "rocks", icon: "🪨", title: "Rocks (风险)", type: "question", color: "warning" },
-            { id: "island", icon: "🏝️", title: "Island (目标)", type: "action", color: "info" }
-          ]
-        }
-      };
+        let currentTpl = "went-well";
+        let items = {};
 
-      let currentTemplate = "went-well";
-      let items = {};
+        function init() {
+            const savedTheme = localStorage.getItem("theme") || "light";
+            document.body.setAttribute("data-theme", savedTheme);
+            document.getElementById('themeToggle').onclick = () => {
+                const n = document.body.getAttribute("data-theme") === "light" ? "dark" : "light";
+                document.body.setAttribute("data-theme", n);
+                localStorage.setItem("theme", n);
+            };
 
-      function init() {
-        const savedTheme = localStorage.getItem("theme") || "dark";
-        if (savedTheme === "light") {
-          document.body.setAttribute("data-theme", "light");
+            renderTabs();
+            loadState();
+            renderBoard();
         }
 
-        document.getElementById("retroDate").value = new Date().toISOString().split("T")[0];
-
-        renderTemplateSelect();
-        loadFromStorage();
-        loadFromUrl();
-        renderGrid();
-
-        document.querySelectorAll(".sprint-info input").forEach((input) => {
-          input.addEventListener("input", saveToStorage);
-        });
-      }
-
-      function renderTemplateSelect() {
-        const container = document.getElementById("templateSelect");
-        Object.keys(TEMPLATES).forEach((key) => {
-          const btn = document.createElement("button");
-          btn.className = "template-btn" + (key === currentTemplate ? " active" : "");
-          btn.textContent = TEMPLATES[key].name;
-          btn.addEventListener("click", () => selectTemplate(key));
-          container.appendChild(btn);
-        });
-      }
-
-      function selectTemplate(key) {
-        currentTemplate = key;
-        document.querySelectorAll(".template-btn").forEach((btn, i) => {
-          btn.classList.toggle("active", Object.keys(TEMPLATES)[i] === key);
-        });
-        renderGrid();
-        saveToStorage();
-      }
-
-      function renderGrid() {
-        const grid = document.getElementById("retroGrid");
-        grid.textContent = "";
-
-        const template = TEMPLATES[currentTemplate];
-        template.columns.forEach((col) => {
-          const column = document.createElement("div");
-          column.className = "retro-column column-" + col.type;
-
-          const header = document.createElement("div");
-          header.className = "column-header";
-
-          const icon = document.createElement("span");
-          icon.className = "column-icon";
-          icon.textContent = col.icon;
-
-          const title = document.createElement("span");
-          title.className = "column-title";
-          title.textContent = col.title;
-
-          const count = document.createElement("span");
-          count.className = "column-count";
-          count.id = "count-" + col.id;
-          count.textContent = (items[col.id] || []).length;
-
-          header.appendChild(icon);
-          header.appendChild(title);
-          header.appendChild(count);
-
-          const list = document.createElement("div");
-          list.className = "item-list";
-          list.id = "list-" + col.id;
-
-          renderItems(col.id, list);
-
-          const form = document.createElement("div");
-          form.className = "add-item-form";
-
-          const textarea = document.createElement("textarea");
-          textarea.className = "add-item-input";
-          textarea.placeholder = "添加新条目...";
-          textarea.rows = 2;
-
-          const addBtn = document.createElement("button");
-          addBtn.className = "add-item-btn";
-          addBtn.textContent = "+ 添加";
-          addBtn.addEventListener("click", () => {
-            if (textarea.value.trim()) {
-              addItem(col.id, textarea.value.trim());
-              textarea.value = "";
-            }
-          });
-
-          textarea.addEventListener("keydown", (e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              if (textarea.value.trim()) {
-                addItem(col.id, textarea.value.trim());
-                textarea.value = "";
-              }
-            }
-          });
-
-          form.appendChild(textarea);
-          form.appendChild(addBtn);
-
-          column.appendChild(header);
-          column.appendChild(list);
-          column.appendChild(form);
-
-          grid.appendChild(column);
-        });
-
-        updateStats();
-      }
-
-      function renderItems(columnId, container) {
-        container.textContent = "";
-        const columnItems = items[columnId] || [];
-
-        columnItems.sort((a, b) => b.votes - a.votes);
-
-        columnItems.forEach((item) => {
-          const div = document.createElement("div");
-          div.className = "retro-item";
-
-          const content = document.createElement("div");
-          content.className = "retro-item-content";
-          content.textContent = item.text;
-
-          const footer = document.createElement("div");
-          footer.className = "retro-item-footer";
-
-          const voteBtn = document.createElement("button");
-          voteBtn.className = "vote-btn";
-          voteBtn.textContent = "👍 " + item.votes;
-          voteBtn.addEventListener("click", () => voteItem(columnId, item.id));
-
-          const deleteBtn = document.createElement("button");
-          deleteBtn.className = "delete-item";
-          deleteBtn.textContent = "×";
-          deleteBtn.addEventListener("click", () => deleteItem(columnId, item.id));
-
-          footer.appendChild(voteBtn);
-          footer.appendChild(deleteBtn);
-
-          div.appendChild(content);
-          div.appendChild(footer);
-
-          container.appendChild(div);
-        });
-      }
-
-      function addItem(columnId, text) {
-        if (!items[columnId]) {
-          items[columnId] = [];
-        }
-        items[columnId].push({
-          id: Date.now(),
-          text: text,
-          votes: 0
-        });
-
-        const list = document.getElementById("list-" + columnId);
-        renderItems(columnId, list);
-        document.getElementById("count-" + columnId).textContent = items[columnId].length;
-        updateStats();
-        saveToStorage();
-      }
-
-      function voteItem(columnId, itemId) {
-        const item = (items[columnId] || []).find((i) => i.id === itemId);
-        if (item) {
-          item.votes++;
-          const list = document.getElementById("list-" + columnId);
-          renderItems(columnId, list);
-          updateStats();
-          saveToStorage();
-        }
-      }
-
-      function deleteItem(columnId, itemId) {
-        items[columnId] = (items[columnId] || []).filter((i) => i.id !== itemId);
-        const list = document.getElementById("list-" + columnId);
-        renderItems(columnId, list);
-        document.getElementById("count-" + columnId).textContent = items[columnId].length;
-        updateStats();
-        saveToStorage();
-      }
-
-      function updateStats() {
-        let totalItems = 0;
-        let totalVotes = 0;
-        let actionItems = 0;
-
-        const template = TEMPLATES[currentTemplate];
-        template.columns.forEach((col) => {
-          const colItems = items[col.id] || [];
-          totalItems += colItems.length;
-          totalVotes += colItems.reduce((sum, i) => sum + i.votes, 0);
-          if (col.type === "action") {
-            actionItems += colItems.length;
-          }
-        });
-
-        document.getElementById("totalItems").textContent = totalItems;
-        document.getElementById("totalVotes").textContent = totalVotes;
-        document.getElementById("actionItems").textContent = actionItems;
-      }
-
-      function exportRetro() {
-        const sprintName = document.getElementById("sprintName").value || "回顾会议";
-        const retroDate = document.getElementById("retroDate").value;
-        const facilitator = document.getElementById("facilitator").value;
-
-        let text = "═══════════════════════════════════════\n";
-        text += "        " + sprintName + " 回顾会议\n";
-        text += "═══════════════════════════════════════\n\n";
-
-        text += "📅 日期: " + retroDate + "\n";
-        if (facilitator) text += "👤 主持人: " + facilitator + "\n";
-        text += "📋 模板: " + TEMPLATES[currentTemplate].name + "\n\n";
-
-        const template = TEMPLATES[currentTemplate];
-        template.columns.forEach((col) => {
-          text += "───────────────────────────────────────\n";
-          text += col.icon + " " + col.title + "\n";
-          text += "───────────────────────────────────────\n";
-
-          const colItems = (items[col.id] || []).sort((a, b) => b.votes - a.votes);
-          if (colItems.length === 0) {
-            text += "(无内容)\n";
-          } else {
-            colItems.forEach((item, i) => {
-              text += i + 1 + ". " + item.text;
-              if (item.votes > 0) {
-                text += " [" + item.votes + " 票]";
-              }
-              text += "\n";
+        function renderTabs() {
+            const tabs = document.getElementById("templateTabs");
+            tabs.innerHTML = "";
+            Object.keys(TEMPLATES).forEach(k => {
+                const btn = document.createElement("button");
+                btn.className = `t-tab ${k === currentTpl ? 'active' : ''}`;
+                btn.textContent = TEMPLATES[k].name;
+                btn.onclick = () => { currentTpl = k; renderTabs(); renderBoard(); saveState(); };
+                tabs.appendChild(btn);
             });
-          }
-          text += "\n";
-        });
+        }
 
-        text += "═══════════════════════════════════════\n";
+        function renderBoard() {
+            const board = document.getElementById("retroBoard");
+            board.innerHTML = "";
+            const tpl = TEMPLATES[currentTpl];
+            
+            tpl.cols.forEach(col => {
+                const colDiv = document.createElement("div");
+                colDiv.className = "retro-col";
+                const colItems = items[col.id] || [];
+                
+                colDiv.innerHTML = `
+                    <div class="col-header" style="border-bottom-color: var(--color-${col.color})">
+                        <span class="col-title">${col.icon} ${col.t}</span>
+                        <span class="col-badge">${colItems.length}</span>
+                    </div>
+                    <div class="item-list" id="list-${col.id}"></div>
+                    <div class="add-area">
+                        <textarea id="input-${col.id}" class="item-input" placeholder="输入反馈... 按回车添加"></textarea>
+                        <button class="btn btn-outline" style="width:100%; font-size:0.8rem;" onclick="addItem('${col.id}')">添加条目</button>
+                    </div>
+                `;
+                board.appendChild(colDiv);
+                
+                const list = colDiv.querySelector(".item-list");
+                colItems.sort((a,b) => b.votes - a.votes).forEach(item => {
+                    const itemDiv = document.createElement("div");
+                    itemDiv.className = "retro-item";
+                    itemDiv.innerHTML = `
+                        <div class="item-text">${item.txt}</div>
+                        <div class="item-footer">
+                            <button class="vote-btn" onclick="vote('${col.id}', ${item.id})">👍 ${item.votes}</button>
+                            <button class="del-btn" onclick="delItem('${col.id}', ${item.id})">×</button>
+                        </div>
+                    `;
+                    list.appendChild(itemDiv);
+                });
 
-        navigator.clipboard.writeText(text).then(() => {
-          showToast("报告已复制到剪贴板");
-        });
-      }
+                colDiv.querySelector("textarea").onkeydown = (e) => {
+                    if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); addItem(col.id); }
+                };
+            });
+            updateStats();
+        }
 
-      function shareRetro() {
-        const data = {
-          template: currentTemplate,
-          sprintName: document.getElementById("sprintName").value,
-          retroDate: document.getElementById("retroDate").value,
-          facilitator: document.getElementById("facilitator").value,
-          items: items
-        };
-        const encoded = btoa(encodeURIComponent(JSON.stringify(data)));
-        const url = window.location.href.split("#")[0] + "#" + encoded;
-        navigator.clipboard.writeText(url).then(() => {
-          showToast("分享链接已复制");
-        });
-      }
+        function addItem(cid) {
+            const input = document.getElementById(`input-${cid}`);
+            const val = input.value.trim();
+            if(!val) return;
+            if(!items[cid]) items[cid] = [];
+            items[cid].push({ id: Date.now(), txt: val, votes: 0 });
+            input.value = "";
+            renderBoard();
+            saveState();
+        }
 
-      function loadFromUrl() {
-        const hash = window.location.hash.slice(1);
-        if (hash) {
-          try {
-            const data = JSON.parse(decodeURIComponent(atob(hash)));
-            if (data.template) {
-              currentTemplate = data.template;
-              document.querySelectorAll(".template-btn").forEach((btn, i) => {
-                btn.classList.toggle("active", Object.keys(TEMPLATES)[i] === currentTemplate);
-              });
+        function vote(cid, id) {
+            const item = items[cid].find(x => x.id === id);
+            item.votes++;
+            renderBoard();
+            saveState();
+        }
+
+        function delItem(cid, id) {
+            items[cid] = items[cid].filter(x => x.id !== id);
+            renderBoard();
+            saveState();
+        }
+
+        function updateStats() {
+            let total = 0, votes = 0, actions = 0;
+            const tpl = TEMPLATES[currentTpl];
+            Object.keys(items).forEach(cid => {
+                total += items[cid].length;
+                votes += items[cid].reduce((s, x) => s + x.votes, 0);
+                const col = tpl.cols.find(c => c.id === cid);
+                if(col && col.isAction) actions += items[cid].length;
+            });
+            document.getElementById("totalItems").textContent = total;
+            document.getElementById("totalVotes").textContent = votes;
+            document.getElementById("actionCount").textContent = actions;
+        }
+
+        function saveState() {
+            localStorage.setItem(LS_KEY, JSON.stringify({
+                tpl: currentTpl,
+                title: document.getElementById('sprintTitle').value,
+                facilitator: document.getElementById('facilitator').value,
+                date: document.getElementById('retroDate').value,
+                items
+            }));
+        }
+
+        function loadState() {
+            const s = localStorage.getItem(LS_KEY);
+            if(s) {
+                const d = JSON.parse(s);
+                currentTpl = d.tpl || currentTpl;
+                document.getElementById('sprintTitle').value = d.title || "";
+                document.getElementById('facilitator').value = d.facilitator || "";
+                document.getElementById('retroDate').value = d.date || "";
+                items = d.items || {};
+                renderTabs();
             }
-            if (data.sprintName) document.getElementById("sprintName").value = data.sprintName;
-            if (data.retroDate) document.getElementById("retroDate").value = data.retroDate;
-            if (data.facilitator) document.getElementById("facilitator").value = data.facilitator;
-            if (data.items) items = data.items;
-            renderGrid();
-          } catch (e) {
-            console.error("Failed to load from URL:", e);
-          }
+            const hash = window.location.hash.slice(1);
+            if(hash) { try { const d = JSON.parse(decodeURIComponent(atob(hash))); items = d.items || {}; } catch(e){} }
         }
-      }
 
-      function saveToStorage() {
-        const data = {
-          template: currentTemplate,
-          sprintName: document.getElementById("sprintName").value,
-          retroDate: document.getElementById("retroDate").value,
-          facilitator: document.getElementById("facilitator").value,
-          items: items
-        };
-        localStorage.setItem(LS_KEY, JSON.stringify(data));
-      }
-
-      function loadFromStorage() {
-        const saved = localStorage.getItem(LS_KEY);
-        if (saved) {
-          try {
-            const data = JSON.parse(saved);
-            if (data.template) {
-              currentTemplate = data.template;
-              document.querySelectorAll(".template-btn").forEach((btn, i) => {
-                btn.classList.toggle("active", Object.keys(TEMPLATES)[i] === currentTemplate);
-              });
-            }
-            if (data.sprintName) document.getElementById("sprintName").value = data.sprintName;
-            if (data.retroDate) document.getElementById("retroDate").value = data.retroDate;
-            if (data.facilitator) document.getElementById("facilitator").value = data.facilitator;
-            if (data.items) items = data.items;
-          } catch (e) {
-            console.error("Failed to load from storage:", e);
-          }
+        function exportMarkdown() {
+            let md = `# 回顾会议报告: ${document.getElementById('sprintTitle').value || '未命名'}\n`;
+            md += `**日期:** ${document.getElementById('retroDate').value} | **主持人:** ${document.getElementById('facilitator').value}\n\n`;
+            const tpl = TEMPLATES[currentTpl];
+            tpl.cols.forEach(col => {
+                md += `## ${col.icon} ${col.t}\n`;
+                const colItems = items[col.id] || [];
+                if(colItems.length === 0) md += `* (无)\n`;
+                else colItems.sort((a,b)=>b.votes-a.votes).forEach(i => md += `* ${i.txt} (👍 ${i.votes})\n`);
+                md += `\n`;
+            });
+            const blob = new Blob([md], {type: "text/markdown"});
+            const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "retro_report.md"; a.click();
         }
-      }
 
-      function clearAll() {
-        if (confirm("确定要清空所有内容吗？")) {
-          items = {};
-          document.getElementById("sprintName").value = "";
-          document.getElementById("facilitator").value = "";
-          renderGrid();
-          localStorage.removeItem(LS_KEY);
-          window.location.hash = "";
+        function shareRetro() {
+            const data = btoa(encodeURIComponent(JSON.stringify({ items })));
+            const url = window.location.href.split('#')[0] + '#' + data;
+            navigator.clipboard.writeText(url).then(() => alert("分享链接已复制！"));
         }
-      }
 
-      function showToast(message) {
-        const toast = document.createElement("div");
-        toast.style.cssText =
-          "position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--accent-color);color:#000;padding:12px 24px;border-radius:8px;z-index:1000;font-size:14px;";
-        toast.textContent = message;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 2000);
-      }
+        function clearBoard() { if(confirm("确定清空吗？")){ items = {}; renderBoard(); saveState(); } }
 
-      window.toggleTheme = function () {
-        const body = document.body;
-        const currentTheme = body.getAttribute("data-theme");
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-        body.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
-      };
-
-      init();
+        init();
     </script>
-  </body>
+</body>
 </html>

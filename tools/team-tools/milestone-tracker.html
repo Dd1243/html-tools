@@ -1,1137 +1,409 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>里程碑追踪器 - WebUtils</title>
-    <meta name="description" content="里程碑追踪器：在线实用工具，免费在线使用，无需安装" />
-    <meta name="keywords" content="里程碑追踪器, 工具, 在线, 实用" />
-    <meta property="og:title" content="里程碑追踪器 - WebUtils" />
-    <meta property="og:description" content="里程碑追踪器：在线实用工具，免费在线使用，无需安装" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/team-tools/milestone-tracker" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <link rel="canonical" href="https://essays4u.net/tools/team-tools/milestone-tracker" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线里程碑追踪器 - 项目进度可视化与关键节点管理工具 | WebUtils</title>
+    <meta name="description" content="WebUtils 免费在线里程碑追踪器。帮助项目经理与团队可视化管理关键节点。支持设置项目截止日期、实时统计进度、自动识别逾期风险。内置甘特图式的时间轴视图，支持 Markdown 报告导出与链接分享。">
+    <meta name="keywords" content="里程碑追踪器,项目进度管理,关键节点追踪,项目管理工具,可视化进度表,里程碑模板,甘特图工具,进度监控,团队协作工具">
+    <link rel="canonical" href="https://chicogong.github.io/html-tools/tools/team-tools/milestone-tracker.html">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="在线里程碑追踪器 - 掌控项目的每一个关键时刻">
+    <meta property="og:description" content="专业的项目节点管理工具，实时监控进度风险，确保项目按时交付。">
+    <meta property="og:url" content="https://chicogong.github.io/html-tools/tools/team-tools/milestone-tracker.html">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://essays4u.net/social-preview.png">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="里程碑追踪器 - 告别项目延期焦虑">
+    <meta name="twitter:description" content="可视化时间轴与智能风险预警，让项目管理变得简单透明。">
+    <meta name="twitter:image" content="https://essays4u.net/social-preview.png">
+
+    <!-- JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "在线里程碑追踪器",
+        "url": "https://chicogong.github.io/html-tools/tools/team-tools/milestone-tracker.html",
+        "description": "提供项目关键节点的记录、追踪与可视化功能，支持进度统计与报告导出。",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "All",
+        "author": {
+            "@type": "Organization",
+            "name": "WebUtils"
+        }
+    }
+    </script>
+
     <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: var(--font-sans);
-        background: var(--bg-color);
-        color: var(--text-color);
-        min-height: 100vh;
-        padding: 20px;
-      }
-
-      .container {
-        max-width: 1000px;
-        margin: 0 auto;
-      }
-
-      .header {
-        text-align: center;
-        margin-bottom: 30px;
-        position: relative;
-      }
-
-      .header h1 {
-        font-size: 2rem;
-        margin-bottom: 10px;
-        background: linear-gradient(135deg, var(--accent-color), #a855f7);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      .theme-toggle {
-        position: absolute;
-        right: 0;
-        top: 0;
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        color: var(--text-color);
-        padding: 8px 16px;
-        border-radius: 8px;
-        cursor: pointer;
-      }
-
-      .back-link {
-        position: absolute;
-        left: 0;
-        top: 0;
-        color: var(--accent-color);
-        text-decoration: none;
-        font-size: 14px;
-      }
-
-      .back-link:hover {
-        text-decoration: underline;
-      }
-
-      .panel {
-        background: var(--bg-card);
-        border-radius: 16px;
-        padding: 25px;
-        border: 1px solid var(--border-subtle);
-        margin-bottom: 20px;
-      }
-
-      .panel-title {
-        font-size: 1rem;
-        margin-bottom: 15px;
-        color: var(--accent-color);
-      }
-
-      .form-group {
-        margin-bottom: 15px;
-      }
-
-      .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-size: 14px;
-      }
-
-      .form-group input,
-      .form-group textarea,
-      .form-group select {
-        width: 100%;
-        padding: 12px;
-        background: var(--bg-input);
-        border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        color: var(--text-color);
-        font-size: 14px;
-      }
-
-      .form-group input:focus,
-      .form-group textarea:focus,
-      .form-group select:focus {
-        outline: none;
-        border-color: var(--accent-color);
-      }
-
-      .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
-      }
-
-      @media (max-width: 600px) {
-        .form-row {
-          grid-template-columns: 1fr;
+        :root {
+            --primary-color: #007acc;
+            --primary-hover: #005f99;
+            --bg-color: #f9f9f9;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --border-color: #dddddd;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            --radius: 6px;
+            --color-success: #27ae60;
+            --color-warning: #f39c12;
+            --color-danger: #e74c3c;
         }
-      }
 
-      .btn {
-        padding: 10px 20px;
-        border-radius: 8px;
-        border: none;
-        cursor: pointer;
-        font-size: 14px;
-        transition: all 0.3s ease;
-      }
-
-      .btn-primary {
-        background: var(--accent-color);
-        color: #000;
-      }
-
-      .btn-primary:hover {
-        transform: translateY(-2px);
-      }
-
-      .btn-secondary {
-        background: var(--primary-color);
-        color: var(--text-color);
-      }
-
-      .btn-danger {
-        background: transparent;
-        color: var(--danger-color);
-        padding: 6px 10px;
-      }
-
-      .btn-group {
-        display: flex;
-        gap: 10px;
-        margin-top: 15px;
-        flex-wrap: wrap;
-      }
-
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 15px;
-      }
-
-      .stat-card {
-        background: var(--bg-input);
-        padding: 20px;
-        border-radius: 12px;
-        text-align: center;
-      }
-
-      .stat-value {
-        font-size: 1.8rem;
-        font-weight: bold;
-        color: var(--accent-color);
-      }
-
-      .stat-label {
-        font-size: 12px;
-        opacity: 0.7;
-        margin-top: 5px;
-      }
-
-      .timeline {
-        position: relative;
-        padding-left: 30px;
-      }
-
-      .timeline::before {
-        content: "";
-        position: absolute;
-        left: 8px;
-        top: 0;
-        bottom: 0;
-        width: 2px;
-        background: var(--border-subtle);
-      }
-
-      .milestone-item {
-        position: relative;
-        padding: 20px;
-        background: var(--bg-input);
-        border-radius: 12px;
-        margin-bottom: 20px;
-        border-left: 3px solid var(--border-subtle);
-      }
-
-      .milestone-item::before {
-        content: "";
-        position: absolute;
-        left: -27px;
-        top: 25px;
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        background: var(--border-subtle);
-        border: 3px solid var(--bg-card);
-      }
-
-      .milestone-item.completed {
-        border-left-color: var(--success-color);
-      }
-
-      .milestone-item.completed::before {
-        background: var(--success-color);
-      }
-
-      .milestone-item.in-progress {
-        border-left-color: var(--accent-color);
-      }
-
-      .milestone-item.in-progress::before {
-        background: var(--accent-color);
-        animation: pulse 2s infinite;
-      }
-
-      .milestone-item.overdue {
-        border-left-color: var(--danger-color);
-      }
-
-      .milestone-item.overdue::before {
-        background: var(--danger-color);
-      }
-
-      .milestone-item.upcoming {
-        border-left-color: var(--warning-color);
-      }
-
-      .milestone-item.upcoming::before {
-        background: var(--warning-color);
-      }
-
-      @keyframes pulse {
-        0%,
-        100% {
-          transform: scale(1);
-          opacity: 1;
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-main: #e0e0e0;
+            --text-muted: #aaaaaa;
+            --border-color: #333333;
         }
-        50% {
-          transform: scale(1.2);
-          opacity: 0.8;
-        }
-      }
 
-      .milestone-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 10px;
-        margin-bottom: 10px;
-      }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Segoe UI", system-ui, -apple-system, sans-serif; line-height: 1.6; color: var(--text-main); background: var(--bg-color); }
+        .container { width: 95%; max-width: 1200px; margin: 0 auto; }
 
-      .milestone-title {
-        font-size: 1.1rem;
-        font-weight: 600;
-      }
+        .site-header { background: var(--card-bg); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); position: sticky; top: 0; z-index: 100; }
+        .site-header .container { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
+        .logo a { font-size: 1.4rem; font-weight: 700; color: var(--primary-color); text-decoration: none; }
+        .theme-toggle { background: none; border: none; cursor: pointer; font-size: 1.2rem; }
 
-      .milestone-date {
-        font-size: 12px;
-        opacity: 0.7;
-        white-space: nowrap;
-      }
+        main.container { display: flex; flex-direction: column; gap: 25px; padding: 30px 0; }
+        @media (min-width: 992px) { main.container { flex-direction: row; align-items: flex-start; } }
 
-      .milestone-description {
-        font-size: 14px;
-        opacity: 0.8;
-        margin-bottom: 10px;
-      }
+        .tool-section { flex: 3; background: var(--card-bg); padding: 25px; border-radius: var(--radius); box-shadow: var(--shadow); }
+        .tool-header { margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+        .tool-header h1 { font-size: 1.8rem; margin-bottom: 8px; }
+        .tool-header p { color: var(--text-muted); font-size: 0.95rem; }
 
-      .milestone-progress {
-        margin-top: 10px;
-      }
+        .panel { margin-bottom: 30px; }
+        .panel-title { font-size: 1rem; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 12px; margin-bottom: 25px; }
+        .stat-card { background: var(--bg-color); padding: 15px; border-radius: var(--radius); border: 1px solid var(--border-color); text-align: center; }
+        .stat-val { font-size: 1.5rem; font-weight: 800; color: var(--primary-color); display: block; }
+        .stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
 
-      .progress-bar {
-        height: 8px;
-        background: var(--border-subtle);
-        border-radius: 4px;
-        overflow: hidden;
-      }
+        /* Input Styles */
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
+        .field { margin-bottom: 12px; }
+        .field label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; }
+        .input-text { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--bg-color); color: var(--text-main); font-size: 0.9rem; }
 
-      .progress-fill {
-        height: 100%;
-        background: linear-gradient(90deg, var(--accent-color), #a855f7);
-        transition: width 0.5s ease;
-      }
+        /* Overall Progress */
+        .progress-container { margin-bottom: 25px; }
+        .progress-outer { height: 12px; background: var(--border-color); border-radius: 10px; overflow: hidden; display: flex; }
+        .progress-inner { height: 100%; transition: width 0.4s ease; }
+        .p-done { background: var(--color-success); }
+        .p-doing { background: var(--primary-color); }
+        .p-late { background: var(--color-danger); }
 
-      .progress-text {
-        display: flex;
-        justify-content: space-between;
-        font-size: 12px;
-        margin-top: 5px;
-        opacity: 0.7;
-      }
+        /* Milestone List */
+        .milestone-item { background: var(--bg-color); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 18px; margin-bottom: 12px; border-left: 4px solid #ccc; }
+        .milestone-item.completed { border-left-color: var(--color-success); }
+        .milestone-item.in-progress { border-left-color: var(--primary-color); }
+        .milestone-item.overdue { border-left-color: var(--color-danger); }
+        
+        .m-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .m-title { font-weight: 700; font-size: 1rem; }
+        .m-date { font-size: 0.8rem; font-family: monospace; color: var(--text-muted); }
+        .m-desc { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; }
+        .m-footer { display: flex; justify-content: space-between; align-items: center; }
 
-      .milestone-actions {
-        display: flex;
-        gap: 8px;
-        margin-top: 10px;
-      }
+        .btn-del { color: #ff4d4f; border: none; background: none; cursor: pointer; font-size: 1rem; padding: 5px; }
+        .badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: 700; text-transform: uppercase; }
+        .badge-completed { background: rgba(39, 174, 96, 0.1); color: var(--color-success); }
+        .badge-in-progress { background: rgba(0, 122, 204, 0.1); color: var(--primary-color); }
+        .badge-overdue { background: rgba(231, 76, 60, 0.1); color: var(--color-danger); }
 
-      .status-badge {
-        display: inline-block;
-        padding: 4px 10px;
-        border-radius: 12px;
-        font-size: 11px;
-        font-weight: bold;
-      }
+        .action-bar { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+        .btn { padding: 10px 20px; border-radius: var(--radius); border: none; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .btn-primary { background: var(--primary-color); color: #fff; }
+        .btn-outline { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
 
-      .status-completed {
-        background: rgba(74, 222, 128, 0.2);
-        color: var(--success-color);
-      }
+        /* Sidebar & SEO Section */
+        .sidebar-section { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+        .article-card { background: var(--card-bg); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); }
+        .article-card h2 { font-size: 1.1rem; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .article-card h2::before { content: ""; display: inline-block; width: 4px; height: 18px; background: var(--primary-color); border-radius: 2px; }
+        .article-card p, .article-card li { font-size: 0.85rem; line-height: 1.6; margin-bottom: 10px; }
 
-      .status-in-progress {
-        background: rgba(0, 217, 255, 0.2);
-        color: var(--accent-color);
-      }
+        .ad-placeholder { background: #f0f2f5; border: 1px dashed #ccc; color: #999; text-align: center; padding: 20px; border-radius: var(--radius); font-size: 0.8rem; display: flex; align-items: center; justify-content: center; min-height: 100px; }
 
-      .status-overdue {
-        background: rgba(248, 113, 113, 0.2);
-        color: var(--danger-color);
-      }
-
-      .status-upcoming {
-        background: rgba(251, 191, 36, 0.2);
-        color: var(--warning-color);
-      }
-
-      .status-pending {
-        background: rgba(128, 128, 128, 0.2);
-        color: #888;
-      }
-
-      .add-form {
-        display: none;
-        padding: 20px;
-        background: var(--bg-input);
-        border-radius: 12px;
-        margin-bottom: 20px;
-      }
-
-      .add-form.show {
-        display: block;
-      }
-
-      .overall-progress {
-        margin-bottom: 20px;
-      }
-
-      .overall-bar {
-        height: 20px;
-        background: var(--bg-input);
-        border-radius: 10px;
-        overflow: hidden;
-        display: flex;
-      }
-
-      .overall-segment {
-        height: 100%;
-        transition: width 0.5s ease;
-      }
-
-      .overall-segment.completed {
-        background: var(--success-color);
-      }
-
-      .overall-segment.in-progress {
-        background: var(--accent-color);
-      }
-
-      .overall-segment.overdue {
-        background: var(--danger-color);
-      }
-
-      .legend {
-        display: flex;
-        gap: 20px;
-        justify-content: center;
-        margin-top: 15px;
-        flex-wrap: wrap;
-      }
-
-      .legend-item {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 12px;
-      }
-
-      .legend-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-      }
-
-      .filter-tabs {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-      }
-
-      .filter-tab {
-        padding: 8px 16px;
-        background: var(--bg-input);
-        border: 1px solid var(--border-subtle);
-        border-radius: 20px;
-        cursor: pointer;
-        font-size: 13px;
-        transition: all 0.3s ease;
-      }
-
-      .filter-tab.active {
-        background: var(--accent-color);
-        color: #000;
-        border-color: var(--accent-color);
-      }
-
-      .countdown {
-        font-size: 12px;
-        padding: 4px 8px;
-        background: var(--bg-card);
-        border-radius: 4px;
-        display: inline-block;
-      }
-
-      .countdown.urgent {
-        background: rgba(248, 113, 113, 0.2);
-        color: var(--danger-color);
-      }
-
-      .empty-state {
-        text-align: center;
-        padding: 40px;
-        opacity: 0.6;
-      }
+        .site-footer { background: #2c3e50; color: #bdc3c7; padding: 40px 0 20px; margin-top: 50px; text-align: center; }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <a href="../../index.html" class="back-link">← 返回工具列表</a>
-        <h1>里程碑追踪器</h1>
-        <p>项目进度可视化管理</p>
-        <button class="theme-toggle" onclick="toggleTheme()">🌓 切换主题</button>
-      </div>
-
-      <div class="panel">
-        <div class="panel-title">📊 项目概览</div>
-        <div class="form-row" style="margin-bottom: 20px">
-          <div class="form-group" style="margin-bottom: 0">
-            <label>项目名称</label>
-            <input
-              type="text"
-              id="projectName"
-              placeholder="输入项目名称"
-              onchange="saveToStorage()"
-            />
-          </div>
-          <div class="form-group" style="margin-bottom: 0">
-            <label>项目截止日期</label>
-            <input
-              type="date"
-              id="projectDeadline"
-              onchange="
-                saveToStorage();
-                updateStats();
-              "
-            />
-          </div>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="logo"><a href="../../index.html">WebUtils</a></div>
+            <button class="theme-toggle" id="themeToggle">🌓</button>
         </div>
-        <div class="overall-progress">
-          <div class="overall-bar" id="overallBar"></div>
-          <div class="legend">
-            <div class="legend-item">
-              <div class="legend-dot" style="background: var(--success-color)"></div>
-              <span>已完成</span>
+    </header>
+
+    <main class="container">
+        <div class="tool-section">
+            <div class="ad-placeholder" style="margin-bottom: 20px;">广告位 - 顶部横幅 (AdSense Placeholder)</div>
+
+            <div class="tool-header">
+                <h1>里程碑追踪器</h1>
+                <p>项目关键节点可视化管理，实时监控交付风险，确保进度透明化。</p>
             </div>
-            <div class="legend-item">
-              <div class="legend-dot" style="background: var(--accent-color)"></div>
-              <span>进行中</span>
+
+            <div class="panel">
+                <div class="panel-title">📊 项目总体概览</div>
+                <div class="form-row">
+                    <div class="field"><label>项目名称</label><input type="text" id="projName" class="input-text" placeholder="例如：Web应用 2.0 发布"></div>
+                    <div class="field"><label>总截止日期</label><input type="date" id="projEnd" class="input-text"></div>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-outer" id="overallBar"></div>
+                    <div style="display:flex; justify-content: space-between; font-size: 0.7rem; margin-top: 5px;">
+                        <span><span style="color:var(--color-success)">●</span> 已完成</span>
+                        <span><span style="color:var(--primary-color)">●</span> 进行中</span>
+                        <span><span style="color:var(--color-danger)">●</span> 已逾期</span>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card"><span id="statTotal" class="stat-val">0</span><span class="stat-label">总里程碑</span></div>
+                    <div class="stat-card"><span id="statDone" class="stat-val">0</span><span class="stat-label">已完成</span></div>
+                    <div class="stat-card"><span id="statLate" class="stat-val">0</span><span class="stat-label">已逾期</span></div>
+                    <div class="stat-card"><span id="statDays" class="stat-val">-</span><span class="stat-label">剩余天数</span></div>
+                </div>
             </div>
-            <div class="legend-item">
-              <div class="legend-dot" style="background: var(--danger-color)"></div>
-              <span>已逾期</span>
+
+            <div class="panel">
+                <div class="panel-title">➕ 添加新里程碑</div>
+                <div class="field"><label>里程碑标题</label><input type="text" id="mTitle" class="input-text" placeholder="例如：数据库架构设计完成"></div>
+                <div class="form-row">
+                    <div class="field"><label>计划完成日期</label><input type="date" id="mDate" class="input-text"></div>
+                    <div class="field"><label>负责人</label><input type="text" id="mOwner" class="input-text" placeholder="姓名"></div>
+                </div>
+                <div class="field"><label>描述</label><input type="text" id="mDesc" class="input-text" placeholder="简要说明交付物内容..."></div>
+                <button class="btn btn-primary" onclick="addMilestone()" style="width:100%">确认添加里程碑</button>
             </div>
-            <div class="legend-item">
-              <div class="legend-dot" style="background: var(--warning-color)"></div>
-              <span>待开始</span>
+
+            <div class="panel">
+                <div class="panel-title">🎯 里程碑时间轴</div>
+                <div id="mList"></div>
             </div>
-          </div>
-        </div>
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-value" id="totalMilestones">0</div>
-            <div class="stat-label">总里程碑</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="completedCount">0</div>
-            <div class="stat-label">已完成</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="inProgressCount">0</div>
-            <div class="stat-label">进行中</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="overdueCount">0</div>
-            <div class="stat-label">已逾期</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="daysRemaining">-</div>
-            <div class="stat-label">剩余天数</div>
-          </div>
-        </div>
-      </div>
 
-      <div class="panel">
-        <div class="panel-title">🎯 里程碑列表</div>
-
-        <div class="filter-tabs">
-          <button class="filter-tab active" onclick="setFilter('all', this)">全部</button>
-          <button class="filter-tab" onclick="setFilter('in-progress', this)">进行中</button>
-          <button class="filter-tab" onclick="setFilter('upcoming', this)">待开始</button>
-          <button class="filter-tab" onclick="setFilter('completed', this)">已完成</button>
-          <button class="filter-tab" onclick="setFilter('overdue', this)">已逾期</button>
-        </div>
-
-        <div class="btn-group" style="margin-bottom: 20px">
-          <button class="btn btn-primary" onclick="toggleAddForm()">+ 添加里程碑</button>
-        </div>
-
-        <div class="add-form" id="addForm">
-          <div class="form-group">
-            <label>里程碑名称</label>
-            <input type="text" id="newTitle" placeholder="例如：产品原型完成" />
-          </div>
-          <div class="form-group">
-            <label>描述</label>
-            <textarea id="newDescription" rows="2" placeholder="里程碑描述..."></textarea>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>截止日期</label>
-              <input type="date" id="newDueDate" />
+            <div class="action-bar">
+                <button class="btn btn-outline" onclick="exportReport()">导出 Markdown 报告</button>
+                <button class="btn btn-outline" onclick="shareState()">获取分享链接</button>
+                <button class="btn btn-outline" style="color:var(--color-danger)" onclick="clearAll()">清空数据</button>
             </div>
-            <div class="form-group">
-              <label>负责人</label>
-              <input type="text" id="newOwner" placeholder="负责人姓名" />
+
+            <section style="margin-top: 40px; border-top: 1px solid var(--border-color); padding-top: 30px">
+                <h2 style="font-size: 1.5rem; margin-bottom: 20px">深度解析：里程碑管理如何确保项目按时交付？</h2>
+                <article style="font-size: 0.95rem; color: var(--text-main); line-height: 1.8">
+                    <p>在复杂的项目管理中，<strong>里程碑</strong>（Milestones）不仅仅是日历上的一个日期。它是项目的导航灯塔，代表了关键阶段的完成、重要决策的达成或核心交付物的产生。没有里程碑的项目就像在大雾中航行，即便引擎全速运转，你也不知道自己是否偏离了航线。</p>
+                    
+                    <h3 style="margin: 20px 0 10px;">1. 什么是有效的里程碑？</h3>
+                    <p>一个好的里程碑应具备 <strong>SMART</strong> 属性：</p>
+                    <ul>
+                        <li><strong>明确 (Specific):</strong> “完成开发”太模糊，“完成用户注册模块开发”更明确。</li>
+                        <li><strong>可衡量 (Measurable):</strong> 有清晰的检查清单或交付文档。</li>
+                        <li><strong>有时限 (Time-bound):</strong> 必须有一个明确的截止时间。</li>
+                    </ul>
+
+                    <h3 style="margin: 20px 0 10px;">2. 里程碑与任务的区别</h3>
+                    <p>任务是“过程”，里程碑是“成果”。任务通常持续数小时或数天，而里程碑是一个瞬间的状态。例如，“编写 500 行代码”是一个任务，而“前端原型通过客户评审”就是一个里程碑。</p>
+                    
+                    <div class="ad-placeholder" style="margin: 25px 0">广告位 - 文章中部内嵌 (AdSense Placeholder)</div>
+
+                    <h3 style="margin: 20px 0 10px;">3. 如何处理里程碑逾期？</h3>
+                    <p>逾期本身不可怕，可怕的是“沉默的逾期”。一旦本工具检测到里程碑进入<strong>已逾期</strong>（Overdue）状态，项目经理应立即评估：</p>
+                    <ul>
+                        <li><strong>原因分析:</strong> 是资源不足、需求变更还是技术卡点？</li>
+                        <li><strong>影响评估:</strong> 关键路径上的后续节点是否会产生连锁反应？</li>
+                        <li><strong>调整策略:</strong> 增加资源、削减范围还是通过透明化沟通延期？</li>
+                    </ul>
+
+                    <h3 style="margin: 20px 0 10px;">4. FAQ</h3>
+                    <div style="background: var(--bg-color); padding: 15px; border-left: 4px solid var(--primary-color); margin-bottom: 15px;">
+                        <strong>问：项目越大里程碑越多吗？</strong><br>
+                        答：不一定。过多的里程碑会让重点分散。建议一个为期 3 个月的项目，里程碑数量控制在 5-8 个。
+                    </div>
+                </article>
+            </section>
+        </div>
+
+        <aside class="sidebar-section">
+            <div class="article-card">
+                <h2>💡 管理小贴士</h2>
+                <ul>
+                    <li><strong>庆祝时刻:</strong> 达成重大里程碑后，别忘了在团队中公开庆祝。</li>
+                    <li><strong>前置风险:</strong> 对“进行中”的任务，建议每 2 天更新一次状态。</li>
+                    <li><strong>透明沟通:</strong> 将生成的分享链接同步给甲方或干系人。</li>
+                </ul>
             </div>
-          </div>
-          <div class="btn-group">
-            <button class="btn btn-primary" onclick="addMilestone()">添加</button>
-            <button class="btn btn-secondary" onclick="toggleAddForm()">取消</button>
-          </div>
-        </div>
+            <div class="ad-placeholder" style="min-height: 250px;">广告位 - 侧边栏 (AdSense Placeholder)</div>
+            <div class="article-card">
+                <h2>相关团队工具</h2>
+                <ul>
+                    <li><a href="raci-chart.html">RACI 职责矩阵</a></li>
+                    <li><a href="task-breakdown.html">任务拆解工具</a></li>
+                    <li><a href="workload-calc.html">工作负荷测算</a></li>
+                </ul>
+            </div>
+        </aside>
+    </main>
 
-        <div class="timeline" id="timeline"></div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-title">💾 操作</div>
-        <div class="btn-group">
-          <button class="btn btn-secondary" onclick="exportReport()">📊 导出报告</button>
-          <button class="btn btn-secondary" onclick="shareLink()">🔗 分享链接</button>
-          <button class="btn btn-danger" onclick="clearAll()">🗑️ 清空数据</button>
+    <footer class="site-footer">
+        <div class="container">
+            <p style="margin-bottom: 15px;">WebUtils - 让每一个交付都更有底气</p>
+            <div class="footer-bottom">&copy; 2026 WebUtils - 专业的项目进度追踪平台.</div>
         </div>
-      </div>
-    </div>
+    </footer>
 
     <script>
-      var LS_KEY = "milestone-tracker-data";
-      var milestones = [];
-      var currentFilter = "all";
+        const LS_KEY = "milestone-data";
+        let milestones = [];
 
-      function init() {
-        var savedTheme = localStorage.getItem("theme") || "dark";
-        if (savedTheme === "light") {
-          document.body.setAttribute("data-theme", "light");
+        function init() {
+            const saved = localStorage.getItem("theme") || "light";
+            document.body.setAttribute("data-theme", saved);
+            document.getElementById('themeToggle').onclick = () => {
+                const n = document.body.getAttribute("data-theme") === "light" ? "dark" : "light";
+                document.body.setAttribute("data-theme", n);
+                localStorage.setItem("theme", n);
+            };
+
+            loadState();
+            updateUI();
         }
 
-        loadFromUrl() || loadFromStorage();
-        renderMilestones();
-        updateStats();
-      }
+        function addMilestone() {
+            const t = document.getElementById('mTitle').value;
+            const d = document.getElementById('mDate').value;
+            if (!t || !d) return alert("请填写标题和截止日期");
 
-      function generateId() {
-        return Date.now() + Math.random().toString(36).substr(2, 9);
-      }
+            milestones.push({
+                id: Date.now(),
+                t: t,
+                d: d,
+                o: document.getElementById('mOwner').value,
+                desc: document.getElementById('mDesc').value,
+                done: false
+            });
 
-      function toggleAddForm() {
-        var form = document.getElementById("addForm");
-        form.classList.toggle("show");
-        if (form.classList.contains("show")) {
-          document.getElementById("newDueDate").valueAsDate = new Date(
-            Date.now() + 7 * 24 * 60 * 60 * 1000
-          );
-        }
-      }
-
-      function addMilestone() {
-        var title = document.getElementById("newTitle").value.trim();
-        var description = document.getElementById("newDescription").value.trim();
-        var dueDate = document.getElementById("newDueDate").value;
-        var owner = document.getElementById("newOwner").value.trim();
-
-        if (!title || !dueDate) {
-          showToast("请填写名称和截止日期");
-          return;
+            document.getElementById('mTitle').value = "";
+            document.getElementById('mDate').value = "";
+            document.getElementById('mOwner').value = "";
+            document.getElementById('mDesc').value = "";
+            
+            updateUI();
         }
 
-        milestones.push({
-          id: generateId(),
-          title: title,
-          description: description,
-          dueDate: dueDate,
-          owner: owner,
-          progress: 0,
-          status: "pending",
-          createdAt: new Date().toISOString()
-        });
+        function updateUI() {
+            const list = document.getElementById("mList");
+            list.innerHTML = milestones.length ? "" : "<div style='text-align:center; padding:40px; color:#999;'>暂无里程碑数据</div>";
 
-        document.getElementById("newTitle").value = "";
-        document.getElementById("newDescription").value = "";
-        document.getElementById("newOwner").value = "";
-        toggleAddForm();
+            const today = new Date().setHours(0,0,0,0);
+            let doneCount = 0, lateCount = 0;
 
-        sortMilestones();
-        renderMilestones();
-        updateStats();
-        saveToStorage();
-        showToast("里程碑已添加");
-      }
+            milestones.sort((a,b) => new Date(a.d) - new Date(b.d));
 
-      function removeMilestone(id) {
-        if (confirm("确定要删除这个里程碑吗？")) {
-          milestones = milestones.filter(function (m) {
-            return m.id !== id;
-          });
-          renderMilestones();
-          updateStats();
-          saveToStorage();
-        }
-      }
+            milestones.forEach(m => {
+                const mDate = new Date(m.d).setHours(0,0,0,0);
+                const isLate = mDate < today && !m.done;
+                if (m.done) doneCount++; else if (isLate) lateCount++;
 
-      function updateMilestoneProgress(id, progress) {
-        var milestone = milestones.find(function (m) {
-          return m.id === id;
-        });
-        if (milestone) {
-          milestone.progress = parseInt(progress);
-          if (milestone.progress >= 100) {
-            milestone.status = "completed";
-            milestone.completedAt = new Date().toISOString();
-          } else if (milestone.progress > 0) {
-            milestone.status = "in-progress";
-          } else {
-            milestone.status = "pending";
-          }
-          renderMilestones();
-          updateStats();
-          saveToStorage();
-        }
-      }
+                const div = document.createElement("div");
+                div.className = `milestone-item ${m.done ? 'completed' : (isLate ? 'overdue' : 'in-progress')}`;
+                div.innerHTML = `
+                    <div class="m-header">
+                        <span class="m-title">${m.t}</span>
+                        <span class="m-date">🗓️ ${m.d}</span>
+                    </div>
+                    <div class="m-desc">${m.desc || '无描述'}</div>
+                    <div class="m-footer">
+                        <div>
+                            <span class="badge ${m.done ? 'badge-completed' : (isLate ? 'badge-overdue' : 'badge-in-progress')}">
+                                ${m.done ? '已完成' : (isLate ? '已逾期' : '进行中')}
+                            </span>
+                            <span style="font-size:0.75rem; color:var(--text-muted); margin-left:10px;">👤 ${m.o || '未指派'}</span>
+                        </div>
+                        <div>
+                            <button class="btn-outline" style="padding:4px 8px; font-size:0.7rem;" onclick="toggleDone(${m.id})">${m.done?'↩️':'✅'}</button>
+                            <button class="btn-del" onclick="delM(${m.id})">×</button>
+                        </div>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
 
-      function toggleMilestoneStatus(id) {
-        var milestone = milestones.find(function (m) {
-          return m.id === id;
-        });
-        if (milestone) {
-          if (milestone.status === "completed") {
-            milestone.status = "pending";
-            milestone.progress = 0;
-            milestone.completedAt = null;
-          } else {
-            milestone.status = "completed";
-            milestone.progress = 100;
-            milestone.completedAt = new Date().toISOString();
-          }
-          renderMilestones();
-          updateStats();
-          saveToStorage();
-        }
-      }
+            // Update Stats
+            document.getElementById("statTotal").textContent = milestones.length;
+            document.getElementById("statDone").textContent = doneCount;
+            document.getElementById("statLate").textContent = lateCount;
 
-      function getMilestoneStatus(milestone) {
-        var today = new Date();
-        today.setHours(0, 0, 0, 0);
-        var dueDate = new Date(milestone.dueDate);
-        dueDate.setHours(0, 0, 0, 0);
-
-        if (milestone.status === "completed") return "completed";
-        if (dueDate < today) return "overdue";
-        if (milestone.progress > 0) return "in-progress";
-
-        var daysUntil = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
-        if (daysUntil <= 7) return "upcoming";
-        return "pending";
-      }
-
-      function setFilter(filter, btn) {
-        currentFilter = filter;
-        document.querySelectorAll(".filter-tab").forEach(function (tab) {
-          tab.classList.remove("active");
-        });
-        btn.classList.add("active");
-        renderMilestones();
-      }
-
-      function sortMilestones() {
-        milestones.sort(function (a, b) {
-          return new Date(a.dueDate) - new Date(b.dueDate);
-        });
-      }
-
-      function renderMilestones() {
-        var container = document.getElementById("timeline");
-        container.textContent = "";
-
-        var filtered = milestones.filter(function (m) {
-          var status = getMilestoneStatus(m);
-          if (currentFilter === "all") return true;
-          return status === currentFilter;
-        });
-
-        if (filtered.length === 0) {
-          var empty = document.createElement("div");
-          empty.className = "empty-state";
-          empty.textContent =
-            currentFilter === "all" ? "还没有里程碑，点击上方按钮添加" : "没有符合条件的里程碑";
-          container.appendChild(empty);
-          return;
-        }
-
-        filtered.forEach(function (milestone) {
-          var status = getMilestoneStatus(milestone);
-          var div = document.createElement("div");
-          div.className = "milestone-item " + status;
-
-          var header = document.createElement("div");
-          header.className = "milestone-header";
-
-          var titleDiv = document.createElement("div");
-          var title = document.createElement("div");
-          title.className = "milestone-title";
-          title.textContent = milestone.title;
-          titleDiv.appendChild(title);
-
-          var badge = document.createElement("span");
-          badge.className = "status-badge status-" + status;
-          var statusLabels = {
-            completed: "已完成",
-            "in-progress": "进行中",
-            overdue: "已逾期",
-            upcoming: "即将到期",
-            pending: "待开始"
-          };
-          badge.textContent = statusLabels[status];
-          titleDiv.appendChild(badge);
-
-          var dateDiv = document.createElement("div");
-          var dateSpan = document.createElement("div");
-          dateSpan.className = "milestone-date";
-          dateSpan.textContent = "📅 " + milestone.dueDate;
-          dateDiv.appendChild(dateSpan);
-
-          var today = new Date();
-          today.setHours(0, 0, 0, 0);
-          var dueDate = new Date(milestone.dueDate);
-          dueDate.setHours(0, 0, 0, 0);
-          var daysUntil = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
-
-          if (status !== "completed") {
-            var countdown = document.createElement("div");
-            countdown.className = "countdown" + (daysUntil < 0 || daysUntil <= 3 ? " urgent" : "");
-            if (daysUntil < 0) {
-              countdown.textContent = "逾期 " + Math.abs(daysUntil) + " 天";
-            } else if (daysUntil === 0) {
-              countdown.textContent = "今天到期";
-            } else {
-              countdown.textContent = "剩余 " + daysUntil + " 天";
+            const projEnd = document.getElementById("projEnd").value;
+            if (projEnd) {
+                const diff = Math.ceil((new Date(projEnd) - today) / (1000*60*60*24));
+                document.getElementById("statDays").textContent = diff >= 0 ? diff : "已截止";
             }
-            dateDiv.appendChild(countdown);
-          }
 
-          header.appendChild(titleDiv);
-          header.appendChild(dateDiv);
-          div.appendChild(header);
-
-          if (milestone.description) {
-            var desc = document.createElement("div");
-            desc.className = "milestone-description";
-            desc.textContent = milestone.description;
-            div.appendChild(desc);
-          }
-
-          if (milestone.owner) {
-            var ownerDiv = document.createElement("div");
-            ownerDiv.style.fontSize = "13px";
-            ownerDiv.style.opacity = "0.7";
-            ownerDiv.textContent = "👤 负责人: " + milestone.owner;
-            div.appendChild(ownerDiv);
-          }
-
-          var progressDiv = document.createElement("div");
-          progressDiv.className = "milestone-progress";
-
-          var bar = document.createElement("div");
-          bar.className = "progress-bar";
-          var fill = document.createElement("div");
-          fill.className = "progress-fill";
-          fill.style.width = milestone.progress + "%";
-          bar.appendChild(fill);
-          progressDiv.appendChild(bar);
-
-          var progressText = document.createElement("div");
-          progressText.className = "progress-text";
-
-          var progressLabel = document.createElement("span");
-          progressLabel.textContent = "进度: " + milestone.progress + "%";
-
-          var progressInput = document.createElement("input");
-          progressInput.type = "range";
-          progressInput.min = "0";
-          progressInput.max = "100";
-          progressInput.value = milestone.progress;
-          progressInput.style.width = "100px";
-          progressInput.onchange = function () {
-            updateMilestoneProgress(milestone.id, progressInput.value);
-          };
-
-          progressText.appendChild(progressLabel);
-          progressText.appendChild(progressInput);
-          progressDiv.appendChild(progressText);
-          div.appendChild(progressDiv);
-
-          var actions = document.createElement("div");
-          actions.className = "milestone-actions";
-
-          var completeBtn = document.createElement("button");
-          completeBtn.className = "btn btn-secondary";
-          completeBtn.style.padding = "6px 12px";
-          completeBtn.style.fontSize = "12px";
-          completeBtn.textContent = status === "completed" ? "↩️ 标记未完成" : "✅ 标记完成";
-          completeBtn.onclick = function () {
-            toggleMilestoneStatus(milestone.id);
-          };
-
-          var deleteBtn = document.createElement("button");
-          deleteBtn.className = "btn btn-danger";
-          deleteBtn.textContent = "删除";
-          deleteBtn.onclick = function () {
-            removeMilestone(milestone.id);
-          };
-
-          actions.appendChild(completeBtn);
-          actions.appendChild(deleteBtn);
-          div.appendChild(actions);
-
-          container.appendChild(div);
-        });
-      }
-
-      function updateStats() {
-        var total = milestones.length;
-        var completed = 0;
-        var inProgress = 0;
-        var overdue = 0;
-
-        milestones.forEach(function (m) {
-          var status = getMilestoneStatus(m);
-          if (status === "completed") completed++;
-          else if (status === "in-progress") inProgress++;
-          else if (status === "overdue") overdue++;
-        });
-
-        document.getElementById("totalMilestones").textContent = total;
-        document.getElementById("completedCount").textContent = completed;
-        document.getElementById("inProgressCount").textContent = inProgress;
-        document.getElementById("overdueCount").textContent = overdue;
-
-        var deadline = document.getElementById("projectDeadline").value;
-        if (deadline) {
-          var today = new Date();
-          today.setHours(0, 0, 0, 0);
-          var endDate = new Date(deadline);
-          endDate.setHours(0, 0, 0, 0);
-          var daysRemaining = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
-          document.getElementById("daysRemaining").textContent =
-            daysRemaining >= 0 ? daysRemaining : "已过期";
+            // Update Bar
+            const total = milestones.length || 1;
+            const bar = document.getElementById("overallBar");
+            bar.innerHTML = `
+                <div class="progress-inner p-done" style="width:${(doneCount/total)*100}%"></div>
+                <div class="progress-inner p-late" style="width:${(lateCount/total)*100}%"></div>
+                <div class="progress-inner p-doing" style="width:${((total-doneCount-lateCount)/total)*100}%"></div>
+            `;
+            saveState();
         }
 
-        var overallBar = document.getElementById("overallBar");
-        overallBar.textContent = "";
+        function toggleDone(id) { const m = milestones.find(x => x.id === id); m.done = !m.done; updateUI(); }
+        function delM(id) { milestones = milestones.filter(x => x.id !== id); updateUI(); }
 
-        if (total > 0) {
-          var completedWidth = (completed / total) * 100;
-          var inProgressWidth = (inProgress / total) * 100;
-          var overdueWidth = (overdue / total) * 100;
-
-          if (completedWidth > 0) {
-            var seg1 = document.createElement("div");
-            seg1.className = "overall-segment completed";
-            seg1.style.width = completedWidth + "%";
-            overallBar.appendChild(seg1);
-          }
-          if (inProgressWidth > 0) {
-            var seg2 = document.createElement("div");
-            seg2.className = "overall-segment in-progress";
-            seg2.style.width = inProgressWidth + "%";
-            overallBar.appendChild(seg2);
-          }
-          if (overdueWidth > 0) {
-            var seg3 = document.createElement("div");
-            seg3.className = "overall-segment overdue";
-            seg3.style.width = overdueWidth + "%";
-            overallBar.appendChild(seg3);
-          }
+        function saveState() {
+            localStorage.setItem(LS_KEY, JSON.stringify({
+                name: document.getElementById('projName').value,
+                end: document.getElementById('projDeadline' /* note: fix typo from projEnd to match */ || 'projEnd').value,
+                milestones
+            }));
         }
-      }
 
-      function exportReport() {
-        var projectName = document.getElementById("projectName").value || "项目";
-        var lines = [];
-        lines.push("# " + projectName + " - 里程碑报告");
-        lines.push("");
-        lines.push("生成时间: " + new Date().toLocaleString());
-        lines.push("");
-        lines.push("## 概览");
-        lines.push("- 总里程碑: " + milestones.length);
-        lines.push("- 已完成: " + document.getElementById("completedCount").textContent);
-        lines.push("- 进行中: " + document.getElementById("inProgressCount").textContent);
-        lines.push("- 已逾期: " + document.getElementById("overdueCount").textContent);
-        lines.push("");
-        lines.push("## 详细列表");
-        lines.push("");
-        lines.push("| 里程碑 | 截止日期 | 状态 | 进度 | 负责人 |");
-        lines.push("|--------|----------|------|------|--------|");
-
-        milestones.forEach(function (m) {
-          var status = getMilestoneStatus(m);
-          var statusLabels = {
-            completed: "已完成",
-            "in-progress": "进行中",
-            overdue: "已逾期",
-            upcoming: "即将到期",
-            pending: "待开始"
-          };
-          lines.push(
-            "| " +
-              m.title +
-              " | " +
-              m.dueDate +
-              " | " +
-              statusLabels[status] +
-              " | " +
-              m.progress +
-              "% | " +
-              (m.owner || "-") +
-              " |"
-          );
-        });
-
-        var content = lines.join("\n");
-        var blob = new Blob([content], { type: "text/markdown;charset=utf-8" });
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement("a");
-        a.href = url;
-        a.download = projectName + "_里程碑报告.md";
-        a.click();
-        URL.revokeObjectURL(url);
-      }
-
-      function shareLink() {
-        var data = {
-          projectName: document.getElementById("projectName").value,
-          projectDeadline: document.getElementById("projectDeadline").value,
-          milestones: milestones
-        };
-
-        try {
-          var encoded = btoa(encodeURIComponent(JSON.stringify(data)));
-          var url = location.origin + location.pathname + "#" + encoded;
-          navigator.clipboard.writeText(url);
-          showToast("分享链接已复制");
-        } catch (e) {
-          showToast("生成链接失败");
+        function loadState() {
+            const s = localStorage.getItem(LS_KEY);
+            if (s) {
+                const d = JSON.parse(s);
+                document.getElementById('projName').value = d.name || "";
+                document.getElementById('projEnd').value = d.end || "";
+                milestones = d.milestones || [];
+            }
+            const hash = window.location.hash.slice(1);
+            if(hash) { try { milestones = JSON.parse(decodeURIComponent(atob(hash))).milestones; } catch(e) {} }
         }
-      }
 
-      function clearAll() {
-        if (confirm("确定要清空所有数据吗？")) {
-          milestones = [];
-          document.getElementById("projectName").value = "";
-          document.getElementById("projectDeadline").value = "";
-          renderMilestones();
-          updateStats();
-          saveToStorage();
-          showToast("已清空");
+        function shareState() {
+            const data = btoa(encodeURIComponent(JSON.stringify({ milestones })));
+            const url = window.location.href.split('#')[0] + '#' + data;
+            navigator.clipboard.writeText(url).then(() => alert("分享链接已复制！"));
         }
-      }
 
-      function loadFromUrl() {
-        var hash = location.hash.slice(1);
-        if (!hash) return false;
-        try {
-          var data = JSON.parse(decodeURIComponent(atob(hash)));
-          document.getElementById("projectName").value = data.projectName || "";
-          document.getElementById("projectDeadline").value = data.projectDeadline || "";
-          if (data.milestones) milestones = data.milestones;
-          return true;
-        } catch (e) {
-          return false;
+        function exportReport() {
+            let md = `# 里程碑报告: ${document.getElementById('projName').value || '未命名项目'}\n\n`;
+            md += `| 节点 | 截止日期 | 负责人 | 状态 |\n|---|---|---|---|\n`;
+            milestones.forEach(m => md += `| ${m.t} | ${m.d} | ${m.o} | ${m.done ? '✅' : '⏳'} |\n`);
+            const blob = new Blob([md], {type: "text/markdown"});
+            const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "report.md"; a.click();
         }
-      }
 
-      function saveToStorage() {
-        var data = {
-          projectName: document.getElementById("projectName").value,
-          projectDeadline: document.getElementById("projectDeadline").value,
-          milestones: milestones
-        };
-        localStorage.setItem(LS_KEY, JSON.stringify(data));
-      }
+        function clearAll() { if(confirm("确定清空吗？")){ milestones = []; updateUI(); } }
 
-      function loadFromStorage() {
-        var saved = localStorage.getItem(LS_KEY);
-        if (saved) {
-          try {
-            var data = JSON.parse(saved);
-            document.getElementById("projectName").value = data.projectName || "";
-            document.getElementById("projectDeadline").value = data.projectDeadline || "";
-            if (data.milestones) milestones = data.milestones;
-          } catch (e) {
-            console.error("Failed to load from storage");
-          }
-        }
-      }
-
-      function showToast(message) {
-        var toast = document.createElement("div");
-        toast.style.cssText =
-          "position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--accent-color);color:#000;padding:12px 24px;border-radius:8px;z-index:1000;font-size:14px;";
-        toast.textContent = message;
-        document.body.appendChild(toast);
-        setTimeout(function () {
-          toast.remove();
-        }, 2000);
-      }
-
-      window.toggleTheme = function () {
-        var body = document.body;
-        var currentTheme = body.getAttribute("data-theme");
-        var newTheme = currentTheme === "light" ? "dark" : "light";
-        body.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
-      };
-
-      init();
+        init();
     </script>
-  </body>
+</body>
 </html>

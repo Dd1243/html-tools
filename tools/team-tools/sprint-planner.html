@@ -1,993 +1,501 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>敏捷冲刺规划器 - WebUtils</title>
-    <meta name="description" content="敏捷冲刺规划器：在线实用工具，免费在线使用，无需安装" />
-    <meta name="keywords" content="敏捷冲刺规划器, 工具, 在线, 实用" />
-    <meta property="og:title" content="敏捷冲刺规划器 - WebUtils" />
-    <meta
-      property="og:description"
-      content="敏捷冲刺规划器：在线实用工具，免费在线使用，无需安装"
-    />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/team-tools/sprint-planner" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <link rel="canonical" href="https://essays4u.net/tools/team-tools/sprint-planner" />
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线敏捷冲刺规划器 - 科学估算容量与管理 Sprint Backlog | WebUtils</title>
+    <meta name="description" content="WebUtils 免费在线敏捷冲刺规划工具。帮助 Scrum 团队精确计算团队容量、追踪历史速率、规划用户故事并管理冲刺目标。内置容量预警机制、速度趋势图以及 Markdown 报告导出。提升冲刺计划会议的科学性与成功率。">
+    <meta name="keywords" content="敏捷冲刺规划,Sprint Planning,冲刺容量估算,用户故事规划,Velocity追踪,Scrum工具,项目计划表,冲刺目标管理,敏捷开发工具">
+    <link rel="canonical" href="https://chicogong.github.io/html-tools/tools/team-tools/sprint-planner.html">
 
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
+    <!-- Open Graph -->
+    <meta property="og:title" content="在线敏捷冲刺规划器 - 打造高效的冲刺计划">
+    <meta property="og:description" content="专业的 Scrum 冲刺规划工具，自动计算团队容量，确保任务分配科学合理。">
+    <meta property="og:url" content="https://chicogong.github.io/html-tools/tools/team-tools/sprint-planner.html">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://essays4u.net/social-preview.png">
 
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="敏捷冲刺规划 - 告别过度承诺与交付延期">
+    <meta name="twitter:description" content="可视化容量管理与速率追踪，让每一次冲刺都成竹在胸。">
+    <meta name="twitter:image" content="https://essays4u.net/social-preview.png">
 
-      body {
-        font-family: var(--font-sans);
-        font-size: 16px;
-        line-height: 1.6;
-        background: var(--bg-color);
-        color: var(--text-color);
-        min-height: 100vh;
-        padding: 20px;
-      }
-
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-
-      .header {
-        text-align: center;
-        margin-bottom: 30px;
-        position: relative;
-      }
-
-      .header h1 {
-        font-size: 2rem;
-        margin-bottom: 10px;
-        background: linear-gradient(135deg, var(--accent-color), #a855f7);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      .theme-toggle {
-        position: absolute;
-        right: 0;
-        top: 0;
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        color: var(--text-color);
-        padding: 8px 16px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-      }
-
-      .theme-toggle:hover {
-        background: var(--primary-color);
-      }
-
-      .back-link {
-        position: absolute;
-        left: 0;
-        top: 0;
-        color: var(--accent-color);
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        font-size: 14px;
-      }
-
-      .back-link:hover {
-        text-decoration: underline;
-      }
-
-      .panel {
-        background: var(--bg-card);
-        border-radius: 16px;
-        padding: 25px;
-        border: 1px solid var(--border-subtle);
-        margin-bottom: 20px;
-      }
-
-      .panel-title {
-        font-size: 1rem;
-        margin-bottom: 15px;
-        color: var(--accent-color);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .sprint-info {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px;
-        margin-bottom: 20px;
-      }
-
-      .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-      }
-
-      .form-group label {
-        font-size: 13px;
-        color: var(--text-color);
-        opacity: 0.8;
-      }
-
-      .form-group input,
-      .form-group select {
-        padding: 10px 12px;
-        background: var(--bg-input);
-        border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        color: var(--text-color);
-        font-size: 14px;
-      }
-
-      .form-group input:focus,
-      .form-group select:focus {
-        outline: none;
-        border-color: var(--accent-color);
-      }
-
-      .capacity-section {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 20px;
-      }
-
-      .team-member {
-        display: grid;
-        grid-template-columns: 1fr 80px 80px 40px;
-        gap: 10px;
-        padding: 12px;
-        background: var(--bg-input);
-        border-radius: 8px;
-        margin-bottom: 10px;
-        align-items: center;
-      }
-
-      .team-member input {
-        padding: 8px;
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: 6px;
-        color: var(--text-color);
-        font-size: 13px;
-      }
-
-      .backlog-item {
-        display: grid;
-        grid-template-columns: 1fr 80px 100px 40px;
-        gap: 10px;
-        padding: 12px;
-        background: var(--bg-input);
-        border-radius: 8px;
-        margin-bottom: 10px;
-        align-items: center;
-      }
-
-      .backlog-item input,
-      .backlog-item select {
-        padding: 8px;
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: 6px;
-        color: var(--text-color);
-        font-size: 13px;
-      }
-
-      .backlog-item.in-sprint {
-        border-left: 3px solid var(--success-color);
-      }
-
-      .backlog-item.over-capacity {
-        border-left: 3px solid var(--danger-color);
-      }
-
-      .btn {
-        padding: 10px 20px;
-        border-radius: 8px;
-        border: none;
-        cursor: pointer;
-        font-size: 14px;
-        transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      .btn-primary {
-        background: var(--accent-color);
-        color: #000;
-      }
-
-      .btn-primary:hover {
-        opacity: 0.9;
-      }
-
-      .btn-secondary {
-        background: var(--primary-color);
-        color: var(--text-color);
-      }
-
-      .btn-secondary:hover {
-        background: var(--border-subtle);
-      }
-
-      .btn-danger {
-        background: transparent;
-        color: var(--danger-color);
-        padding: 8px;
-      }
-
-      .btn-danger:hover {
-        background: rgba(248, 113, 113, 0.1);
-      }
-
-      .btn-group {
-        display: flex;
-        gap: 10px;
-        margin-top: 15px;
-        flex-wrap: wrap;
-      }
-
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 15px;
-        margin-top: 20px;
-      }
-
-      .stat-card {
-        background: var(--bg-input);
-        padding: 15px;
-        border-radius: 12px;
-        text-align: center;
-      }
-
-      .stat-value {
-        font-size: 2rem;
-        font-weight: bold;
-        color: var(--accent-color);
-      }
-
-      .stat-label {
-        font-size: 12px;
-        opacity: 0.7;
-        margin-top: 5px;
-      }
-
-      .progress-bar {
-        height: 20px;
-        background: var(--bg-input);
-        border-radius: 10px;
-        overflow: hidden;
-        margin-top: 10px;
-      }
-
-      .progress-fill {
-        height: 100%;
-        background: var(--accent-color);
-        border-radius: 10px;
-        transition: width 0.3s ease;
-      }
-
-      .progress-fill.warning {
-        background: var(--warning-color);
-      }
-
-      .progress-fill.danger {
-        background: var(--danger-color);
-      }
-
-      .velocity-chart {
-        display: flex;
-        align-items: flex-end;
-        gap: 10px;
-        height: 150px;
-        padding: 20px 0;
-      }
-
-      .velocity-bar {
-        flex: 1;
-        background: var(--accent-color);
-        border-radius: 4px 4px 0 0;
-        position: relative;
-        min-height: 20px;
-      }
-
-      .velocity-bar span {
-        position: absolute;
-        bottom: -20px;
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: 11px;
-        opacity: 0.7;
-      }
-
-      .checkbox-wrapper {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .checkbox-wrapper input[type="checkbox"] {
-        width: 18px;
-        height: 18px;
-      }
-
-      @media (max-width: 768px) {
-        .team-member,
-        .backlog-item {
-          grid-template-columns: 1fr;
+    <!-- JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "在线敏捷冲刺规划器",
+        "url": "https://chicogong.github.io/html-tools/tools/team-tools/sprint-planner.html",
+        "description": "辅助 Scrum 团队进行冲刺规划的工具，包含团队容量计算、用户故事分配及速率分析功能。",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "All",
+        "author": {
+            "@type": "Organization",
+            "name": "WebUtils"
         }
-      }
-      .visually-hidden {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        margin: -1px;
-        padding: 0;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0;
-      }
+    }
+    </script>
+
+    <style>
+        :root {
+            --primary-color: #007acc;
+            --primary-hover: #005f99;
+            --bg-color: #ffffff;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --border-color: #dddddd;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            --radius: 6px;
+            --color-success: #27ae60;
+            --color-warning: #f39c12;
+            --color-danger: #e74c3c;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-main: #e0e0e0;
+            --text-muted: #aaaaaa;
+            --border-color: #333333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Segoe UI", system-ui, -apple-system, sans-serif; line-height: 1.6; color: var(--text-main); background: var(--bg-color); }
+        .container { width: 95%; max-width: 1200px; margin: 0 auto; }
+
+        .site-header { background: var(--card-bg); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); position: sticky; top: 0; z-index: 100; }
+        .site-header .container { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
+        .logo a { font-size: 1.4rem; font-weight: 700; color: var(--primary-color); text-decoration: none; }
+        .theme-toggle { background: none; border: none; cursor: pointer; font-size: 1.2rem; }
+
+        main.container { display: flex; flex-direction: column; gap: 25px; padding: 30px 0; }
+        @media (min-width: 992px) { main.container { flex-direction: row; align-items: flex-start; } }
+
+        .tool-section { flex: 3; background: var(--card-bg); padding: 25px; border-radius: var(--radius); box-shadow: var(--shadow); }
+        .tool-header { margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+        .tool-header h1 { font-size: 1.8rem; margin-bottom: 8px; }
+        .tool-header p { color: var(--text-muted); font-size: 0.95rem; }
+
+        .panel { margin-bottom: 30px; }
+        .panel-title { font-size: 1rem; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .panel-title::before { content: ""; width: 4px; height: 16px; background: var(--primary-color); border-radius: 2px; }
+
+        /* Configuration */
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 15px; }
+        .field { display: flex; flex-direction: column; gap: 5px; }
+        .field label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
+        .input-text { width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--bg-color); color: var(--text-main); font-size: 0.9rem; }
+
+        /* Capacity Section */
+        .capacity-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 768px) { .capacity-grid { grid-template-columns: 1fr; } }
+        
+        .member-list, .velocity-list { display: flex; flex-direction: column; gap: 10px; }
+        .member-item, .velocity-item { display: grid; grid-template-columns: 1fr 60px 60px 30px; gap: 8px; align-items: center; background: var(--bg-color); padding: 8px; border-radius: var(--radius); border: 1px solid var(--border-color); }
+        .velocity-item { grid-template-columns: 1fr 80px 30px; }
+
+        /* Backlog Section */
+        .backlog-item { display: grid; grid-template-columns: 30px 1fr 60px 80px 30px; gap: 10px; align-items: center; padding: 12px; border: 1px solid var(--border-color); border-radius: var(--radius); margin-bottom: 10px; transition: 0.2s; }
+        .backlog-item.active { border-left: 4px solid var(--primary-color); background: rgba(0, 122, 204, 0.02); }
+        .backlog-item select { padding: 4px; border-radius: 4px; border: 1px solid var(--border-color); font-size: 0.8rem; }
+
+        /* Stats Dashboard */
+        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; margin-top: 20px; }
+        .dash-card { text-align: center; padding: 15px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: var(--radius); }
+        .dash-val { font-size: 1.6rem; font-weight: 800; color: var(--primary-color); display: block; }
+        .dash-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-top: 5px; }
+
+        .progress-container { margin: 20px 0; }
+        .progress-outer { height: 12px; background: #eee; border-radius: 6px; overflow: hidden; position: relative; }
+        .progress-inner { height: 100%; background: var(--primary-color); transition: 0.4s; }
+        .progress-inner.over { background: var(--color-danger); }
+        .progress-text { font-size: 0.75rem; text-align: center; margin-top: 8px; font-weight: 600; }
+
+        /* Chart */
+        .chart-container { height: 120px; display: flex; align-items: flex-end; gap: 8px; padding: 10px 0; border-bottom: 1px solid var(--border-color); margin-top: 15px; }
+        .chart-bar { flex: 1; background: var(--primary-color); border-radius: 3px 3px 0 0; position: relative; min-height: 5px; }
+        .chart-bar::after { content: attr(data-label); position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 10px; color: var(--text-muted); }
+
+        /* Buttons */
+        .action-bar { display: flex; gap: 10px; margin-top: 30px; flex-wrap: wrap; }
+        .btn { padding: 10px 20px; border-radius: var(--radius); border: none; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .btn-primary { background: var(--primary-color); color: #fff; }
+        .btn-outline { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); }
+        .btn-sm { padding: 4px 8px; font-size: 0.8rem; }
+        .btn-del { color: var(--color-danger); background: none; font-size: 1.2rem; }
+
+        /* Sidebar */
+        .sidebar-section { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+        .article-card { background: var(--card-bg); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); }
+        .article-card h2 { font-size: 1.1rem; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .article-card h2::before { content: ""; display: inline-block; width: 4px; height: 18px; background: var(--primary-color); border-radius: 2px; }
+        .article-card p, .article-card li { font-size: 0.85rem; line-height: 1.6; margin-bottom: 10px; }
+
+        .ad-placeholder { background: #f0f2f5; border: 1px dashed #ccc; color: #999; text-align: center; padding: 20px; border-radius: var(--radius); font-size: 0.8rem; display: flex; align-items: center; justify-content: center; min-height: 100px; }
+
+        .site-footer { background: #2c3e50; color: #bdc3c7; padding: 40px 0 20px; margin-top: 50px; text-align: center; }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <a href="../../index.html" class="back-link">← 返回工具列表</a>
-        <h1>敏捷冲刺规划器</h1>
-        <p>规划和追踪敏捷冲刺</p>
-        <button class="theme-toggle" onclick="toggleTheme()">🌓 切换主题</button>
-      </div>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="logo"><a href="../../index.html">WebUtils</a></div>
+            <button class="theme-toggle" id="themeToggle">🌓</button>
+        </div>
+    </header>
 
-      <div class="panel">
-        <div class="panel-title">🏃 冲刺信息</div>
-        <div class="sprint-info">
-          <div class="form-group">
-            <label>冲刺名称</label>
-            <input type="text" id="sprintName" placeholder="例如：Sprint 23" />
-          </div>
-          <div class="form-group">
-            <label>开始日期</label>
-            <input type="date" id="startDate" />
-          </div>
-          <div class="form-group">
-            <label>结束日期</label>
-            <input type="date" id="endDate" />
-          </div>
-          <div class="form-group">
-            <label>冲刺目标</label>
-            <input type="text" id="sprintGoal" placeholder="本冲刺的主要目标" />
-          </div>
-        </div>
-      </div>
+    <main class="container">
+        <div class="tool-section">
+            <div class="ad-placeholder" style="margin-bottom: 20px;">广告位 - 顶部横幅 (AdSense Placeholder)</div>
 
-      <div class="capacity-section">
-        <div class="panel">
-          <div class="panel-title">👥 团队容量</div>
-          <div id="teamMembers"></div>
-          <div class="btn-group">
-            <button class="btn btn-secondary" onclick="addTeamMember()">+ 添加成员</button>
-          </div>
+            <div class="tool-header">
+                <h1>敏捷冲刺规划器</h1>
+                <p>科学规划冲刺内容，动态管理团队容量，确保每一个 Sprint 目标都清晰可行。</p>
+            </div>
+
+            <!-- Sprint Info -->
+            <div class="panel">
+                <div class="panel-title">🏃 冲刺概览</div>
+                <div class="form-row">
+                    <div class="field"><label>冲刺名称</label><input type="text" id="sprintName" class="input-text" placeholder="例如：Sprint 23"></div>
+                    <div class="field"><label>开始日期</label><input type="date" id="startDate" class="input-text"></div>
+                    <div class="field"><label>结束日期</label><input type="date" id="endDate" class="input-text"></div>
+                </div>
+                <div class="field"><label>冲刺目标</label><input type="text" id="sprintGoal" class="input-text" placeholder="本冲刺的主要交付目标是什么？"></div>
+            </div>
+
+            <!-- Capacity & Velocity -->
+            <div class="capacity-grid">
+                <div class="panel">
+                    <div class="panel-title">👥 团队容量 (Capacity)</div>
+                    <div id="memberList" class="member-list"></div>
+                    <button class="btn btn-outline btn-sm" onclick="addMember()" style="margin-top:10px; width:100%">+ 添加成员</button>
+                    <p style="font-size:0.7rem; color:var(--text-muted); margin-top:10px;">容量 = 个人点数 × 可用百分比</p>
+                </div>
+                <div class="panel">
+                    <div class="panel-title">📊 速率追踪 (Velocity)</div>
+                    <div id="velocityList" class="velocity-list"></div>
+                    <button class="btn btn-outline btn-sm" onclick="addVelocity()" style="margin-top:10px; width:100%">+ 添加历史记录</button>
+                    <div id="velocityChart" class="chart-container"></div>
+                </div>
+            </div>
+
+            <!-- Backlog -->
+            <div class="panel">
+                <div class="panel-title">📋 冲刺待办列表 (Sprint Backlog)</div>
+                <div id="backlogList"></div>
+                <button class="btn btn-outline" onclick="addStory()" style="margin-top:10px; width:100%">+ 添加用户故事</button>
+            </div>
+
+            <!-- Dashboard -->
+            <div class="panel">
+                <div class="panel-title">📈 计划概览</div>
+                <div class="progress-container">
+                    <div class="progress-outer"><div id="capacityBar" class="progress-inner"></div></div>
+                    <div id="capacityText" class="progress-text">容量使用率: 0%</div>
+                </div>
+                <div class="dashboard">
+                    <div class="dash-card"><span id="statCapacity" class="dash-val">0</span><span class="dash-label">总容量</span></div>
+                    <div class="dash-card"><span id="statPlanned" class="dash-val">0</span><span class="dash-label">已规划</span></div>
+                    <div class="dash-card"><span id="statVelocity" class="dash-val">0</span><span class="dash-label">平均速率</span></div>
+                    <div class="dash-card"><span id="statDays" class="dash-val">0</span><span class="dash-label">持续天数</span></div>
+                </div>
+            </div>
+
+            <div class="action-bar">
+                <button class="btn btn-primary" onclick="exportPlan()">导出 Markdown 计划</button>
+                <button class="btn btn-outline" onclick="sharePlan()">获取分享链接</button>
+                <button class="btn btn-outline" style="color:var(--color-danger)" onclick="clearAll()">清空数据</button>
+            </div>
+
+            <!-- SEO Content -->
+            <section style="margin-top: 40px; border-top: 1px solid var(--border-color); padding-top: 30px">
+                <h2 style="font-size: 1.5rem; margin-bottom: 20px">敏捷冲刺规划：如何避免团队“过度承诺”？</h2>
+                <article style="font-size: 0.95rem; color: var(--text-main); line-height: 1.8">
+                    <p>冲刺计划（Sprint Planning）不是简单的“把任务塞进两周”。它是一场关于<strong>平衡</strong>的艺术：在产品待办事项的优先级与团队的实际交付能力（Capacity）之间寻找交点。</p>
+                    
+                    <h3 style="margin: 20px 0 10px;">1. 容量 (Capacity) 与 速率 (Velocity) 的区别</h3>
+                    <p>这是新手 Scrum Master 最容易混淆的概念：</p>
+                    <ul>
+                        <li><strong>速率 (Velocity):</strong> 是团队过去几个冲刺平均交付的点数。它代表了团队的“平均步频”。</li>
+                        <li><strong>容量 (Capacity):</strong> 是团队在“当前”冲刺中实际可用的资源。它受成员请假、公共假期、会议安排等因素影响。</li>
+                    </ul>
+                    <p><strong>黄金法则：</strong> 在规划时，如果容量显著低于平均速率（例如有人请长假），你必须按比例削减冲刺内容。</p>
+
+                    <div class="ad-placeholder" style="margin: 25px 0">广告位 - 文章中部内嵌 (AdSense Placeholder)</div>
+
+                    <h3 style="margin: 20px 0 10px;">2. 如何设定有效的冲刺目标？</h3>
+                    <p>冲刺目标是冲刺的心脏。没有目标的冲刺只是一堆零散任务的堆砌。好的冲刺目标应能回答：<strong>“如果我们完成了所有任务，但没有达成这个目标，这次冲刺算成功吗？”</strong>。如果答案是否定的，那说明目标还不够明确。</p>
+
+                    <h3 style="margin: 20px 0 10px;">3. 冲刺规划会议的检查清单</h3>
+                    <ul>
+                        <li><strong>回顾速率：</strong> 过去 3 个冲刺我们平均完成了多少点？</li>
+                        <li><strong>计算容量：</strong> 谁这周要请假？有公共假期吗？</li>
+                        <li><strong>确定目标：</strong> 这个 Sprint 的核心价值是什么？</li>
+                        <li><strong>梳理 Backlog：</strong> 优先级最高的 5-10 个故事准备好了吗？是否有清晰的验收标准？</li>
+                        <li><strong>承诺交付：</strong> 团队是否对选定的任务达成一致并充满信心？</li>
+                    </ul>
+
+                    <h3 style="margin: 20px 0 10px;">4. FAQ：常见疑问</h3>
+                    <div style="background: var(--bg-color); padding: 15px; border-left: 4px solid var(--primary-color); margin-bottom: 15px;">
+                        <strong>问：冲刺中途发现规划太多了怎么办？</strong><br>
+                        答：立即沟通。由 PO 决定移除优先级较低的任务，而不是让团队通过加班来硬扛。
+                    </div>
+                </article>
+            </section>
         </div>
 
-        <div class="panel">
-          <div class="panel-title">📊 历史速率</div>
-          <div id="velocityInputs"></div>
-          <div class="btn-group">
-            <button class="btn btn-secondary" onclick="addVelocityRecord()">+ 添加记录</button>
-          </div>
-          <div class="velocity-chart" id="velocityChart"></div>
-        </div>
-      </div>
+        <!-- Sidebar -->
+        <aside class="sidebar-section">
+            <div class="article-card">
+                <h2>💡 规划小建议</h2>
+                <ul>
+                    <li><strong>留白：</strong> 永远不要把容量填到 100%。预留 10-20% 的“缓冲”来应对意外情况。</li>
+                    <li><strong>拆解：</strong> 如果一个用户故事超过 8 点，建议将其拆解为更小的任务。</li>
+                    <li><strong>共识：</strong> 规划不是分配，是团队的共同承诺。</li>
+                </ul>
+            </div>
+            <div class="ad-placeholder" style="min-height: 250px;">广告位 - 侧边栏 (AdSense Placeholder)</div>
+            <div class="article-card">
+                <h2>相关管理工具</h2>
+                <ul>
+                    <li><a href="retrospective.html">回顾会议模板</a></li>
+                    <li><a href="task-breakdown.html">任务拆解工具</a></li>
+                    <li><a href="raci-chart.html">RACI 职责矩阵</a></li>
+                </ul>
+            </div>
+        </aside>
+    </main>
 
-      <div class="panel">
-        <div class="panel-title">📋 产品待办列表</div>
-        <div id="backlogItems"></div>
-        <div class="btn-group">
-          <button class="btn btn-secondary" onclick="addBacklogItem()">+ 添加用户故事</button>
+    <footer class="site-footer">
+        <div class="container">
+            <p style="margin-bottom: 15px;">WebUtils - 让敏捷开发变得简单、科学、高效</p>
+            <div class="footer-bottom">&copy; 2026 WebUtils - 专业的 Scrum 协作平台.</div>
         </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-title">📈 冲刺概览</div>
-        <div class="progress-bar">
-          <div class="progress-fill" id="capacityProgress" style="width: 0%"></div>
-        </div>
-        <p style="text-align: center; margin-top: 10px; font-size: 13px">
-          容量使用率:
-          <span id="capacityPercent">0</span>
-          %
-        </p>
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-value" id="totalCapacity">0</div>
-            <div class="stat-label">总容量 (点数)</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="plannedPoints">0</div>
-            <div class="stat-label">计划点数</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="avgVelocity">0</div>
-            <div class="stat-label">平均速率</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="sprintDays">0</div>
-            <div class="stat-label">冲刺天数</div>
-          </div>
-        </div>
-        <div class="btn-group" style="justify-content: center; margin-top: 20px">
-          <button class="btn btn-primary" onclick="exportPlan()">📋 导出计划</button>
-          <button class="btn btn-secondary" onclick="sharePlan()">🔗 分享</button>
-          <button class="btn btn-secondary" onclick="clearAll()">🗑️ 清空</button>
-        </div>
-      </div>
-    </div>
+    </footer>
 
     <script>
-      const LS_KEY = "sprint-planner-data";
+        const LS_KEY = "sprint-planner-v2-data";
+        let members = [];
+        let velocities = [];
+        let stories = [];
 
-      let teamMembers = [];
-      let backlogItems = [];
-      let velocityRecords = [];
+        function init() {
+            const savedTheme = localStorage.getItem("theme") || "light";
+            document.body.setAttribute("data-theme", savedTheme);
+            document.getElementById('themeToggle').onclick = () => {
+                const n = document.body.getAttribute("data-theme") === "light" ? "dark" : "light";
+                document.body.setAttribute("data-theme", n);
+                localStorage.setItem("theme", n);
+            };
 
-      function init() {
-        const savedTheme = localStorage.getItem("theme") || "dark";
-        if (savedTheme === "light") {
-          document.body.setAttribute("data-theme", "light");
+            const today = new Date();
+            document.getElementById('startDate').value = today.toISOString().split('T')[0];
+            const end = new Date(today); end.setDate(end.getDate() + 14);
+            document.getElementById('endDate').value = end.toISOString().split('T')[0];
+
+            loadState();
+            if(members.length === 0) addMember("团队核心", 20, 100);
+            if(velocities.length === 0) [18, 22, 20].forEach(v => addVelocity(v));
+            if(stories.length === 0) addStory("用户注册与登录模块", 5, "high");
+
+            renderAll();
+            ['sprintName', 'startDate', 'endDate', 'sprintGoal'].forEach(id => {
+                document.getElementById(id).oninput = () => { updateStats(); saveState(); };
+            });
         }
 
-        const today = new Date();
-        document.getElementById("startDate").value = today.toISOString().split("T")[0];
-        const endDate = new Date(today);
-        endDate.setDate(endDate.getDate() + 14);
-        document.getElementById("endDate").value = endDate.toISOString().split("T")[0];
-
-        loadFromStorage();
-        loadFromUrl();
-
-        if (teamMembers.length === 0) {
-          addTeamMember("成员1", 10, 80);
-        }
-        if (backlogItems.length === 0) {
-          addBacklogItem();
-        }
-        if (velocityRecords.length === 0) {
-          addVelocityRecord();
-        }
-
-        document.querySelectorAll("input").forEach((el) => {
-          el.addEventListener("input", () => {
+        function addMember(name = "", cap = 10, avail = 100) {
+            members.push({ id: Date.now(), name, cap, avail });
+            renderMembers();
             updateStats();
-            saveToStorage();
-          });
-        });
-      }
-
-      function addTeamMember(name = "", capacity = 10, availability = 100) {
-        teamMembers.push({
-          id: Date.now(),
-          name: name,
-          capacity: capacity,
-          availability: availability
-        });
-        renderTeamMembers();
-        updateStats();
-        saveToStorage();
-      }
-
-      function removeTeamMember(id) {
-        teamMembers = teamMembers.filter((m) => m.id !== id);
-        renderTeamMembers();
-        updateStats();
-        saveToStorage();
-      }
-
-      function renderTeamMembers() {
-        const container = document.getElementById("teamMembers");
-        container.textContent = "";
-
-        teamMembers.forEach((member) => {
-          const div = document.createElement("div");
-          div.className = "team-member";
-
-          const nameInput = document.createElement("input");
-          nameInput.type = "text";
-          nameInput.placeholder = "成员姓名";
-          nameInput.value = member.name;
-          nameInput.addEventListener("input", (e) => {
-            member.name = e.target.value;
-            saveToStorage();
-          });
-
-          const capacityInput = document.createElement("input");
-          capacityInput.type = "number";
-          capacityInput.min = "0";
-          capacityInput.placeholder = "点数";
-          capacityInput.value = member.capacity;
-          capacityInput.addEventListener("input", (e) => {
-            member.capacity = parseInt(e.target.value) || 0;
-            updateStats();
-            saveToStorage();
-          });
-
-          const availInput = document.createElement("input");
-          availInput.type = "number";
-          availInput.min = "0";
-          availInput.max = "100";
-          availInput.placeholder = "%";
-          availInput.value = member.availability;
-          availInput.addEventListener("input", (e) => {
-            member.availability = parseInt(e.target.value) || 0;
-            updateStats();
-            saveToStorage();
-          });
-
-          const deleteBtn = document.createElement("button");
-          deleteBtn.className = "btn btn-danger";
-          deleteBtn.textContent = "×";
-          deleteBtn.addEventListener("click", () => removeTeamMember(member.id));
-
-          div.appendChild(nameInput);
-          div.appendChild(capacityInput);
-          div.appendChild(availInput);
-          div.appendChild(deleteBtn);
-
-          container.appendChild(div);
-        });
-      }
-
-      function addVelocityRecord(value = 0) {
-        velocityRecords.push({
-          id: Date.now(),
-          value: value
-        });
-        renderVelocityRecords();
-        updateStats();
-        saveToStorage();
-      }
-
-      function removeVelocityRecord(id) {
-        velocityRecords = velocityRecords.filter((r) => r.id !== id);
-        renderVelocityRecords();
-        updateStats();
-        saveToStorage();
-      }
-
-      function renderVelocityRecords() {
-        const container = document.getElementById("velocityInputs");
-        container.textContent = "";
-
-        velocityRecords.forEach((record, index) => {
-          const div = document.createElement("div");
-          div.style.cssText = "display:flex;gap:10px;margin-bottom:8px;align-items:center;";
-
-          const label = document.createElement("span");
-          label.style.cssText = "font-size:12px;opacity:0.7;width:70px;";
-          label.textContent = "Sprint " + (index + 1);
-
-          const input = document.createElement("input");
-          input.type = "number";
-          input.min = "0";
-          input.style.cssText =
-            "flex:1;padding:8px;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:6px;color:var(--text-color);";
-          input.value = record.value;
-          input.addEventListener("input", (e) => {
-            record.value = parseInt(e.target.value) || 0;
-            updateStats();
-            renderVelocityChart();
-            saveToStorage();
-          });
-
-          const deleteBtn = document.createElement("button");
-          deleteBtn.className = "btn btn-danger";
-          deleteBtn.textContent = "×";
-          deleteBtn.addEventListener("click", () => removeVelocityRecord(record.id));
-
-          div.appendChild(label);
-          div.appendChild(input);
-          div.appendChild(deleteBtn);
-
-          container.appendChild(div);
-        });
-
-        renderVelocityChart();
-      }
-
-      function renderVelocityChart() {
-        const container = document.getElementById("velocityChart");
-        container.textContent = "";
-
-        if (velocityRecords.length === 0) return;
-
-        const maxValue = Math.max(...velocityRecords.map((r) => r.value), 1);
-
-        velocityRecords.forEach((record, index) => {
-          const bar = document.createElement("div");
-          bar.className = "velocity-bar";
-          const height = (record.value / maxValue) * 100;
-          bar.style.height = height + "%";
-
-          const label = document.createElement("span");
-          label.textContent = "S" + (index + 1);
-          bar.appendChild(label);
-
-          container.appendChild(bar);
-        });
-      }
-
-      function addBacklogItem(title = "", points = 0, priority = "medium") {
-        backlogItems.push({
-          id: Date.now(),
-          title: title,
-          points: points,
-          priority: priority,
-          inSprint: false
-        });
-        renderBacklogItems();
-        updateStats();
-        saveToStorage();
-      }
-
-      function removeBacklogItem(id) {
-        backlogItems = backlogItems.filter((item) => item.id !== id);
-        renderBacklogItems();
-        updateStats();
-        saveToStorage();
-      }
-
-      function renderBacklogItems() {
-        const container = document.getElementById("backlogItems");
-        container.textContent = "";
-
-        backlogItems.forEach((item) => {
-          const div = document.createElement("div");
-          div.className = "backlog-item";
-          if (item.inSprint) div.classList.add("in-sprint");
-
-          const checkWrapper = document.createElement("div");
-          checkWrapper.className = "checkbox-wrapper";
-
-          const checkbox = document.createElement("input");
-          checkbox.type = "checkbox";
-          checkbox.checked = item.inSprint;
-          checkbox.addEventListener("change", (e) => {
-            item.inSprint = e.target.checked;
-            renderBacklogItems();
-            updateStats();
-            saveToStorage();
-          });
-
-          const titleInput = document.createElement("input");
-          titleInput.type = "text";
-          titleInput.placeholder = "用户故事标题";
-          titleInput.value = item.title;
-          titleInput.style.flex = "1";
-          titleInput.addEventListener("input", (e) => {
-            item.title = e.target.value;
-            saveToStorage();
-          });
-
-          checkWrapper.appendChild(checkbox);
-          checkWrapper.appendChild(titleInput);
-
-          const pointsInput = document.createElement("input");
-          pointsInput.type = "number";
-          pointsInput.min = "0";
-          pointsInput.placeholder = "点数";
-          pointsInput.value = item.points;
-          pointsInput.addEventListener("input", (e) => {
-            item.points = parseInt(e.target.value) || 0;
-            updateStats();
-            saveToStorage();
-          });
-
-          const prioritySelect = document.createElement("select");
-          ["high", "medium", "low"].forEach((p) => {
-            const option = document.createElement("option");
-            option.value = p;
-            option.textContent = p === "high" ? "高" : p === "medium" ? "中" : "低";
-            if (p === item.priority) option.selected = true;
-            prioritySelect.appendChild(option);
-          });
-          prioritySelect.addEventListener("change", (e) => {
-            item.priority = e.target.value;
-            saveToStorage();
-          });
-
-          const deleteBtn = document.createElement("button");
-          deleteBtn.className = "btn btn-danger";
-          deleteBtn.textContent = "×";
-          deleteBtn.addEventListener("click", () => removeBacklogItem(item.id));
-
-          div.appendChild(checkWrapper);
-          div.appendChild(pointsInput);
-          div.appendChild(prioritySelect);
-          div.appendChild(deleteBtn);
-
-          container.appendChild(div);
-        });
-      }
-
-      function updateStats() {
-        const totalCapacity = teamMembers.reduce((sum, m) => {
-          return sum + (m.capacity * m.availability) / 100;
-        }, 0);
-
-        const plannedPoints = backlogItems
-          .filter((item) => item.inSprint)
-          .reduce((sum, item) => sum + item.points, 0);
-
-        const avgVelocity =
-          velocityRecords.length > 0
-            ? velocityRecords.reduce((sum, r) => sum + r.value, 0) / velocityRecords.length
-            : 0;
-
-        const startDate = new Date(document.getElementById("startDate").value);
-        const endDate = new Date(document.getElementById("endDate").value);
-        const sprintDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
-
-        document.getElementById("totalCapacity").textContent = Math.round(totalCapacity);
-        document.getElementById("plannedPoints").textContent = plannedPoints;
-        document.getElementById("avgVelocity").textContent = Math.round(avgVelocity);
-        document.getElementById("sprintDays").textContent = sprintDays > 0 ? sprintDays : 0;
-
-        const capacityPercent = totalCapacity > 0 ? (plannedPoints / totalCapacity) * 100 : 0;
-        document.getElementById("capacityPercent").textContent = Math.round(capacityPercent);
-
-        const progressBar = document.getElementById("capacityProgress");
-        progressBar.style.width = Math.min(capacityPercent, 100) + "%";
-        progressBar.classList.remove("warning", "danger");
-        if (capacityPercent > 100) {
-          progressBar.classList.add("danger");
-        } else if (capacityPercent > 80) {
-          progressBar.classList.add("warning");
+            saveState();
         }
-      }
 
-      function exportPlan() {
-        const sprintName = document.getElementById("sprintName").value || "Sprint";
-        const startDate = document.getElementById("startDate").value;
-        const endDate = document.getElementById("endDate").value;
-        const sprintGoal = document.getElementById("sprintGoal").value;
-
-        let text = "═══════════════════════════════════════\n";
-        text += "        " + sprintName + " 规划\n";
-        text += "═══════════════════════════════════════\n\n";
-
-        text += "📅 周期：" + startDate + " ~ " + endDate + "\n";
-        if (sprintGoal) text += "🎯 目标：" + sprintGoal + "\n";
-        text += "\n";
-
-        text += "───────────────────────────────────────\n";
-        text += "             团队容量\n";
-        text += "───────────────────────────────────────\n";
-        teamMembers.forEach((m) => {
-          const effectiveCapacity = Math.round((m.capacity * m.availability) / 100);
-          text +=
-            "• " +
-            (m.name || "成员") +
-            ": " +
-            effectiveCapacity +
-            " 点 (" +
-            m.availability +
-            "% 可用)\n";
-        });
-        text += "\n";
-
-        text += "───────────────────────────────────────\n";
-        text += "             冲刺内容\n";
-        text += "───────────────────────────────────────\n";
-        const sprintItems = backlogItems.filter((item) => item.inSprint);
-        if (sprintItems.length > 0) {
-          sprintItems.forEach((item, i) => {
-            const priorityLabel =
-              item.priority === "high" ? "[高]" : item.priority === "medium" ? "[中]" : "[低]";
-            text +=
-              i +
-              1 +
-              ". " +
-              (item.title || "用户故事") +
-              " - " +
-              item.points +
-              "点 " +
-              priorityLabel +
-              "\n";
-          });
-        } else {
-          text += "(无计划项目)\n";
+        function renderMembers() {
+            const list = document.getElementById("memberList");
+            list.innerHTML = "";
+            members.forEach(m => {
+                const div = document.createElement("div");
+                div.className = "member-item";
+                div.innerHTML = `
+                    <input type="text" class="input-text" value="${m.name}" placeholder="姓名" oninput="updateMember(${m.id}, 'name', this.value)">
+                    <input type="number" class="input-text" value="${m.cap}" placeholder="点数" oninput="updateMember(${m.id}, 'cap', this.value)">
+                    <input type="number" class="input-text" value="${m.avail}" placeholder="%" oninput="updateMember(${m.id}, 'avail', this.value)">
+                    <button class="btn-del" onclick="delMember(${m.id})">×</button>
+                `;
+                list.appendChild(div);
+            });
         }
-        text += "\n";
 
-        const totalCapacity = teamMembers.reduce(
-          (sum, m) => sum + (m.capacity * m.availability) / 100,
-          0
-        );
-        const plannedPoints = sprintItems.reduce((sum, item) => sum + item.points, 0);
-
-        text += "───────────────────────────────────────\n";
-        text += "总容量: " + Math.round(totalCapacity) + " 点\n";
-        text += "计划点数: " + plannedPoints + " 点\n";
-        text +=
-          "使用率: " +
-          Math.round(totalCapacity > 0 ? (plannedPoints / totalCapacity) * 100 : 0) +
-          "%\n";
-        text += "═══════════════════════════════════════\n";
-
-        navigator.clipboard.writeText(text).then(() => {
-          showToast("已复制到剪贴板");
-        });
-      }
-
-      function sharePlan() {
-        const data = {
-          sprintName: document.getElementById("sprintName").value,
-          startDate: document.getElementById("startDate").value,
-          endDate: document.getElementById("endDate").value,
-          sprintGoal: document.getElementById("sprintGoal").value,
-          teamMembers: teamMembers,
-          backlogItems: backlogItems,
-          velocityRecords: velocityRecords
-        };
-        const encoded = btoa(encodeURIComponent(JSON.stringify(data)));
-        const url = window.location.href.split("#")[0] + "#" + encoded;
-        navigator.clipboard.writeText(url).then(() => {
-          showToast("分享链接已复制");
-        });
-      }
-
-      function loadFromUrl() {
-        const hash = window.location.hash.slice(1);
-        if (hash) {
-          try {
-            const data = JSON.parse(decodeURIComponent(atob(hash)));
-            document.getElementById("sprintName").value = data.sprintName || "";
-            document.getElementById("startDate").value = data.startDate || "";
-            document.getElementById("endDate").value = data.endDate || "";
-            document.getElementById("sprintGoal").value = data.sprintGoal || "";
-            if (data.teamMembers) teamMembers = data.teamMembers;
-            if (data.backlogItems) backlogItems = data.backlogItems;
-            if (data.velocityRecords) velocityRecords = data.velocityRecords;
-            renderTeamMembers();
-            renderBacklogItems();
-            renderVelocityRecords();
+        function updateMember(id, field, val) {
+            const m = members.find(x => x.id === id);
+            m[field] = field === 'name' ? val : parseInt(val) || 0;
             updateStats();
-          } catch (e) {
-            console.error("Failed to load from URL:", e);
-          }
+            saveState();
         }
-      }
 
-      function saveToStorage() {
-        const data = {
-          sprintName: document.getElementById("sprintName").value,
-          startDate: document.getElementById("startDate").value,
-          endDate: document.getElementById("endDate").value,
-          sprintGoal: document.getElementById("sprintGoal").value,
-          teamMembers: teamMembers,
-          backlogItems: backlogItems,
-          velocityRecords: velocityRecords
-        };
-        localStorage.setItem(LS_KEY, JSON.stringify(data));
-      }
+        function delMember(id) { members = members.filter(x => x.id !== id); renderMembers(); updateStats(); saveState(); }
 
-      function loadFromStorage() {
-        const saved = localStorage.getItem(LS_KEY);
-        if (saved) {
-          try {
-            const data = JSON.parse(saved);
-            document.getElementById("sprintName").value = data.sprintName || "";
-            if (data.startDate) document.getElementById("startDate").value = data.startDate;
-            if (data.endDate) document.getElementById("endDate").value = data.endDate;
-            document.getElementById("sprintGoal").value = data.sprintGoal || "";
-            if (data.teamMembers) teamMembers = data.teamMembers;
-            if (data.backlogItems) backlogItems = data.backlogItems;
-            if (data.velocityRecords) velocityRecords = data.velocityRecords;
-            renderTeamMembers();
-            renderBacklogItems();
-            renderVelocityRecords();
+        function addVelocity(val = 0) {
+            velocities.push({ id: Date.now(), val });
+            renderVelocities();
             updateStats();
-          } catch (e) {
-            console.error("Failed to load from storage:", e);
-          }
+            saveState();
         }
-      }
 
-      function clearAll() {
-        if (confirm("确定要清空所有内容吗？")) {
-          document.getElementById("sprintName").value = "";
-          document.getElementById("sprintGoal").value = "";
-          teamMembers = [];
-          backlogItems = [];
-          velocityRecords = [];
-          addTeamMember("成员1", 10, 80);
-          addBacklogItem();
-          addVelocityRecord();
-          localStorage.removeItem(LS_KEY);
-          window.location.hash = "";
+        function renderVelocities() {
+            const list = document.getElementById("velocityList");
+            list.innerHTML = "";
+            velocities.forEach((v, idx) => {
+                const div = document.createElement("div");
+                div.className = "velocity-item";
+                div.innerHTML = `
+                    <span style="font-size:0.75rem; color:var(--text-muted)">Sprint ${idx+1}</span>
+                    <input type="number" class="input-text" value="${v.val}" oninput="updateVelocity(${v.id}, this.value)">
+                    <button class="btn-del" onclick="delVelocity(${v.id})">×</button>
+                `;
+                list.appendChild(div);
+            });
+            renderChart();
         }
-      }
 
-      function showToast(message) {
-        const toast = document.createElement("div");
-        toast.style.cssText =
-          "position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--accent-color);color:#000;padding:12px 24px;border-radius:8px;z-index:1000;font-size:14px;";
-        toast.textContent = message;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 2000);
-      }
+        function updateVelocity(id, val) {
+            velocities.find(x => x.id === id).val = parseInt(val) || 0;
+            updateStats();
+            renderChart();
+            saveState();
+        }
 
-      window.toggleTheme = function () {
-        const body = document.body;
-        const currentTheme = body.getAttribute("data-theme");
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-        body.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
-      };
+        function delVelocity(id) { velocities = velocities.filter(x => x.id !== id); renderVelocities(); updateStats(); saveState(); }
 
-      init();
+        function renderChart() {
+            const chart = document.getElementById("velocityChart");
+            chart.innerHTML = "";
+            if(velocities.length === 0) return;
+            const max = Math.max(...velocities.map(v => v.val), 1);
+            velocities.forEach((v, idx) => {
+                const bar = document.createElement("div");
+                bar.className = "chart-bar";
+                bar.style.height = `${(v.val/max)*100}%`;
+                bar.setAttribute("data-label", `S${idx+1}`);
+                chart.appendChild(bar);
+            });
+        }
+
+        function addStory(txt = "", pts = 0, pri = "medium") {
+            stories.push({ id: Date.now(), txt, pts, pri, active: true });
+            renderStories();
+            updateStats();
+            saveState();
+        }
+
+        function renderStories() {
+            const list = document.getElementById("backlogList");
+            list.innerHTML = "";
+            stories.forEach(s => {
+                const div = document.createElement("div");
+                div.className = `backlog-item ${s.active ? 'active' : ''}`;
+                div.innerHTML = `
+                    <input type="checkbox" ${s.active ? 'checked' : ''} onchange="updateStory(${s.id}, 'active', this.checked)">
+                    <input type="text" class="input-text" value="${s.txt}" placeholder="用户故事..." oninput="updateStory(${s.id}, 'txt', this.value)">
+                    <input type="number" class="input-text" value="${s.pts}" placeholder="点数" oninput="updateStory(${s.id}, 'pts', this.value)">
+                    <select onchange="updateStory(${s.id}, 'pri', this.value)">
+                        <option value="high" ${s.pri==='high'?'selected':''}>高优先级</option>
+                        <option value="medium" ${s.pri==='medium'?'selected':''}>中优先级</option>
+                        <option value="low" ${s.pri==='low'?'selected':''}>低优先级</option>
+                    </select>
+                    <button class="btn-del" onclick="delStory(${s.id})">×</button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function updateStory(id, field, val) {
+            const s = stories.find(x => x.id === id);
+            s[field] = val;
+            if(field === 'active') renderStories();
+            updateStats();
+            saveState();
+        }
+
+        function delStory(id) { stories = stories.filter(x => x.id !== id); renderStories(); updateStats(); saveState(); }
+
+        function updateStats() {
+            const totalCap = members.reduce((s, m) => s + (m.cap * m.avail / 100), 0);
+            const planned = stories.filter(s => s.active).reduce((s, x) => s + (parseInt(x.pts) || 0), 0);
+            const avgVel = velocities.length > 0 ? velocities.reduce((s, x) => s + x.val, 0) / velocities.length : 0;
+            
+            const start = new Date(document.getElementById('startDate').value);
+            const end = new Date(document.getElementById('endDate').value);
+            const days = Math.ceil((end - start) / (1000*60*60*24)) + 1;
+
+            document.getElementById('statCapacity').textContent = Math.round(totalCap);
+            document.getElementById('statPlanned').textContent = planned;
+            document.getElementById('statVelocity').textContent = Math.round(avgVel);
+            document.getElementById('statDays').textContent = days > 0 ? days : 0;
+
+            const percent = totalCap > 0 ? (planned / totalCap) * 100 : 0;
+            const bar = document.getElementById("capacityBar");
+            bar.style.width = `${Math.min(percent, 100)}%`;
+            bar.className = `progress-inner ${percent > 100 ? 'over' : ''}`;
+            document.getElementById("capacityText").textContent = `容量使用率: ${Math.round(percent)}%`;
+            if(percent > 100) document.getElementById("capacityText").style.color = "var(--color-danger)";
+            else document.getElementById("capacityText").style.color = "var(--text-main)";
+        }
+
+        function renderAll() { renderMembers(); renderVelocities(); renderStories(); updateStats(); }
+
+        function saveState() {
+            localStorage.setItem(LS_KEY, JSON.stringify({
+                name: document.getElementById('sprintName').value,
+                goal: document.getElementById('sprintGoal').value,
+                start: document.getElementById('startDate').value,
+                end: document.getElementById('endDate').value,
+                members, velocities, stories
+            }));
+        }
+
+        function loadState() {
+            const s = localStorage.getItem(LS_KEY);
+            if(s) {
+                const d = JSON.parse(s);
+                document.getElementById('sprintName').value = d.name || "";
+                document.getElementById('sprintGoal').value = d.goal || "";
+                if(d.start) document.getElementById('startDate').value = d.start;
+                if(d.end) document.getElementById('endDate').value = d.end;
+                members = d.members || [];
+                velocities = d.velocities || [];
+                stories = d.stories || [];
+            }
+            const hash = window.location.hash.slice(1);
+            if(hash) { try { const d = JSON.parse(decodeURIComponent(atob(hash))); stories = d.stories || []; } catch(e){} }
+        }
+
+        function exportPlan() {
+            let md = `# 冲刺计划: ${document.getElementById('sprintName').value || '未命名'}\n`;
+            md += `**周期:** ${document.getElementById('startDate').value} ~ ${document.getElementById('endDate').value}\n`;
+            md += `**目标:** ${document.getElementById('sprintGoal').value}\n\n`;
+            md += `## 团队容量: ${document.getElementById('statCapacity').textContent} 点\n`;
+            md += `## 计划交付: ${document.getElementById('statPlanned').textContent} 点\n\n`;
+            md += `### 用户故事列表\n| 故事 | 点数 | 优先级 |\n|---|---|---|\n`;
+            stories.filter(s => s.active).forEach(s => md += `| ${s.txt} | ${s.pts} | ${s.pri} |\n`);
+            const blob = new Blob([md], {type: "text/markdown"});
+            const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "sprint_plan.md"; a.click();
+        }
+
+        function sharePlan() {
+            const data = btoa(encodeURIComponent(JSON.stringify({ stories })));
+            const url = window.location.href.split('#')[0] + '#' + data;
+            navigator.clipboard.writeText(url).then(() => alert("分享链接已复制！"));
+        }
+
+        function clearAll() { if(confirm("确定清空吗？")){ members = []; velocities = []; stories = []; renderAll(); saveState(); } }
+
+        init();
     </script>
-  </body>
+</body>
 </html>

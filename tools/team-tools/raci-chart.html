@@ -1,879 +1,538 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RACI 责任分配矩阵 - WebUtils</title>
-    <meta name="description" content="RACI 责任分配矩阵：在线实用工具，免费在线使用，无需安装" />
-    <meta name="keywords" content="RACI 责任分配矩阵, 工具, 在线, 实用" />
-    <meta property="og:title" content="RACI 责任分配矩阵 - WebUtils" />
-    <meta
-      property="og:description"
-      content="RACI 责任分配矩阵：在线实用工具，免费在线使用，无需安装"
-    />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/team-tools/raci-chart" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <link rel="canonical" href="https://essays4u.net/tools/team-tools/raci-chart" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线 RACI 责任分配矩阵工具 - 明确团队分工与职责边界 | WebUtils</title>
+    <meta name="description" content="WebUtils 免费在线 RACI 矩阵工具。帮助项目经理与团队明确执行者 (R)、负责人 (A)、被咨询者 (C) 和被通知者 (I)。支持自动验证分配逻辑、实时统计、Markdown 格式导出与链接分享。优化团队协作效率，消除职责模糊。">
+    <meta name="keywords" content="RACI矩阵,责任分配矩阵,RAM矩阵,项目职责分工,团队协作工具,职责边界,执行者,负责人,被咨询者,被通知者,项目管理工具">
+    <link rel="canonical" href="https://chicogong.github.io/html-tools/tools/team-tools/raci-chart.html">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="在线 RACI 矩阵工具 - 让团队分工不再模糊">
+    <meta property="og:description" content="专业的团队职责分配工具，一键生成 RACI 矩阵，自动检测分工风险。">
+    <meta property="og:url" content="https://chicogong.github.io/html-tools/tools/team-tools/raci-chart.html">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://essays4u.net/social-preview.png">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="RACI 责任分配矩阵 - 提升团队执行力的关键">
+    <meta name="twitter:description" content="可视化职责分配，确保每个任务都有明确的负责人，消除管理死角。">
+    <meta name="twitter:image" content="https://essays4u.net/social-preview.png">
+
+    <!-- JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "在线 RACI 责任分配矩阵工具",
+        "url": "https://chicogong.github.io/html-tools/tools/team-tools/raci-chart.html",
+        "description": "提供团队职责分配的可视化矩阵工具，支持 R/A/C/I 四种角色的分配与逻辑验证。",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "All",
+        "author": {
+            "@type": "Organization",
+            "name": "WebUtils"
+        }
+    }
+    </script>
+
     <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: var(--font-sans);
-        background: var(--bg-color);
-        color: var(--text-color);
-        min-height: 100vh;
-        padding: 20px;
-      }
-
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-
-      .header {
-        text-align: center;
-        margin-bottom: 30px;
-        position: relative;
-      }
-
-      .header h1 {
-        font-size: 2rem;
-        margin-bottom: 10px;
-        background: linear-gradient(135deg, var(--accent-color), #a855f7);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      .theme-toggle {
-        position: absolute;
-        right: 0;
-        top: 0;
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        color: var(--text-color);
-        padding: 8px 16px;
-        border-radius: 8px;
-        cursor: pointer;
-      }
-
-      .back-link {
-        position: absolute;
-        left: 0;
-        top: 0;
-        color: var(--accent-color);
-        text-decoration: none;
-        font-size: 14px;
-      }
-
-      .back-link:hover {
-        text-decoration: underline;
-      }
-
-      .panel {
-        background: var(--bg-card);
-        border-radius: 16px;
-        padding: 25px;
-        border: 1px solid var(--border-subtle);
-        margin-bottom: 20px;
-      }
-
-      .panel-title {
-        font-size: 1rem;
-        margin-bottom: 15px;
-        color: var(--accent-color);
-      }
-
-      .legend {
-        display: flex;
-        gap: 20px;
-        flex-wrap: wrap;
-        margin-bottom: 20px;
-      }
-
-      .legend-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 13px;
-      }
-
-      .legend-badge {
-        width: 28px;
-        height: 28px;
-        border-radius: 6px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 14px;
-      }
-
-      .badge-r {
-        background: var(--r-color);
-        color: #000;
-      }
-      .badge-a {
-        background: var(--a-color);
-        color: #000;
-      }
-      .badge-c {
-        background: var(--c-color);
-        color: #000;
-      }
-      .badge-i {
-        background: var(--i-color);
-        color: #000;
-      }
-
-      .setup-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-      }
-
-      .item-list {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
-
-      .item-row {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-      }
-
-      .item-row input {
-        flex: 1;
-        padding: 10px;
-        background: var(--bg-input);
-        border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        color: var(--text-color);
-        font-size: 14px;
-      }
-
-      .item-row input:focus {
-        outline: none;
-        border-color: var(--accent-color);
-      }
-
-      .btn {
-        padding: 10px 20px;
-        border-radius: 8px;
-        border: none;
-        cursor: pointer;
-        font-size: 14px;
-        transition: all 0.3s ease;
-      }
-
-      .btn-primary {
-        background: var(--accent-color);
-        color: #000;
-      }
-
-      .btn-secondary {
-        background: var(--primary-color);
-        color: var(--text-color);
-      }
-
-      .btn-danger {
-        background: transparent;
-        color: var(--r-color);
-        padding: 8px 12px;
-      }
-
-      .btn-group {
-        display: flex;
-        gap: 10px;
-        margin-top: 15px;
-        flex-wrap: wrap;
-      }
-
-      .matrix-wrapper {
-        overflow-x: auto;
-      }
-
-      .raci-table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-
-      .raci-table th,
-      .raci-table td {
-        padding: 12px;
-        border: 1px solid var(--border-subtle);
-        text-align: center;
-      }
-
-      .raci-table th {
-        background: var(--primary-color);
-        font-weight: 600;
-        font-size: 13px;
-      }
-
-      .raci-table td.task-name {
-        text-align: left;
-        font-weight: 500;
-        min-width: 150px;
-      }
-
-      .raci-cell {
-        cursor: pointer;
-        transition: background 0.2s ease;
-        min-width: 80px;
-      }
-
-      .raci-cell:hover {
-        background: var(--primary-color);
-      }
-
-      .raci-badge {
-        display: inline-flex;
-        width: 32px;
-        height: 32px;
-        border-radius: 6px;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 16px;
-      }
-
-      .raci-badge.r {
-        background: var(--r-color);
-        color: #000;
-      }
-      .raci-badge.a {
-        background: var(--a-color);
-        color: #000;
-      }
-      .raci-badge.c {
-        background: var(--c-color);
-        color: #000;
-      }
-      .raci-badge.i {
-        background: var(--i-color);
-        color: #000;
-      }
-
-      .validation-section {
-        margin-top: 20px;
-      }
-
-      .validation-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 10px;
-        background: var(--bg-input);
-        border-radius: 8px;
-        margin-bottom: 8px;
-        font-size: 13px;
-      }
-
-      .validation-item.valid {
-        border-left: 3px solid var(--c-color);
-      }
-
-      .validation-item.warning {
-        border-left: 3px solid var(--a-color);
-      }
-
-      .validation-item.error {
-        border-left: 3px solid var(--r-color);
-      }
-
-      .validation-icon {
-        font-size: 18px;
-      }
-
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 15px;
-        margin-top: 20px;
-      }
-
-      .stat-card {
-        background: var(--bg-input);
-        padding: 15px;
-        border-radius: 12px;
-        text-align: center;
-      }
-
-      .stat-value {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: var(--accent-color);
-      }
-
-      .stat-label {
-        font-size: 11px;
-        opacity: 0.7;
-        margin-top: 5px;
-      }
-
-      @media (max-width: 768px) {
-        .setup-grid {
-          grid-template-columns: 1fr;
+        :root {
+            --primary-color: #007acc;
+            --primary-hover: #005f99;
+            --bg-color: #ffffff;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --border-color: #dddddd;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            --radius: 6px;
+            --r-color: #e74c3c;
+            --a-color: #f39c12;
+            --c-color: #27ae60;
+            --i-color: #3498db;
         }
-        .legend {
-          justify-content: center;
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-main: #e0e0e0;
+            --text-muted: #aaaaaa;
+            --border-color: #333333;
         }
-      }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Segoe UI", system-ui, -apple-system, sans-serif; line-height: 1.6; color: var(--text-main); background: var(--bg-color); }
+        .container { width: 95%; max-width: 1200px; margin: 0 auto; }
+
+        .site-header { background: var(--card-bg); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); position: sticky; top: 0; z-index: 100; }
+        .site-header .container { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
+        .logo a { font-size: 1.4rem; font-weight: 700; color: var(--primary-color); text-decoration: none; }
+        .theme-toggle { background: none; border: none; cursor: pointer; font-size: 1.2rem; }
+
+        main.container { display: flex; flex-direction: column; gap: 25px; padding: 30px 0; }
+        @media (min-width: 992px) { main.container { flex-direction: row; align-items: flex-start; } }
+
+        .tool-section { flex: 3; background: var(--card-bg); padding: 25px; border-radius: var(--radius); box-shadow: var(--shadow); }
+        .tool-header { margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+        .tool-header h1 { font-size: 1.8rem; margin-bottom: 8px; }
+        .tool-header p { color: var(--text-muted); font-size: 0.95rem; }
+
+        .panel { margin-bottom: 30px; }
+        .panel-title { font-size: 1rem; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+
+        /* RACI Legend */
+        .legend-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .legend-item { display: flex; align-items: center; gap: 10px; background: var(--bg-color); padding: 10px; border-radius: var(--radius); border: 1px solid var(--border-color); }
+        .l-badge { width: 30px; height: 30px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; flex-shrink: 0; }
+        .l-r { background: var(--r-color); }
+        .l-a { background: var(--a-color); }
+        .l-c { background: var(--c-color); }
+        .l-i { background: var(--i-color); }
+        .l-text { font-size: 0.8rem; line-height: 1.2; }
+        .l-text strong { display: block; font-size: 0.9rem; }
+
+        /* Setup Grid */
+        .setup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
+        @media (max-width: 768px) { .setup-grid { grid-template-columns: 1fr; } }
+        
+        .item-list { display: flex; flex-direction: column; gap: 8px; }
+        .item-row { display: flex; gap: 8px; }
+        .input-text { flex: 1; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--bg-color); color: var(--text-main); font-size: 0.9rem; }
+        .btn-sm { padding: 4px 10px; border-radius: 4px; border: none; cursor: pointer; font-size: 0.8rem; }
+        .btn-del { color: #ff4d4f; background: none; font-size: 1.2rem; }
+
+        /* Matrix Table */
+        .matrix-wrapper { overflow-x: auto; margin-bottom: 25px; border: 1px solid var(--border-color); border-radius: var(--radius); }
+        .raci-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        .raci-table th, .raci-table td { padding: 12px; border: 1px solid var(--border-color); text-align: center; }
+        .raci-table th { background: var(--bg-color); font-size: 0.85rem; font-weight: 700; }
+        .raci-table td.task-name { text-align: left; font-weight: 600; font-size: 0.9rem; min-width: 150px; }
+        
+        .raci-cell { cursor: pointer; transition: 0.2s; position: relative; }
+        .raci-cell:hover { background: rgba(0, 122, 204, 0.05); }
+        .raci-val { width: 32px; height: 32px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; font-size: 0.9rem; }
+        .v-r { background: var(--r-color); }
+        .v-a { background: var(--a-color); }
+        .v-c { background: var(--c-color); }
+        .v-i { background: var(--i-color); }
+
+        /* Validation */
+        .validation-item { display: flex; align-items: center; gap: 10px; padding: 10px 15px; border-radius: var(--radius); margin-bottom: 8px; font-size: 0.85rem; border-left: 4px solid #ccc; background: var(--bg-color); }
+        .val-error { border-left-color: var(--r-color); }
+        .val-warning { border-left-color: var(--a-color); }
+        .val-success { border-left-color: var(--c-color); }
+
+        /* Action Bar */
+        .action-bar { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+        .btn { padding: 10px 20px; border-radius: var(--radius); border: none; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .btn-primary { background: var(--primary-color); color: #fff; }
+        .btn-outline { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        /* Sidebar & SEO Section */
+        .sidebar-section { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+        .article-card { background: var(--card-bg); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); }
+        .article-card h2 { font-size: 1.1rem; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .article-card h2::before { content: ""; display: inline-block; width: 4px; height: 18px; background: var(--primary-color); border-radius: 2px; }
+        .article-card p, .article-card li { font-size: 0.85rem; line-height: 1.6; margin-bottom: 10px; }
+
+        .ad-placeholder { background: #f0f2f5; border: 1px dashed #ccc; color: #999; text-align: center; padding: 20px; border-radius: var(--radius); font-size: 0.8rem; display: flex; align-items: center; justify-content: center; min-height: 100px; }
+
+        .site-footer { background: #2c3e50; color: #bdc3c7; padding: 40px 0 20px; margin-top: 50px; text-align: center; }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <a href="../../index.html" class="back-link">← 返回工具列表</a>
-        <h1>RACI 责任分配矩阵</h1>
-        <p>明确团队成员职责分工</p>
-        <button class="theme-toggle" onclick="toggleTheme()">🌓 切换主题</button>
-      </div>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="logo"><a href="../../index.html">WebUtils</a></div>
+            <button class="theme-toggle" id="themeToggle">🌓</button>
+        </div>
+    </header>
 
-      <div class="panel">
-        <div class="legend">
-          <div class="legend-item">
-            <div class="legend-badge badge-r">R</div>
-            <span>Responsible 执行者 - 实际完成工作的人</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-badge badge-a">A</div>
-            <span>Accountable 负责人 - 对结果负最终责任</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-badge badge-c">C</div>
-            <span>Consulted 被咨询者 - 提供意见和建议</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-badge badge-i">I</div>
-            <span>Informed 被通知者 - 需要被告知进展</span>
-          </div>
-        </div>
-      </div>
+    <main class="container">
+        <div class="tool-section">
+            <div class="ad-placeholder" style="margin-bottom: 20px;">广告位 - 顶部横幅 (AdSense Placeholder)</div>
 
-      <div class="setup-grid">
-        <div class="panel">
-          <div class="panel-title">📋 任务/活动</div>
-          <div class="item-list" id="taskList"></div>
-          <div class="btn-group">
-            <button class="btn btn-secondary" onclick="addTask()">+ 添加任务</button>
-          </div>
+            <div class="tool-header">
+                <h1>RACI 责任分配矩阵</h1>
+                <p>明确团队成员在各个任务中的角色，消除职责模糊，提升协作透明度。</p>
+            </div>
+
+            <!-- Legend -->
+            <div class="legend-grid">
+                <div class="legend-item">
+                    <div class="l-badge l-r">R</div>
+                    <div class="l-text"><strong>Responsible 执行者</strong>实际完成工作的人</div>
+                </div>
+                <div class="legend-item">
+                    <div class="l-badge l-a">A</div>
+                    <div class="l-text"><strong>Accountable 负责人</strong>对结果负最终责任（仅限一个）</div>
+                </div>
+                <div class="legend-item">
+                    <div class="l-badge l-c">C</div>
+                    <div class="l-text"><strong>Consulted 被咨询者</strong>双向沟通，提供专业意见</div>
+                </div>
+                <div class="legend-item">
+                    <div class="l-badge l-i">I</div>
+                    <div class="l-text"><strong>Informed 被通知者</strong>单向告知进度或结果</div>
+                </div>
+            </div>
+
+            <!-- Setup -->
+            <div class="setup-grid">
+                <div class="panel">
+                    <div class="panel-title">📋 任务列表</div>
+                    <div id="taskList" class="item-list"></div>
+                    <button class="btn btn-outline" onclick="addTask()" style="margin-top:12px; width:100%">+ 添加任务</button>
+                </div>
+                <div class="panel">
+                    <div class="panel-title">👥 角色/人员</div>
+                    <div id="roleList" class="item-list"></div>
+                    <button class="btn btn-outline" onclick="addRole()" style="margin-top:12px; width:100%">+ 添加角色</button>
+                </div>
+            </div>
+
+            <!-- Matrix -->
+            <div class="panel">
+                <div class="panel-title">📊 RACI 矩阵 (点击单元格切换)</div>
+                <div class="matrix-wrapper">
+                    <table class="raci-table" id="raciTable"></table>
+                </div>
+                <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center">
+                    点击单元格在 R → A → C → I → 空 之间循环切换
+                </p>
+            </div>
+
+            <!-- Validation -->
+            <div class="panel">
+                <div class="panel-title">✅ 逻辑验证</div>
+                <div id="validationSection"></div>
+            </div>
+
+            <div class="action-bar">
+                <button class="btn btn-primary" onclick="exportMarkdown()">导出 Markdown</button>
+                <button class="btn btn-outline" onclick="shareRACI()">分享链接</button>
+                <button class="btn btn-outline" style="color:var(--r-color)" onclick="clearAll()">清空矩阵</button>
+            </div>
+
+            <!-- SEO Content -->
+            <section style="margin-top: 40px; border-top: 1px solid var(--border-color); padding-top: 30px">
+                <h2 style="font-size: 1.5rem; margin-bottom: 20px">深度解析：如何利用 RACI 矩阵解决团队协作混乱？</h2>
+                <article style="font-size: 0.95rem; color: var(--text-main); line-height: 1.8">
+                    <p>在项目管理中，最令人头疼的不是技术难题，而是<strong>“谁该负责？”</strong>和<strong>“为什么这件事没人做？”</strong>。RACI 矩阵（Responsibility Assignment Matrix）是解决这类问题的“神药”。它通过结构化的方式，将任务与团队成员之间的各种复杂关系简化为四种清晰的定义。</p>
+                    
+                    <h3 style="margin: 20px 0 10px;">1. 拆解 RACI 的核心角色</h3>
+                    <p>理解这四个字母的本质区别是成功的关键：</p>
+                    <ul>
+                        <li><strong>R (Responsible):</strong> 这是“干活的人”。一个任务可以有多个 R，但过多的 R 可能意味着任务拆解不够细。</li>
+                        <li><strong>A (Accountable):</strong> 这是“扛雷的人”。<strong>核心法则：每个任务必须且只能有一个 A。</strong> 如果没有人为结果负责，任务就会在推诿中失败。</li>
+                        <li><strong>C (Consulted):</strong> 这是“出主意的人”。通常是领域专家。在决策前，必须征求他们的意见，但这不意味着他们有最终决定权。</li>
+                        <li><strong>I (Informed):</strong> 这是“看进度的人”。他们不参与执行或咨询，但他们的工作受该任务影响，因此需要及时获知结果。</li>
+                    </ul>
+
+                    <div class="ad-placeholder" style="margin: 25px 0">广告位 - 文章中部内嵌 (AdSense Placeholder)</div>
+
+                    <h3 style="margin: 20px 0 10px;">2. 如何使用本工具进行自动验证？</h3>
+                    <p>一个健康的 RACI 矩阵应符合以下逻辑，本工具会自动检测并提示风险：</p>
+                    <ul>
+                        <li><strong>每个任务都有 A 吗？</strong> 没有 A 意味着责任真空。</li>
+                        <li><strong>每个任务只有一个 A 吗？</strong> 多个 A 意味着决策冲突。</li>
+                        <li><strong>每个任务都有 R 吗？</strong> 没有 R 意味着任务无人执行。</li>
+                        <li><strong>角色分配是否过重？</strong> 如果某个成员身上挂了太多的 R，可能存在过载风险。</li>
+                    </ul>
+
+                    <h3 style="margin: 20px 0 10px;">3. RACI 实施的常见陷阱</h3>
+                    <p><strong>陷阱一：将 RACI 等同于工作量清单。</strong> RACI 关注的是职责边界，而不是具体的工时分配。对于工作量评估，建议配合“工作负荷测算”工具。</p>
+                    <p><strong>陷阱二：忽略沟通。</strong> 仅仅填好表格是不够的。你需要与矩阵中的每个人沟通，确认他们认可被赋予的角色，特别是 C 和 I 的频率和形式。</p>
+
+                    <h3 style="margin: 20px 0 10px;">4. FAQ：常见疑问解答</h3>
+                    <div style="background: var(--bg-color); padding: 15px; border-left: 4px solid var(--primary-color); margin-bottom: 15px;">
+                        <strong>问：R 和 A 可以是同一个人吗？</strong><br>
+                        答：可以。在小团队或简单任务中，执行者往往也是该任务的最终负责人。
+                    </div>
+                    <div style="background: var(--bg-color); padding: 15px; border-left: 4px solid var(--primary-color); margin-bottom: 15px;">
+                        <strong>问：什么时候使用 C，什么时候使用 I？</strong><br>
+                        答：如果你需要对方的输入来完成任务，就是 C；如果你只需要对方知道你完成了，就是 I。
+                    </div>
+                </article>
+            </section>
         </div>
 
-        <div class="panel">
-          <div class="panel-title">👥 角色/人员</div>
-          <div class="item-list" id="roleList"></div>
-          <div class="btn-group">
-            <button class="btn btn-secondary" onclick="addRole()">+ 添加角色</button>
-          </div>
-        </div>
-      </div>
+        <!-- Sidebar -->
+        <aside class="sidebar-section">
+            <div class="article-card">
+                <h2>💡 矩阵维护建议</h2>
+                <ul>
+                    <li><strong>保持简洁:</strong> 任务描述应以动词开头（如：编写、审查、发布）。</li>
+                    <li><strong>定期回顾:</strong> 随着项目进入不同阶段，职责可能发生变化。</li>
+                    <li><strong>透明共享:</strong> 利用“分享链接”将矩阵同步给所有团队成员。</li>
+                </ul>
+            </div>
+            <div class="ad-placeholder" style="min-height: 250px;">广告位 - 侧边栏 (AdSense Placeholder)</div>
+            <div class="article-card">
+                <h2>相关管理工具</h2>
+                <ul>
+                    <li><a href="milestone-tracker.html">里程碑追踪器</a></li>
+                    <li><a href="decision-matrix.html">决策矩阵工具</a></li>
+                    <li><a href="workload-calc.html">工作负荷测算</a></li>
+                </ul>
+            </div>
+        </aside>
+    </main>
 
-      <div class="panel">
-        <div class="panel-title">📊 RACI 矩阵 (点击单元格切换状态)</div>
-        <div class="matrix-wrapper">
-          <table class="raci-table" id="raciTable"></table>
+    <footer class="site-footer">
+        <div class="container">
+            <p style="margin-bottom: 15px;">WebUtils - 让团队协作更有序、更透明</p>
+            <div class="footer-bottom">&copy; 2026 WebUtils - 专业的项目管理效能平台.</div>
         </div>
-        <p style="font-size: 12px; opacity: 0.6; margin-top: 10px; text-align: center">
-          点击单元格循环切换: 空 → R → A → C → I → 空
-        </p>
-      </div>
-
-      <div class="panel">
-        <div class="panel-title">✅ 验证检查</div>
-        <div class="validation-section" id="validationSection"></div>
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-value" id="totalTasks">0</div>
-            <div class="stat-label">任务数</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="totalRoles">0</div>
-            <div class="stat-label">角色数</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="assignedCells">0</div>
-            <div class="stat-label">已分配</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="completionRate">0%</div>
-            <div class="stat-label">完成率</div>
-          </div>
-        </div>
-        <div class="btn-group" style="justify-content: center; margin-top: 20px">
-          <button class="btn btn-primary" onclick="exportRACI()">📋 导出</button>
-          <button class="btn btn-secondary" onclick="shareRACI()">🔗 分享</button>
-          <button class="btn btn-secondary" onclick="clearAll()">🗑️ 清空</button>
-        </div>
-      </div>
-    </div>
+    </footer>
 
     <script>
-      const LS_KEY = "raci-chart-data";
-      const RACI_SEQUENCE = ["", "R", "A", "C", "I"];
+        const LS_KEY = "raci-chart-data-v2";
+        const RACI_SEQUENCE = ["", "R", "A", "C", "I"];
+        
+        let tasks = [];
+        let roles = [];
+        let assignments = {};
 
-      let tasks = [];
-      let roles = [];
-      let assignments = {};
+        function init() {
+            const savedTheme = localStorage.getItem("theme") || "light";
+            document.body.setAttribute("data-theme", savedTheme);
+            document.getElementById('themeToggle').onclick = () => {
+                const n = document.body.getAttribute("data-theme") === "light" ? "dark" : "light";
+                document.body.setAttribute("data-theme", n);
+                localStorage.setItem("theme", n);
+            };
 
-      function init() {
-        const savedTheme = localStorage.getItem("theme") || "dark";
-        if (savedTheme === "light") {
-          document.body.setAttribute("data-theme", "light");
-        }
+            loadFromStorage();
+            loadFromUrl();
 
-        loadFromStorage();
-        loadFromUrl();
-
-        if (tasks.length === 0) {
-          tasks = [
-            { id: 1, name: "需求分析" },
-            { id: 2, name: "系统设计" },
-            { id: 3, name: "开发实现" },
-            { id: 4, name: "测试验证" }
-          ];
-        }
-        if (roles.length === 0) {
-          roles = [
-            { id: 1, name: "产品经理" },
-            { id: 2, name: "技术负责人" },
-            { id: 3, name: "开发工程师" },
-            { id: 4, name: "测试工程师" }
-          ];
-        }
-
-        renderTasks();
-        renderRoles();
-        renderMatrix();
-      }
-
-      function generateId() {
-        return Date.now() + Math.random().toString(36).substr(2, 9);
-      }
-
-      function addTask(name = "") {
-        tasks.push({ id: generateId(), name: name });
-        renderTasks();
-        renderMatrix();
-        saveToStorage();
-      }
-
-      function removeTask(id) {
-        tasks = tasks.filter((t) => t.id !== id);
-        // Clean up assignments
-        Object.keys(assignments).forEach((key) => {
-          if (key.startsWith(id + "-")) {
-            delete assignments[key];
-          }
-        });
-        renderTasks();
-        renderMatrix();
-        saveToStorage();
-      }
-
-      function renderTasks() {
-        const container = document.getElementById("taskList");
-        container.textContent = "";
-
-        tasks.forEach((task) => {
-          const div = document.createElement("div");
-          div.className = "item-row";
-
-          const input = document.createElement("input");
-          input.type = "text";
-          input.placeholder = "任务名称";
-          input.value = task.name;
-          input.addEventListener("input", (e) => {
-            task.name = e.target.value;
-            renderMatrix();
-            saveToStorage();
-          });
-
-          const deleteBtn = document.createElement("button");
-          deleteBtn.className = "btn btn-danger";
-          deleteBtn.textContent = "×";
-          deleteBtn.addEventListener("click", () => removeTask(task.id));
-
-          div.appendChild(input);
-          div.appendChild(deleteBtn);
-          container.appendChild(div);
-        });
-      }
-
-      function addRole(name = "") {
-        roles.push({ id: generateId(), name: name });
-        renderRoles();
-        renderMatrix();
-        saveToStorage();
-      }
-
-      function removeRole(id) {
-        roles = roles.filter((r) => r.id !== id);
-        // Clean up assignments
-        Object.keys(assignments).forEach((key) => {
-          if (key.endsWith("-" + id)) {
-            delete assignments[key];
-          }
-        });
-        renderRoles();
-        renderMatrix();
-        saveToStorage();
-      }
-
-      function renderRoles() {
-        const container = document.getElementById("roleList");
-        container.textContent = "";
-
-        roles.forEach((role) => {
-          const div = document.createElement("div");
-          div.className = "item-row";
-
-          const input = document.createElement("input");
-          input.type = "text";
-          input.placeholder = "角色名称";
-          input.value = role.name;
-          input.addEventListener("input", (e) => {
-            role.name = e.target.value;
-            renderMatrix();
-            saveToStorage();
-          });
-
-          const deleteBtn = document.createElement("button");
-          deleteBtn.className = "btn btn-danger";
-          deleteBtn.textContent = "×";
-          deleteBtn.addEventListener("click", () => removeRole(role.id));
-
-          div.appendChild(input);
-          div.appendChild(deleteBtn);
-          container.appendChild(div);
-        });
-      }
-
-      function cycleRaci(taskId, roleId) {
-        const key = taskId + "-" + roleId;
-        const current = assignments[key] || "";
-        const currentIndex = RACI_SEQUENCE.indexOf(current);
-        const nextIndex = (currentIndex + 1) % RACI_SEQUENCE.length;
-        const nextValue = RACI_SEQUENCE[nextIndex];
-
-        if (nextValue) {
-          assignments[key] = nextValue;
-        } else {
-          delete assignments[key];
-        }
-
-        renderMatrix();
-        saveToStorage();
-      }
-
-      function renderMatrix() {
-        const table = document.getElementById("raciTable");
-        table.textContent = "";
-
-        if (tasks.length === 0 || roles.length === 0) {
-          const row = document.createElement("tr");
-          const cell = document.createElement("td");
-          cell.textContent = "请先添加任务和角色";
-          cell.style.padding = "20px";
-          cell.style.opacity = "0.5";
-          row.appendChild(cell);
-          table.appendChild(row);
-          validate();
-          return;
-        }
-
-        // Header row
-        const headerRow = document.createElement("tr");
-        const emptyHeader = document.createElement("th");
-        emptyHeader.textContent = "任务 / 角色";
-        headerRow.appendChild(emptyHeader);
-
-        roles.forEach((role) => {
-          const th = document.createElement("th");
-          th.textContent = role.name || "(未命名)";
-          headerRow.appendChild(th);
-        });
-
-        table.appendChild(headerRow);
-
-        // Task rows
-        tasks.forEach((task) => {
-          const row = document.createElement("tr");
-
-          const nameCell = document.createElement("td");
-          nameCell.className = "task-name";
-          nameCell.textContent = task.name || "(未命名)";
-          row.appendChild(nameCell);
-
-          roles.forEach((role) => {
-            const cell = document.createElement("td");
-            cell.className = "raci-cell";
-
-            const key = task.id + "-" + role.id;
-            const value = assignments[key] || "";
-
-            if (value) {
-              const badge = document.createElement("span");
-              badge.className = "raci-badge " + value.toLowerCase();
-              badge.textContent = value;
-              cell.appendChild(badge);
+            if (tasks.length === 0) {
+                tasks = [
+                    { id: 't1', name: "需求调研与定义" },
+                    { id: 't2', name: "系统架构方案设计" },
+                    { id: 't3', name: "核心模块编码开发" },
+                    { id: 't4', name: "集成测试与用户验收" }
+                ];
+            }
+            if (roles.length === 0) {
+                roles = [
+                    { id: 'r1', name: "项目经理" },
+                    { id: 'r2', name: "架构师" },
+                    { id: 'r3', name: "开发组长" },
+                    { id: 'r4', name: "测试负责人" }
+                ];
             }
 
-            cell.addEventListener("click", () => cycleRaci(task.id, role.id));
-            row.appendChild(cell);
-          });
+            renderAll();
+        }
 
-          table.appendChild(row);
-        });
+        function generateId() { return 'id-' + Math.random().toString(36).substr(2, 9); }
 
-        validate();
-      }
+        function addTask() {
+            tasks.push({ id: generateId(), name: "" });
+            renderAll();
+            saveToStorage();
+        }
 
-      function validate() {
-        const container = document.getElementById("validationSection");
-        container.textContent = "";
+        function removeTask(id) {
+            tasks = tasks.filter(t => t.id !== id);
+            Object.keys(assignments).forEach(k => { if(k.startsWith(id + "-")) delete assignments[k]; });
+            renderAll();
+            saveToStorage();
+        }
 
-        const issues = [];
-        let totalAssigned = 0;
+        function addRole() {
+            roles.push({ id: generateId(), name: "" });
+            renderAll();
+            saveToStorage();
+        }
 
-        tasks.forEach((task) => {
-          let hasR = false;
-          let hasA = false;
-          let aCount = 0;
+        function removeRole(id) {
+            roles = roles.filter(r => r.id !== id);
+            Object.keys(assignments).forEach(k => { if(k.endsWith("-" + id)) delete assignments[k]; });
+            renderAll();
+            saveToStorage();
+        }
 
-          roles.forEach((role) => {
-            const key = task.id + "-" + role.id;
-            const value = assignments[key];
-            if (value) {
-              totalAssigned++;
-              if (value === "R") hasR = true;
-              if (value === "A") {
-                hasA = true;
-                aCount++;
-              }
-            }
-          });
-
-          const taskName = task.name || "(未命名任务)";
-
-          if (!hasR) {
-            issues.push({ type: "error", message: "「" + taskName + "」没有指定执行者 (R)" });
-          }
-          if (!hasA) {
-            issues.push({ type: "error", message: "「" + taskName + "」没有指定负责人 (A)" });
-          }
-          if (aCount > 1) {
-            issues.push({
-              type: "warning",
-              message: "「" + taskName + "」有多个负责人 (A)，建议只有一个"
+        function renderTasks() {
+            const list = document.getElementById("taskList");
+            list.innerHTML = "";
+            tasks.forEach(t => {
+                const div = document.createElement("div");
+                div.className = "item-row";
+                div.innerHTML = `
+                    <input type="text" class="input-text" value="${t.name}" placeholder="任务名称..." oninput="updateTaskName('${t.id}', this.value)">
+                    <button class="btn-del" onclick="removeTask('${t.id}')">×</button>
+                `;
+                list.appendChild(div);
             });
-          }
-        });
-
-        if (issues.length === 0 && tasks.length > 0 && roles.length > 0) {
-          issues.push({ type: "valid", message: "所有任务都已正确分配责任" });
         }
 
-        issues.forEach((issue) => {
-          const div = document.createElement("div");
-          div.className = "validation-item " + issue.type;
-
-          const icon = document.createElement("span");
-          icon.className = "validation-icon";
-          icon.textContent = issue.type === "valid" ? "✓" : issue.type === "warning" ? "⚠" : "✗";
-
-          const text = document.createElement("span");
-          text.textContent = issue.message;
-
-          div.appendChild(icon);
-          div.appendChild(text);
-          container.appendChild(div);
-        });
-
-        // Update stats
-        document.getElementById("totalTasks").textContent = tasks.length;
-        document.getElementById("totalRoles").textContent = roles.length;
-        document.getElementById("assignedCells").textContent = totalAssigned;
-
-        const totalCells = tasks.length * roles.length;
-        const rate = totalCells > 0 ? Math.round((totalAssigned / totalCells) * 100) : 0;
-        document.getElementById("completionRate").textContent = rate + "%";
-      }
-
-      function exportRACI() {
-        let text = "═══════════════════════════════════════\n";
-        text += "         RACI 责任分配矩阵\n";
-        text += "═══════════════════════════════════════\n\n";
-
-        text += "R = 执行者 | A = 负责人 | C = 被咨询者 | I = 被通知者\n\n";
-
-        // Find max task name length for formatting
-        const maxTaskLen = Math.max(...tasks.map((t) => (t.name || "").length), 10);
-
-        // Header
-        text += "任务".padEnd(maxTaskLen + 2);
-        roles.forEach((role) => {
-          text += (role.name || "角色").padEnd(12);
-        });
-        text += "\n";
-        text += "─".repeat(maxTaskLen + 2 + roles.length * 12) + "\n";
-
-        // Rows
-        tasks.forEach((task) => {
-          text += (task.name || "(未命名)").padEnd(maxTaskLen + 2);
-          roles.forEach((role) => {
-            const key = task.id + "-" + role.id;
-            const value = assignments[key] || "-";
-            text += value.padEnd(12);
-          });
-          text += "\n";
-        });
-
-        text += "\n═══════════════════════════════════════\n";
-
-        navigator.clipboard.writeText(text).then(() => {
-          showToast("已复制到剪贴板");
-        });
-      }
-
-      function shareRACI() {
-        const data = {
-          tasks: tasks,
-          roles: roles,
-          assignments: assignments
-        };
-        const encoded = btoa(encodeURIComponent(JSON.stringify(data)));
-        const url = window.location.href.split("#")[0] + "#" + encoded;
-        navigator.clipboard.writeText(url).then(() => {
-          showToast("分享链接已复制");
-        });
-      }
-
-      function loadFromUrl() {
-        const hash = window.location.hash.slice(1);
-        if (hash) {
-          try {
-            const data = JSON.parse(decodeURIComponent(atob(hash)));
-            if (data.tasks) tasks = data.tasks;
-            if (data.roles) roles = data.roles;
-            if (data.assignments) assignments = data.assignments;
-          } catch (e) {
-            console.error("Failed to load from URL:", e);
-          }
+        function renderRoles() {
+            const list = document.getElementById("roleList");
+            list.innerHTML = "";
+            roles.forEach(r => {
+                const div = document.createElement("div");
+                div.className = "item-row";
+                div.innerHTML = `
+                    <input type="text" class="input-text" value="${r.name}" placeholder="角色/人员..." oninput="updateRoleName('${r.id}', this.value)">
+                    <button class="btn-del" onclick="removeRole('${r.id}')">×</button>
+                `;
+                list.appendChild(div);
+            });
         }
-      }
 
-      function saveToStorage() {
-        const data = {
-          tasks: tasks,
-          roles: roles,
-          assignments: assignments
-        };
-        localStorage.setItem(LS_KEY, JSON.stringify(data));
-      }
+        function updateTaskName(id, val) { tasks.find(t => t.id === id).name = val; renderMatrix(); saveToStorage(); }
+        function updateRoleName(id, val) { roles.find(r => r.id === id).name = val; renderMatrix(); saveToStorage(); }
 
-      function loadFromStorage() {
-        const saved = localStorage.getItem(LS_KEY);
-        if (saved) {
-          try {
-            const data = JSON.parse(saved);
-            if (data.tasks) tasks = data.tasks;
-            if (data.roles) roles = data.roles;
-            if (data.assignments) assignments = data.assignments;
-          } catch (e) {
-            console.error("Failed to load from storage:", e);
-          }
+        function cycleRACI(tid, rid) {
+            const key = `${tid}-${rid}`;
+            const cur = assignments[key] || "";
+            const nextIdx = (RACI_SEQUENCE.indexOf(cur) + 1) % RACI_SEQUENCE.length;
+            const nextVal = RACI_SEQUENCE[nextIdx];
+            if (nextVal) assignments[key] = nextVal; else delete assignments[key];
+            renderMatrix();
+            validate();
+            saveToStorage();
         }
-      }
 
-      function clearAll() {
-        if (confirm("确定要清空所有内容吗？")) {
-          tasks = [{ id: generateId(), name: "" }];
-          roles = [{ id: generateId(), name: "" }];
-          assignments = {};
-          renderTasks();
-          renderRoles();
-          renderMatrix();
-          localStorage.removeItem(LS_KEY);
-          window.location.hash = "";
+        function renderMatrix() {
+            const table = document.getElementById("raciTable");
+            table.innerHTML = "";
+
+            // Header
+            const hRow = document.createElement("tr");
+            hRow.innerHTML = `<th>任务 / 角色</th>`;
+            roles.forEach(r => {
+                const th = document.createElement("th");
+                th.textContent = r.name || "(未命名)";
+                hRow.appendChild(th);
+            });
+            table.appendChild(hRow);
+
+            // Rows
+            tasks.forEach(t => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `<td class="task-name">${t.name || "(未命名)"}</td>`;
+                roles.forEach(r => {
+                    const td = document.createElement("td");
+                    td.className = "raci-cell";
+                    const val = assignments[`${t.id}-${r.id}`] || "";
+                    if (val) {
+                        td.innerHTML = `<span class="raci-val v-${val.toLowerCase()}">${val}</span>`;
+                    }
+                    td.onclick = () => cycleRACI(t.id, r.id);
+                    tr.appendChild(td);
+                });
+                table.appendChild(tr);
+            });
         }
-      }
 
-      function showToast(message) {
-        const toast = document.createElement("div");
-        toast.style.cssText =
-          "position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--accent-color);color:#000;padding:12px 24px;border-radius:8px;z-index:1000;font-size:14px;";
-        toast.textContent = message;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 2000);
-      }
+        function validate() {
+            const container = document.getElementById("validationSection");
+            container.innerHTML = "";
+            const issues = [];
 
-      window.toggleTheme = function () {
-        const body = document.body;
-        const currentTheme = body.getAttribute("data-theme");
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-        body.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
-      };
+            tasks.forEach(t => {
+                let rCount = 0, aCount = 0;
+                roles.forEach(r => {
+                    const val = assignments[`${t.id}-${r.id}`];
+                    if (val === 'R') rCount++;
+                    if (val === 'A') aCount++;
+                });
 
-      init();
+                const tName = t.name || "未命名任务";
+                if (aCount === 0) issues.push({ type: 'error', msg: `「${tName}」缺少负责人 (A)。` });
+                else if (aCount > 1) issues.push({ type: 'warning', msg: `「${tName}」有多个负责人 (A)，建议仅保留一个。` });
+                
+                if (rCount === 0) issues.push({ type: 'error', msg: `「${tName}」缺少执行者 (R)。` });
+            });
+
+            if (issues.length === 0 && tasks.length > 0) {
+                issues.push({ type: 'success', msg: "矩阵逻辑验证通过！所有任务均已正确分配核心职责。" });
+            }
+
+            issues.forEach(iss => {
+                const div = document.createElement("div");
+                div.className = `validation-item val-${iss.type}`;
+                div.textContent = (iss.type === 'error' ? '❌ ' : iss.type === 'warning' ? '⚠️ ' : '✅ ') + iss.msg;
+                container.appendChild(div);
+            });
+        }
+
+        function renderAll() {
+            renderTasks();
+            renderRoles();
+            renderMatrix();
+            validate();
+        }
+
+        function saveToStorage() {
+            localStorage.setItem(LS_KEY, JSON.stringify({ tasks, roles, assignments }));
+        }
+
+        function loadFromStorage() {
+            const saved = localStorage.getItem(LS_KEY);
+            if (saved) {
+                try {
+                    const d = JSON.parse(saved);
+                    tasks = d.tasks || [];
+                    roles = d.roles || [];
+                    assignments = d.assignments || {};
+                } catch(e) {}
+            }
+        }
+
+        function loadFromUrl() {
+            const hash = window.location.hash.slice(1);
+            if (hash) {
+                try {
+                    const d = JSON.parse(decodeURIComponent(atob(hash)));
+                    if (d.tasks) tasks = d.tasks;
+                    if (d.roles) roles = d.roles;
+                    if (d.assignments) assignments = d.assignments;
+                } catch(e) {}
+            }
+        }
+
+        function shareRACI() {
+            const data = btoa(encodeURIComponent(JSON.stringify({ tasks, roles, assignments })));
+            const url = window.location.href.split('#')[0] + '#' + data;
+            navigator.clipboard.writeText(url).then(() => alert("分享链接已复制到剪贴板！"));
+        }
+
+        function exportMarkdown() {
+            let md = `### RACI 责任分配矩阵\n\n`;
+            md += `| 任务 | ` + roles.map(r => r.name || "角色").join(" | ") + " |\n";
+            md += `|---|` + roles.map(() => "---").join("|") + "|\n";
+            tasks.forEach(t => {
+                md += `| ${t.name || "任务"} | ` + roles.map(r => assignments[`${t.id}-${r.id}`] || "-").join(" | ") + " |\n";
+            });
+            md += `\n\n**R**=Responsible, **A**=Accountable, **C**=Consulted, **I**=Informed`;
+            
+            const blob = new Blob([md], {type: "text/markdown"});
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "raci_matrix.md";
+            a.click();
+        }
+
+        function clearAll() {
+            if(confirm("确定清空所有数据吗？")){
+                tasks = [{ id: generateId(), name: "" }];
+                roles = [{ id: generateId(), name: "" }];
+                assignments = {};
+                renderAll();
+                localStorage.removeItem(LS_KEY);
+                window.location.hash = "";
+            }
+        }
+
+        init();
     </script>
-  </body>
+</body>
 </html>

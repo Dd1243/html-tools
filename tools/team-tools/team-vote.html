@@ -1,1061 +1,518 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>团队投票工具 - WebUtils</title>
-    <meta name="description" content="团队投票工具：在线实用工具，免费在线使用，无需安装" />
-    <meta name="keywords" content="团队投票工具, 工具, 在线, 实用" />
-    <meta property="og:title" content="团队投票工具 - WebUtils" />
-    <meta property="og:description" content="团队投票工具：在线实用工具，免费在线使用，无需安装" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/team-tools/team-vote" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <link rel="canonical" href="https://essays4u.net/tools/team-tools/team-vote" />
-    <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线团队投票工具 - 快速达成共识与透明决策支持 | WebUtils</title>
+    <meta name="description" content="WebUtils 免费在线团队投票工具。支持单选、多选及评分（1-5分）等多种投票模式。内置实时统计、自动识别胜出项、多维度结果分析。支持链接分享与 TXT 结果导出。帮助团队在头脑风暴、活动选择或技术选型中快速高效地做出决策。">
+    <meta name="keywords" content="团队投票工具,在线表决系统,决策支持工具,敏捷投票,评分投票,多选投票,达成共识,头脑风暴工具,团队决策">
+    <link rel="canonical" href="https://chicogong.github.io/html-tools/tools/team-tools/team-vote.html">
 
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
+    <!-- Open Graph -->
+    <meta property="og:title" content="在线团队投票工具 - 消除决策犹豫，快速达成共识">
+    <meta property="og:description" content="多模式投票支持，结果透明实时更新，是团队远程协作与现场讨论的最佳辅助。">
+    <meta property="og:url" content="https://chicogong.github.io/html-tools/tools/team-tools/team-vote.html">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://essays4u.net/social-preview.png">
 
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="团队投票工具 - 让每个人的声音都被听见">
+    <meta name="twitter:description" content="可视化投票进度与统计分析，让团队决策变得公平、科学、高效。">
+    <meta name="twitter:image" content="https://essays4u.net/social-preview.png">
 
-      body {
-        font-family: var(--font-sans);
-        font-size: 16px;
-        line-height: 1.6;
-        background: var(--bg-color);
-        color: var(--text-color);
-        min-height: 100vh;
-        padding: 20px;
-      }
-
-      .container {
-        max-width: 900px;
-        margin: 0 auto;
-      }
-
-      .header {
-        text-align: center;
-        margin-bottom: 30px;
-        position: relative;
-      }
-
-      .header h1 {
-        font-size: 2rem;
-        margin-bottom: 10px;
-        background: linear-gradient(135deg, var(--accent-color), #a855f7);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      .theme-toggle {
-        position: absolute;
-        right: 0;
-        top: 0;
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        color: var(--text-color);
-        padding: 8px 16px;
-        border-radius: 8px;
-        cursor: pointer;
-      }
-
-      .back-link {
-        position: absolute;
-        left: 0;
-        top: 0;
-        color: var(--accent-color);
-        text-decoration: none;
-        font-size: 14px;
-      }
-
-      .back-link:hover {
-        text-decoration: underline;
-      }
-
-      .panel {
-        background: var(--bg-card);
-        border-radius: 16px;
-        padding: 25px;
-        border: 1px solid var(--border-subtle);
-        margin-bottom: 20px;
-      }
-
-      .panel-title {
-        font-size: 1rem;
-        margin-bottom: 15px;
-        color: var(--accent-color);
-      }
-
-      .form-group {
-        margin-bottom: 15px;
-      }
-
-      .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-size: 14px;
-      }
-
-      .form-group input,
-      .form-group textarea,
-      .form-group select {
-        width: 100%;
-        padding: 12px;
-        background: var(--bg-input);
-        border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        color: var(--text-color);
-        font-size: 14px;
-      }
-
-      .form-group input:focus,
-      .form-group textarea:focus,
-      .form-group select:focus {
-        outline: none;
-        border-color: var(--accent-color);
-      }
-
-      .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
-      }
-
-      @media (max-width: 600px) {
-        .form-row {
-          grid-template-columns: 1fr;
+    <!-- JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "在线团队投票工具",
+        "url": "https://chicogong.github.io/html-tools/tools/team-tools/team-vote.html",
+        "description": "提供灵活的在线投票功能，包含单选、多选、打分模式，支持实时统计与决策导出。",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "All",
+        "author": {
+            "@type": "Organization",
+            "name": "WebUtils"
         }
-      }
+    }
+    </script>
 
-      .option-item {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        padding: 12px;
-        background: var(--bg-input);
-        border-radius: 8px;
-        margin-bottom: 10px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        border: 2px solid transparent;
-      }
+    <style>
+        :root {
+            --primary-color: #007acc;
+            --primary-hover: #005f99;
+            --bg-color: #ffffff;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --border-color: #dddddd;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            --radius: 6px;
+            --color-success: #27ae60;
+            --color-warning: #f39c12;
+            --color-danger: #e74c3c;
+        }
 
-      .option-item:hover {
-        border-color: var(--accent-color);
-      }
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-main: #e0e0e0;
+            --text-muted: #aaaaaa;
+            --border-color: #333333;
+        }
 
-      .option-item.selected {
-        border-color: var(--success-color);
-        background: rgba(74, 222, 128, 0.1);
-      }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Segoe UI", system-ui, -apple-system, sans-serif; line-height: 1.6; color: var(--text-main); background: var(--bg-color); }
+        .container { width: 95%; max-width: 1200px; margin: 0 auto; }
 
-      .option-item.voted {
-        cursor: default;
-      }
+        .site-header { background: var(--card-bg); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); position: sticky; top: 0; z-index: 100; }
+        .site-header .container { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
+        .logo a { font-size: 1.4rem; font-weight: 700; color: var(--primary-color); text-decoration: none; }
+        .theme-toggle { background: none; border: none; cursor: pointer; font-size: 1.2rem; }
 
-      .option-checkbox {
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        border: 2px solid var(--border-subtle);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-      }
+        main.container { display: flex; flex-direction: column; gap: 25px; padding: 30px 0; }
+        @media (min-width: 992px) { main.container { flex-direction: row; align-items: flex-start; } }
 
-      .option-item.selected .option-checkbox {
-        background: var(--success-color);
-        border-color: var(--success-color);
-      }
+        .tool-section { flex: 3; background: var(--card-bg); padding: 25px; border-radius: var(--radius); box-shadow: var(--shadow); }
+        .tool-header { margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+        .tool-header h1 { font-size: 1.8rem; margin-bottom: 8px; }
+        .tool-header p { color: var(--text-muted); font-size: 0.95rem; }
 
-      .option-item.selected .option-checkbox::after {
-        content: "✓";
-        color: #000;
-        font-weight: bold;
-      }
+        .panel { margin-bottom: 30px; }
+        .panel-title { font-size: 1rem; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .panel-title::before { content: ""; width: 4px; height: 16px; background: var(--primary-color); border-radius: 2px; }
 
-      .option-content {
-        flex: 1;
-      }
+        /* Configuration */
+        .type-tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .t-tab { flex: 1; min-width: 100px; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius); cursor: pointer; text-align: center; transition: 0.2s; background: var(--bg-color); font-size: 0.9rem; }
+        .t-tab.active { border-color: var(--primary-color); background: rgba(0, 122, 204, 0.05); color: var(--primary-color); font-weight: 700; }
 
-      .option-text {
-        font-size: 14px;
-        margin-bottom: 5px;
-      }
+        .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px; }
+        .field label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
+        .input-text { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--bg-color); color: var(--text-main); font-size: 0.95rem; }
 
-      .option-bar {
-        height: 8px;
-        background: var(--border-subtle);
-        border-radius: 4px;
-        overflow: hidden;
-      }
+        /* Options Management */
+        .opt-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        .opt-row { display: flex; gap: 10px; align-items: center; }
+        .opt-num { width: 24px; height: 24px; background: #eee; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0; }
 
-      .option-bar-fill {
-        height: 100%;
-        background: linear-gradient(90deg, var(--accent-color), #a855f7);
-        transition: width 0.5s ease;
-      }
+        /* Voting Card */
+        .vote-card { border: 1px solid var(--border-color); border-radius: var(--radius); padding: 15px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; position: relative; display: flex; gap: 12px; align-items: center; }
+        .vote-card:hover { border-color: var(--primary-color); background: rgba(0, 122, 204, 0.02); }
+        .vote-card.selected { border-color: var(--color-success); background: rgba(39, 174, 96, 0.05); }
+        .v-check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border-color); display: flex; align-items: center; justify-content: center; }
+        .selected .v-check { border-color: var(--color-success); background: var(--color-success); }
+        .selected .v-check::after { content: "✓"; color: #fff; font-size: 12px; }
+        
+        /* Scoring */
+        .score-row { display: flex; gap: 5px; margin-top: 10px; }
+        .score-btn { width: 34px; height: 34px; border-radius: 4px; border: 1px solid var(--border-color); background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .score-btn:hover { background: #eee; }
+        .score-btn.active { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
 
-      .option-stats {
-        display: flex;
-        justify-content: space-between;
-        font-size: 12px;
-        margin-top: 5px;
-        opacity: 0.7;
-      }
+        /* Results Display */
+        .res-item { margin-bottom: 15px; }
+        .res-header { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 5px; }
+        .res-title { font-weight: 600; }
+        .res-val { font-weight: 800; color: var(--primary-color); }
+        .res-bar-bg { height: 10px; background: #eee; border-radius: 5px; overflow: hidden; margin-bottom: 5px; }
+        .res-bar-fill { height: 100%; background: linear-gradient(90deg, var(--primary-color), #a855f7); transition: width 0.6s ease-out; }
+        .res-voters { font-size: 0.75rem; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 5px; }
+        .v-tag { background: rgba(0,0,0,0.05); padding: 2px 8px; border-radius: 10px; }
 
-      .btn {
-        padding: 10px 20px;
-        border-radius: 8px;
-        border: none;
-        cursor: pointer;
-        font-size: 14px;
-        transition: all 0.3s ease;
-      }
+        /* Banner */
+        .winner-banner { background: var(--color-success); color: #fff; padding: 12px; border-radius: var(--radius); text-align: center; margin-bottom: 20px; font-weight: 700; box-shadow: 0 4px 12px rgba(39, 174, 96, 0.2); animation: slideIn 0.5s; }
+        @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-      .btn-primary {
-        background: var(--accent-color);
-        color: #000;
-      }
+        /* Stats Grid */
+        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 15px; margin-top: 20px; }
+        .dash-card { text-align: center; padding: 15px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: var(--radius); }
+        .dash-val { font-size: 1.4rem; font-weight: 800; color: var(--primary-color); display: block; }
+        .dash-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
 
-      .btn-primary:hover {
-        transform: translateY(-2px);
-      }
+        /* Buttons */
+        .action-bar { display: flex; gap: 10px; margin-top: 30px; flex-wrap: wrap; }
+        .btn { padding: 10px 20px; border-radius: var(--radius); border: none; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .btn-primary { background: var(--primary-color); color: #fff; }
+        .btn-outline { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); }
+        .btn-del { color: var(--color-danger); background: none; font-size: 1.2rem; }
 
-      .btn-secondary {
-        background: var(--primary-color);
-        color: var(--text-color);
-      }
+        /* Sidebar */
+        .sidebar-section { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+        .article-card { background: var(--card-bg); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); }
+        .article-card h2 { font-size: 1.1rem; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .article-card h2::before { content: ""; display: inline-block; width: 4px; height: 18px; background: var(--primary-color); border-radius: 2px; }
+        .article-card p, .article-card li { font-size: 0.85rem; line-height: 1.6; margin-bottom: 10px; }
 
-      .btn-danger {
-        background: transparent;
-        color: var(--danger-color);
-        padding: 6px 10px;
-      }
+        .ad-placeholder { background: #f0f2f5; border: 1px dashed #ccc; color: #999; text-align: center; padding: 20px; border-radius: var(--radius); font-size: 0.8rem; display: flex; align-items: center; justify-content: center; min-height: 100px; }
 
-      .btn-group {
-        display: flex;
-        gap: 10px;
-        margin-top: 15px;
-        flex-wrap: wrap;
-      }
-
-      .vote-type-toggle {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 15px;
-      }
-
-      .vote-type-btn {
-        flex: 1;
-        padding: 12px;
-        background: var(--bg-input);
-        border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        color: var(--text-color);
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-size: 13px;
-      }
-
-      .vote-type-btn.active {
-        background: var(--accent-color);
-        color: #000;
-        border-color: var(--accent-color);
-      }
-
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-        gap: 15px;
-      }
-
-      .stat-card {
-        background: var(--bg-input);
-        padding: 15px;
-        border-radius: 12px;
-        text-align: center;
-      }
-
-      .stat-value {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: var(--accent-color);
-      }
-
-      .stat-label {
-        font-size: 11px;
-        opacity: 0.7;
-        margin-top: 5px;
-      }
-
-      .voter-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 5px;
-        margin-top: 10px;
-      }
-
-      .voter-tag {
-        background: var(--primary-color);
-        padding: 4px 10px;
-        border-radius: 12px;
-        font-size: 11px;
-      }
-
-      .new-option-row {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-      }
-
-      .new-option-row input {
-        flex: 1;
-        padding: 10px;
-        background: var(--bg-input);
-        border: 1px solid var(--border-subtle);
-        border-radius: 8px;
-        color: var(--text-color);
-        font-size: 14px;
-      }
-
-      .vote-mode {
-        padding: 10px 15px;
-        background: rgba(0, 217, 255, 0.1);
-        border-radius: 8px;
-        display: inline-block;
-        font-size: 13px;
-        margin-bottom: 15px;
-      }
-
-      .winner-banner {
-        background: linear-gradient(135deg, var(--success-color), #22c55e);
-        color: #000;
-        padding: 15px 20px;
-        border-radius: 8px;
-        text-align: center;
-        margin-bottom: 15px;
-        font-weight: bold;
-      }
-      .visually-hidden {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        margin: -1px;
-        padding: 0;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0;
-      }
+        .site-footer { background: #2c3e50; color: #bdc3c7; padding: 40px 0 20px; margin-top: 50px; text-align: center; }
     </style>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <a href="../../index.html" class="back-link">← 返回工具列表</a>
-        <h1>团队投票工具</h1>
-        <p>快速进行团队决策投票</p>
-        <button class="theme-toggle" onclick="toggleTheme()">🌓 切换主题</button>
-      </div>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="logo"><a href="../../index.html">WebUtils</a></div>
+            <button class="theme-toggle" id="themeToggle">🌓</button>
+        </div>
+    </header>
 
-      <div class="panel">
-        <div class="panel-title">📋 投票设置</div>
-        <div class="form-group">
-          <label>投票主题</label>
-          <input type="text" id="voteTitle" placeholder="例如：下周团建活动选择" />
-        </div>
-        <div class="form-group">
-          <label>投票类型</label>
-          <div class="vote-type-toggle">
-            <button class="vote-type-btn active" onclick="setVoteType('single', this)">
-              单选投票
-            </button>
-            <button class="vote-type-btn" onclick="setVoteType('multi', this)">多选投票</button>
-            <button class="vote-type-btn" onclick="setVoteType('score', this)">评分投票</button>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>最大可选数量 (多选时)</label>
-            <input type="number" id="maxSelections" value="3" min="1" />
-          </div>
-          <div class="form-group">
-            <label>当前投票人</label>
-            <input type="text" id="voterName" placeholder="输入您的名字" />
-          </div>
-        </div>
-      </div>
+    <main class="container">
+        <div class="tool-section">
+            <div class="ad-placeholder" style="margin-bottom: 20px;">广告位 - 顶部横幅 (AdSense Placeholder)</div>
 
-      <div class="panel">
-        <div class="panel-title">🗳️ 投票选项</div>
-        <div id="optionsList"></div>
-        <div class="new-option-row">
-          <input
-            type="text"
-            id="newOptionInput"
-            placeholder="输入新选项"
-            onkeypress="handleOptionKeypress(event)"
-          />
-          <button class="btn btn-secondary" onclick="addOption()">+ 添加</button>
-        </div>
-      </div>
+            <div class="tool-header">
+                <h1>团队决策投票工具</h1>
+                <p>消除冗长讨论，利用多种投票机制快速发现团队共识。透明、高效、即时统计。</p>
+            </div>
 
-      <div class="panel" id="votingPanel" style="display: none">
-        <div class="panel-title">✅ 进行投票</div>
-        <div class="vote-mode" id="voteMode">单选模式 - 请选择一个选项</div>
-        <div id="votingOptions"></div>
-        <div class="btn-group">
-          <button class="btn btn-primary" onclick="submitVote()">提交投票</button>
-        </div>
-      </div>
+            <!-- Settings -->
+            <div class="panel">
+                <div class="panel-title">📋 投票主题设置</div>
+                <div class="field"><label>投票主题</label><input type="text" id="voteTitle" class="input-text" placeholder="例如：本季度最佳团建方案选择"></div>
+                <div class="field"><label>投票模式</label>
+                    <div class="type-tabs" id="typeTabs">
+                        <div class="t-tab active" onclick="setMode('single')">单选</div>
+                        <div class="t-tab" onclick="setMode('multi')">多选</div>
+                        <div class="t-tab" onclick="setMode('score')">评分 (1-5)</div>
+                    </div>
+                </div>
+                <div id="multiConfig" class="field" style="display:none;"><label>最大可选数量</label><input type="number" id="maxSelect" class="input-text" value="3" min="1"></div>
+            </div>
 
-      <div class="panel">
-        <div class="panel-title">📊 投票结果</div>
-        <div id="winnerBanner"></div>
-        <div id="resultsList"></div>
-        <div class="stats-grid" style="margin-top: 20px">
-          <div class="stat-card">
-            <div class="stat-value" id="totalVoters">0</div>
-            <div class="stat-label">投票人数</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="totalVotes">0</div>
-            <div class="stat-label">总票数</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="optionCount">0</div>
-            <div class="stat-label">选项数</div>
-          </div>
-        </div>
-      </div>
+            <!-- Options Management -->
+            <div class="panel">
+                <div class="panel-title">🗳️ 选项编辑</div>
+                <div id="optList" class="opt-list"></div>
+                <div class="opt-row">
+                    <input type="text" id="newOptInput" class="input-text" placeholder="输入新选项内容...">
+                    <button class="btn btn-primary" onclick="addOption()">+ 添加选项</button>
+                </div>
+            </div>
 
-      <div class="panel">
-        <div class="panel-title">🔧 操作</div>
-        <div class="btn-group">
-          <button class="btn btn-secondary" onclick="shareLink()">🔗 分享投票</button>
-          <button class="btn btn-secondary" onclick="exportResults()">📤 导出结果</button>
-          <button class="btn btn-danger" onclick="resetVote()">🗑️ 重置投票</button>
+            <!-- Voting Area -->
+            <div class="panel" id="votingPanel">
+                <div class="panel-title">✅ 进行投票</div>
+                <div class="field"><label>您的名字</label><input type="text" id="voterName" class="input-text" placeholder="输入姓名以提交投票"></div>
+                <div id="voteItems"></div>
+                <button class="btn btn-primary" style="width:100%; margin-top:20px;" onclick="submitVote()">确认提交投票</button>
+            </div>
+
+            <!-- Results -->
+            <div class="panel">
+                <div class="panel-title">📊 投票结果实时统计</div>
+                <div id="winner"></div>
+                <div id="resList"></div>
+                <div class="dashboard">
+                    <div class="dash-card"><span id="statVoters" class="dash-val">0</span><span class="dash-label">投票人数</span></div>
+                    <div class="dash-card"><span id="statTotal" class="dash-val">0</span><span class="dash-label">总票数</span></div>
+                    <div class="dash-card"><span id="statOptions" class="dash-val">0</span><span class="dash-label">选项总数</span></div>
+                </div>
+            </div>
+
+            <div class="action-bar">
+                <button class="btn btn-outline" onclick="shareVote()">生成分享链接</button>
+                <button class="btn btn-outline" onclick="exportTxt()">导出结果报表</button>
+                <button class="btn btn-outline" style="color:var(--color-danger)" onclick="clearAll()">重置全部投票</button>
+            </div>
+
+            <!-- SEO Content -->
+            <section style="margin-top: 40px; border-top: 1px solid var(--border-color); padding-top: 30px">
+                <h2 style="font-size: 1.5rem; margin-bottom: 20px">深度解析：如何利用科学投票打破团队“决策僵局”？</h2>
+                <article style="font-size: 0.95rem; color: var(--text-main); line-height: 1.8">
+                    <p>在团队协作中，最消耗能量的往往不是工作本身，而是无休止的讨论。当各方持不同意见时，依靠层级决策会打击士气，依靠长时间讨论会浪费成本。这时候，一个<strong>透明、即时的投票机制</strong>就是最优解。</p>
+                    
+                    <h3 style="margin: 20px 0 10px;">1. 选择正确的投票模式</h3>
+                    <ul>
+                        <li><strong>单选投票：</strong> 适用于最终结论的确认。简单明了，胜负分明。</li>
+                        <li><strong>多选投票：</strong> 适用于头脑风暴后的“缩减范围”。例如从 10 个创意中选出前 3 个。</li>
+                        <li><strong>评分投票 (1-5分)：</strong> 适用于评估优先级或复杂度。它比单纯的选择更细致，能体现出团队对某个选项的真实认可程度。</li>
+                    </ul>
+
+                    <div class="ad-placeholder" style="margin: 25px 0">广告位 - 文章中部内嵌 (AdSense Placeholder)</div>
+
+                    <h3 style="margin: 20px 0 10px;">2. 提升决策质量的 3 个原则</h3>
+                    <p>投票不仅仅是点击按钮，它需要遵循一定的原则以确保结果的效力：</p>
+                    <ol>
+                        <li><strong>先讨论再投票：</strong> 投票应发生在充分的信息同步之后，确保大家对选项的理解是一致的。</li>
+                        <li><strong>可视化过程：</strong> 利用本工具的实时统计功能，让团队即时看到结果分布，有助于发现潜在的分歧点。</li>
+                        <li><strong>处理平局：</strong> 如果出现平局，不建议反复投票，而是针对平局项进行第二轮的“深度辩论”或采用评分制。</li>
+                    </ol>
+
+                    <h3 style="margin: 20px 0 10px;">3. FAQ：常见疑问解答</h3>
+                    <div style="background: var(--bg-color); padding: 15px; border-left: 4px solid var(--primary-color); margin-bottom: 15px;">
+                        <strong>问：投票是少数服从多数吗？</strong><br>
+                        答：不完全是。在敏捷团队中，投票是为了发现“共识”或“阻力”。如果高票项依然存在强烈反对者，应关注其反对原因。
+                    </div>
+                </article>
+            </section>
         </div>
-      </div>
-    </div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar-section">
+            <div class="article-card">
+                <h2>💡 决策小窍门</h2>
+                <ul>
+                    <li><strong>匿名性：</strong> 如果涉及敏感话题，建议大家在投完票后统一刷新查看。</li>
+                    <li><strong>点投票：</strong> 结合“多选模式”，每人限投 3 票，是收敛问题的黄金法则。</li>
+                    <li><strong>分享功能：</strong> 将生成的链接发到工作群，全员即刻参与。</li>
+                </ul>
+            </div>
+            <div class="ad-placeholder" style="min-height: 250px;">广告位 - 侧边栏 (AdSense Placeholder)</div>
+            <div class="article-card">
+                <h2>相关管理工具</h2>
+                <ul>
+                    <li><a href="decision-matrix.html">决策矩阵工具</a></li>
+                    <li><a href="retrospective.html">回顾会议模板</a></li>
+                    <li><a href="raci-chart.html">RACI 职责分配</a></li>
+                </ul>
+            </div>
+        </aside>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p style="margin-bottom: 15px;">WebUtils - 让每一个团队决策都变得透明、高效</p>
+            <div class="footer-bottom">&copy; 2026 WebUtils - 专业的团队协作辅助专家.</div>
+        </div>
+    </footer>
 
     <script>
-      var LS_KEY = "team-vote-data";
-      var voteType = "single";
-      var options = [];
-      var votes = {};
-      var currentSelections = [];
+        const LS_KEY = "team-vote-v2-data";
+        let mode = "single";
+        let options = [];
+        let votes = {}; // { voterName: { selections: [], scores: {} } }
+        let currentSelections = [];
+        let currentScores = {};
 
-      function init() {
-        var savedTheme = localStorage.getItem("theme") || "dark";
-        if (savedTheme === "light") {
-          document.body.setAttribute("data-theme", "light");
-        }
-
-        loadFromUrl() || loadFromStorage();
-
-        if (options.length === 0) {
-          options = [
-            { id: generateId(), text: "选项 A", score: 0 },
-            { id: generateId(), text: "选项 B", score: 0 },
-            { id: generateId(), text: "选项 C", score: 0 }
-          ];
-        }
-
-        document.getElementById("voteTitle").addEventListener("input", function () {
-          saveToStorage();
-        });
-
-        renderAll();
-      }
-
-      function generateId() {
-        return Date.now() + Math.random().toString(36).substr(2, 9);
-      }
-
-      function setVoteType(type, btn) {
-        voteType = type;
-        currentSelections = [];
-        document.querySelectorAll(".vote-type-btn").forEach(function (b) {
-          b.classList.remove("active");
-        });
-        btn.classList.add("active");
-
-        var modeText = {
-          single: "单选模式 - 请选择一个选项",
-          multi:
-            "多选模式 - 最多选择 " + document.getElementById("maxSelections").value + " 个选项",
-          score: "评分模式 - 为每个选项打分 (1-5分)"
-        };
-        document.getElementById("voteMode").textContent = modeText[type];
-
-        renderVotingOptions();
-        saveToStorage();
-      }
-
-      function addOption() {
-        var input = document.getElementById("newOptionInput");
-        var text = input.value.trim();
-        if (text) {
-          options.push({ id: generateId(), text: text, score: 0 });
-          input.value = "";
-          renderAll();
-          saveToStorage();
-        }
-      }
-
-      function handleOptionKeypress(e) {
-        if (e.key === "Enter") {
-          addOption();
-        }
-      }
-
-      function removeOption(id) {
-        options = options.filter(function (opt) {
-          return opt.id !== id;
-        });
-        renderAll();
-        saveToStorage();
-      }
-
-      function renderAll() {
-        renderOptionsList();
-        renderVotingOptions();
-        renderResults();
-      }
-
-      function renderOptionsList() {
-        var container = document.getElementById("optionsList");
-        container.textContent = "";
-
-        options.forEach(function (opt, index) {
-          var div = document.createElement("div");
-          div.className = "option-item";
-          div.style.cursor = "default";
-
-          var number = document.createElement("div");
-          number.className = "option-checkbox";
-          number.style.background = "var(--accent-color)";
-          number.style.border = "none";
-          number.style.color = "#000";
-          number.style.fontWeight = "bold";
-          number.style.fontSize = "12px";
-          number.textContent = index + 1;
-
-          var content = document.createElement("div");
-          content.className = "option-content";
-
-          var input = document.createElement("input");
-          input.type = "text";
-          input.value = opt.text;
-          input.style.background = "var(--bg-card)";
-          input.style.border = "1px solid var(--border-subtle)";
-          input.style.borderRadius = "6px";
-          input.style.padding = "8px";
-          input.style.color = "var(--text-color)";
-          input.style.width = "100%";
-          input.addEventListener("input", function (e) {
-            opt.text = e.target.value;
-            renderVotingOptions();
-            renderResults();
-            saveToStorage();
-          });
-
-          content.appendChild(input);
-
-          var deleteBtn = document.createElement("button");
-          deleteBtn.className = "btn btn-danger";
-          deleteBtn.textContent = "×";
-          deleteBtn.onclick = function () {
-            removeOption(opt.id);
-          };
-
-          div.appendChild(number);
-          div.appendChild(content);
-          div.appendChild(deleteBtn);
-          container.appendChild(div);
-        });
-
-        document.getElementById("optionCount").textContent = options.length;
-
-        if (options.length > 0) {
-          document.getElementById("votingPanel").style.display = "block";
-        }
-      }
-
-      function renderVotingOptions() {
-        var container = document.getElementById("votingOptions");
-        container.textContent = "";
-
-        var voterName = document.getElementById("voterName").value.trim();
-        var hasVoted = voterName && votes[voterName];
-
-        options.forEach(function (opt) {
-          var div = document.createElement("div");
-          var isSelected = currentSelections.indexOf(opt.id) !== -1;
-          div.className =
-            "option-item" + (isSelected ? " selected" : "") + (hasVoted ? " voted" : "");
-
-          if (!hasVoted) {
-            div.onclick = function () {
-              toggleSelection(opt.id);
+        function init() {
+            const savedTheme = localStorage.getItem("theme") || "light";
+            document.body.setAttribute("data-theme", savedTheme);
+            document.getElementById('themeToggle').onclick = () => {
+                const n = document.body.getAttribute("data-theme") === "light" ? "dark" : "light";
+                document.body.setAttribute("data-theme", n);
+                localStorage.setItem("theme", n);
             };
-          }
 
-          var checkbox = document.createElement("div");
-          checkbox.className = "option-checkbox";
+            loadState();
+            if(options.length === 0) {
+                ["方案 A：下周五下午海边烧烤", "方案 B：周六全天山地越野", "方案 C：室内剧本杀剧场"].forEach(txt => options.push({ id: Date.now()+Math.random(), txt }));
+            }
 
-          var content = document.createElement("div");
-          content.className = "option-content";
+            document.getElementById('voteTitle').oninput = saveState;
+            document.getElementById('maxSelect').oninput = saveState;
+            renderAll();
+        }
 
-          var text = document.createElement("div");
-          text.className = "option-text";
-          text.textContent = opt.text;
-          content.appendChild(text);
+        function setMode(m) {
+            mode = m;
+            currentSelections = [];
+            currentScores = {};
+            document.querySelectorAll('.t-tab').forEach(t => t.classList.toggle('active', t.textContent.includes(m==='single'?'单选':m==='multi'?'多选':'评分')));
+            document.getElementById('multiConfig').style.display = m === 'multi' ? 'block' : 'none';
+            renderVoteArea();
+            saveState();
+        }
 
-          if (voteType === "score" && !hasVoted) {
-            var scoreRow = document.createElement("div");
-            scoreRow.style.display = "flex";
-            scoreRow.style.gap = "5px";
-            scoreRow.style.marginTop = "8px";
+        function addOption() {
+            const val = document.getElementById('newOptInput').value.trim();
+            if(!val) return;
+            options.push({ id: Date.now(), txt: val });
+            document.getElementById('newOptInput').value = "";
+            renderAll();
+            saveState();
+        }
 
-            for (var i = 1; i <= 5; i++) {
-              (function (score) {
-                var starBtn = document.createElement("button");
-                starBtn.style.cssText =
-                  "width:30px;height:30px;border-radius:50%;border:1px solid var(--border-subtle);background:var(--bg-input);color:var(--text-color);cursor:pointer;font-size:14px;";
-                starBtn.textContent = score;
-                starBtn.onclick = function (e) {
-                  e.stopPropagation();
-                  setScore(opt.id, score);
-                };
-                if (getScore(opt.id) === score) {
-                  starBtn.style.background = "var(--accent-color)";
-                  starBtn.style.color = "#000";
+        function delOption(id) {
+            options = options.filter(o => o.id !== id);
+            Object.keys(votes).forEach(v => {
+                votes[v].selections = votes[v].selections.filter(sid => sid !== id);
+                delete votes[v].scores[id];
+            });
+            renderAll();
+            saveState();
+        }
+
+        function updateOptTxt(id, val) { options.find(o => o.id === id).txt = val; renderAll(); saveState(); }
+
+        function renderAll() {
+            renderOptEditor();
+            renderVoteArea();
+            renderResults();
+        }
+
+        function renderOptEditor() {
+            const list = document.getElementById("optList");
+            list.innerHTML = "";
+            options.forEach((o, idx) => {
+                const div = document.createElement("div");
+                div.className = "opt-row";
+                div.innerHTML = `
+                    <div class="opt-num">${idx+1}</div>
+                    <input type="text" class="input-text" value="${o.txt}" oninput="updateOptTxt(${o.id}, this.value)">
+                    <button class="btn-del" onclick="delOption(${o.id})">×</button>
+                `;
+                list.appendChild(div);
+            });
+            document.getElementById('statOptions').textContent = options.length;
+        }
+
+        function renderVoteArea() {
+            const container = document.getElementById("voteItems");
+            container.innerHTML = "";
+            options.forEach(o => {
+                const div = document.createElement("div");
+                div.className = `vote-card ${currentSelections.includes(o.id) ? 'selected' : ''}`;
+                
+                if(mode === 'score') {
+                    div.style.flexDirection = "column";
+                    div.style.alignItems = "flex-start";
+                    div.innerHTML = `<div>${o.txt}</div><div class="score-row" id="score-${o.id}"></div>`;
+                    const sRow = div.querySelector('.score-row');
+                    for(let i=1; i<=5; i++) {
+                        const sBtn = document.createElement("button");
+                        sBtn.className = `score-btn ${currentScores[o.id] === i ? 'active' : ''}`;
+                        sBtn.textContent = i;
+                        sBtn.onclick = (e) => { e.stopPropagation(); currentScores[o.id] = i; renderVoteArea(); };
+                        sRow.appendChild(sBtn);
+                    }
+                } else {
+                    div.innerHTML = `<div class="v-check"></div><div>${o.txt}</div>`;
+                    div.onclick = () => toggleSelect(o.id);
                 }
-                scoreRow.appendChild(starBtn);
-              })(i);
+                container.appendChild(div);
+            });
+        }
+
+        function toggleSelect(id) {
+            if(mode === 'single') currentSelections = [id];
+            else {
+                if(currentSelections.includes(id)) currentSelections = currentSelections.filter(x => x !== id);
+                else {
+                    const max = parseInt(document.getElementById('maxSelect').value) || 3;
+                    if(currentSelections.length < max) currentSelections.push(id);
+                    else return alert(`最多只能选择 ${max} 项`);
+                }
             }
-            content.appendChild(scoreRow);
-          }
-
-          div.appendChild(checkbox);
-          div.appendChild(content);
-          container.appendChild(div);
-        });
-      }
-
-      function toggleSelection(id) {
-        if (voteType === "score") return;
-
-        var index = currentSelections.indexOf(id);
-
-        if (voteType === "single") {
-          currentSelections = index !== -1 ? [] : [id];
-        } else {
-          var maxSelections = parseInt(document.getElementById("maxSelections").value) || 3;
-          if (index !== -1) {
-            currentSelections.splice(index, 1);
-          } else if (currentSelections.length < maxSelections) {
-            currentSelections.push(id);
-          } else {
-            showToast("最多只能选择 " + maxSelections + " 个选项");
-            return;
-          }
+            renderVoteArea();
         }
 
-        renderVotingOptions();
-      }
+        function submitVote() {
+            const name = document.getElementById('voterName').value.trim();
+            if(!name) return alert("请输入名字");
+            if(votes[name]) return alert("该名字已投过票");
+            
+            if(mode === 'score' && Object.keys(currentScores).length === 0) return alert("请至少为一个选项评分");
+            if(mode !== 'score' && currentSelections.length === 0) return alert("请至少选择一个选项");
 
-      var scores = {};
-
-      function setScore(optId, score) {
-        scores[optId] = score;
-        renderVotingOptions();
-      }
-
-      function getScore(optId) {
-        return scores[optId] || 0;
-      }
-
-      function submitVote() {
-        var voterName = document.getElementById("voterName").value.trim();
-        if (!voterName) {
-          showToast("请输入您的名字");
-          return;
+            votes[name] = { selections: [...currentSelections], scores: {...currentScores} };
+            currentSelections = [];
+            currentScores = {};
+            document.getElementById('voterName').value = "";
+            renderAll();
+            saveState();
+            alert("提交成功！");
         }
 
-        if (votes[voterName]) {
-          showToast("您已经投过票了");
-          return;
-        }
-
-        if (voteType === "score") {
-          var hasAnyScore = options.some(function (opt) {
-            return scores[opt.id] > 0;
-          });
-          if (!hasAnyScore) {
-            showToast("请至少为一个选项打分");
-            return;
-          }
-          votes[voterName] = { type: "score", scores: Object.assign({}, scores) };
-        } else {
-          if (currentSelections.length === 0) {
-            showToast("请选择至少一个选项");
-            return;
-          }
-          votes[voterName] = { type: voteType, selections: currentSelections.slice() };
-        }
-
-        currentSelections = [];
-        scores = {};
-
-        renderAll();
-        saveToStorage();
-        showToast("投票成功！");
-      }
-
-      function renderResults() {
-        var container = document.getElementById("resultsList");
-        container.textContent = "";
-
-        var optionVotes = {};
-        var optionVoters = {};
-        var optionScores = {};
-        var totalVotes = 0;
-        var voterNames = Object.keys(votes);
-
-        options.forEach(function (opt) {
-          optionVotes[opt.id] = 0;
-          optionVoters[opt.id] = [];
-          optionScores[opt.id] = 0;
-        });
-
-        voterNames.forEach(function (voter) {
-          var vote = votes[voter];
-          if (vote.type === "score") {
-            Object.keys(vote.scores).forEach(function (optId) {
-              if (optionScores[optId] !== undefined) {
-                optionScores[optId] += vote.scores[optId];
-                optionVoters[optId].push(voter + "(" + vote.scores[optId] + "分)");
-              }
+        function renderResults() {
+            const list = document.getElementById("resList");
+            list.innerHTML = "";
+            const counts = {};
+            const scoreTotals = {};
+            const voterMap = {};
+            
+            options.forEach(o => { counts[o.id] = 0; scoreTotals[o.id] = 0; voterMap[o.id] = []; });
+            
+            const voterNames = Object.keys(votes);
+            voterNames.forEach(vn => {
+                const v = votes[vn];
+                v.selections.forEach(sid => { if(counts[sid]!==undefined) { counts[sid]++; voterMap[sid].push(vn); } });
+                Object.keys(v.scores).forEach(sid => { if(scoreTotals[sid]!==undefined) { scoreTotals[sid] += v.scores[sid]; voterMap[sid].push(`${vn}(${v.scores[sid]})`); } });
             });
-          } else {
-            vote.selections.forEach(function (optId) {
-              if (optionVotes[optId] !== undefined) {
-                optionVotes[optId]++;
-                optionVoters[optId].push(voter);
-                totalVotes++;
-              }
+
+            const max = mode === 'score' ? Math.max(...Object.values(scoreTotals), 1) : Math.max(...Object.values(counts), 1);
+            
+            options.sort((a, b) => (mode==='score' ? scoreTotals[b.id]-scoreTotals[a.id] : counts[b.id]-counts[a.id])).forEach(o => {
+                const val = mode === 'score' ? scoreTotals[o.id] : counts[o.id];
+                const per = (val / max) * 100;
+                const div = document.createElement("div");
+                div.className = "res-item";
+                div.innerHTML = `
+                    <div class="res-header">
+                        <span class="res-title">${o.txt}</span>
+                        <span class="res-val">${val} ${mode==='score'?'分':'票'}</span>
+                    </div>
+                    <div class="res-bar-bg"><div class="res-bar-fill" style="width:${per}%"></div></div>
+                    <div class="res-voters">${voterMap[o.id].map(v => `<span class="v-tag">${v}</span>`).join('')}</div>
+                `;
+                list.appendChild(div);
             });
-          }
-        });
 
-        var maxVotes = Math.max.apply(
-          null,
-          options.map(function (opt) {
-            return voteType === "score" ? optionScores[opt.id] : optionVotes[opt.id];
-          })
-        );
-
-        var winnerBanner = document.getElementById("winnerBanner");
-        if (voterNames.length > 0 && maxVotes > 0) {
-          var winners = options.filter(function (opt) {
-            return (voteType === "score" ? optionScores[opt.id] : optionVotes[opt.id]) === maxVotes;
-          });
-          if (winners.length === 1) {
-            winnerBanner.textContent = "🏆 领先选项: " + winners[0].text;
-            winnerBanner.style.display = "block";
-          } else if (winners.length > 1) {
-            winnerBanner.textContent =
-              "⚖️ 平局: " +
-              winners
-                .map(function (w) {
-                  return w.text;
-                })
-                .join(", ");
-            winnerBanner.style.display = "block";
-          }
-        } else {
-          winnerBanner.style.display = "none";
-        }
-
-        options.forEach(function (opt) {
-          var div = document.createElement("div");
-          div.className = "option-item";
-          div.style.cursor = "default";
-
-          var content = document.createElement("div");
-          content.className = "option-content";
-
-          var text = document.createElement("div");
-          text.className = "option-text";
-          text.textContent = opt.text;
-
-          var bar = document.createElement("div");
-          bar.className = "option-bar";
-
-          var fill = document.createElement("div");
-          fill.className = "option-bar-fill";
-          var voteCount = voteType === "score" ? optionScores[opt.id] : optionVotes[opt.id];
-          var percent = maxVotes > 0 ? (voteCount / maxVotes) * 100 : 0;
-          fill.style.width = percent + "%";
-          bar.appendChild(fill);
-
-          var stats = document.createElement("div");
-          stats.className = "option-stats";
-          if (voteType === "score") {
-            stats.textContent =
-              "总分: " +
-              optionScores[opt.id] +
-              " | 平均: " +
-              (voterNames.length > 0 ? (optionScores[opt.id] / voterNames.length).toFixed(1) : 0);
-          } else {
-            var percentage =
-              totalVotes > 0 ? ((optionVotes[opt.id] / totalVotes) * 100).toFixed(1) : 0;
-            stats.textContent = optionVotes[opt.id] + " 票 (" + percentage + "%)";
-          }
-
-          content.appendChild(text);
-          content.appendChild(bar);
-          content.appendChild(stats);
-
-          if (optionVoters[opt.id].length > 0) {
-            var voterList = document.createElement("div");
-            voterList.className = "voter-list";
-            optionVoters[opt.id].forEach(function (voter) {
-              var tag = document.createElement("span");
-              tag.className = "voter-tag";
-              tag.textContent = voter;
-              voterList.appendChild(tag);
-            });
-            content.appendChild(voterList);
-          }
-
-          div.appendChild(content);
-          container.appendChild(div);
-        });
-
-        document.getElementById("totalVoters").textContent = voterNames.length;
-        document.getElementById("totalVotes").textContent = totalVotes;
-      }
-
-      function shareLink() {
-        var data = {
-          title: document.getElementById("voteTitle").value,
-          type: voteType,
-          maxSelections: parseInt(document.getElementById("maxSelections").value),
-          options: options,
-          votes: votes
-        };
-
-        try {
-          var encoded = btoa(encodeURIComponent(JSON.stringify(data)));
-          var url = location.origin + location.pathname + "#" + encoded;
-          navigator.clipboard.writeText(url);
-          showToast("分享链接已复制");
-        } catch (e) {
-          showToast("生成链接失败");
-        }
-      }
-
-      function exportResults() {
-        var title = document.getElementById("voteTitle").value || "团队投票";
-        var lines = [];
-        lines.push("投票主题: " + title);
-        lines.push(
-          "投票类型: " + (voteType === "single" ? "单选" : voteType === "multi" ? "多选" : "评分")
-        );
-        lines.push("投票人数: " + Object.keys(votes).length);
-        lines.push("");
-        lines.push("投票结果:");
-        lines.push("─".repeat(40));
-
-        options.forEach(function (opt, index) {
-          var count = 0;
-          var voters = [];
-          Object.keys(votes).forEach(function (voter) {
-            var vote = votes[voter];
-            if (vote.type === "score") {
-              if (vote.scores[opt.id]) {
-                count += vote.scores[opt.id];
-                voters.push(voter + "(" + vote.scores[opt.id] + "分)");
-              }
-            } else {
-              if (vote.selections.indexOf(opt.id) !== -1) {
-                count++;
-                voters.push(voter);
-              }
+            // Winner logic
+            const banner = document.getElementById('winner');
+            banner.innerHTML = "";
+            if(voterNames.length > 0 && max > 0) {
+                const winners = options.filter(o => (mode==='score'?scoreTotals[o.id]:counts[o.id]) === max);
+                const bDiv = document.createElement("div");
+                bDiv.className = "winner-banner";
+                bDiv.innerHTML = winners.length > 1 ? `⚖️ 平局项: ${winners.map(w=>w.txt).join(', ')}` : `🏆 领先项: ${winners[0].txt}`;
+                banner.appendChild(bDiv);
             }
-          });
-          lines.push(
-            index + 1 + ". " + opt.text + ": " + count + (voteType === "score" ? "分" : "票")
-          );
-          if (voters.length > 0) {
-            lines.push("   投票人: " + voters.join(", "));
-          }
-        });
 
-        var content = lines.join("\n");
-        var blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement("a");
-        a.href = url;
-        a.download = title + "_投票结果.txt";
-        a.click();
-        URL.revokeObjectURL(url);
-      }
-
-      function resetVote() {
-        if (confirm("确定要重置所有投票数据吗？")) {
-          votes = {};
-          currentSelections = [];
-          scores = {};
-          renderAll();
-          saveToStorage();
-          showToast("已重置");
+            document.getElementById('statVoters').textContent = voterNames.length;
+            document.getElementById('statTotal').textContent = mode === 'score' ? Object.values(scoreTotals).reduce((a,b)=>a+b,0) : Object.values(counts).reduce((a,b)=>a+b,0);
         }
-      }
 
-      function loadFromUrl() {
-        var hash = location.hash.slice(1);
-        if (!hash) return false;
-        try {
-          var data = JSON.parse(decodeURIComponent(atob(hash)));
-          document.getElementById("voteTitle").value = data.title || "";
-          voteType = data.type || "single";
-          document.getElementById("maxSelections").value = data.maxSelections || 3;
-          if (data.options) options = data.options;
-          if (data.votes) votes = data.votes;
+        function saveState() {
+            localStorage.setItem(LS_KEY, JSON.stringify({
+                title: document.getElementById('voteTitle').value,
+                mode, options, votes, max: document.getElementById('maxSelect').value
+            }));
+        }
 
-          document.querySelectorAll(".vote-type-btn").forEach(function (btn) {
-            btn.classList.remove("active");
-            if (
-              btn.textContent.indexOf(
-                voteType === "single" ? "单选" : voteType === "multi" ? "多选" : "评分"
-              ) !== -1
-            ) {
-              btn.classList.add("active");
+        function loadState() {
+            const s = localStorage.getItem(LS_KEY);
+            if(s) {
+                const d = JSON.parse(s);
+                document.getElementById('voteTitle').value = d.title || "";
+                mode = d.mode || "single";
+                options = d.options || [];
+                votes = d.votes || {};
+                document.getElementById('maxSelect').value = d.max || 3;
+                setMode(mode);
             }
-          });
-
-          return true;
-        } catch (e) {
-          return false;
+            const hash = window.location.hash.slice(1);
+            if(hash) { try { const d = JSON.parse(decodeURIComponent(atob(hash))); options = d.options || []; votes = d.votes || {}; } catch(e){} }
         }
-      }
 
-      function saveToStorage() {
-        var data = {
-          title: document.getElementById("voteTitle").value,
-          type: voteType,
-          maxSelections: parseInt(document.getElementById("maxSelections").value),
-          options: options,
-          votes: votes
-        };
-        localStorage.setItem(LS_KEY, JSON.stringify(data));
-      }
+        function shareVote() {
+            const data = btoa(encodeURIComponent(JSON.stringify({ options, votes })));
+            const url = window.location.href.split('#')[0] + '#' + data;
+            navigator.clipboard.writeText(url).then(() => alert("分享链接已复制！"));
+        }
 
-      function loadFromStorage() {
-        var saved = localStorage.getItem(LS_KEY);
-        if (saved) {
-          try {
-            var data = JSON.parse(saved);
-            document.getElementById("voteTitle").value = data.title || "";
-            voteType = data.type || "single";
-            document.getElementById("maxSelections").value = data.maxSelections || 3;
-            if (data.options) options = data.options;
-            if (data.votes) votes = data.votes;
-
-            document.querySelectorAll(".vote-type-btn").forEach(function (btn) {
-              btn.classList.remove("active");
-              if (
-                btn.textContent.indexOf(
-                  voteType === "single" ? "单选" : voteType === "multi" ? "多选" : "评分"
-                ) !== -1
-              ) {
-                btn.classList.add("active");
-              }
+        function exportTxt() {
+            const title = document.getElementById('voteTitle').value || '团队投票';
+            let out = `【${title}】投票结果报告\n\n`;
+            options.forEach((o, i) => {
+                const sid = o.id;
+                let val = 0;
+                let vs = [];
+                Object.keys(votes).forEach(vn => {
+                    const v = votes[vn];
+                    if(mode === 'score') { if(v.scores[sid]) { val += v.scores[sid]; vs.push(`${vn}(${v.scores[sid]})`); } }
+                    else { if(v.selections.includes(sid)) { val++; vs.push(vn); } }
+                });
+                out += `${i+1}. ${o.txt}: ${val}${mode==='score'?'分':'票'}\n   投票人: ${vs.join(', ') || '无'}\n\n`;
             });
-          } catch (e) {
-            console.error("Failed to load from storage");
-          }
+            const blob = new Blob([out], {type: "text/plain"});
+            const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "vote_result.txt"; a.click();
         }
-      }
 
-      function showToast(message) {
-        var toast = document.createElement("div");
-        toast.style.cssText =
-          "position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--accent-color);color:#000;padding:12px 24px;border-radius:8px;z-index:1000;font-size:14px;";
-        toast.textContent = message;
-        document.body.appendChild(toast);
-        setTimeout(function () {
-          toast.remove();
-        }, 2000);
-      }
+        function clearAll() { if(confirm("确定重置所有数据吗？")){ votes = {}; currentSelections = []; currentScores = []; renderAll(); saveState(); } }
 
-      window.toggleTheme = function () {
-        var body = document.body;
-        var currentTheme = body.getAttribute("data-theme");
-        var newTheme = currentTheme === "light" ? "dark" : "light";
-        body.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
-      };
-
-      init();
+        init();
     </script>
-  </body>
+</body>
 </html>
