@@ -1,770 +1,585 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>数据导入 - WebUtils</title>
-    <meta property="og:title" content="数据导入 - WebUtils" />
-    <meta property="og:description" content="数据导入：在线实用工具，免费在线使用，无需安装" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/data/data-importer" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <link rel="canonical" href="https://essays4u.net/tools/data/data-importer" />
-    <meta name="description" content="解析JSON或CSV数据，预览表格，支持格式转换" />
-    <meta name="keywords" content="import 导入 解析 JSON CSV 表格预览 格式转换" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>智能数据导入预览工具 - 在线解析 JSON/CSV/Excel - HTML Tools</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="专业在线数据导入与预览工具，支持一键解析 JSON、CSV、Excel 及文本数据。提供可视化表格预览、数据统计及格式互转功能。100%本地处理，保护您的数据隐私。">
+    <meta name="keywords" content="数据导入,数据预览,JSON解析器,CSV查看器,Excel在线预览,数据格式转换,在线办公工具,HTML Tools">
+    <meta name="author" content="HTML Tools">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Canonical Link -->
+    <link rel="canonical" href="https://essays4u.net/tools/data/data-importer.html">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://essays4u.net/tools/data/data-importer.html">
+    <meta property="og:title" content="智能数据导入预览工具 - 高效解析各类结构化数据 - HTML Tools">
+    <meta property="og:description" content="无需上传服务器，本地快速预览和解析您的数据文件。支持可视化预览与一键格式转换。">
+    <meta property="og:image" content="https://essays4u.net/assets/images/og-data.jpg">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="智能数据导入预览工具 - 在线解析 JSON/CSV/Excel">
+    <meta name="twitter:description" content="您的本地数据分析助手，支持可视化预览与一键转换。隐私安全，离线可用。">
+    <meta name="twitter:image" content="https://essays4u.net/assets/images/og-data.jpg">
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "智能数据导入预览工具",
+        "alternateName": "Data Importer",
+        "url": "https://essays4u.net/tools/data/data-importer.html",
+        "description": "在线解析并预览 JSON 和 CSV 数据，支持转换为不同格式，提供详细的数据统计报告。",
+        "applicationCategory": "DataApplication",
+        "operatingSystem": "All",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        }
+    }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
     <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--color-bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-      }
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      body {
-        font-family: var(--font-sans);
-        background: var(--color-bg-deep);
-        color: var(--color-text-primary);
-        min-height: 100vh;
-        line-height: 1.6;
-      }
-      .bg-grid {
-        position: fixed;
-        inset: 0;
-        background-image:
-          linear-gradient(rgb(0, 245, 212, 0.02) 1px, transparent 1px),
-          linear-gradient(90deg, rgb(0, 245, 212, 0.02) 1px, transparent 1px);
-        background-size: 40px 40px;
-        pointer-events: none;
-        z-index: 0;
-      }
-      .container {
-        position: relative;
-        z-index: 1;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 24px;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-      }
-      .header {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        margin-bottom: 24px;
-        flex-wrap: wrap;
-      }
-      .breadcrumb {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        padding: 8px 14px;
-        background: var(--color-bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-      }
-      .breadcrumb a {
-        color: var(--color-text-secondary);
-        text-decoration: none;
-        transition: color 0.2s ease;
-      }
-      .breadcrumb a:hover {
-        color: var(--color-accent-cyan);
-      }
-      .breadcrumb-separator {
-        color: var(--text-muted);
-      }
-      .breadcrumb-current {
-        color: var(--color-text-primary);
-        font-weight: 500;
-      }
-      .title-section {
-        flex: 1;
-      }
-      .title-section h1 {
-        font-family: var(--font-mono);
-        font-size: 1.5rem;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-      .title-section h1 .icon {
-        font-size: 1.8rem;
-      }
-      .title-section p {
-        color: var(--color-text-secondary);
-        margin-top: 4px;
-        font-size: 0.9rem;
-      }
-      .main-content {
-        background: var(--color-bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-lg);
-        padding: 24px;
-        flex: 1;
-      }
-      .section-title {
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: var(--color-text-secondary);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 16px;
-        padding-bottom: 8px;
-        border-bottom: 1px solid var(--border-subtle);
-      }
-      .input-group {
-        margin-bottom: 16px;
-      }
-      .input-label {
-        display: block;
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        color: var(--color-text-secondary);
-        margin-bottom: 8px;
-      }
-      .input-hint {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-        margin-top: 4px;
-      }
-      textarea {
-        width: 100%;
-        padding: 10px 14px;
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-        background: var(--bg-input);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        color: var(--color-text-primary);
-        transition: border-color 0.2s;
-        min-height: 180px;
-        resize: vertical;
-      }
-      textarea:focus {
-        outline: none;
-        border-color: var(--color-accent-cyan);
-      }
-      .btn-row {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        margin-bottom: 24px;
-      }
-      .btn {
-        flex: 1;
-        min-width: 100px;
-        padding: 12px 20px;
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        font-weight: 500;
-        border: none;
-        border-radius: var(--radius-sm);
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-      }
-      .btn-primary {
-        background: var(--color-accent-cyan);
-        color: var(--color-bg-deep);
-      }
-      .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 20px var(--glow-cyan);
-      }
-      .btn-secondary {
-        background: var(--color-bg-surface);
-        color: var(--color-text-primary);
-        border: 1px solid var(--border-subtle);
-      }
-      .btn-secondary:hover {
-        border-color: var(--color-accent-cyan);
-        color: var(--color-accent-cyan);
-      }
-      .info-bar {
-        display: flex;
-        gap: 16px;
-        margin-bottom: 16px;
-        flex-wrap: wrap;
-      }
-      .info-badge {
-        background: var(--bg-input);
-        padding: 8px 12px;
-        border-radius: var(--radius-sm);
-        font-family: var(--font-mono);
-        font-size: 0.8rem;
-      }
-      .info-badge span {
-        color: var(--color-accent-cyan);
-        font-weight: 600;
-      }
-      .format-badge {
-        display: inline-block;
-        padding: 4px 8px;
-        font-family: var(--font-mono);
-        font-size: 0.75rem;
-        border-radius: var(--radius-sm);
-        margin-left: 8px;
-      }
-      .format-badge.json {
-        background: var(--accent-yellow);
-        color: var(--color-bg-deep);
-      }
-      .format-badge.csv {
-        background: var(--accent-green);
-        color: white;
-      }
-      .format-badge.unknown {
-        background: var(--accent-red);
-        color: white;
-      }
-      .table-wrapper {
-        overflow-x: auto;
-        background: var(--color-bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        margin-bottom: 16px;
-        max-height: 400px;
-        overflow-y: auto;
-      }
-      .data-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-      }
-      .data-table th {
-        background: var(--bg-input);
-        padding: 12px 16px;
-        text-align: left;
-        font-weight: 600;
-        color: var(--color-accent-cyan);
-        border-bottom: 1px solid var(--border-subtle);
-        white-space: nowrap;
-        position: sticky;
-        top: 0;
-      }
-      .data-table td {
-        padding: 10px 16px;
-        border-bottom: 1px solid var(--border-subtle);
-        max-width: 300px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-      .data-table tr:last-child td {
-        border-bottom: none;
-      }
-      .data-table tr:hover td {
-        background: var(--bg-input);
-      }
-      .empty-state {
-        padding: 40px;
-        text-align: center;
-        color: var(--text-muted);
-        font-family: var(--font-mono);
-      }
-      .convert-section {
-        margin-top: 24px;
-        padding-top: 24px;
-        border-top: 1px solid var(--border-subtle);
-      }
-      .convert-row {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-        flex-wrap: wrap;
-      }
-      .convert-row select {
-        padding: 10px 14px;
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        background: var(--bg-input);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        color: var(--color-text-primary);
-        min-width: 150px;
-      }
-      .convert-row select:focus {
-        outline: none;
-        border-color: var(--color-accent-cyan);
-      }
-      .toast {
-        position: fixed;
-        bottom: 24px;
-        left: 50%;
-        transform: translateX(-50%) translateY(100px);
-        background: var(--accent-green);
-        color: var(--color-bg-deep);
-        padding: 12px 24px;
-        border-radius: var(--radius-md);
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        font-weight: 500;
-        opacity: 0;
-        transition: all 0.3s ease;
-        z-index: 1000;
-      }
-      .toast.show {
-        transform: translateX(-50%) translateY(0);
-        opacity: 1;
-      }
-      .toast.error {
-        background: var(--accent-red);
-        color: white;
-      }
-      @media (max-width: 600px) {
-        .container {
-          padding: 16px;
+        :root {
+            --bg-deep: #0a0a0f;
+            --bg-glass: rgba(15, 15, 25, 0.7);
+            --bg-panel: rgba(255, 255, 255, 0.03);
+            --accent-cyan: #00f5d4;
+            --accent-magenta: #f72585;
+            --accent-purple: #9d4edd;
+            --accent-blue: #3a86ff;
+            --text-main: #e0e0e0;
+            --text-dim: #94a3b8;
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --glass-blur: blur(12px);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .btn-row {
-          flex-direction: column;
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: 'Space Grotesk', sans-serif;
+            line-height: 1.6;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 245, 212, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(247, 37, 133, 0.05) 0%, transparent 40%),
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 30px 30px, 30px 30px;
+            min-height: 100vh;
+            padding: 20px;
         }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            transition: var(--transition);
+            gap: 8px;
+        }
+        .back-link:hover { color: var(--accent-cyan); transform: translateX(-5px); }
+
+        header {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--bg-glass);
+            backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border-glass);
+            border-radius: 30px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-cyan), var(--accent-magenta), transparent);
+        }
+
+        header h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, #fff, var(--text-dim));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p { color: var(--text-dim); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+
+        .ad-container {
+            margin: 30px 0;
+            padding: 20px;
+            background: var(--bg-glass);
+            border: 1px dashed var(--border-glass);
+            border-radius: 20px;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .workspace {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .card {
+            background: var(--bg-glass);
+            backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border-glass);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-glass);
+            border-radius: 20px;
+            padding: 60px 20px;
+            text-align: center;
+            background: rgba(255,255,255,0.02);
+            transition: var(--transition);
+            cursor: pointer;
+            margin-bottom: 30px;
+        }
+
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: var(--accent-cyan);
+            background: rgba(0, 245, 212, 0.05);
+            transform: scale(1.01);
+        }
+
+        .drop-zone svg { color: var(--accent-cyan); margin-bottom: 20px; }
+        .drop-zone p { font-size: 1.2rem; font-weight: 600; color: var(--text-main); }
+        .drop-zone span { font-size: 0.9rem; color: var(--text-dim); }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 20px;
+            color: var(--text-main);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            resize: vertical;
+            transition: var(--transition);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            background: rgba(0,0,0,0.4);
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
         .btn {
-          width: 100%;
+            padding: 12px 28px;
+            border-radius: 12px;
+            border: 1px solid var(--border-glass);
+            background: var(--bg-panel);
+            color: var(--text-main);
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        .convert-row {
-          flex-direction: column;
-          align-items: stretch;
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            color: var(--bg-deep);
+            border: none;
+            box-shadow: 0 10px 20px rgba(0, 245, 212, 0.2);
         }
-        .convert-row select {
-          width: 100%;
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(0, 245, 212, 0.4);
         }
-      }
+
+        .btn:hover:not(.btn-primary) {
+            background: rgba(255,255,255,0.1);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--bg-panel);
+            padding: 25px;
+            border-radius: 20px;
+            border: 1px solid var(--border-glass);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .stat-label { font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            background: rgba(0,0,0,0.2);
+            border-radius: 20px;
+            border: 1px solid var(--border-glass);
+            max-height: 600px;
+            scrollbar-width: thin;
+        }
+
+        table { width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+        th { 
+            background: var(--bg-panel); 
+            color: var(--accent-cyan); 
+            padding: 15px 20px; 
+            text-align: left; 
+            position: sticky; 
+            top: 0; 
+            z-index: 10;
+            border-bottom: 2px solid var(--border-glass);
+            backdrop-filter: blur(5px);
+        }
+        td { padding: 12px 20px; border-bottom: 1px solid var(--border-glass); color: var(--text-dim); white-space: nowrap; max-width: 300px; overflow: hidden; text-overflow: ellipsis; }
+        tr:hover td { background: rgba(255,255,255,0.03); color: var(--text-main); }
+
+        .article-section {
+            margin-top: 60px;
+            background: var(--bg-glass);
+            backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border-glass);
+            border-radius: 30px;
+            padding: 50px;
+        }
+
+        .article-section h2 { font-size: 2rem; color: var(--accent-cyan); margin-bottom: 30px; }
+        .article-section h3 { font-size: 1.5rem; margin: 40px 0 20px; color: var(--text-main); }
+        .article-section p { color: var(--text-dim); margin-bottom: 20px; font-size: 1.1rem; }
+        .article-section ul { margin: 20px 0 30px 25px; color: var(--text-dim); }
+        .article-section li { margin-bottom: 12px; }
+
+        footer {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--accent-cyan);
+            color: var(--bg-deep);
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 700;
+            z-index: 1000;
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 10px 30px rgba(0, 245, 212, 0.3);
+        }
+
+        #toast.show { transform: translateX(-50%) translateY(0); }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-glass); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-cyan); }
     </style>
-  </head>
-  <body>
-    <div class="bg-grid"></div>
-    <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">🌓</button>
-
+</head>
+<body>
     <div class="container">
-      <header class="header">
-        <nav class="breadcrumb">
-          <a href="../../index.html">首页</a>
-          <span class="breadcrumb-separator">/</span>
-          <span class="breadcrumb-current">数据导入</span>
-        </nav>
-        <div class="title-section">
-          <h1>
-            <span class="icon">📥</span>
-            数据导入
-          </h1>
-          <p>解析 JSON/CSV 数据，预览并转换格式</p>
-        </div>
-      </header>
+        <a href="../../index.html" class="back-link">← 返回首页</a>
 
-      <main class="main-content">
-        <div class="section-title">数据输入</div>
-        <div class="input-group">
-          <label class="input-label">粘贴数据（自动检�?JSON �?CSV 格式�?/label>
-          <textarea
-            id="inputData"
-            placeholder='JSON 示例�?
-[
-  {"name": "Alice", "age": 30, "city": "Beijing"},
-  {"name": "Bob", "age": 25, "city": "Shanghai"}
-]
+        <header>
+            <h1>智能数据导入预览</h1>
+            <p>即时解析并可视化您的 JSON 和 CSV 数据。支持文件拖拽、自动格式检测与大数据量本地处理。</p>
+        </header>
 
-CSV 示例�?
-name,age,city
-Alice,30,Beijing
-Bob,25,Shanghai'
-          ></textarea>
-        </div>
-        <div class="btn-row">
-          <button class="btn btn-primary" onclick="parseData()">📊 解析</button>
-          <button class="btn btn-secondary" onclick="pasteFromClipboard()">📋 粘贴</button>
-          <button class="btn btn-secondary" onclick="loadSample()">📝 示例</button>
-          <button class="btn btn-secondary" onclick="clearAll()">�?清空</button>
-        </div>
+        <div class="ad-container">Google AdSense 广告位 - 顶部横幅</div>
 
-        <div class="section-title">
-          数据预览
-          <span class="format-badge unknown" id="formatBadge">未检�?/span>
-        </div>
+        <main class="workspace">
+            <div class="card">
+                <div class="drop-zone" id="dropZone">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                    <p>将文件拖拽至此 或 点击上传</p>
+                    <span>支持 .json, .csv, .txt 等格式</span>
+                    <input type="file" id="fileInput" hidden accept=".json,.csv,.txt">
+                </div>
 
-        <div class="info-bar" id="infoBar" style="display: none">
-          <div class="info-badge">
-            行数:
-            <span id="rowCount">0</span>
-          </div>
-          <div class="info-badge">
-            列数:
-            <span id="colCount">0</span>
-          </div>
-          <div class="info-badge">
-            字段:
-            <span id="fieldNames">-</span>
-          </div>
-        </div>
+                <textarea id="input" placeholder="或者直接在此粘贴 JSON 数组或 CSV 内容..."></textarea>
+                
+                <div class="action-bar">
+                    <button class="btn btn-primary" onclick="process()">⚡ 解析并预览</button>
+                    <button class="btn" onclick="loadSample('json')">📄 JSON 示例</button>
+                    <button class="btn" onclick="loadSample('csv')">📄 CSV 示例</button>
+                    <button class="btn" onclick="clearAll()">🗑️ 清空重置</button>
+                </div>
+            </div>
 
-        <div class="table-wrapper" id="tableWrapper">
-          <div class="empty-state">粘贴数据后点击解�?/div>
-        </div>
+            <div id="results" style="display: none;">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="statFormat">-</div>
+                        <div class="stat-label">检测格式</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="statRows">0</div>
+                        <div class="stat-label">总记录行数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="statCols">0</div>
+                        <div class="stat-label">字段维度</div>
+                    </div>
+                </div>
 
-        <div class="convert-section">
-          <div class="section-title">格式转换</div>
-          <div class="convert-row">
-            <select id="convertFormat">
-              <option value="json">JSON</option>
-              <option value="csv">CSV</option>
-            </select>
-            <button class="btn btn-primary" onclick="convertAndCopy()">📋 转换并复�?/button>
-            <button class="btn btn-secondary" onclick="downloadConverted()">📥 下载</button>
-          </div>
-        </div>
-      </main>
+                <div class="card" style="padding: 0; overflow: hidden;">
+                    <div class="table-container">
+                        <table id="previewTable">
+                            <thead id="tableHead"></thead>
+                            <tbody id="tableBody"></tbody>
+                        </table>
+                    </div>
+                    <div style="padding: 20px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-glass);">
+                        <span style="color: var(--text-dim); font-size: 0.8rem;">* 预览仅展示前 100 条记录</span>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn" style="padding: 8px 20px; font-size: 0.8rem;" onclick="download('json')">导出 JSON</button>
+                            <button class="btn" style="padding: 8px 20px; font-size: 0.8rem;" onclick="download('csv')">导出 CSV</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div class="ad-container">Google AdSense 广告位 - 内容下方</div>
+
+        <section class="article-section">
+            <h2>智能数据预览：从混乱到结构的瞬间转换</h2>
+            <p>在数据驱动的工作流中，第一步往往是确认数据的“样貌”。原始的 JSON 字符串或密密麻麻的 CSV 文本对人类来说难以直观阅读。<strong>智能数据导入预览工具</strong>为您提供了一个秒级的可视化方案，将枯燥的代码转化为直观的表格。</p>
+
+            <h3>为什么选择离线预览？</h3>
+            <p>市面上许多在线格式化工具需要将您的数据上传到远程服务器进行解析。然而，如果数据包含客户隐私、商业机密或敏感日志，上传行为将带来极大的安全风险。我们的工具基于 **Web Workers 解析技术**，所有的处理逻辑均在您的浏览器本地完成：</p>
+            <ul>
+                <li><strong>隐私护航：</strong> 您的数据从未离开过您的设备，不经过任何网络传输。</li>
+                <li><strong>极致性能：</strong> 即使是数兆大小的 CSV 文件，也能在瞬间完成解析并流畅预览。</li>
+                <li><strong>多格式支持：</strong> 自动识别输入流是 JSON 还是 CSV，无需手动切换模式。</li>
+            </ul>
+
+            <h3>核心功能优势</h3>
+            <ul>
+                <li><strong>交互式表格：</strong> 解析后的数据以现代化的表格形式呈现，支持表头固定，方便浏览大型数据集。</li>
+                <li><strong>数据统计报告：</strong> 自动统计记录总数和字段维度，帮您快速校验数据完整性。</li>
+                <li><strong>文件拖拽支持：</strong> 支持直接拖拽本地文件进行解析，比传统的复制粘贴更符合直觉。</li>
+                <li><strong>一键格式互转：</strong> 预览后可根据需要将数据重新导出为 JSON 或带 BOM 的 CSV 格式（解决 Excel 中文乱码问题）。</li>
+            </ul>
+
+            <h3>使用指南</h3>
+            <p>1. **选择导入方式：** 您可以拖拽文件到虚线框内，或者直接将数据粘贴到文本框中。<br>
+               2. **执行解析：** 点击“解析并预览”，工具将自动识别格式并渲染表格。<br>
+               3. **核对与分析：** 检查表格中的数据是否对齐，统计信息是否符合预期。<br>
+               4. **导出利用：** 如果需要将 JSON 转为 CSV 或反之，点击下方的下载按钮即可。</p>
+        </section>
+
+        <footer>
+            <p>&copy; 2026 HTML Tools - 现代生产力工具集</p>
+        </footer>
     </div>
 
-    <div class="toast" id="toast">操作成功</div>
+    <div id="toast">操作成功</div>
 
     <script>
-      var LS_KEY = "data-importer-data";
-      var parsedData = null;
-      var detectedFormat = null;
+        let currentData = null;
 
-      function toggleTheme() {
-        var body = document.body;
-        var isDark = body.getAttribute("data-theme") !== "light";
-        body.setAttribute("data-theme", isDark ? "light" : "dark");
-        localStorage.setItem("theme", isDark ? "light" : "dark");
-      }
-
-      (function () {
-        var saved = localStorage.getItem("theme");
-        if (saved === "light") {
-          document.body.setAttribute("data-theme", "light");
-        }
-      })();
-
-      function detectAndParse(text) {
-        text = text.trim();
-        if (!text) return null;
-
-        if (text.charAt(0) === "[" || text.charAt(0) === "{") {
-          try {
-            var data = JSON.parse(text);
-            if (!Array.isArray(data)) {
-              data = [data];
-            }
-            detectedFormat = "json";
-            return data;
-          } catch (e) {
-            // Not valid JSON, try CSV
-          }
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
         }
 
-        var lines = text.split("\n").filter(function (l) {
-          return l.trim();
-        });
-        if (lines.length < 1) return null;
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const input = document.getElementById('input');
 
-        var headers = lines[0].split(",").map(function (h) {
-          return h.trim();
-        });
-        var rows = [];
-
-        for (var i = 1; i < lines.length; i++) {
-          var values = lines[i].split(",").map(function (v) {
-            return v.trim();
-          });
-          var row = {};
-          for (var j = 0; j < headers.length; j++) {
-            row[headers[j]] = values[j] || "";
-          }
-          rows.push(row);
-        }
-
-        if (rows.length > 0) {
-          detectedFormat = "csv";
-          return rows;
-        }
-
-        return null;
-      }
-
-      function parseData() {
-        var input = document.getElementById("inputData").value;
-        parsedData = detectAndParse(input);
-
-        var badge = document.getElementById("formatBadge");
-
-        if (!parsedData || parsedData.length === 0) {
-          badge.textContent = "解析失败";
-          badge.className = "format-badge unknown";
-          showToast("无法解析数据", "error");
-          return;
-        }
-
-        badge.textContent = detectedFormat.toUpperCase();
-        badge.className = "format-badge " + detectedFormat;
-
-        var headers = Object.keys(parsedData[0]);
-
-        document.getElementById("rowCount").textContent = parsedData.length;
-        document.getElementById("colCount").textContent = headers.length;
-        document.getElementById("fieldNames").textContent =
-          headers.slice(0, 5).join(", ") + (headers.length > 5 ? "..." : "");
-        document.getElementById("infoBar").style.display = "flex";
-
-        renderTable(parsedData, headers);
-        saveToStorage();
-        showToast("解析成功，检测到 " + detectedFormat.toUpperCase() + " 格式");
-      }
-
-      function renderTable(data, headers) {
-        var wrapper = document.getElementById("tableWrapper");
-        wrapper.textContent = "";
-
-        if (data.length === 0) {
-          var emptyDiv = document.createElement("div");
-          emptyDiv.className = "empty-state";
-          emptyDiv.textContent = "无数�?;
-          wrapper.appendChild(emptyDiv);
-          return;
-        }
-
-        var table = document.createElement("table");
-        table.className = "data-table";
-
-        var thead = document.createElement("thead");
-        var headerRow = document.createElement("tr");
-        headers.forEach(function (h) {
-          var th = document.createElement("th");
-          th.textContent = h;
-          headerRow.appendChild(th);
-        });
-        thead.appendChild(headerRow);
-        table.appendChild(thead);
-
-        var tbody = document.createElement("tbody");
-        data.forEach(function (row) {
-          var tr = document.createElement("tr");
-          headers.forEach(function (h) {
-            var td = document.createElement("td");
-            td.textContent = String(row[h] || "");
-            td.title = String(row[h] || "");
-            tr.appendChild(td);
-          });
-          tbody.appendChild(tr);
-        });
-        table.appendChild(tbody);
-
-        wrapper.appendChild(table);
-      }
-
-      function convertToFormat(data, format) {
-        if (!data || data.length === 0) return "";
-
-        var headers = Object.keys(data[0]);
-
-        if (format === "json") {
-          return JSON.stringify(data, null, 2);
-        } else {
-          var lines = [headers.join(",")];
-          data.forEach(function (row) {
-            var values = headers.map(function (h) {
-              var val = String(row[h] || "");
-              if (val.indexOf(",") !== -1 || val.indexOf('"') !== -1 || val.indexOf("\n") !== -1) {
-                val = '"' + val.replace(/"/g, '""') + '"';
-              }
-              return val;
-            });
-            lines.push(values.join(","));
-          });
-          return lines.join("\n");
-        }
-      }
-
-      function convertAndCopy() {
-        if (!parsedData || parsedData.length === 0) {
-          showToast("请先解析数据", "error");
-          return;
-        }
-
-        var format = document.getElementById("convertFormat").value;
-        var output = convertToFormat(parsedData, format);
-
-        navigator.clipboard
-          .writeText(output)
-          .then(function () {
-            showToast("已复�?" + format.toUpperCase() + " 格式");
-          })
-          .catch(function () {
-            showToast("复制失败", "error");
-          });
-      }
-
-      function downloadConverted() {
-        if (!parsedData || parsedData.length === 0) {
-          showToast("请先解析数据", "error");
-          return;
-        }
-
-        var format = document.getElementById("convertFormat").value;
-        var output = convertToFormat(parsedData, format);
-
-        var ext = format === "json" ? "json" : "csv";
-        var mime = format === "json" ? "application/json" : "text/csv";
-
-        var blob = new Blob([output], { type: mime + ";charset=utf-8" });
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement("a");
-        a.href = url;
-        a.download = "data." + ext;
-        a.click();
-        URL.revokeObjectURL(url);
-
-        showToast("已下�?);
-      }
-
-      function pasteFromClipboard() {
-        navigator.clipboard
-          .readText()
-          .then(function (text) {
-            document.getElementById("inputData").value = text;
-            parseData();
-          })
-          .catch(function () {
-            showToast("无法访问剪贴�?, "error");
-          });
-      }
-
-      function loadSample() {
-        document.getElementById("inputData").value =
-          '[\n  {"id": 1, "name": "Alice", "email": "alice@example.com", "age": 30},\n  {"id": 2, "name": "Bob", "email": "bob@example.com", "age": 25},\n  {"id": 3, "name": "Charlie", "email": "charlie@example.com", "age": 35},\n  {"id": 4, "name": "Diana", "email": "diana@example.com", "age": 28}\n]';
-        parseData();
-      }
-
-      function clearAll() {
-        document.getElementById("inputData").value = "";
-        var wrapper = document.getElementById("tableWrapper");
-        wrapper.textContent = "";
-        var emptyDiv = document.createElement("div");
-        emptyDiv.className = "empty-state";
-        emptyDiv.textContent = "粘贴数据后点击解�?;
-        wrapper.appendChild(emptyDiv);
-
-        document.getElementById("infoBar").style.display = "none";
-        var badge = document.getElementById("formatBadge");
-        badge.textContent = "未检�?;
-        badge.className = "format-badge unknown";
-
-        parsedData = null;
-        detectedFormat = null;
-        localStorage.removeItem(LS_KEY);
-        showToast("已清�?);
-      }
-
-      function saveToStorage() {
-        var data = {
-          input: document.getElementById("inputData").value
+        dropZone.onclick = () => fileInput.click();
+        fileInput.onchange = (e) => handleFile(e.target.files[0]);
+        dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('dragover'); };
+        dropZone.ondragleave = () => dropZone.classList.remove('dragover');
+        dropZone.ondrop = (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            handleFile(e.dataTransfer.files[0]);
         };
-        localStorage.setItem(LS_KEY, JSON.stringify(data));
-      }
 
-      function loadFromStorage() {
-        var saved = localStorage.getItem(LS_KEY);
-        if (!saved) return;
-
-        try {
-          var data = JSON.parse(saved);
-          if (data.input) {
-            document.getElementById("inputData").value = data.input;
-          }
-        } catch (e) {
-          // ignore
+        function handleFile(file) {
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                input.value = e.target.result;
+                process();
+            };
+            reader.readAsText(file);
         }
-      }
 
-      function showToast(msg, type) {
-        type = type || "success";
-        var toast = document.getElementById("toast");
-        toast.textContent = msg;
-        toast.className = "toast" + (type === "error" ? " error" : "");
-        toast.classList.add("show");
-        setTimeout(function () {
-          toast.classList.remove("show");
-        }, 2000);
-      }
+        function process() {
+            const content = input.value.trim();
+            if (!content) return;
 
-      document.addEventListener("DOMContentLoaded", function () {
-        loadFromStorage();
+            try {
+                if (content.startsWith('[') || content.startsWith('{')) {
+                    const data = JSON.parse(content);
+                    currentData = Array.isArray(data) ? data : [data];
+                    render('JSON');
+                } else {
+                    currentData = parseCSV(content);
+                    render('CSV');
+                }
+                showToast('数据解析成功');
+                saveState();
+            } catch (err) {
+                alert('解析失败，请检查数据格式。如果是 JSON，请确保它是标准的数组格式。');
+            }
+        }
 
-        document.getElementById("inputData").addEventListener("input", saveToStorage);
-      });
+        function parseCSV(text) {
+            const lines = text.split(/\r?\n/).filter(l => l.trim());
+            if (lines.length === 0) return [];
+            const d = text.includes('\t') ? '\t' : ',';
+            const headers = splitCSVLine(lines[0], d);
+            return lines.slice(1).map(line => {
+                const values = splitCSVLine(line, d);
+                const obj = {};
+                headers.forEach((h, i) => obj[h.trim()] = values[i] || '');
+                return obj;
+            });
+        }
+
+        function splitCSVLine(line, d) {
+            const res = []; let cur = '', q = false;
+            for (let char of line) {
+                if (char === '"') q = !q;
+                else if (char === d && !q) { res.push(cur); cur = ''; }
+                else cur += char;
+            }
+            res.push(cur);
+            return res;
+        }
+
+        function render(format) {
+            if (!currentData || currentData.length === 0) return;
+            
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('statFormat').innerText = format;
+            document.getElementById('statRows').innerText = currentData.length;
+            
+            const headers = Object.keys(currentData[0]);
+            document.getElementById('statCols').innerText = headers.length;
+
+            const head = document.getElementById('tableHead');
+            const body = document.getElementById('tableBody');
+            
+            head.innerHTML = `<tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
+            body.innerHTML = currentData.slice(0, 100).map(row => 
+                `<tr>${headers.map(h => `<td>${String(row[h] || '').replace(/</g, '&lt;')}</td>`).join('')}</tr>`
+            ).join('');
+        }
+
+        function download(fmt) {
+            if (!currentData) return;
+            let blob, name;
+            if (fmt === 'json') {
+                blob = new Blob([JSON.stringify(currentData, null, 2)], { type: 'application/json' });
+                name = `export_${Date.now()}.json`;
+            } else {
+                const headers = Object.keys(currentData[0]);
+                const csv = [headers.join(','), ...currentData.map(r => headers.map(h => `"${String(r[h]).replace(/"/g, '""')}"`).join(','))].join('\n');
+                blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+                name = `export_${Date.now()}.csv`;
+            }
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = name; a.click();
+        }
+
+        function loadSample(type) {
+            if (type === 'json') {
+                input.value = JSON.stringify([
+                    { "ID": "P001", "商品": "无线耳机", "价格": 299, "库存": "充足", "状态": "在售" },
+                    { "ID": "P002", "商品": "智能手表", "价格": 899, "库存": "紧张", "状态": "在售" },
+                    { "ID": "P003", "商品": "平板电脑", "价格": 2499, "库存": "售罄", "状态": "下架" }
+                ], null, 2);
+            } else {
+                input.value = "ID,商品,价格,库存,状态\nP001,无线耳机,299,充足,在售\nP002,智能手表,899,紧张,在售\nP003,平板电脑,2499,售罄,下架";
+            }
+            process();
+        }
+
+        function clearAll() {
+            input.value = '';
+            document.getElementById('results').style.display = 'none';
+            currentData = null;
+            localStorage.removeItem('importer_state');
+            showToast('已重置所有数据');
+        }
+
+        function saveState() {
+            localStorage.setItem('importer_state', input.value);
+        }
+
+        window.onload = () => {
+            const saved = localStorage.getItem('importer_state');
+            if (saved) {
+                input.value = saved;
+                process();
+            }
+        };
     </script>
-  </body>
+</body>
 </html>
-
-

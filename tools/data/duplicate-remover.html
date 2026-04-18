@@ -1,979 +1,193 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>重复项删�?- WebUtils</title>
-    <meta
-      name="description"
-      content="从文本中删除重复行，支持大小写敏感、保留首�?末次出现、去除空�?
-    />
-    <meta name="keywords" content="去重 删除重复 duplicate remover unique 文本处理" />
-    <meta name="author" content="WebUtils" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://essays4u.net/tools/data/duplicate-remover" />
-    <meta property="og:title" content="重复项删�?- WebUtils" />
-    <meta
-      property="og:description"
-      content="从文本中删除重复行，支持大小写敏感、保留首�?末次出现、去除空�?
-    />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://essays4u.net/tools/data/duplicate-remover" />
-    <meta property="og:site_name" content="WebUtils" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="重复项删�?- WebUtils" />
-    <meta
-      name="twitter:description"
-      content="从文本中删除重复行，支持大小写敏感、保留首�?末次出现、去除空�?
-    />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "首页",
-            "item": "https://essays4u.net/"
-          },
-          {
-            "@type": "ListItem",
-            "position": 2,
-            "name": "数据工具",
-            "item": "https://essays4u.net/#data"
-          },
-          {
-            "@type": "ListItem",
-            "position": 3,
-            "name": "重复项删�?,
-            "item": "https://essays4u.net/tools/data/duplicate-remover.html"
-          }
-        ]
-      }
-    </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线重复项删除工具 - 文本与数据去重专家 - WebUtils</title>
+    <meta name="description" content="高效的在线重复项删除工具，支持批量文本、列表及 CSV 数据去重。提供忽略大小写、去除空格、仅提取重复项等高级功能，保障数据唯一性与清洗效率。">
+    <meta name="keywords" content="重复项删除,数据去重,文本去重,CSV去重,在线工具,重复行提取,列表清洗">
+    <link rel="canonical" href="https://essays4u.net/tools/data/duplicate-remover.html">
+    
     <style>
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      *,
-      *::before,
-      *::after {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      html {
-        font-size: 16px;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-      }
-      body {
-        font-family: var(--font-sans);
-        background: var(--color-bg-deep);
-        color: var(--color-text-primary);
-        min-height: 100vh;
-        min-height: 100dvh;
-        line-height: 1.5;
-        transition:
-          background-color var(--transition-normal),
-          color var(--transition-normal);
-      }
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        z-index: 0;
-        background:
-          radial-gradient(circle at 20% 20%, rgba(0, 212, 170, 0.03) 0%, transparent 50%),
-          radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.03) 0%, transparent 50%);
-      }
-      [data-theme="light"] body::before {
-        background:
-          radial-gradient(circle at 20% 20%, rgba(0, 184, 148, 0.05) 0%, transparent 50%),
-          radial-gradient(circle at 80% 80%, rgba(124, 58, 237, 0.05) 0%, transparent 50%);
-      }
-      .nav-bar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 1000;
-        height: calc(var(--nav-height) + var(--safe-area-top));
-        padding-top: var(--safe-area-top);
-        background: var(--glass-bg);
-        backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-        -webkit-backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-        border-bottom: 1px solid var(--glass-border);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: background var(--transition-normal);
-      }
-      .nav-content {
-        width: 100%;
-        max-width: var(--container-max);
-        height: var(--nav-height);
-        padding: 0 var(--space-6);
-        display: grid;
-        grid-template-columns: 1fr auto 1fr;
-        align-items: center;
-        gap: var(--space-4);
-      }
-      .nav-back {
-        display: flex;
-        align-items: center;
-        gap: var(--space-1);
-        color: var(--color-accent-primary);
-        text-decoration: none;
-        font-size: 0.9375rem;
-        font-weight: 500;
-        padding: var(--space-2) var(--space-1);
-        margin-left: calc(var(--space-2) * -1);
-        border-radius: var(--radius-sm);
-        transition: all var(--transition-fast);
-        justify-self: start;
-      }
-      .nav-back:hover {
-        background: var(--color-border-subtle);
-      }
-      .nav-back-icon {
-        width: 20px;
-        height: 20px;
-        stroke-width: 2.5;
-      }
-      .nav-back-text {
-        display: inline;
-      }
-      .nav-title {
-        font-size: 1rem;
-        font-weight: 600;
-        color: var(--color-text-primary);
-        text-align: center;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .nav-actions {
-        display: flex;
-        align-items: center;
-        gap: var(--space-2);
-        justify-self: end;
-      }
-      .theme-toggle {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 36px;
-        height: 36px;
-        border: none;
-        border-radius: var(--radius-full);
-        background: var(--color-bg-subtle);
-        color: var(--color-text-secondary);
-        cursor: pointer;
-        transition: all var(--transition-fast);
-      }
-      .theme-toggle:hover {
-        background: var(--color-border-strong);
-        color: var(--color-text-primary);
-        transform: scale(1.05);
-      }
-      .theme-toggle svg {
-        width: 18px;
-        height: 18px;
-      }
-      .theme-icon-dark,
-      .theme-icon-light {
-        display: none;
-      }
-      [data-theme="dark"] .theme-icon-light,
-      :root:not([data-theme]) .theme-icon-light {
-        display: block;
-      }
-      [data-theme="light"] .theme-icon-dark {
-        display: block;
-      }
-      .main-content {
-        position: relative;
-        z-index: 1;
-        min-height: 100vh;
-        min-height: 100dvh;
-        padding-top: calc(var(--nav-height) + var(--safe-area-top) + var(--space-5));
-        padding-bottom: calc(var(--space-6) + var(--safe-area-bottom));
-        padding-left: var(--space-6);
-        padding-right: var(--space-6);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      .tool-card {
-        width: 100%;
-        max-width: var(--container-max);
-        background: var(--glass-bg);
-        backdrop-filter: saturate(var(--glass-saturate)) blur(16px);
-        -webkit-backdrop-filter: saturate(var(--glass-saturate)) blur(16px);
-        border: 1px solid var(--glass-border);
-        border-radius: var(--radius-lg);
-        padding: var(--space-6);
-        box-shadow: var(--shadow-lg);
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        transition: all var(--transition-normal);
-        animation: fade-in-up 0.4s ease-out;
-      }
-      @keyframes fade-in-up {
-        from {
-          opacity: 0;
-          transform: translateY(16px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      .tool-header {
-        display: flex;
-        align-items: center;
-        gap: var(--space-4);
-        margin-bottom: var(--space-5);
-        padding-bottom: var(--space-5);
-        border-bottom: 1px solid var(--color-border-subtle);
-      }
-      .tool-icon {
-        width: 48px;
-        height: 48px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(
-          135deg,
-          var(--color-accent-primary),
-          var(--color-accent-tertiary)
-        );
-        border-radius: var(--radius-md);
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: var(--color-bg-deep);
-        box-shadow: 0 4px 12px rgba(0, 212, 170, 0.25);
-        font-family: var(--font-mono);
-      }
-      .tool-info h1 {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: var(--color-text-primary);
-      }
-      .tool-info .desc {
-        font-size: 0.875rem;
-        color: var(--text-muted);
-        margin-top: var(--space-1);
-      }
-      .toolbar {
-        display: flex;
-        flex-wrap: wrap;
-        gap: var(--space-3);
-        margin-bottom: var(--space-5);
-      }
-      .btn-group {
-        display: flex;
-        gap: 2px;
-        background: var(--color-bg-subtle);
-        border-radius: var(--radius-sm);
-        padding: 2px;
-      }
-      .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: var(--space-2);
-        height: 36px;
-        padding: 0 var(--space-4);
-        font-family: var(--font-mono);
-        font-size: 0.8125rem;
-        font-weight: 500;
-        color: var(--color-text-secondary);
-        background: transparent;
-        border: none;
-        border-radius: var(--radius-sm);
-        cursor: pointer;
-        transition: all var(--transition-fast);
-        white-space: nowrap;
-      }
-      .btn:hover {
-        background: var(--color-bg-surface);
-        color: var(--color-text-primary);
-      }
-      .btn-primary {
-        background: var(--color-accent-primary);
-        color: var(--color-bg-deep);
-      }
-      .btn-primary:hover {
-        background: #00b894;
-        box-shadow: var(--shadow-glow);
-      }
-      .options-bar {
-        display: flex;
-        flex-wrap: wrap;
-        gap: var(--space-5);
-        align-items: center;
-        margin-bottom: var(--space-5);
-        font-size: 0.875rem;
-      }
-      .option-item {
-        display: flex;
-        align-items: center;
-        gap: var(--space-2);
-        color: var(--color-text-secondary);
-      }
-      .option-item select {
-        font-family: var(--font-mono);
-        font-size: 0.8125rem;
-        padding: var(--space-2) var(--space-3);
-        background: var(--color-bg-subtle);
-        border: 1px solid var(--color-border-default);
-        border-radius: var(--radius-sm);
-        color: var(--color-text-primary);
-        cursor: pointer;
-        transition: all var(--transition-fast);
-      }
-      .option-item select:focus {
-        outline: none;
-        border-color: var(--color-accent-primary);
-      }
-      .option-item input[type="checkbox"] {
-        width: 16px;
-        height: 16px;
-        accent-color: var(--color-accent-primary);
-        cursor: pointer;
-      }
-      .option-item label {
-        cursor: pointer;
-      }
-      .panels {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: var(--space-5);
-        flex: 1;
-        min-height: 400px;
-      }
-      .panel {
-        display: flex;
-        flex-direction: column;
-        min-height: 0;
-      }
-      .panel-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: var(--space-3);
-      }
-      .panel-label {
-        font-family: var(--font-mono);
-        font-size: 0.75rem;
-        font-weight: 500;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-      }
-      .panel-textarea {
-        flex: 1;
-        width: 100%;
-        min-height: 350px;
-        padding: var(--space-4);
-        font-family: var(--font-mono);
-        font-size: 0.875rem;
-        line-height: 1.6;
-        color: var(--color-text-primary);
-        background: var(--color-bg-input);
-        border: 2px solid var(--color-border-default);
-        border-radius: var(--radius-md);
-        resize: vertical;
-        tab-size: 2;
-        transition: all var(--transition-fast);
-      }
-      .panel-textarea::placeholder {
-        color: var(--text-muted);
-      }
-      .panel-textarea:hover {
-        border-color: var(--color-border-strong);
-      }
-      .panel-textarea:focus {
-        outline: none;
-        border-color: var(--color-accent-primary);
-        box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.15);
-      }
-      .panel-textarea[readonly] {
-        background: var(--color-bg-subtle);
-      }
-      .status-bar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: var(--space-4);
-        margin-top: var(--space-5);
-        padding-top: var(--space-5);
-        border-top: 1px solid var(--color-border-subtle);
-      }
-      .status {
-        font-family: var(--font-mono);
-        font-size: 0.8125rem;
-        color: var(--text-muted);
-        display: flex;
-        align-items: center;
-        gap: var(--space-2);
-      }
-      .status.success {
-        color: var(--color-success);
-      }
-      .status.success::before {
-        content: "�?;
-      }
-      .status.error {
-        color: var(--color-error);
-      }
-      .status.error::before {
-        content: "�?;
-      }
-      .stats {
-        display: none;
-        gap: var(--space-6);
-        flex-wrap: wrap;
-      }
-      .stats.show {
-        display: flex;
-      }
-      .stat-item {
-        display: flex;
-        align-items: center;
-        gap: var(--space-2);
-      }
-      .stat-value {
-        font-family: var(--font-mono);
-        font-size: 1rem;
-        font-weight: 600;
-        color: var(--color-accent-primary);
-      }
-      .stat-label {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-      .footer {
-        text-align: center;
-        margin-top: var(--space-5);
-        padding-top: var(--space-4);
-      }
-      .footer p {
-        font-family: var(--font-mono);
-        font-size: 0.75rem;
-        color: var(--text-muted);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: var(--space-2);
-        flex-wrap: wrap;
-      }
-      .footer a {
-        color: var(--color-accent-primary);
-        text-decoration: none;
-        transition: color var(--transition-fast);
-      }
-      .footer a:hover {
-        color: var(--color-text-primary);
-      }
-      @media (max-width: 900px) {
-        .panels {
-          grid-template-columns: 1fr;
-          gap: var(--space-4);
-        }
-        .panel-textarea {
-          min-height: 250px;
-        }
-      }
-      @media (max-width: 640px) {
         :root {
-          --nav-height: 52px;
+            --primary: #00f5d4;
+            --secondary: #00bbf9;
+            --bg-dark: #0a0a0f;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #e0e0e0;
         }
-        .nav-content {
-          padding: 0 var(--space-4);
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text);
+            font-family: 'Space Grotesk', 'PingFang SC', sans-serif;
+            line-height: 1.6;
+            background-image: radial-gradient(circle at 10% 10%, rgba(0, 245, 212, 0.05) 0%, transparent 40%);
         }
-        .nav-back-text {
-          display: none;
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .back-link { color: var(--primary); text-decoration: none; margin-bottom: 20px; display: inline-block; }
+
+        header { text-align: center; margin-bottom: 40px; }
+        h1 { font-size: 2.5rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .glass-panel {
+            background: var(--card-bg); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 24px; padding: 30px; margin-bottom: 30px;
         }
-        .main-content {
-          padding: calc(var(--nav-height) + var(--safe-area-top) + var(--space-4)) var(--space-4)
-            calc(var(--space-5) + var(--safe-area-bottom));
+
+        .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        @media (max-width: 850px) { .tool-grid { grid-template-columns: 1fr; } }
+
+        label { display: block; margin-bottom: 10px; color: var(--primary); font-weight: 600; font-size: 0.9rem; }
+        textarea {
+            width: 100%; height: 380px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 12px; color: white; padding: 15px; font-family: 'JetBrains Mono', monospace; resize: vertical; outline: none; transition: 0.3s;
         }
-        .tool-card {
-          padding: var(--space-4);
-          border-radius: var(--radius-md);
-        }
-        .tool-header {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: var(--space-3);
-          margin-bottom: var(--space-4);
-          padding-bottom: var(--space-4);
-        }
-        .tool-icon {
-          width: 40px;
-          height: 40px;
-          font-size: 1rem;
-        }
-        .tool-info h1 {
-          font-size: 1.125rem;
-        }
-        .toolbar {
-          gap: var(--space-2);
-          margin-bottom: var(--space-4);
-        }
-        .btn-group {
-          flex-wrap: wrap;
-        }
-        .btn {
-          height: 34px;
-          padding: 0 var(--space-3);
-          font-size: 0.75rem;
-        }
-        .options-bar {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: var(--space-3);
-          margin-bottom: var(--space-4);
-        }
-        .panels {
-          min-height: auto;
-        }
-        .panel-textarea {
-          min-height: 180px;
-        }
-        .status-bar {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: var(--space-3);
-        }
-        .stats.show {
-          gap: var(--space-4);
-        }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.01ms !important;
-          transition-duration: 0.01ms !important;
-        }
-      }
-      :focus-visible {
-        outline: 2px solid var(--color-accent-primary);
-        outline-offset: 2px;
-      }
-      button:focus:not(:focus-visible),
-      a:focus:not(:focus-visible),
-      input:focus:not(:focus-visible),
-      select:focus:not(:focus-visible),
-      textarea:focus:not(:focus-visible) {
-        outline: none;
-      }
+        textarea:focus { border-color: var(--primary); }
+
+        .options-bar { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; font-size: 0.9rem; }
+        .option-item { display: flex; align-items: center; gap: 8px; cursor: pointer; color: #888; }
+        .option-item input { width: 18px; height: 18px; cursor: pointer; }
+
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
+        button { padding: 12px 25px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
+        .btn-primary { background: var(--primary); color: var(--bg-dark); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 245, 212, 0.4); }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: white; border: 1px solid var(--border); }
+
+        .stats-info { margin-top: 15px; font-size: 0.85rem; color: #888; }
+        .stats-info b { color: var(--primary); }
+
+        article { margin-top: 60px; color: #aaa; }
+        article h2 { color: var(--primary); margin: 30px 0 15px; }
+        article p { margin-bottom: 15px; }
+
+        footer { text-align: center; padding: 40px 0; color: #555; border-top: 1px solid var(--border); }
     </style>
-  </head>
-  <body>
-    <nav class="nav-bar">
-      <div class="nav-content">
-        <a href="../../index.html" class="nav-back" aria-label="返回首页">
-          <svg
-            class="nav-back-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polyline points="15 18 9 12 15 6"></polyline>
-          </svg>
-          <span class="nav-back-text">首页</span>
-        </a>
-        <h1 class="nav-title">重复项删�?/h1>
-        <div class="nav-actions">
-          <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
-            <svg
-              class="theme-icon-light"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <circle cx="12" cy="12" r="5"></circle>
-              <line x1="12" y1="1" x2="12" y2="3"></line>
-              <line x1="12" y1="21" x2="12" y2="23"></line>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-              <line x1="1" y1="12" x2="3" y2="12"></line>
-              <line x1="21" y1="12" x2="23" y2="12"></line>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-            </svg>
-            <svg
-              class="theme-icon-dark"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </nav>
-    <main class="main-content">
-      <div class="tool-card">
-        <div class="tool-header">
-          <div class="tool-icon">�?/div>
-          <div class="tool-info">
-            <h1>重复项删�?/h1>
-            <p class="desc">从文本中删除重复行，每行一个项目，纯本地处�?/p>
-          </div>
-        </div>
-        <div class="toolbar">
-          <div class="btn-group">
-            <button id="btnPaste" class="btn">粘贴</button>
-            <button id="btnRemove" class="btn btn-primary">去重</button>
-          </div>
-          <div class="btn-group">
-            <button id="btnCopy" class="btn">复制</button>
-            <button id="btnDownload" class="btn">下载</button>
-            <button id="btnShare" class="btn">分享</button>
-            <button id="btnClear" class="btn">清空</button>
-          </div>
-        </div>
-        <div class="options-bar">
-          <div class="option-item">
-            <input type="checkbox" id="caseSensitive" checked />
-            <label for="caseSensitive">区分大小�?/label>
-          </div>
-          <div class="option-item">
-            <span>保留:</span>
-            <select id="keepOption">
-              <option value="first">首次出现</option>
-              <option value="last">末次出现</option>
-            </select>
-          </div>
-          <div class="option-item">
-            <input type="checkbox" id="trimWhitespace" checked />
-            <label for="trimWhitespace">去除首尾空白</label>
-          </div>
-          <div class="option-item">
-            <input type="checkbox" id="ignoreEmpty" checked />
-            <label for="ignoreEmpty">忽略空行</label>
-          </div>
-        </div>
-        <div class="panels">
-          <div class="panel">
-            <div class="panel-header"><span class="panel-label">输入 (每行一�?</span></div>
-            <textarea
-              id="input"
-              class="panel-textarea"
-              placeholder="在此粘贴文本，每行一个项�?.."
-              spellcheck="false"
-            ></textarea>
-          </div>
-          <div class="panel">
-            <div class="panel-header"><span class="panel-label">输出 (去重结果)</span></div>
-            <textarea
-              id="output"
-              class="panel-textarea"
-              readonly
-              placeholder="去重结果..."
-              spellcheck="false"
-            ></textarea>
-          </div>
-        </div>
-        <div class="status-bar">
-          <div id="status" class="status"></div>
-          <div id="stats" class="stats">
-            <div class="stat-item">
-              <span class="stat-value" id="statTotal">0</span>
-              <span class="stat-label">总行�?/span>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-link">← 返回首页</a>
+        <header>
+            <h1>重复项删除工具</h1>
+            <p style="color: #666;">极速去重，保持数据集的唯一性与纯净度</p>
+        </header>
+
+        <div class="glass-panel">
+            <div class="options-bar">
+                <label class="option-item"><input type="checkbox" id="trimLines" checked> 去除行首尾空格</label>
+                <label class="option-item"><input type="checkbox" id="ignoreCase"> 忽略大小写</label>
+                <label class="option-item"><input type="checkbox" id="removeEmpty" checked> 移除空行</label>
+                <label class="option-item"><input type="checkbox" id="extractDupes"> 仅提取重复项 (而非去重)</label>
             </div>
-            <div class="stat-item">
-              <span class="stat-value" id="statUnique">0</span>
-              <span class="stat-label">唯一�?/span>
+
+            <div class="tool-grid">
+                <div>
+                    <label>输入原始数据</label>
+                    <textarea id="inputText" placeholder="在此粘贴您的列表数据..."></textarea>
+                    <div class="stats-info">原始总行数: <b id="inputCount">0</b></div>
+                    <div class="btn-group">
+                        <button class="btn-primary" onclick="process()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+                            立即处理
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <label>处理后的结果</label>
+                    <textarea id="outputText" readonly placeholder="处理结果预览..."></textarea>
+                    <div class="stats-info">当前行数: <b id="outputCount">0</b> (已删除 <b id="deletedCount">0</b> 行)</div>
+                    <div class="btn-group">
+                        <button class="btn-secondary" onclick="copyResult()">复制结果</button>
+                    </div>
+                </div>
             </div>
-            <div class="stat-item">
-              <span class="stat-value" id="statDuplicates">0</span>
-              <span class="stat-label">重复�?/span>
-            </div>
-          </div>
         </div>
-      </div>
-      <footer class="footer">
-        <p>
-          <a href="https://github.com/chicogong/html-tools" target="_blank" rel="noreferrer">
-            GitHub
-          </a>
-          <span>·</span>
-          <span>纯前�?· 无服务器</span>
-          <span>·</span>
-          <a href="../../index.html">WebUtils</a>
-        </p>
-      </footer>
-    </main>
+
+        <article>
+            <h2>为什么数据去重在工作中很重要？</h2>
+            <p>在处理数千行客户名单、SEO 关键词列表或程序日志时，重复数据是导致分析偏差和资源浪费的主要原因。一个干净、唯一的列表是后续所有数据挖掘工作的前提。手动查找重复项不仅低效，而且容易遗漏细微的差异（如多余的空格或大小写不一）。</p>
+            
+            <h2>工具高级功能解析</h2>
+            <ul>
+                <li><strong>忽略大小写</strong>：开启后，工具会将 "Apple" 和 "apple" 视为重复项，这在整理品牌名或分类标签时非常有用。</li>
+                <li><strong>去除行首尾空格</strong>：很多从 Excel 导出的数据会自带隐藏空格，开启此项可确保去重逻辑的严谨性。</li>
+                <li><strong>仅提取重复项</strong>：这是一个独特的功能，可以帮您快速找出数据集中哪些项是重复出现的，方便进行错误追踪。</li>
+            </ul>
+        </article>
+
+        <footer>
+            <p>© 2026 WebUtils Data Cleaner. 本地计算，数据绝不上传。</p>
+        </footer>
+    </div>
+
     <script>
-      const inputEl = document.getElementById("input");
-      const outputEl = document.getElementById("output");
-      const statusEl = document.getElementById("status");
-      const statsEl = document.getElementById("stats");
-      const caseSensitiveEl = document.getElementById("caseSensitive");
-      const keepOptionEl = document.getElementById("keepOption");
-      const trimWhitespaceEl = document.getElementById("trimWhitespace");
-      const ignoreEmptyEl = document.getElementById("ignoreEmpty");
-      const LS_KEY = "duplicate_remover_input_v1";
+        const inputArea = document.getElementById('inputText');
+        const outputArea = document.getElementById('outputText');
 
-      window.loadFromUrl = function () {
-        const hash = location.hash.slice(1);
-        if (!hash) return false;
-        try {
-          inputEl.value = decodeURIComponent(atob(hash));
-          return true;
-        } catch (e) {
-          return false;
-        }
-      };
+        inputArea.addEventListener('input', () => {
+            const lines = inputArea.value.split('\n').filter(l => l.length > 0);
+            document.getElementById('inputCount').innerText = lines.length;
+        });
 
-      function saveToUrl() {
-        try {
-          if (inputEl.value.length > 2000) return;
-          history.replaceState(null, "", "#" + btoa(encodeURIComponent(inputEl.value)));
-        } catch (e) {}
-      }
+        function process() {
+            const raw = inputArea.value;
+            const lines = raw.split(/\r?\n/);
+            
+            const trim = document.getElementById('trimLines').checked;
+            const ignoreCase = document.getElementById('ignoreCase').checked;
+            const removeEmpty = document.getElementById('removeEmpty').checked;
+            const extractDupes = document.getElementById('extractDupes').checked;
 
-      function loadFromStorage() {
-        const saved = localStorage.getItem(LS_KEY);
-        if (saved) inputEl.value = saved;
-      }
+            let seen = new Map(); // value -> count
+            let result = [];
+            
+            lines.forEach(line => {
+                let processed = line;
+                if (trim) processed = processed.trim();
+                if (removeEmpty && processed === "") return;
 
-      function saveToStorage() {
-        localStorage.setItem(LS_KEY, inputEl.value);
-      }
+                let key = ignoreCase ? processed.toLowerCase() : processed;
+                
+                if (!seen.has(key)) {
+                    seen.set(key, 1);
+                    if (!extractDupes) result.push(processed);
+                } else {
+                    seen.set(key, seen.get(key) + 1);
+                    if (extractDupes && seen.get(key) === 2) {
+                        result.push(processed);
+                    }
+                }
+            });
 
-      function showStatus(msg, type) {
-        statusEl.textContent = msg;
-        statusEl.className = "status " + (type || "");
-      }
-
-      function removeDuplicates() {
-        const text = inputEl.value;
-        if (!text.trim()) {
-          showStatus("请输入文�?, "error");
-          return;
-        }
-
-        const caseSensitive = caseSensitiveEl.checked;
-        const keepFirst = keepOptionEl.value === "first";
-        const trimWs = trimWhitespaceEl.checked;
-        const ignoreEmpty = ignoreEmptyEl.checked;
-
-        let lines = text.split("\n");
-        const totalLines = lines.length;
-
-        if (trimWs) {
-          lines = lines.map((line) => line.trim());
+            outputArea.value = result.join('\n');
+            const finalCount = result.length;
+            const initialCount = lines.filter(l => l.trim() !== "").length;
+            
+            document.getElementById('outputCount').innerText = finalCount;
+            document.getElementById('deletedCount').innerText = Math.max(0, initialCount - finalCount);
+            
+            saveState();
         }
 
-        const seen = new Map();
-        const result = [];
+        function copyResult() {
+            outputArea.select();
+            document.execCommand('copy');
+            alert('已复制到剪贴板');
+        }
 
-        if (keepFirst) {
-          for (let i = 0; i < lines.length; i++) {
-            const line = lines[i];
-            if (ignoreEmpty && line === "") continue;
-            const key = caseSensitive ? line : line.toLowerCase();
-            if (!seen.has(key)) {
-              seen.set(key, true);
-              result.push(line);
+        function saveState() {
+            localStorage.setItem('dupe_remover_state', JSON.stringify({ input: inputArea.value }));
+        }
+
+        window.onload = () => {
+            const saved = localStorage.getItem('dupe_remover_state');
+            if (saved) {
+                inputArea.value = JSON.parse(saved).input || '';
+                inputArea.dispatchEvent(new Event('input'));
             }
-          }
-        } else {
-          for (let i = lines.length - 1; i >= 0; i--) {
-            const line = lines[i];
-            if (ignoreEmpty && line === "") continue;
-            const key = caseSensitive ? line : line.toLowerCase();
-            if (!seen.has(key)) {
-              seen.set(key, true);
-              result.unshift(line);
-            }
-          }
-        }
-
-        outputEl.value = result.join("\n");
-
-        const nonEmptyTotal = ignoreEmpty ? lines.filter((l) => l !== "").length : totalLines;
-        const uniqueCount = result.length;
-        const duplicateCount = nonEmptyTotal - uniqueCount;
-
-        document.getElementById("statTotal").textContent = nonEmptyTotal;
-        document.getElementById("statUnique").textContent = uniqueCount;
-        document.getElementById("statDuplicates").textContent = duplicateCount;
-        statsEl.classList.add("show");
-
-        showStatus("去重完成，移�?" + duplicateCount + " 个重复项", "success");
-      }
-
-      document.getElementById("btnPaste").onclick = async function () {
-        try {
-          const text = await navigator.clipboard.readText();
-          inputEl.value = text;
-          saveToStorage();
-          saveToUrl();
-          showStatus("已粘�?, "success");
-        } catch (e) {
-          showStatus("无法访问剪贴�?, "error");
-        }
-      };
-
-      document.getElementById("btnRemove").onclick = removeDuplicates;
-
-      document.getElementById("btnCopy").onclick = async function () {
-        if (!outputEl.value) {
-          showStatus("没有内容", "error");
-          return;
-        }
-        try {
-          await navigator.clipboard.writeText(outputEl.value);
-          showStatus("已复�?, "success");
-        } catch (e) {
-          showStatus("复制失败", "error");
-        }
-      };
-
-      document.getElementById("btnDownload").onclick = function () {
-        if (!outputEl.value) {
-          showStatus("没有内容", "error");
-          return;
-        }
-        const blob = new Blob([outputEl.value], { type: "text/plain;charset=utf-8" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "unique_items.txt";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        showStatus("已下�?, "success");
-      };
-
-      document.getElementById("btnShare").onclick = async function () {
-        saveToUrl();
-        try {
-          await navigator.clipboard.writeText(location.href);
-          showStatus("链接已复�?, "success");
-        } catch (e) {
-          showStatus("复制失败", "error");
-        }
-      };
-
-      document.getElementById("btnClear").onclick = function () {
-        inputEl.value = "";
-        outputEl.value = "";
-        statsEl.classList.remove("show");
-        statusEl.textContent = "";
-        statusEl.className = "status";
-        localStorage.removeItem(LS_KEY);
-        history.replaceState(null, "", location.pathname);
-      };
-
-      inputEl.addEventListener("input", function () {
-        saveToStorage();
-        saveToUrl();
-      });
-
-      document.addEventListener("keydown", function (e) {
-        if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
-          e.preventDefault();
-          removeDuplicates();
-        }
-      });
-
-      window.toggleTheme = function () {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute("data-theme") || "dark";
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
-      };
-
-      function initTheme() {
-        const savedTheme = localStorage.getItem("theme");
-        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        const theme = savedTheme || (prefersDark ? "dark" : "light");
-        document.documentElement.setAttribute("data-theme", theme);
-      }
-
-      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function (e) {
-        if (!localStorage.getItem("theme"))
-          document.documentElement.setAttribute("data-theme", e.matches ? "dark" : "light");
-      });
-
-      initTheme();
-      if (!loadFromUrl()) loadFromStorage();
+        };
     </script>
-  </body>
-</html>
-
-
+</body>
+</html>",explanation:
