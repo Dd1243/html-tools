@@ -481,13 +481,11 @@
       .travel-hero {
         position: relative;
         overflow: hidden;
-        border: 1px solid var(--border-subtle, #2a2a3a);
+        border: 1px solid #dbe4ea;
         border-radius: 24px;
         padding: 28px;
-        background:
-          radial-gradient(circle at top right, rgba(0, 245, 212, 0.18), transparent 32%),
-          linear-gradient(135deg, rgba(10, 10, 15, 0.95), rgba(18, 18, 26, 0.92));
-        box-shadow: 0 28px 60px rgba(0, 0, 0, 0.24);
+        background: linear-gradient(180deg, #ffffff, #f7fafc);
+        box-shadow: 0 22px 48px rgba(15, 23, 42, 0.1);
       }
       .travel-hero::after {
         content: "";
@@ -496,7 +494,7 @@
         width: 180px;
         height: 180px;
         border-radius: 999px;
-        background: rgba(247, 37, 133, 0.08);
+        background: rgba(37, 99, 235, 0.08);
         filter: blur(10px);
         pointer-events: none;
       }
@@ -506,9 +504,9 @@
         gap: 8px;
         padding: 6px 12px;
         border-radius: 999px;
-        border: 1px solid rgba(0, 245, 212, 0.24);
-        background: rgba(0, 245, 212, 0.08);
-        color: var(--accent-cyan, #00f5d4);
+        border: 1px solid rgba(37, 99, 235, 0.16);
+        background: rgba(37, 99, 235, 0.08);
+        color: #1d4ed8;
         font-size: 0.82rem;
         font-weight: 700;
         letter-spacing: 0.04em;
@@ -519,19 +517,19 @@
         font-size: clamp(1.8rem, 4vw, 2.6rem);
         line-height: 1.12;
         font-weight: 800;
-        color: var(--text-primary, #f4f4f5);
+        color: #0f172a;
       }
       .travel-hero__lead,
       .travel-hero__note {
         max-width: 76ch;
-        color: var(--text-secondary, #b3b6c6);
+        color: #334155;
         line-height: 1.8;
         font-size: 1rem;
       }
       .travel-hero__note {
         margin-top: 18px;
         padding-left: 14px;
-        border-left: 3px solid rgba(0, 245, 212, 0.36);
+        border-left: 3px solid rgba(37, 99, 235, 0.28);
       }
       .travel-hero__chips {
         display: flex;
@@ -545,15 +543,15 @@
         gap: 8px;
         padding: 10px 14px;
         border-radius: 999px;
-        border: 1px solid var(--border-subtle, #313244);
-        background: rgba(255, 255, 255, 0.04);
-        color: var(--text-primary, #f4f4f5);
+        border: 1px solid #d8e2ea;
+        background: #f8fafc;
+        color: #0f172a;
         font-size: 0.92rem;
         line-height: 1.3;
       }
       .travel-hero__chip::before {
         content: "•";
-        color: var(--accent-magenta, #f72585);
+        color: #e11d48;
       }
       .travel-hero__actions {
         display: flex;
@@ -575,20 +573,21 @@
         cursor: pointer;
       }
       .travel-hero__action {
-        background: linear-gradient(135deg, var(--accent-cyan, #00f5d4), #2dd4bf);
-        color: #031316;
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        color: #ffffff;
       }
       .travel-hero__ghost {
-        background: rgba(255, 255, 255, 0.04);
-        border-color: var(--border-subtle, #313244);
-        color: var(--text-primary, #f4f4f5);
+        background: #ffffff;
+        border-color: #cbd5e1;
+        color: #0f172a;
       }
       .travel-ad-slot {
-        border: 1px dashed rgba(0, 245, 212, 0.32);
+        border: 1px dashed #cbd5e1;
         border-radius: 20px;
         padding: 18px 20px;
-        background: linear-gradient(135deg, rgba(18, 18, 26, 0.92), rgba(26, 26, 36, 0.88));
-        color: var(--text-secondary, #b3b6c6);
+        background: #ffffff;
+        color: #475569;
+        box-shadow: 0 14px 30px rgba(15, 23, 42, 0.06);
       }
       .travel-ad-slot__label {
         display: inline-flex;
@@ -596,7 +595,7 @@
         gap: 8px;
         font-size: 0.9rem;
         font-weight: 800;
-        color: var(--text-primary, #f4f4f5);
+        color: #0f172a;
       }
       .travel-ad-slot__label::before {
         content: "AD";
@@ -606,8 +605,8 @@
         min-width: 30px;
         height: 22px;
         border-radius: 999px;
-        background: rgba(0, 245, 212, 0.12);
-        color: var(--accent-cyan, #00f5d4);
+        background: rgba(37, 99, 235, 0.1);
+        color: #1d4ed8;
         font-size: 0.74rem;
         font-weight: 900;
       }
@@ -618,24 +617,25 @@
       .travel-ad-slot__meta {
         margin-top: 10px;
         font-size: 0.82rem;
-        color: var(--text-muted, #8a8fa3);
+        color: #64748b;
       }
       .travel-article {
-        border: 1px solid var(--border-subtle, #2a2a3a);
+        border: 1px solid #dbe4ea;
         border-radius: 24px;
         padding: 28px;
-        background: linear-gradient(180deg, rgba(18, 18, 26, 0.96), rgba(18, 18, 26, 0.9));
+        background: linear-gradient(180deg, #ffffff, #f8fafc);
+        box-shadow: 0 22px 48px rgba(15, 23, 42, 0.08);
       }
       .travel-article__title {
         margin-bottom: 12px;
         font-size: clamp(1.35rem, 3vw, 1.9rem);
         line-height: 1.25;
         font-weight: 800;
-        color: var(--text-primary, #f4f4f5);
+        color: #0f172a;
       }
       .travel-article__intro,
       .travel-article__paragraph {
-        color: var(--text-secondary, #b3b6c6);
+        color: #334155;
         line-height: 1.88;
         margin-bottom: 14px;
       }
@@ -646,23 +646,23 @@
         margin: 22px 0;
       }
       .travel-article__panel {
-        border: 1px solid rgba(255, 255, 255, 0.06);
+        border: 1px solid #e2e8f0;
         border-radius: 18px;
         padding: 18px;
-        background: rgba(255, 255, 255, 0.025);
+        background: #f8fafc;
       }
       .travel-article__panel h3 {
         margin-bottom: 10px;
         font-size: 1rem;
         font-weight: 800;
-        color: var(--text-primary, #f4f4f5);
+        color: #0f172a;
       }
       .travel-article__panel ul,
       .travel-article__steps,
       .travel-article__mistakes {
         margin: 0;
         padding-left: 18px;
-        color: var(--text-secondary, #b3b6c6);
+        color: #475569;
         line-height: 1.8;
       }
       .travel-article__steps li,
@@ -674,24 +674,24 @@
         margin: 24px 0 12px;
         font-size: 1.08rem;
         font-weight: 800;
-        color: var(--text-primary, #f4f4f5);
+        color: #0f172a;
       }
       .travel-article__notice {
         margin-top: 18px;
         padding: 16px 18px;
         border-radius: 16px;
-        border: 1px solid rgba(0, 245, 212, 0.18);
-        background: rgba(0, 245, 212, 0.06);
-        color: var(--text-primary, #eefdfb);
+        border: 1px solid rgba(37, 99, 235, 0.16);
+        background: #eff6ff;
+        color: #1e3a8a;
         line-height: 1.8;
       }
       .travel-faq {
         margin-top: 24px;
       }
       .travel-faq details {
-        border: 1px solid rgba(255, 255, 255, 0.06);
+        border: 1px solid #e2e8f0;
         border-radius: 16px;
-        background: rgba(255, 255, 255, 0.025);
+        background: #f8fafc;
         padding: 0 16px;
       }
       .travel-faq details + details {
@@ -702,14 +702,14 @@
         list-style: none;
         padding: 16px 0;
         font-weight: 700;
-        color: var(--text-primary, #f4f4f5);
+        color: #0f172a;
       }
       .travel-faq summary::-webkit-details-marker {
         display: none;
       }
       .travel-faq__answer {
         padding: 0 0 16px;
-        color: var(--text-secondary, #b3b6c6);
+        color: #475569;
         line-height: 1.8;
       }
       @media (max-width: 900px) {
@@ -1058,13 +1058,12 @@
       ensureStructuredData(faqItems, howToSteps);
       markToolStart(surface);
 
-      const topReference = findTopReference(surface);
       const bottomReference = findBottomReference(surface);
 
       const hero = buildHero(featureLabels);
       const topAd = buildAdSlot(
         "top",
-        `${pageTitle} 页面顶部广告位，适合放置响应式横幅广告，不遮挡主要功能，兼顾 SEO 内容区与首次可见区域。`
+        `${pageTitle} 页面顶部广告位已放到工具区之后，适合放置响应式横幅广告，既保留广告位，也不遮挡用户先使用工具。`
       );
       const article = buildArticle(featureLabels, faqItems, howToSteps);
       const bottomAd = buildAdSlot(
@@ -1072,13 +1071,7 @@
         `${pageTitle} 页面底部广告位，适合放置信息流或内容型广告，靠近长文说明区域但不干扰实际工具操作。`
       );
 
-      [hero, topAd].forEach((node) => {
-        if (node) {
-          insertBefore(surface, node, topReference);
-        }
-      });
-
-      [article, bottomAd].forEach((node) => {
+      [hero, topAd, article, bottomAd].forEach((node) => {
         if (node) {
           insertBefore(surface, node, bottomReference);
         }

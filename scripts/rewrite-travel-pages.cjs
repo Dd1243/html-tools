@@ -589,7 +589,13 @@ function buildHead(html, fileName, meta) {
   return html;
 }
 
-function buildTopBlock(meta) {
+function buildTopBlock() {
+  return `
+        <div id="travel-tool-start" class="travel-tool-start-anchor" aria-hidden="true"></div>
+`;
+}
+
+function buildBottomBlock(meta) {
   return `
         <section class="travel-enhanced-block travel-hero" data-travel-enhance-root="hero" aria-label="${escapeHtml(meta.name)} 页面导读">
           <div class="travel-hero__eyebrow">逐页深度改版 · 静态内容已内置</div>
@@ -602,23 +608,18 @@ function buildTopBlock(meta) {
             ${meta.audience.slice(0, 3).map((item) => `<span class="travel-hero__chip">${escapeHtml(item)}</span>`).join('')}
           </div>
           <div class="travel-hero__actions">
-            <a class="travel-hero__action" href="#travel-tool-start">直达工具区</a>
-            <a class="travel-hero__ghost" href="#travel-page-guide">查看使用指南</a>
+            <a class="travel-hero__action" href="#travel-tool-start">返回工具区</a>
+            <a class="travel-hero__ghost" href="#travel-page-guide">继续查看说明</a>
           </div>
-          <p class="travel-hero__note">如果你准备把这个页面发给家人、同伴或客户，建议把本页当作“执行说明页”而不仅是工具页：先看上面的导读，再进入功能区，最后参考底部 FAQ 做出更稳的决定。</p>
+          <p class="travel-hero__note">如果你准备把这个页面发给家人、同伴或客户，建议把本页当作“执行说明页”而不仅是工具页：先使用上面的工具，再结合下面的说明、FAQ 和广告位布局做更稳的决定。</p>
         </section>
 
         <aside class="travel-enhanced-block travel-ad-slot" data-travel-enhance-root="ad-top" aria-label="Google AdSense 页面顶部预留位">
           <div class="travel-ad-slot__label">Google AdSense 预留位</div>
-          <div class="travel-ad-slot__text">${escapeHtml(meta.name)} 顶部横幅广告位，适合放置响应式广告代码，不遮挡工具核心操作，兼顾首屏说明区与商业化布局。</div>
+          <div class="travel-ad-slot__text">${escapeHtml(meta.name)} 顶部横幅广告位已下移到工具区之后，适合放置响应式广告代码，不遮挡工具核心操作，同时保留首屏给真正的工具功能。</div>
           <div class="travel-ad-slot__meta">部署时建议替换为响应式广告单元，并保留当前块级结构，方便同时适配桌面与手机。</div>
         </aside>
 
-        <div id="travel-tool-start" class="travel-tool-start-anchor" aria-hidden="true"></div>
-`;}
-
-function buildBottomBlock(meta) {
-  return `
         <section class="travel-enhanced-block travel-article" id="travel-page-guide" data-travel-enhance-root="article" aria-label="${escapeHtml(meta.name)} 深度使用指南">
           <h2 class="travel-article__title">${escapeHtml(meta.name)} 深度使用指南：把结果变成真正可执行的旅行动作</h2>
           <p class="travel-article__intro">${escapeHtml(meta.summary)} 很多旅行页面的问题不在于工具不会用，而在于用户只盯着一个结果值，却没有把这个结果和机票、证件、酒店、路线、预算、天气或现场限制放在一起判断。把这一步补上，才能真正减少临场返工。</p>
@@ -669,7 +670,7 @@ function injectBody(html, meta) {
   html = html.replace(/\s*<div id="travel-tool-start" class="travel-tool-start-anchor" aria-hidden="true"><\/div>\s*/i, '\n');
   html = html.replace(/\s*<section class="travel-enhanced-block travel-article"[\s\S]*?<\/section>\s*/i, '\n');
   html = html.replace(/\s*<aside class="travel-enhanced-block travel-ad-slot"[\s\S]*?data-travel-enhance-root="ad-bottom"[\s\S]*?<\/aside>\s*/i, '\n');
-  const top = buildTopBlock(meta);
+  const top = buildTopBlock();
   const bottom = buildBottomBlock(meta);
 
   if (/(<main[^>]*>\s*<div class="container">)/i.test(html)) {
