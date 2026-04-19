@@ -469,6 +469,32 @@ function getDescription(html) {
   return match ? match[1].trim() : '';
 }
 
+function clipText(text, max = 126) {
+  const normalized = String(text)
+    .replace(/\s+/g, ' ')
+    .replace(/\s*([，。！？；：])/g, '$1')
+    .trim();
+
+  if (normalized.length <= max) {
+    return normalized;
+  }
+
+  return `${normalized.slice(0, max - 1).replace(/[，、；：\s]+$/u, '')}…`;
+}
+
+function buildSeoDescription(meta) {
+  const audienceText = meta.audience.slice(0, 2).join('、');
+  const parts = [
+    meta.summary,
+    meta.pain,
+    audienceText ? `适合${audienceText}使用。` : '',
+    '帮助你在出发前更快完成判断、核对与执行准备。'
+  ].filter(Boolean);
+
+  return clipText(parts.join(''), 126);
+}
+
+
 function upsertMeta(html, attrs, type, key, value) {
   const regex = new RegExp(`<meta[^>]*${type}=["']${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["'][^>]*>`, 'i');
   const tag = `<meta ${Object.entries(attrs).map(([k, v]) => `${k}="${escapeHtml(v)}"`).join(' ')} />`;
@@ -496,8 +522,9 @@ function upsertOrInsertHead(html, tag) {
 
 function buildHead(html, fileName, meta) {
   const title = getTitle(html);
-  const description = getDescription(html) || meta.summary;
+  const description = buildSeoDescription(meta) || getDescription(html) || meta.summary;
   const slug = fileName.replace(/\.html$/i, '');
+
   const canonical = `${siteOrigin}/tools/travel/${slug}`;
   const faqEntities = meta.faqs.map(([question, answer]) => ({
     '@type': 'Question',
