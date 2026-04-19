@@ -4,6 +4,15 @@ on:
   push:
     branches: [main, master]
   workflow_dispatch:
+    inputs:
+      mode:
+        description: Submission mode
+        required: false
+        default: sitemap
+        type: choice
+        options:
+          - sitemap
+          - homepage
 
 jobs:
   indexnow:
@@ -11,11 +20,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Submit to IndexNow
+      - name: Submit changed URLs to IndexNow on push
+        if: github.event_name == 'push'
+        run: node scripts/indexnow.js --from-git "${{ github.event.before }}" "${{ github.sha }}"
+
+      - name: Submit sitemap URLs to IndexNow on manual run
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'sitemap'
+        run: node scripts/indexnow.js --from-sitemap sitemap.xml
+
+      - name: Submit homepage to IndexNow on manual run
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'homepage'
         run: node scripts/indexnow.js https://essays4u.net/

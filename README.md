@@ -345,7 +345,7 @@
 | 头条搜索站长平台      | ✅ 已验证 | `ByteDanceVerify.html` + meta tag      |
 | 百度资源平台          | ✅ 已验证 | meta tag                               |
 | 搜狗资源平台          | ✅ 已验证 | `sogousiteverification.txt`            |
-| IndexNow              | ✅ 已配置 | `03bdae3721054dfba79edd66e6157c3f.txt` |
+| IndexNow              | ✅ 已配置 | `e845f78234854930b593635741639f72.txt` |
 
 ### SEO 相关文件
 
