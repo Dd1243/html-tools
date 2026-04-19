@@ -1,21 +1,125 @@
 const fs = require('fs');
 const path = require('path');
 
+const TOOLS_ROOT = path.resolve(__dirname, '../tools');
 const SITE_URL = 'https://essays4u.net';
 const DEFAULT_SITE_NAME = 'WebUtils';
 const DEFAULT_IMAGE = `${SITE_URL}/social-preview.png`;
-const CATEGORY_CONFIG = {
-  dev: { dir: path.resolve(__dirname, '../tools/dev'), applicationCategory: 'DeveloperApplication' },
-  text: { dir: path.resolve(__dirname, '../tools/text'), applicationCategory: 'UtilitiesApplication' },
-  time: { dir: path.resolve(__dirname, '../tools/time'), applicationCategory: 'UtilitiesApplication' },
-  generator: { dir: path.resolve(__dirname, '../tools/generator'), applicationCategory: 'UtilitiesApplication' },
-  media: { dir: path.resolve(__dirname, '../tools/media'), applicationCategory: 'MultimediaApplication' }
+const APPLICATION_CATEGORY_MAP = {
+  ai: 'UtilitiesApplication',
+  'ai-coding': 'DeveloperApplication',
+  astronomy: 'UtilitiesApplication',
+  automotive: 'UtilitiesApplication',
+  business: 'BusinessApplication',
+  calculator: 'UtilitiesApplication',
+  chinese: 'EducationalApplication',
+  converter: 'UtilitiesApplication',
+  crypto: 'FinanceApplication',
+  data: 'DeveloperApplication',
+  design: 'DesignApplication',
+  dev: 'DeveloperApplication',
+  diy: 'UtilitiesApplication',
+  ecommerce: 'BusinessApplication',
+  education: 'EducationalApplication',
+  extractor: 'UtilitiesApplication',
+  finance: 'FinanceApplication',
+  fitness: 'HealthApplication',
+  food: 'UtilitiesApplication',
+  fun: 'UtilitiesApplication',
+  game: 'GameApplication',
+  gaming: 'GameApplication',
+  gardening: 'UtilitiesApplication',
+  generator: 'UtilitiesApplication',
+  health: 'HealthApplication',
+  language: 'EducationalApplication',
+  legal: 'BusinessApplication',
+  life: 'UtilitiesApplication',
+  lifestyle: 'UtilitiesApplication',
+  math: 'EducationalApplication',
+  media: 'MultimediaApplication',
+  music: 'MultimediaApplication',
+  network: 'DeveloperApplication',
+  office: 'BusinessApplication',
+  parenting: 'UtilitiesApplication',
+  pet: 'UtilitiesApplication',
+  pets: 'UtilitiesApplication',
+  photography: 'MultimediaApplication',
+  privacy: 'DeveloperApplication',
+  productivity: 'BusinessApplication',
+  'real-estate': 'BusinessApplication',
+  realestate: 'BusinessApplication',
+  security: 'DeveloperApplication',
+  seo: 'BusinessApplication',
+  shopping: 'BusinessApplication',
+  social: 'SocialNetworkingApplication',
+  'social-media': 'SocialNetworkingApplication',
+  sports: 'HealthApplication',
+  'team-tools': 'BusinessApplication',
+  text: 'UtilitiesApplication',
+  time: 'UtilitiesApplication',
+  travel: 'TravelApplication',
+  weather: 'WeatherApplication'
+};
+const LABEL_MAP = {
+  ai: 'AI 工具',
+  'ai-coding': 'AI 编程工具',
+  astronomy: '天文工具',
+  automotive: '汽车工具',
+  business: '商业工具',
+  calculator: '计算工具',
+  chinese: '中文工具',
+  converter: '转换工具',
+  crypto: '加密与数字资产工具',
+  data: '数据工具',
+  design: '设计工具',
+  dev: '开发者工具',
+  diy: 'DIY 工具',
+  ecommerce: '电商工具',
+  education: '教育工具',
+  extractor: '提取工具',
+  finance: '金融工具',
+  fitness: '健身工具',
+  food: '饮食工具',
+  fun: '娱乐工具',
+  game: '游戏工具',
+  gaming: '游戏工具',
+  gardening: '园艺工具',
+  generator: '生成器工具',
+  health: '健康工具',
+  language: '语言工具',
+  legal: '法律工具',
+  life: '生活工具',
+  lifestyle: '生活方式工具',
+  math: '数学工具',
+  media: '媒体工具',
+  music: '音乐工具',
+  network: '网络工具',
+  office: '办公工具',
+  parenting: '育儿工具',
+  pet: '宠物工具',
+  pets: '宠物工具',
+  photography: '摄影工具',
+  privacy: '隐私工具',
+  productivity: '效率工具',
+  'real-estate': '房产工具',
+  realestate: '房产工具',
+  security: '安全工具',
+  seo: 'SEO 工具',
+  shopping: '购物工具',
+  social: '社交工具',
+  'social-media': '社交媒体工具',
+  sports: '运动工具',
+  'team-tools': '团队工具',
+  text: '文本工具',
+  time: '时间工具',
+  travel: '旅行工具',
+  weather: '天气工具'
 };
 
 const args = process.argv.slice(2);
 const CHECK_ONLY = args.includes('--check');
+const ALL_CATEGORIES = args.includes('--all');
 const targetCategories = args.filter((arg) => !arg.startsWith('--'));
-const categories = targetCategories.length ? targetCategories : ['dev'];
 
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -27,6 +131,31 @@ function escapeHtml(value) {
     .replace(/"/g, '&quot;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
+}
+
+function listAvailableCategories() {
+  return fs
+    .readdirSync(TOOLS_ROOT, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .filter((category) => {
+      const dir = path.join(TOOLS_ROOT, category);
+      return fs.readdirSync(dir).some((file) => file.endsWith('.html'));
+    })
+    .sort();
+}
+
+function getCategoryConfig(category) {
+  const dir = path.join(TOOLS_ROOT, category);
+
+  if (!fs.existsSync(dir) || !fs.statSync(dir).isDirectory()) {
+    throw new Error(`Unsupported category: ${category}`);
+  }
+
+  return {
+    dir,
+    applicationCategory: APPLICATION_CATEGORY_MAP[category] || 'UtilitiesApplication'
+  };
 }
 
 function getTitle(html) {
@@ -129,14 +258,7 @@ function getSiteName(html, title) {
 }
 
 function getDefaultDescription(title, category) {
-  const labelMap = {
-    dev: '开发者工具',
-    text: '文本工具',
-    time: '时间工具',
-    generator: '生成器工具',
-    media: '媒体工具'
-  };
-  return `${title}，免费在线${labelMap[category] || '实用工具'}。`;
+  return `${title}，免费在线${LABEL_MAP[category] || '实用工具'}。`;
 }
 
 function analyze(html, fileName, category) {
@@ -178,7 +300,7 @@ function analyze(html, fileName, category) {
 }
 
 function fixHtml(html, fileName, category) {
-  const config = CATEGORY_CONFIG[category];
+  const config = getCategoryConfig(category);
   const info = analyze(html, fileName, category);
   let next = html;
 
@@ -217,7 +339,7 @@ function createEmptyStats(total = 0) {
 }
 
 function collectCategoryStats(category) {
-  const config = CATEGORY_CONFIG[category];
+  const config = getCategoryConfig(category);
   const files = fs.readdirSync(config.dir).filter((file) => file.endsWith('.html')).sort();
   const stats = createEmptyStats(files.length);
 
@@ -261,11 +383,25 @@ function aggregateTotals(summary) {
   return totals;
 }
 
+function resolveCategories() {
+  const available = listAvailableCategories();
+
+  if (ALL_CATEGORIES) {
+    return available;
+  }
+
+  if (targetCategories.length) {
+    return targetCategories;
+  }
+
+  return ['dev'];
+}
+
 function main() {
+  const categories = resolveCategories();
+
   for (const category of categories) {
-    if (!CATEGORY_CONFIG[category]) {
-      throw new Error(`Unsupported category: ${category}`);
-    }
+    getCategoryConfig(category);
   }
 
   const before = {};
@@ -278,14 +414,14 @@ function main() {
   }
 
   if (CHECK_ONLY) {
-    console.log(JSON.stringify({ categories: before, totals: aggregateTotals(before) }, null, 2));
+    console.log(JSON.stringify({ categories, summary: before, totals: aggregateTotals(before) }, null, 2));
     return;
   }
 
   const changedByCategory = {};
 
   for (const category of categories) {
-    const config = CATEGORY_CONFIG[category];
+    const config = getCategoryConfig(category);
     const changedFiles = [];
 
     for (const fileName of fileIndex[category]) {
