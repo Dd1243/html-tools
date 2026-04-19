@@ -1,11 +1,21 @@
 const fs = require('fs');
 const path = require('path');
 
-const DEV_DIR = path.resolve(__dirname, '../tools/dev');
 const SITE_URL = 'https://essays4u.net';
-const SITE_NAME = 'WebUtils';
+const DEFAULT_SITE_NAME = 'WebUtils';
 const DEFAULT_IMAGE = `${SITE_URL}/social-preview.png`;
-const CHECK_ONLY = process.argv.includes('--check');
+const CATEGORY_CONFIG = {
+  dev: { dir: path.resolve(__dirname, '../tools/dev'), applicationCategory: 'DeveloperApplication' },
+  text: { dir: path.resolve(__dirname, '../tools/text'), applicationCategory: 'UtilitiesApplication' },
+  time: { dir: path.resolve(__dirname, '../tools/time'), applicationCategory: 'UtilitiesApplication' },
+  generator: { dir: path.resolve(__dirname, '../tools/generator'), applicationCategory: 'UtilitiesApplication' },
+  media: { dir: path.resolve(__dirname, '../tools/media'), applicationCategory: 'MultimediaApplication' }
+};
+
+const args = process.argv.slice(2);
+const CHECK_ONLY = args.includes('--check');
+const targetCategories = args.filter((arg) => !arg.startsWith('--'));
+const categories = targetCategories.length ? targetCategories : ['dev'];
 
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -45,26 +55,47 @@ function insertBeforeHeadEnd(html, snippet) {
   return html.replace(/\s*<\/head>/i, `\n${snippet}\n  </head>`);
 }
 
-function upsertMeta(html, attribute, key, content) {
+function hasMeta(html, attribute, key) {
+  const pattern = new RegExp(`<meta\\s+[^>]*${attribute}=["']${escapeRegExp(key)}["'][^>]*>`, 'i');
+  return pattern.test(html);
+}
+
+function ensureMeta(html, attribute, key, content, replaceIfDifferent = false) {
   const tag = `    <meta ${attribute}="${key}" content="${escapeHtml(content)}" />`;
   const pattern = new RegExp(`<meta\\s+[^>]*${attribute}=["']${escapeRegExp(key)}["'][^>]*>`, 'i');
-  return pattern.test(html) ? html.replace(pattern, tag) : insertBeforeHeadEnd(html, tag);
+
+  if (!pattern.test(html)) {
+    return insertBeforeHeadEnd(html, tag);
+  }
+
+  if (!replaceIfDifferent) {
+    return html;
+  }
+
+  const existing = getMetaContent(html, key, attribute);
+  return existing === content ? html : html.replace(pattern, tag);
 }
 
-function upsertLinkCanonical(html, href) {
+function ensureCanonical(html, href) {
   const tag = `    <link rel="canonical" href="${href}" />`;
   const pattern = /<link\s+[^>]*rel=["']canonical["'][^>]*>/i;
-  return pattern.test(html) ? html.replace(pattern, tag) : insertBeforeHeadEnd(html, tag);
+  const existing = getCanonical(html);
+
+  if (!pattern.test(html)) {
+    return insertBeforeHeadEnd(html, tag);
+  }
+
+  return existing === href ? html : html.replace(pattern, tag);
 }
 
-function buildJsonLd(name, description, url) {
+function buildJsonLd(name, description, url, applicationCategory) {
   const data = {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
     name,
     description,
     url,
-    applicationCategory: 'DeveloperApplication',
+    applicationCategory,
     operatingSystem: 'Any',
     offers: {
       '@type': 'Offer',
@@ -85,25 +116,45 @@ function hasJsonLd(html) {
 }
 
 function normalizedNameFromTitle(title, fallback) {
-  const cleaned = title.replace(/\s*[|｜-]\s*WebUtils\s*$/i, '').trim();
+  const cleaned = title.replace(/\s*[|｜-]\s*(WebUtils|Web工具箱)\s*$/i, '').trim();
   return cleaned || fallback;
 }
 
-function analyze(html, fileName) {
+function getSiteName(html, title) {
+  return (
+    getMetaContent(html, 'og:site_name', 'property') ||
+    getMetaContent(html, 'author') ||
+    (/Web工具箱/i.test(title) ? 'Web工具箱' : DEFAULT_SITE_NAME)
+  );
+}
+
+function getDefaultDescription(title, category) {
+  const labelMap = {
+    dev: '开发者工具',
+    text: '文本工具',
+    time: '时间工具',
+    generator: '生成器工具',
+    media: '媒体工具'
+  };
+  return `${title}，免费在线${labelMap[category] || '实用工具'}。`;
+}
+
+function analyze(html, fileName, category) {
   const slug = fileName.replace(/\.html$/i, '');
-  const expectedUrl = `${SITE_URL}/tools/dev/${slug}`;
+  const expectedUrl = `${SITE_URL}/tools/${category}/${slug}`;
   const title = getTitle(html) || slug;
-  const description = getMetaContent(html, 'description') || `${title}，免费在线开发者工具。`;
+  const description = getMetaContent(html, 'description') || getDefaultDescription(title, category);
   const appName = normalizedNameFromTitle(title, slug);
   const canonical = getCanonical(html);
+  const siteName = getSiteName(html, title);
 
-  const hasOgTitle = /<meta\s+[^>]*property=["']og:title["'][^>]*content=/i.test(html);
-  const hasOgDescription = /<meta\s+[^>]*property=["']og:description["'][^>]*content=/i.test(html);
-  const hasOgType = /<meta\s+[^>]*property=["']og:type["'][^>]*content=/i.test(html);
-  const hasOgUrl = /<meta\s+[^>]*property=["']og:url["'][^>]*content=/i.test(html);
-  const hasTwitterCard = /<meta\s+[^>]*name=["']twitter:card["'][^>]*content=/i.test(html);
-  const hasTwitterTitle = /<meta\s+[^>]*name=["']twitter:title["'][^>]*content=/i.test(html);
-  const hasTwitterDescription = /<meta\s+[^>]*name=["']twitter:description["'][^>]*content=/i.test(html);
+  const hasOgTitle = hasMeta(html, 'property', 'og:title');
+  const hasOgDescription = hasMeta(html, 'property', 'og:description');
+  const hasOgType = hasMeta(html, 'property', 'og:type');
+  const hasOgUrl = hasMeta(html, 'property', 'og:url');
+  const hasTwitterCard = hasMeta(html, 'name', 'twitter:card');
+  const hasTwitterTitle = hasMeta(html, 'name', 'twitter:title');
+  const hasTwitterDescription = hasMeta(html, 'name', 'twitter:description');
   const canonicalBad =
     !canonical ||
     canonical !== expectedUrl ||
@@ -113,11 +164,11 @@ function analyze(html, fileName) {
     /\/\//.test(canonical.replace('https://', ''));
 
   return {
-    slug,
     expectedUrl,
     title,
     description,
     appName,
+    siteName,
     hasJsonLd: hasJsonLd(html),
     hasOg: hasOgTitle && hasOgDescription && hasOgType && hasOgUrl,
     hasTwitter: hasTwitterCard && hasTwitterTitle && hasTwitterDescription,
@@ -126,109 +177,146 @@ function analyze(html, fileName) {
   };
 }
 
-function fixHtml(html, fileName) {
-  const info = analyze(html, fileName);
+function fixHtml(html, fileName, category) {
+  const config = CATEGORY_CONFIG[category];
+  const info = analyze(html, fileName, category);
   let next = html;
 
-  next = upsertLinkCanonical(next, info.expectedUrl);
-  next = upsertMeta(next, 'property', 'og:title', info.title);
-  next = upsertMeta(next, 'property', 'og:description', info.description);
-  next = upsertMeta(next, 'property', 'og:type', 'website');
-  next = upsertMeta(next, 'property', 'og:url', info.expectedUrl);
-  next = upsertMeta(next, 'property', 'og:site_name', SITE_NAME);
-  next = upsertMeta(next, 'property', 'og:locale', 'zh_CN');
-  next = upsertMeta(next, 'property', 'og:image', DEFAULT_IMAGE);
-  next = upsertMeta(next, 'name', 'twitter:card', 'summary_large_image');
-  next = upsertMeta(next, 'name', 'twitter:title', info.title);
-  next = upsertMeta(next, 'name', 'twitter:description', info.description);
-  next = upsertMeta(next, 'name', 'twitter:image', DEFAULT_IMAGE);
+  next = ensureCanonical(next, info.expectedUrl);
+  next = ensureMeta(next, 'property', 'og:title', info.title);
+  next = ensureMeta(next, 'property', 'og:description', info.description);
+  next = ensureMeta(next, 'property', 'og:type', 'website');
+  next = ensureMeta(next, 'property', 'og:url', info.expectedUrl, true);
+  next = ensureMeta(next, 'property', 'og:site_name', info.siteName);
+  next = ensureMeta(next, 'property', 'og:locale', 'zh_CN');
+  next = ensureMeta(next, 'property', 'og:image', DEFAULT_IMAGE);
+  next = ensureMeta(next, 'name', 'twitter:card', 'summary_large_image');
+  next = ensureMeta(next, 'name', 'twitter:title', info.title);
+  next = ensureMeta(next, 'name', 'twitter:description', info.description);
+  next = ensureMeta(next, 'name', 'twitter:image', DEFAULT_IMAGE);
 
   if (!info.hasJsonLd) {
-    next = insertBeforeHeadEnd(next, buildJsonLd(info.appName, info.description, info.expectedUrl));
+    next = insertBeforeHeadEnd(
+      next,
+      buildJsonLd(info.appName, info.description, info.expectedUrl, config.applicationCategory)
+    );
   }
 
-  return { next, info };
+  return next;
 }
 
-function collectStats(files) {
-  const stats = {
-    total: files.length,
-    missingJsonLd: [],
-    missingOg: [],
-    missingTwitter: [],
-    missingCanonical: [],
-    badCanonical: []
+function createEmptyStats(total = 0) {
+  return {
+    total,
+    missingJsonLd: 0,
+    missingOg: 0,
+    missingTwitter: 0,
+    missingCanonical: 0,
+    badCanonical: 0
   };
+}
+
+function collectCategoryStats(category) {
+  const config = CATEGORY_CONFIG[category];
+  const files = fs.readdirSync(config.dir).filter((file) => file.endsWith('.html')).sort();
+  const stats = createEmptyStats(files.length);
 
   for (const fileName of files) {
-    const fullPath = path.join(DEV_DIR, fileName);
+    const fullPath = path.join(config.dir, fileName);
     const html = fs.readFileSync(fullPath, 'utf8');
-    const info = analyze(html, fileName);
+    const info = analyze(html, fileName, category);
 
     if (!info.hasJsonLd) {
-      stats.missingJsonLd.push(fileName);
+      stats.missingJsonLd += 1;
     }
     if (!info.hasOg) {
-      stats.missingOg.push(fileName);
+      stats.missingOg += 1;
     }
     if (!info.hasTwitter) {
-      stats.missingTwitter.push(fileName);
+      stats.missingTwitter += 1;
     }
     if (!info.hasCanonical) {
-      stats.missingCanonical.push(fileName);
+      stats.missingCanonical += 1;
     }
     if (info.canonicalBad) {
-      stats.badCanonical.push({ file: fileName, expected: info.expectedUrl });
+      stats.badCanonical += 1;
     }
   }
 
-  return stats;
+  return { files, stats };
+}
+
+function aggregateTotals(summary) {
+  const totals = createEmptyStats();
+
+  for (const stats of Object.values(summary)) {
+    totals.total += stats.total;
+    totals.missingJsonLd += stats.missingJsonLd;
+    totals.missingOg += stats.missingOg;
+    totals.missingTwitter += stats.missingTwitter;
+    totals.missingCanonical += stats.missingCanonical;
+    totals.badCanonical += stats.badCanonical;
+  }
+
+  return totals;
 }
 
 function main() {
-  const files = fs.readdirSync(DEV_DIR).filter((file) => file.endsWith('.html')).sort();
-  const before = collectStats(files);
-
-  if (CHECK_ONLY) {
-    console.log(JSON.stringify(before, null, 2));
-    return;
-  }
-
-  const changed = [];
-
-  for (const fileName of files) {
-    const fullPath = path.join(DEV_DIR, fileName);
-    const html = fs.readFileSync(fullPath, 'utf8');
-    const { next } = fixHtml(html, fileName);
-
-    if (next !== html) {
-      fs.writeFileSync(fullPath, next, 'utf8');
-      changed.push(fileName);
+  for (const category of categories) {
+    if (!CATEGORY_CONFIG[category]) {
+      throw new Error(`Unsupported category: ${category}`);
     }
   }
 
-  const after = collectStats(files);
+  const before = {};
+  const fileIndex = {};
+
+  for (const category of categories) {
+    const { files, stats } = collectCategoryStats(category);
+    before[category] = stats;
+    fileIndex[category] = files;
+  }
+
+  if (CHECK_ONLY) {
+    console.log(JSON.stringify({ categories: before, totals: aggregateTotals(before) }, null, 2));
+    return;
+  }
+
+  const changedByCategory = {};
+
+  for (const category of categories) {
+    const config = CATEGORY_CONFIG[category];
+    const changedFiles = [];
+
+    for (const fileName of fileIndex[category]) {
+      const fullPath = path.join(config.dir, fileName);
+      const html = fs.readFileSync(fullPath, 'utf8');
+      const next = fixHtml(html, fileName, category);
+
+      if (next !== html) {
+        fs.writeFileSync(fullPath, next, 'utf8');
+        changedFiles.push(fileName);
+      }
+    }
+
+    changedByCategory[category] = changedFiles.length;
+  }
+
+  const after = {};
+
+  for (const category of categories) {
+    after[category] = collectCategoryStats(category).stats;
+  }
 
   console.log(
     JSON.stringify(
       {
-        checked: before.total,
-        changed: changed.length,
-        changedFiles: changed,
-        before: {
-          missingJsonLd: before.missingJsonLd.length,
-          missingOg: before.missingOg.length,
-          missingTwitter: before.missingTwitter.length,
-          missingCanonical: before.missingCanonical.length,
-          badCanonical: before.badCanonical.length
-        },
-        after: {
-          missingJsonLd: after.missingJsonLd.length,
-          missingOg: after.missingOg.length,
-          missingTwitter: after.missingTwitter.length,
-          missingCanonical: after.missingCanonical.length,
-          badCanonical: after.badCanonical.length
-        }
+        categories,
+        changedByCategory,
+        before,
+        after,
+        totalsBefore: aggregateTotals(before),
+        totalsAfter: aggregateTotals(after)
       },
       null,
       2
