@@ -30,6 +30,10 @@ const MANIFEST_JSON = path.join(ROOT_DIR, 'manifest.json');
 // 网站域名 (不带尾部斜杠)
 const SITE_URL = 'https://essays4u.net';
 
+function toPublicUrl(filePath) {
+  return String(filePath).replace(/\.html$/i, '');
+}
+
 // 优先显示的分类顺序
 const PRIORITY_CATEGORIES = [
   'dev',
@@ -58,7 +62,7 @@ function escapeString(str) {
  * 生成工具的 JS 对象字符串
  */
 function toolToJsLine(tool) {
-  const url = escapeString(tool.path);
+  const url = escapeString(toPublicUrl(tool.path));
   const category = escapeString(tool.category);
   const name = escapeString(tool.name);
   const desc = escapeString(tool.description || tool.name);
@@ -307,7 +311,7 @@ function updateSitemap(tools, toolCount) {
   for (const tool of tools) {
     xml += `
   <url>
-    <loc>${SITE_URL}/${tool.path}</loc>
+    <loc>${SITE_URL}/${toPublicUrl(tool.path)}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -321,9 +325,9 @@ function updateSitemap(tools, toolCount) {
   // 检查是否有变化
   if (fs.existsSync(SITEMAP_XML)) {
     const existing = fs.readFileSync(SITEMAP_XML, 'utf8');
-    const existingCount = (existing.match(/<loc>/g) || []).length;
 
-    if (existingCount === toolCount + 1) {
+    if (existing === xml) {
+      const existingCount = (existing.match(/<loc>/g) || []).length;
       console.log(`⏭️  sitemap.xml: 无需更新 (${existingCount} URLs)`);
       return false;
     }

@@ -547,7 +547,8 @@ function buildHead(html, fileName, meta) {
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: '首页', item: `${siteOrigin}/` },
         { '@type': 'ListItem', position: 2, name: '旅行工具', item: `${siteOrigin}/#travel` },
-        { '@type': 'ListItem', position: 3, name: meta.name, item: `${canonical}.html` }
+        { '@type': 'ListItem', position: 3, name: meta.name, item: canonical }
+
       ]
     },
     {
