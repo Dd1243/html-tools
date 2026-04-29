@@ -31,11 +31,17 @@ jobs:
       - name: Submit changed URLs to IndexNow on push
         if: github.event_name == 'push'
         run: node scripts/indexnow.js --from-git "${{ github.event.before }}" "${{ github.sha }}"
+        continue-on-error: true
+        # 允许 IndexNow 提交失败
+        # 原因：可能的网络问题、API 限制、或搜索引擎暂时不可用
+        # IndexNow 是可选的优化，失败不应阻塞部署
 
       - name: Submit sitemap URLs to IndexNow on manual run
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'sitemap'
         run: node scripts/indexnow.js --from-sitemap sitemap.xml
+        continue-on-error: true
 
       - name: Submit homepage to IndexNow on manual run
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'homepage'
         run: node scripts/indexnow.js https://essays4u.net/
+        continue-on-error: true
