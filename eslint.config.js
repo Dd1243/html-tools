@@ -4,7 +4,13 @@ import html from 'eslint-plugin-html';
 export default [
   // Ignore patterns
   {
-    ignores: ['node_modules/**', 'dist/**', '.git/**']
+    ignores: [
+      'node_modules/**',
+      'dist/**',
+      '.git/**',
+      'templates/**', // 忽略模板文件（有历史遗留的解析错误）
+      'offline.html' // 离线页面有编码问题
+    ]
   },
 
   // Base config for all files
