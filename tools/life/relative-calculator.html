@@ -45,6 +45,7 @@
         --text-muted: #55556a;
         --border-subtle: #2a2a3a;
         --border-strong: #3a3a4a;
+        --border-color: #2a2a3a;
         --accent-cyan: #00f5d4;
         --accent-magenta: #f72585;
         --accent-green: #10b981;
@@ -59,6 +60,15 @@
           "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
         --font-mono: "JetBrains Mono", "Courier New", monospace;
         --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --bg-primary: #0a0a0f;
+        --bg-secondary: #12121a;
+        --bg-tertiary: #1a1a25;
+        --color-text-primary: #fff;
+        --color-text-secondary: #88a;
+        --accent: #ec4899;
+        --accent-light: #f472b6;
+        --border: #2a2a3a;
+        --success: #22c55e;
       }
 
       [data-theme="light"] {
@@ -71,34 +81,22 @@
         --text-muted: #999;
         --border-subtle: #e5e5e5;
         --border-strong: #d5d5d5;
+        --border-color: #e5e5e5;
         --accent-cyan: #00d4b8;
         --accent-magenta: #e63975;
         --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      :root {
-        --bg-primary: #0a0a0f;
-        --bg-secondary: #12121a;
-        --bg-tertiary: #1a1a25;
-        --color-text-primary: #fff;
-        --color-text-secondary: #88a;
-        --accent: #ec4899;
-        --accent-light: #f472b6;
-        --border: #2a2a3a;
-        --success: #22c55e;
-      }
-      [data-theme="light"] {
         --bg-primary: #f8fafc;
         --bg-secondary: #fff;
         --bg-tertiary: #f1f5f9;
         --color-text-primary: #1e293b;
         --color-text-secondary: #64748b;
         --border: #e2e8f0;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
       }
       body {
         font-family: var(--font-sans);
@@ -445,13 +443,31 @@
 
     <div class="container">
       <div class="card">
-        <div class="relation-path" id="relationPath">
-          <span class="relation-placeholder">
-            点击下方按钮添加关系，如：父亲 → 的 → 哥哥 = 伯父
-          </span>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+          <div>
+            <label style="display: block; margin-bottom: 0.5rem; color: var(--color-text-secondary); font-size: 0.9rem;">我的性别</label>
+            <select id="myGender" onchange="updateGenderInfo()" style="width: 100%; padding: 0.75rem; background: var(--bg-tertiary); border: 1px solid var(--border-subtle); border-radius: 0.5rem; color: var(--color-text-primary); cursor: pointer;">
+              <option value="m">男性</option>
+              <option value="f">女性</option>
+            </select>
+          </div>
+          <div>
+            <label style="display: block; margin-bottom: 0.5rem; color: var(--color-text-secondary); font-size: 0.9rem;">查询模式</label>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="mode-btn active" onclick="switchMode('forward')" style="flex: 1; padding: 0.75rem; background: var(--accent-cyan); color: white; border: none; border-radius: 0.5rem; cursor: pointer;">正向查询</button>
+              <button class="mode-btn" onclick="switchMode('reverse')" style="flex: 1; padding: 0.75rem; background: var(--bg-tertiary); border: 1px solid var(--border-subtle); color: var(--color-text-primary); border-radius: 0.5rem; cursor: pointer;">反向查询</button>
+            </div>
+          </div>
         </div>
 
-        <div class="btn-grid">
+        <div id="forwardMode">
+          <div class="relation-path" id="relationPath">
+            <span class="relation-placeholder">
+              点击下方按钮添加关系，如：父亲 → 的 → 哥哥 = 伯父
+            </span>
+          </div>
+
+          <div class="btn-grid">
           <button class="relation-btn" onclick="addRelation('f')">
             <span class="icon">👨</span>
             父亲
@@ -512,6 +528,19 @@
           <div class="result-label">你应该叫TA</div>
           <div class="result-title" id="resultTitle">-</div>
           <div class="result-reverse" id="resultReverse"></div>
+          <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+            <button class="action-btn" onclick="copyResult()" style="flex: 1;">📋 复制</button>
+            <button class="action-btn" onclick="saveToHistory()" style="flex: 1;">💾 保存</button>
+          </div>
+        </div>
+        </div>
+
+        <div id="reverseMode" style="display: none;">
+          <div style="margin-bottom: 1rem;">
+            <label style="display: block; margin-bottom: 0.5rem; color: var(--color-text-secondary); font-size: 0.9rem;">输入称呼查询关系</label>
+            <input type="text" id="reverseInput" placeholder="如：伯父、舅舅、表哥..." style="width: 100%; padding: 0.75rem; background: var(--bg-tertiary); border: 1px solid var(--border-subtle); border-radius: 0.5rem; color: var(--color-text-primary);" onkeyup="reverseSearch()">
+          </div>
+          <div id="reverseResults" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.75rem;"></div>
         </div>
       </div>
 
@@ -560,14 +589,24 @@
             <li>从"我"的角度出发，逐层选择亲属关系</li>
             <li>"兄弟"表示不分长幼的兄或弟，"姐妹"同理</li>
             <li>计算结果会同时显示对方应该如何称呼你</li>
+            <li>使用反向查询可以快速查找陌生的亲戚称呼</li>
+            <li>点击"保存"可以将查询结果保存到历史记录</li>
           </ul>
+        </div>
+
+        <div style="margin-top: 1.5rem;">
+          <h3 style="font-size: 1rem; color: var(--color-text-secondary); margin-bottom: 1rem;">📜 查询历史</h3>
+          <div id="historyList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem;"></div>
+          <button onclick="clearHistory()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--bg-tertiary); border: 1px solid var(--border-subtle); border-radius: 0.5rem; color: var(--color-text-secondary); cursor: pointer;">清空历史</button>
         </div>
       </div>
     </div>
 
     <script>
-      // 关系链
-      let relations = [];
+      // 查询历史
+      let queryHistory = JSON.parse(localStorage.getItem('relativeCalcHistory') || '[]');
+      let currentMode = 'forward';
+      let myGender = localStorage.getItem('myGender') || 'm';
 
       // 关系名称映射
       const RELATION_NAMES = {
@@ -845,6 +884,148 @@
 
       // 初始化
       document.body.setAttribute("data-theme", localStorage.getItem("theme") || "dark");
+      document.getElementById('myGender').value = myGender;
+      renderHistory();
+
+      /**
+       * 切换查询模式
+       */
+      window.switchMode = function(mode) {
+        currentMode = mode;
+        document.getElementById('forwardMode').style.display = mode === 'forward' ? 'block' : 'none';
+        document.getElementById('reverseMode').style.display = mode === 'reverse' ? 'block' : 'none';
+
+        // 更新按钮样式
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+          btn.classList.remove('active');
+          btn.style.background = 'var(--bg-tertiary)';
+          btn.style.borderColor = 'var(--border-subtle)';
+          btn.style.color = 'var(--color-text-primary)';
+        });
+        event.target.classList.add('active');
+        event.target.style.background = 'var(--accent-cyan)';
+        event.target.style.color = 'white';
+      };
+
+      /**
+       * 更新性别信息
+       */
+      window.updateGenderInfo = function() {
+        myGender = document.getElementById('myGender').value;
+        localStorage.setItem('myGender', myGender);
+      };
+
+      /**
+       * 反向搜索
+       */
+      window.reverseSearch = function() {
+        const input = document.getElementById('reverseInput').value.trim().toLowerCase();
+        const resultsDiv = document.getElementById('reverseResults');
+
+        if (!input) {
+          resultsDiv.innerHTML = '';
+          return;
+        }
+
+        const results = [];
+        for (const [key, value] of Object.entries(TITLES)) {
+          if (value.title.toLowerCase().includes(input)) {
+            results.push({ key, ...value });
+          }
+        }
+
+        if (results.length === 0) {
+          resultsDiv.innerHTML = '<p style="color: var(--color-text-secondary);">未找到匹配的称呼</p>';
+          return;
+        }
+
+        resultsDiv.innerHTML = results.map(r => {
+          const key = r.key.replace(/'/g, "\\'");
+          return `<div style="padding: 0.75rem; background: var(--bg-tertiary); border: 1px solid var(--border-subtle); border-radius: 0.5rem; cursor: pointer;" onclick="setReverseExample('${key}')"><div style="font-weight: 600; color: var(--accent-cyan);">${r.title}</div><div style="font-size: 0.85rem; color: var(--color-text-secondary);">TA叫你：${r.reverse}</div></div>`;
+        }).join('');
+      };
+
+      /**
+       * 设置反向示例
+       */
+      window.setReverseExample = function(key) {
+        relations = key.split(',');
+        updatePath();
+        calculate();
+        switchMode('forward');
+      };
+
+      /**
+       * 复制结果
+       */
+      window.copyResult = function() {
+        const title = document.getElementById('resultTitle').textContent;
+        const reverse = document.getElementById('resultReverse').textContent;
+        const text = `你应该叫TA：${title}\n${reverse}`;
+        navigator.clipboard.writeText(text).then(() => {
+          alert('已复制到剪贴板');
+        });
+      };
+
+      /**
+       * 保存到历史
+       */
+      window.saveToHistory = function() {
+        const title = document.getElementById('resultTitle').textContent;
+        if (title === '-') return;
+
+        const item = {
+          relations: [...relations],
+          title: title,
+          reverse: document.getElementById('resultReverse').textContent,
+          time: new Date().toLocaleString()
+        };
+
+        queryHistory.unshift(item);
+        if (queryHistory.length > 20) queryHistory.pop();
+        localStorage.setItem('relativeCalcHistory', JSON.stringify(queryHistory));
+        renderHistory();
+        alert('已保存到历史记录');
+      };
+
+      /**
+       * 渲染历史记录
+       */
+      function renderHistory() {
+        const historyList = document.getElementById('historyList');
+        if (queryHistory.length === 0) {
+          historyList.innerHTML = '<p style="color: var(--color-text-secondary);">暂无历史记录</p>';
+          return;
+        }
+
+        historyList.innerHTML = queryHistory.map((item, idx) => `
+          <div style="padding: 0.75rem; background: var(--bg-tertiary); border: 1px solid var(--border-subtle); border-radius: 0.5rem; cursor: pointer;" onclick="loadFromHistory(${idx})">
+            <div style="font-weight: 600; color: var(--accent-cyan);">${item.title}</div>
+            <div style="font-size: 0.8rem; color: var(--color-text-secondary);">${item.time}</div>
+          </div>
+        `).join('');
+      }
+
+      /**
+       * 从历史加载
+       */
+      window.loadFromHistory = function(idx) {
+        const item = queryHistory[idx];
+        relations = [...item.relations];
+        updatePath();
+        calculate();
+      };
+
+      /**
+       * 清空历史
+       */
+      window.clearHistory = function() {
+        if (confirm('确定要清空所有历史记录吗？')) {
+          queryHistory = [];
+          localStorage.removeItem('relativeCalcHistory');
+          renderHistory();
+        }
+      };
     </script>
   
 
