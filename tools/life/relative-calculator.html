@@ -223,6 +223,114 @@
         background: var(--bg-card);
       }
 
+      .tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+
+      .tab-btn {
+        padding: 0.75rem 1rem;
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid transparent;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: 500;
+      }
+
+      .tab-btn.active {
+        color: var(--accent-cyan);
+        border-bottom-color: var(--accent-cyan);
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      .reference-table {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .reference-item {
+        padding: 1rem;
+        background: var(--bg-input);
+        border: 1px solid var(--border-subtle);
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .reference-item:hover {
+        border-color: var(--accent-cyan);
+        background: var(--bg-card);
+      }
+
+      .reference-label {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.25rem;
+      }
+
+      .reference-value {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--accent-cyan);
+      }
+
+      .history-item {
+        padding: 0.75rem;
+        background: var(--bg-input);
+        border: 1px solid var(--border-subtle);
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+      }
+
+      .history-item:hover {
+        border-color: var(--accent-cyan);
+        background: var(--bg-card);
+      }
+
+      .history-text {
+        flex: 1;
+      }
+
+      .history-input {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+      }
+
+      .history-result {
+        color: var(--accent-cyan);
+        font-weight: 600;
+      }
+
+      .history-delete {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 0.25rem 0.5rem;
+      }
+
+      .history-delete:hover {
+        color: var(--accent-red);
+      }
+
       .breadcrumb {
         background: rgba(255, 255, 255, 0.95);
         padding: 8px 15px;
@@ -326,6 +434,22 @@
         <div>
           <div class="input-label" style="margin-top: 2rem;">快速查询</div>
           <div class="quick-buttons" id="quickButtons"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab('reference')">📚 关系速查表</button>
+          <button class="tab-btn" onclick="switchTab('history')">📜 查询历史</button>
+        </div>
+
+        <div id="reference" class="tab-content active">
+          <div class="reference-table" id="referenceTable"></div>
+        </div>
+
+        <div id="history" class="tab-content">
+          <div id="historyList"></div>
+          <button class="btn" onclick="clearHistory()" style="margin-top: 1rem; width: 100%;">🗑️ 清空历史</button>
         </div>
       </div>
 
@@ -459,6 +583,9 @@
         '女儿的女儿'
       ];
 
+      // 查询历史
+      let queryHistory = JSON.parse(localStorage.getItem('relativeCalcHistory') || '[]');
+
       function parseRelationship(input) {
         const parts = input.split('的');
         let result = '';
@@ -492,6 +619,9 @@
         if (result) {
           document.getElementById('resultTitle').textContent = result;
           document.getElementById('resultBox').classList.add('show');
+
+          // 保存到历史
+          addToHistory(input, result);
         } else {
           document.getElementById('resultBox').classList.remove('show');
         }
@@ -530,6 +660,115 @@
           };
           container.appendChild(btn);
         });
+      }
+
+      function switchTab(tab) {
+        // 隐藏所有tab内容
+        document.querySelectorAll('.tab-content').forEach(el => {
+          el.classList.remove('active');
+        });
+        // 取消所有tab按钮的active状态
+        document.querySelectorAll('.tab-btn').forEach(el => {
+          el.classList.remove('active');
+        });
+
+        // 显示选中的tab
+        document.getElementById(tab).classList.add('active');
+        event.target.classList.add('active');
+
+        if (tab === 'reference') {
+          initReferenceTable();
+        } else if (tab === 'history') {
+          renderHistory();
+        }
+      }
+
+      function initReferenceTable() {
+        const container = document.getElementById('referenceTable');
+        if (container.children.length > 0) return; // 已初始化
+
+        const categories = {
+          '直系长辈': ['爸爸', '妈妈', '爷爷', '奶奶', '外公', '外婆'],
+          '直系晚辈': ['儿子', '女儿', '孙子', '孙女', '外孙', '外孙女'],
+          '兄弟姐妹': ['哥哥', '弟弟', '姐姐', '妹妹'],
+          '父亲的兄弟姐妹': ['伯父', '叔叔', '姑姑'],
+          '母亲的兄弟姐妹': ['舅舅', '姨妈'],
+          '配偶': ['丈夫', '妻子'],
+          '堂表亲': ['堂哥', '堂弟', '表哥', '表弟'],
+          '其他': ['侄子', '侄女', '外甥', '外甥女']
+        };
+
+        for (const [category, relations] of Object.entries(categories)) {
+          const categoryTitle = document.createElement('div');
+          categoryTitle.style.gridColumn = '1 / -1';
+          categoryTitle.style.fontSize = '1rem';
+          categoryTitle.style.fontWeight = '600';
+          categoryTitle.style.color = 'var(--accent-cyan)';
+          categoryTitle.style.marginTop = '1rem';
+          categoryTitle.textContent = category;
+          container.appendChild(categoryTitle);
+
+          relations.forEach(relation => {
+            const item = document.createElement('div');
+            item.className = 'reference-item';
+            item.onclick = () => {
+              document.getElementById('relationInput').value = relation;
+              calculate();
+              switchTab('reference');
+            };
+            item.innerHTML = `
+              <div class="reference-label">你应该叫</div>
+              <div class="reference-value">${relationshipMap[relation]}</div>
+              <div class="reference-label" style="margin-top: 0.5rem; font-size: 0.8rem;">${relation}</div>
+            `;
+            container.appendChild(item);
+          });
+        }
+      }
+
+      function addToHistory(input, result) {
+        const item = { input, result, time: new Date().toLocaleTimeString() };
+        queryHistory.unshift(item);
+        if (queryHistory.length > 20) queryHistory.pop();
+        localStorage.setItem('relativeCalcHistory', JSON.stringify(queryHistory));
+      }
+
+      function renderHistory() {
+        const container = document.getElementById('historyList');
+        if (queryHistory.length === 0) {
+          container.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 2rem;">暂无查询历史</p>';
+          return;
+        }
+
+        container.innerHTML = queryHistory.map((item, idx) => `
+          <div class="history-item">
+            <div class="history-text" onclick="loadFromHistory(${idx})">
+              <div class="history-input">${item.input}</div>
+              <div class="history-result">${item.result}</div>
+            </div>
+            <button class="history-delete" onclick="deleteFromHistory(${idx})">✕</button>
+          </div>
+        `).join('');
+      }
+
+      function loadFromHistory(idx) {
+        const item = queryHistory[idx];
+        document.getElementById('relationInput').value = item.input;
+        calculate();
+      }
+
+      function deleteFromHistory(idx) {
+        queryHistory.splice(idx, 1);
+        localStorage.setItem('relativeCalcHistory', JSON.stringify(queryHistory));
+        renderHistory();
+      }
+
+      function clearHistory() {
+        if (confirm('确定要清空所有历史记录吗？')) {
+          queryHistory = [];
+          localStorage.removeItem('relativeCalcHistory');
+          renderHistory();
+        }
       }
 
       // 初始化
