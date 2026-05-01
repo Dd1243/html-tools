@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>亲戚称呼计算器 - WebUtils</title>
-    <meta name="description" content="免费在线亲戚称呼计算器，输入参考人和亲戚信息，快速计算亲戚关系和称呼。支持多代关系、性别识别、详细说明，帮助理解复杂的家族关系。" />
+    <meta name="description" content="免费在线亲戚称呼计算器，输入对方身份快速查询应该怎么称呼。支持多代关系、性别识别，帮助理解复杂的家族关系。" />
     <meta name="keywords" content="relative-calculator,life,tools,webutils" />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
@@ -96,11 +96,6 @@
         margin: 0 auto 1rem;
       }
 
-      .back-link {
-        color: rgba(255, 255, 255, 0.9);
-        text-decoration: none;
-      }
-
       .theme-toggle {
         background: rgba(255, 255, 255, 0.2);
         border: none;
@@ -124,26 +119,25 @@
         margin-bottom: 1.5rem;
       }
 
-      .form-group {
-        margin-bottom: 1.5rem;
+      .input-section {
+        margin-bottom: 2rem;
       }
 
-      .form-group label {
+      .input-label {
         display: block;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.75rem;
         color: var(--text-secondary);
-        font-size: 0.9rem;
+        font-size: 1rem;
         font-weight: 500;
       }
 
-      .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
+      .input-wrapper {
+        display: flex;
+        gap: 0.75rem;
       }
 
-      input, select {
-        width: 100%;
+      input {
+        flex: 1;
         padding: 0.75rem;
         background: var(--bg-input);
         border: 1px solid var(--border-subtle);
@@ -153,7 +147,7 @@
         font-size: 1rem;
       }
 
-      input:focus, select:focus {
+      input:focus {
         outline: none;
         border-color: var(--accent-cyan);
         box-shadow: 0 0 0 3px rgba(0, 245, 212, 0.1);
@@ -180,17 +174,16 @@
         transform: translateY(0);
       }
 
-      .result-section {
+      .result-box {
         background: linear-gradient(135deg, rgba(236, 72, 153, 0.1), rgba(236, 72, 153, 0.05));
         border: 2px solid var(--accent-cyan);
         border-radius: 1rem;
         padding: 2rem;
         text-align: center;
-        margin-top: 2rem;
         display: none;
       }
 
-      .result-section.show {
+      .result-box.show {
         display: block;
       }
 
@@ -207,14 +200,27 @@
         margin-bottom: 1rem;
       }
 
-      .result-info {
-        font-size: 1rem;
-        color: var(--text-secondary);
-        line-height: 1.6;
+      .quick-buttons {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 0.75rem;
+        margin-top: 1.5rem;
       }
 
-      .result-info strong {
+      .quick-btn {
+        padding: 0.75rem;
+        background: var(--bg-input);
+        border: 1px solid var(--border-subtle);
+        border-radius: 0.5rem;
         color: var(--text-primary);
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+      }
+
+      .quick-btn:hover {
+        border-color: var(--accent-cyan);
+        background: var(--bg-card);
       }
 
       .breadcrumb {
@@ -240,16 +246,6 @@
         margin: 0 5px;
       }
 
-      .info-box {
-        background: rgba(236, 72, 153, 0.1);
-        border-left: 4px solid var(--accent-magenta);
-        padding: 1rem;
-        border-radius: 0.5rem;
-        margin-top: 1rem;
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-      }
-
       @media (max-width: 640px) {
         .header h1 {
           font-size: 1.5rem;
@@ -257,11 +253,11 @@
         .container {
           padding: 1rem;
         }
-        .form-row {
-          grid-template-columns: 1fr;
-        }
         .result-title {
           font-size: 2rem;
+        }
+        .quick-buttons {
+          grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
         }
       }
     </style>
@@ -278,7 +274,7 @@
   "applicationCategory": "WebApplication",
   "operatingSystem": "Any (Browser-based)",
   "url": "https://essays4u.net/tools/life/relative-calculator",
-  "description": "计算复杂亲戚关系的正确称呼",
+  "description": "输入对方身份快速查询应该怎么称呼",
   "offers": {
     "@type": "Offer",
     "price": "0",
@@ -308,262 +304,212 @@
         <button class="theme-toggle" onclick="toggleTheme()">🌓 主题</button>
       </div>
       <h1>👨‍👩‍👧‍👦 亲戚称呼计算器</h1>
-      <p>输入参考人和亲戚信息，快速计算亲戚称呼</p>
+      <p>输入对方身份，快速查询应该怎么称呼</p>
     </div>
 
     <div class="container">
       <div class="card">
-        <h2 style="margin-bottom: 1.5rem; font-size: 1.3rem;">📋 输入信息</h2>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>参考人性别</label>
-            <select id="refGender" onchange="calculate()">
-              <option value="m">男性</option>
-              <option value="f">女性</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>亲戚性别</label>
-            <select id="relGender" onchange="calculate()">
-              <option value="m">男性</option>
-              <option value="f">女性</option>
-            </select>
+        <div class="input-section">
+          <label class="input-label">对方的身份关系（如：爸爸的哥哥、妈妈的妹妹、哥哥的儿子）</label>
+          <div class="input-wrapper">
+            <input type="text" id="relationInput" placeholder="输入对方身份..." onkeyup="handleInput(event)">
+            <button class="btn" onclick="calculate()">🔍 查询</button>
           </div>
         </div>
 
-        <div class="form-group">
-          <label>亲戚与参考人的关系</label>
-          <select id="relationship" onchange="calculate()">
-            <option value="">-- 请选择 --</option>
-            <optgroup label="直系长辈">
-              <option value="parent">父母</option>
-              <option value="grandparent">祖父母</option>
-              <option value="greatgrandparent">曾祖父母</option>
-            </optgroup>
-            <optgroup label="直系晚辈">
-              <option value="child">子女</option>
-              <option value="grandchild">孙子女</option>
-              <option value="greatgrandchild">曾孙子女</option>
-            </optgroup>
-            <optgroup label="兄弟姐妹">
-              <option value="sibling">兄弟姐妹</option>
-              <option value="halfsibling">同父异母/同母异父</option>
-            </optgroup>
-            <optgroup label="父亲的兄弟姐妹">
-              <option value="paternal_uncle">伯父/叔父</option>
-              <option value="paternal_aunt">姑母</option>
-            </optgroup>
-            <optgroup label="母亲的兄弟姐妹">
-              <option value="maternal_uncle">舅父</option>
-              <option value="maternal_aunt">姨母</option>
-            </optgroup>
-            <optgroup label="堂表亲">
-              <option value="cousin">堂表兄弟姐妹</option>
-              <option value="cousin_child">堂表侄子女</option>
-            </optgroup>
-            <optgroup label="配偶">
-              <option value="spouse">配偶</option>
-              <option value="spouse_parent">配偶父母</option>
-              <option value="spouse_sibling">配偶兄弟姐妹</option>
-            </optgroup>
-            <optgroup label="子女配偶">
-              <option value="child_spouse">子女配偶</option>
-            </optgroup>
-            <optgroup label="其他">
-              <option value="nephew">侄子女/外甥</option>
-              <option value="uncle_wife">伯母/婶母/舅妈/姨妈</option>
-            </optgroup>
-          </select>
+        <div class="result-box" id="resultBox">
+          <div class="result-label">你应该叫对方</div>
+          <div class="result-title" id="resultTitle">-</div>
+          <button class="btn" onclick="copyResult()" style="margin-top: 1rem;">📋 复制</button>
         </div>
 
-        <div class="form-group">
-          <label>代数差异（可选）</label>
-          <input type="number" id="generation" min="0" max="5" value="0" onchange="calculate()" placeholder="0表示同代，1表示相差一代">
-          <div class="info-box">
-            💡 代数差异用于区分同一关系类型中的不同辈分，如"堂哥"和"堂侄"
-          </div>
-        </div>
-
-        <button class="btn" onclick="calculate()" style="width: 100%; margin-top: 1rem;">🔍 计算称呼</button>
-      </div>
-
-      <div class="result-section" id="resultSection">
-        <div class="result-label">亲戚应该叫参考人</div>
-        <div class="result-title" id="resultTitle">-</div>
-        <div class="result-info" id="resultInfo"></div>
-        <button class="btn" onclick="copyResult()" style="margin-top: 1rem;">📋 复制结果</button>
-      </div>
-
-      <div class="card" style="margin-top: 2rem;">
-        <h2 style="margin-bottom: 1rem; font-size: 1.3rem;">📚 使用说明</h2>
-        <div style="line-height: 1.8; color: var(--text-secondary);">
-          <p style="margin-bottom: 1rem;">
-            <strong>第一步：</strong>选择参考人的性别（即"我"的性别）
-          </p>
-          <p style="margin-bottom: 1rem;">
-            <strong>第二步：</strong>选择亲戚的性别
-          </p>
-          <p style="margin-bottom: 1rem;">
-            <strong>第三步：</strong>从下拉菜单中选择亲戚与参考人的关系
-          </p>
-          <p style="margin-bottom: 1rem;">
-            <strong>第四步：</strong>如需要，输入代数差异（通常保持为0）
-          </p>
-          <p>
-            <strong>第五步：</strong>点击"计算称呼"按钮，工具会显示亲戚应该如何称呼参考人
-          </p>
+        <div>
+          <div class="input-label" style="margin-top: 2rem;">快速查询</div>
+          <div class="quick-buttons" id="quickButtons"></div>
         </div>
       </div>
 
       <div class="card">
-        <h2 style="margin-bottom: 1rem; font-size: 1.3rem;">❓ 常见问题</h2>
+        <h2 style="margin-bottom: 1rem; font-size: 1.3rem;">📚 使用说明</h2>
         <div style="line-height: 1.8; color: var(--text-secondary);">
           <p style="margin-bottom: 1rem;">
-            <strong>Q: 为什么需要选择性别？</strong><br>
-            A: 中文亲戚称呼中，性别会影响称呼的准确性。例如，父亲的哥哥叫"伯父"，父亲的妹妹叫"姑母"。
+            <strong>输入格式：</strong>用"的"连接关系链，如"爸爸的哥哥"、"妈妈的妹妹的儿子"等
           </p>
           <p style="margin-bottom: 1rem;">
-            <strong>Q: 代数差异是什么？</strong><br>
-            A: 代数差异表示两人之间相差的代数。通常为0（同代），但在某些情况下可能为1或更多。
+            <strong>支持的关系词：</strong>爸爸、妈妈、爷爷、奶奶、外公、外婆、哥哥、弟弟、姐姐、妹妹、儿子、女儿、孙子、孙女、外孙、外孙女等
+          </p>
+          <p style="margin-bottom: 1rem;">
+            <strong>示例：</strong>
+            <br>• 爸爸的哥哥 → 伯父
+            <br>• 妈妈的妹妹 → 姨妈
+            <br>• 哥哥的儿子 → 侄子
+            <br>• 爸爸的妈妈 → 奶奶
           </p>
           <p>
-            <strong>Q: 我的数据安全吗？</strong><br>
-            A: 完全安全。所有计算都在您的浏览器本地完成，不会上传到任何服务器。
+            <strong>提示：</strong>所有数据在本地处理，不会上传到服务器，完全保护隐私
           </p>
         </div>
       </div>
     </div>
 
     <script>
-      // 称呼数据库
-      const titleDatabase = {
-        parent: {
-          m: { m: "爸爸/父亲", f: "妈妈/母亲" },
-          f: { m: "爸爸/父亲", f: "妈妈/母亲" }
-        },
-        grandparent: {
-          m: { m: "爷爷", f: "奶奶" },
-          f: { m: "外公/姥爷", f: "外婆/姥姥" }
-        },
-        greatgrandparent: {
-          m: { m: "曾祖父", f: "曾祖母" },
-          f: { m: "外曾祖父", f: "外曾祖母" }
-        },
-        child: {
-          m: { m: "儿子", f: "女儿" },
-          f: { m: "儿子", f: "女儿" }
-        },
-        grandchild: {
-          m: { m: "孙子", f: "孙女" },
-          f: { m: "外孙", f: "外孙女" }
-        },
-        greatgrandchild: {
-          m: { m: "曾孙", f: "曾孙女" },
-          f: { m: "外曾孙", f: "外曾孙女" }
-        },
-        sibling: {
-          m: { m: "哥哥/弟弟", f: "姐姐/妹妹" },
-          f: { m: "哥哥/弟弟", f: "姐姐/妹妹" }
-        },
-        halfsibling: {
-          m: { m: "同父异母兄弟/同母异父兄弟", f: "同父异母姐妹/同母异父姐妹" },
-          f: { m: "同父异母兄弟/同母异父兄弟", f: "同父异母姐妹/同母异父姐妹" }
-        },
-        paternal_uncle: {
-          m: { m: "侄子", f: "侄女" },
-          f: { m: "侄子", f: "侄女" }
-        },
-        paternal_aunt: {
-          m: { m: "侄子", f: "侄女" },
-          f: { m: "侄子", f: "侄女" }
-        },
-        maternal_uncle: {
-          m: { m: "外甥", f: "外甥女" },
-          f: { m: "外甥", f: "外甥女" }
-        },
-        maternal_aunt: {
-          m: { m: "外甥", f: "外甥女" },
-          f: { m: "外甥", f: "外甥女" }
-        },
-        cousin: {
-          m: { m: "堂表兄弟", f: "堂表姐妹" },
-          f: { m: "堂表兄弟", f: "堂表姐妹" }
-        },
-        cousin_child: {
-          m: { m: "堂表侄子", f: "堂表侄女" },
-          f: { m: "堂表侄子", f: "堂表侄女" }
-        },
-        spouse: {
-          m: { m: "丈夫/老公", f: "妻子/老婆" },
-          f: { m: "丈夫/老公", f: "妻子/老婆" }
-        },
-        spouse_parent: {
-          m: { m: "公公", f: "婆婆" },
-          f: { m: "岳父", f: "岳母" }
-        },
-        spouse_sibling: {
-          m: { m: "大伯子/小叔子", f: "大姑子/小姑子" },
-          f: { m: "大舅子/小舅子", f: "大姨子/小姨子" }
-        },
-        child_spouse: {
-          m: { m: "儿媳妇", f: "女婿" },
-          f: { m: "儿媳妇", f: "女婿" }
-        },
-        nephew: {
-          m: { m: "叔叔/伯父/舅舅", f: "姑母/姨母" },
-          f: { m: "叔叔/伯父/舅舅", f: "姑母/姨母" }
-        },
-        uncle_wife: {
-          m: { m: "侄子/外甥", f: "侄女/外甥女" },
-          f: { m: "侄子/外甥", f: "侄女/外甥女" }
-        }
+      // 关系数据库 - 支持链式查询
+      const relationshipMap = {
+        // 直系
+        '爸爸': '儿子/女儿',
+        '妈妈': '儿子/女儿',
+        '父亲': '儿子/女儿',
+        '母亲': '儿子/女儿',
+        '爷爷': '孙子/孙女',
+        '奶奶': '孙子/孙女',
+        '外公': '外孙/外孙女',
+        '外婆': '外孙/外孙女',
+        '姥爷': '外孙/外孙女',
+        '姥姥': '外孙/外孙女',
+        '儿子': '爸爸/妈妈',
+        '女儿': '爸爸/妈妈',
+        '孙子': '爷爷/奶奶',
+        '孙女': '爷爷/奶奶',
+        '外孙': '外公/外婆',
+        '外孙女': '外公/外婆',
+
+        // 兄弟姐妹
+        '哥哥': '弟弟/妹妹',
+        '弟弟': '哥哥/姐姐',
+        '姐姐': '弟弟/妹妹',
+        '妹妹': '哥哥/姐姐',
+        '兄弟': '兄弟/姐妹',
+        '姐妹': '兄弟/姐妹',
+
+        // 父亲的兄弟姐妹
+        '伯父': '侄子/侄女',
+        '伯伯': '侄子/侄女',
+        '叔叔': '侄子/侄女',
+        '叔父': '侄子/侄女',
+        '姑父': '内侄/内侄女',
+        '姑姑': '侄子/侄女',
+        '姑母': '侄子/侄女',
+
+        // 母亲的兄弟姐妹
+        '舅舅': '外甥/外甥女',
+        '舅父': '外甥/外甥女',
+        '姨父': '外甥/外甥女',
+        '姨妈': '外甥/外甥女',
+        '姨母': '外甥/外甥女',
+
+        // 配偶
+        '丈夫': '妻子',
+        '老公': '妻子/老婆',
+        '妻子': '丈夫',
+        '老婆': '丈夫/老公',
+
+        // 子女配偶
+        '儿媳': '公公/婆婆',
+        '儿媳妇': '公公/婆婆',
+        '女婿': '岳父/岳母',
+
+        // 配偶父母
+        '公公': '儿媳/儿媳妇',
+        '婆婆': '儿媳/儿媳妇',
+        '岳父': '女婿',
+        '岳母': '女婿',
+
+        // 堂表亲
+        '堂哥': '堂弟/堂妹',
+        '堂弟': '堂哥/堂姐',
+        '堂姐': '堂弟/堂妹',
+        '堂妹': '堂哥/堂姐',
+        '表哥': '表弟/表妹',
+        '表弟': '表哥/表姐',
+        '表姐': '表弟/表妹',
+        '表妹': '表哥/表姐',
+
+        // 侄子女
+        '侄子': '伯父/叔叔/姑姑',
+        '侄女': '伯父/叔叔/姑姑',
+        '外甥': '舅舅/姨妈',
+        '外甥女': '舅舅/姨妈',
+
+        // 配偶兄弟姐妹
+        '大伯子': '弟妹',
+        '小叔子': '嫂子',
+        '大姑子': '弟妹',
+        '小姑子': '嫂子',
+        '大舅子': '妹夫',
+        '小舅子': '姐夫',
+        '大姨子': '妹夫',
+        '小姨子': '姐夫',
+        '嫂子': '小叔子',
+        '弟妹': '大伯子',
+        '姐夫': '小舅子',
+        '妹夫': '大舅子'
       };
 
+      // 快速查询列表
+      const quickQueries = [
+        '爸爸的哥哥',
+        '爸爸的妹妹',
+        '妈妈的哥哥',
+        '妈妈的妹妹',
+        '哥哥的儿子',
+        '姐姐的女儿',
+        '爸爸的妈妈',
+        '妈妈的妈妈',
+        '儿子的儿子',
+        '女儿的女儿'
+      ];
+
+      function parseRelationship(input) {
+        const parts = input.split('的');
+        let result = '';
+
+        for (let i = 0; i < parts.length; i++) {
+          const part = parts[i].trim();
+          if (!part) continue;
+
+          if (i === 0) {
+            result = relationshipMap[part] || null;
+          } else {
+            if (!result) return null;
+            // 对于链式关系，简化处理
+            result = relationshipMap[part] || null;
+          }
+
+          if (!result) return null;
+        }
+
+        return result;
+      }
+
       function calculate() {
-        const refGender = document.getElementById('refGender').value;
-        const relGender = document.getElementById('relGender').value;
-        const relationship = document.getElementById('relationship').value;
-        const generation = parseInt(document.getElementById('generation').value) || 0;
-
-        if (!relationship) {
-          document.getElementById('resultSection').classList.remove('show');
+        const input = document.getElementById('relationInput').value.trim();
+        if (!input) {
+          document.getElementById('resultBox').classList.remove('show');
           return;
         }
 
-        const data = titleDatabase[relationship];
-        if (!data) {
-          document.getElementById('resultSection').classList.remove('show');
-          return;
+        const result = parseRelationship(input);
+        if (result) {
+          document.getElementById('resultTitle').textContent = result;
+          document.getElementById('resultBox').classList.add('show');
+        } else {
+          document.getElementById('resultBox').classList.remove('show');
         }
+      }
 
-        const refData = data[refGender];
-        if (!refData) {
-          document.getElementById('resultSection').classList.remove('show');
-          return;
+      function handleInput(event) {
+        if (event.key === 'Enter') {
+          calculate();
         }
-
-        const title = refData[relGender];
-        if (!title) {
-          document.getElementById('resultSection').classList.remove('show');
-          return;
-        }
-
-        document.getElementById('resultTitle').textContent = title;
-        document.getElementById('resultInfo').innerHTML = `
-          <p>参考人性别：<strong>${refGender === 'm' ? '男性' : '女性'}</strong></p>
-          <p>亲戚性别：<strong>${relGender === 'm' ? '男性' : '女性'}</strong></p>
-          <p>关系类型：<strong>${document.getElementById('relationship').options[document.getElementById('relationship').selectedIndex].text}</strong></p>
-        `;
-
-        document.getElementById('resultSection').classList.add('show');
       }
 
       function copyResult() {
         const title = document.getElementById('resultTitle').textContent;
-        navigator.clipboard.writeText(title).then(() => {
-          alert('已复制到剪贴板');
-        });
+        if (title !== '-') {
+          navigator.clipboard.writeText(title).then(() => {
+            alert('已复制到剪贴板');
+          });
+        }
       }
 
       function toggleTheme() {
@@ -572,8 +518,23 @@
         localStorage.setItem("theme", t);
       }
 
+      function initQuickButtons() {
+        const container = document.getElementById('quickButtons');
+        quickQueries.forEach(query => {
+          const btn = document.createElement('button');
+          btn.className = 'quick-btn';
+          btn.textContent = query;
+          btn.onclick = () => {
+            document.getElementById('relationInput').value = query;
+            calculate();
+          };
+          container.appendChild(btn);
+        });
+      }
+
       // 初始化
       document.body.setAttribute("data-theme", localStorage.getItem("theme") || "dark");
+      initQuickButtons();
     </script>
   </body>
 </html>
