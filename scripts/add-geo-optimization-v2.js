@@ -124,7 +124,7 @@ function generateEnhancedAppSchema(tool, category) {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "${tool.name}",
-  "applicationCategory": "WebApplication",
+  "applicationCategory": "UtilitiesApplication",
   "operatingSystem": "Any (Browser-based)",
   "url": "https://essays4u.net/${tool.path.replace('.html', '')}",
   "description": "${tool.description || `${tool.name} - WebUtils 在线工具`}",
@@ -317,8 +317,8 @@ function processToolFile(toolId, tool) {
     }
 
     // 1. 在 </head> 前添加 HowTo Schema
-    const howToSchema = generateHowToSchema(tool, tool.category);
-    const enhancedAppSchema = generateEnhancedAppSchema(tool, tool.category);
+    const howToSchema = ``;
+    const enhancedAppSchema = ``;
 
     // 查找现有的 WebApplication schema 并替换
     const appSchemaRegex = /<script type="application\/ld\+json">\s*\{[^<]*"@type":\s*"WebApplication"[^<]*\}\s*<\/script>/s;

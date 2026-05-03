@@ -183,89 +183,10 @@ function generateStructuredData(config, url, toolName) {
     ]
   };
 
-  const softwareApplication = {
-    '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
-    'name': toolName,
-    'applicationCategory': 'DeveloperApplication',
-    'operatingSystem': 'Any',
-    'browserRequirements': 'Requires JavaScript. Works in Chrome, Firefox, Safari, Edge.',
-    'offers': {
-      '@type': 'Offer',
-      'price': '0',
-      'priceCurrency': 'USD'
-    },
-    'description': config.description,
-    'featureList': config.features,
-    'screenshot': 'https://essays4u.net/social-preview.png',
-    'author': {
-      '@type': 'Organization',
-      'name': 'WebUtils',
-      'url': 'https://essays4u.net/'
-    }
-  };
-
-  const howTo = {
-    '@context': 'https://schema.org',
-    '@type': 'HowTo',
-    'name': `如何使用${toolName}`,
-    'description': `详细说明如何使用${toolName}进行相关操作`,
-    'step': [
-      {
-        '@type': 'HowToStep',
-        'name': '输入数据',
-        'text': '在输入框中输入需要处理的数据'
-      },
-      {
-        '@type': 'HowToStep',
-        'name': '选择操作',
-        'text': '选择需要执行的操作类型'
-      },
-      {
-        '@type': 'HowToStep',
-        'name': '查看结果',
-        'text': '查看处理结果，支持实时更新'
-      },
-      {
-        '@type': 'HowToStep',
-        'name': '复制或导出',
-        'text': '点击复制或导出按钮保存结果'
-      }
-    ]
-  };
-
-  const faqPage = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    'mainEntity': config.faqs.map(faq => ({
-      '@type': 'Question',
-      'name': faq.q,
-      'acceptedAnswer': {
-        '@type': 'Answer',
-        'text': faq.a
-      }
-    }))
-  };
-
   return `
     <!-- JSON-LD BreadcrumbList Schema -->
     <script type="application/ld+json">
       ${JSON.stringify(breadcrumbList, null, 2)}
-    </script>
-
-    <!-- JSON-LD SoftwareApplication Schema -->
-    <script type="application/ld+json">
-      ${JSON.stringify(softwareApplication, null, 2)}
-    </script>
-
-    <!-- JSON-LD HowTo Schema -->
-    <script type="application/ld+json">
-      ${JSON.stringify(howTo, null, 2)}
-    </script>
-
-    <!-- JSON-LD FAQ Schema -->
-    <script type="application/ld+json">
-      ${JSON.stringify(faqPage, null, 2)}
     </script>
   `;
 }
