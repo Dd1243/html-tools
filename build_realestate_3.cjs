@@ -213,7 +213,7 @@ const template = (tool) => `<!doctype html>
         background: var(--primary-hover);
         transform: translateY(-1px);
       }
-      
+
       .result-box {
         background: #f0f7ff;
         border: 1px solid #cce5ff;
@@ -374,8 +374,7 @@ const template = (tool) => `<!doctype html>
     </header>
 
     <main class="container">
-      <div class="tool-section">
-        <div class="ad-placeholder ad-top">广告位 - 顶部横幅 (AdSense Placeholder)</div>
+
 
         <div class="tool-header">
           <h1>${tool.title}</h1>
@@ -390,26 +389,7 @@ const template = (tool) => `<!doctype html>
         </section>
       </div>
 
-      <aside class="sidebar-section">
-        <div class="article-card">
-          <h2>使用指南</h2>
-          ${tool.sidebarGuide}
-        </div>
 
-        <div class="ad-placeholder ad-sidebar">广告位 - 侧边栏 (AdSense Placeholder)</div>
-
-        <div class="article-card">
-          <h2>相关房产工具</h2>
-          <ul>
-            <li><a href="mortgage.html">房贷计算器</a></li>
-            <li><a href="combo-loan.html">组合贷款计算器</a></li>
-            <li><a href="lpr-calc.html">LPR房贷计算器</a></li>
-            <li><a href="prepayment.html">提前还贷计算器</a></li>
-            <li><a href="deed-tax.html">契税计算器</a></li>
-            <li><a href="property-tax.html">房产税计算器</a></li>
-          </ul>
-        </div>
-      </aside>
     </main>
 
     <footer class="site-footer">
@@ -524,12 +504,12 @@ const tools = [
       <h2 style="font-size: 1.5rem; margin-bottom: 20px; color:#111">手里有闲钱，到底是提前还贷还是买理财？</h2>
       <article style="font-size: 0.95rem; color: #444; line-height: 1.8">
         <p>近两年，“提前还贷潮”频频登上热搜，很多年轻人排着队把辛辛苦苦攒下的几十万存款提前打入银行账户。这种行为背后，折射出的是大众对理财市场收益预期的降低，以及“无贷一身轻”的朴素愿望。</p>
-        
+
         <h3 style="margin: 20px 0 10px; color: #111">理财收益率 vs 房贷利率的残酷对决</h3>
         <p>要不要提前还贷，财务上的判断标准极其简单：<strong>您手头闲钱的理财年化收益，能否跑赢您的房贷执行利率？</strong></p>
         <p>假设您的房贷利率是 4.5%，而现在大额存单或者稳健型理财的年化收益只能做到 2.5% 到 3%。这就意味着，您把钱存在银行赚取的微薄利息，远不够支付您向银行借款的利息代价（中间存在负利差）。在这种情况下，<strong>将闲置现金用于提前还贷，就等同于购买了一份保本保息、年化收益高达 4.5% 的超级理财产品</strong>。可以说，这是稳赚不赔的买卖。</p>
 
-        <div class="ad-placeholder ad-middle">广告位 - 文章中部内嵌 (AdSense Placeholder)</div>
+
 
         <h3 style="margin: 20px 0 10px; color: #111">缩短期限 还是 减少月供？</h3>
         <p>在向银行申请提前部分还款时，银行通常会给您两个选项：</p>
@@ -562,14 +542,14 @@ const tools = [
 
         // 计算原始月供 (等额本息)
         const oldMonthPay = (totalLoan * rate * Math.pow(1 + rate, totalMonths)) / (Math.pow(1 + rate, totalMonths) - 1);
-        
+
         // 计算已还本金
         const remainMonthsOld = totalMonths - paidMonths;
         if (remainMonthsOld <= 0) return alert('已还清贷款');
-        
+
         // 剩余本金推导公式
         const remainPrincipal = oldMonthPay * (Math.pow(1 + rate, remainMonthsOld) - 1) / (rate * Math.pow(1 + rate, remainMonthsOld));
-        
+
         if (prepayAmount >= remainPrincipal) {
           alert('提前还款金额不能大于剩余未还本金');
           return;
@@ -589,7 +569,7 @@ const tools = [
           let newRemainMonths = Math.ceil(n);
           let newRemainInt = oldMonthPay * newRemainMonths - newRemainPrincipal;
           saveInt = oldRemainInt - newRemainInt;
-          
+
           let savedMonths = remainMonthsOld - newRemainMonths;
           document.getElementById('resNewStatusTitle').textContent = '月供不变，提前结清';
           newStatus = '缩短还款期限 <strong style="color:var(--primary-color)">' + Math.floor(savedMonths/12) + '年' + (savedMonths%12) + '个月</strong><br>新月供维持：' + oldMonthPay.toFixed(2) + ' 元';
@@ -598,7 +578,7 @@ const tools = [
           let newMonthPay = (newRemainPrincipal * rate * Math.pow(1 + rate, remainMonthsOld)) / (Math.pow(1 + rate, remainMonthsOld) - 1);
           let newRemainInt = newMonthPay * remainMonthsOld - newRemainPrincipal;
           saveInt = oldRemainInt - newRemainInt;
-          
+
           let monthSave = oldMonthPay - newMonthPay;
           document.getElementById('resNewStatusTitle').textContent = '期限不变，月供锐减';
           newStatus = '每月月供将减少 <strong style="color:var(--primary-color)">' + monthSave.toFixed(2) + ' 元</strong><br>新月供降至：' + newMonthPay.toFixed(2) + ' 元';
@@ -607,11 +587,11 @@ const tools = [
         const resBox = document.getElementById('resultBox');
         resBox.classList.remove('active');
         void resBox.offsetWidth;
-        
+
         document.getElementById('resSaveInt').innerHTML = (saveInt / 10000).toFixed(2) + ' <span style="font-size:1.2rem;color:#666">万元</span>';
         document.getElementById('resNewStatus').innerHTML = newStatus;
         document.getElementById('resRemainP').innerHTML = (newRemainPrincipal / 10000).toFixed(2) + ' <span style="font-size:1rem;color:#666">万元</span>';
-        
+
         resBox.classList.add('active');
       });
     `
@@ -661,12 +641,12 @@ const tools = [
       <h2 style="font-size: 1.5rem; margin-bottom: 20px; color:#111">买房不可忽视的“终身负债”：物业费</h2>
       <article style="font-size: 0.95rem; color: #444; line-height: 1.8">
         <p>在购买房产时，很多购房者所有的注意力都放在了房价和房贷上，却往往忽略了一个从交房那天起、将伴随您这套房子一生的固定支出——<strong>物业管理费</strong>。这其实可以看作是一笔长期的“隐性负债”。</p>
-        
+
         <h3 style="margin: 20px 0 10px; color: #111">物业费到底是怎么算出来的？</h3>
         <p>目前国内绝大多数小区的物业费计费标准都是：<code>房屋产权建筑面积 × 物业单价（元/㎡/月）</code>。需要特别注意的是，<strong>公摊面积是包含在内一起计费的！</strong></p>
         <p>举个例子：如果您买了一套 120 平米的高层住宅，公摊率高达 25%，意味着您的实际套内使用面积只有 90 平米。但是，您每个月缴纳物业费时，依然必须按照 120 平米来全额缴纳。这就是为什么很多业主经常抱怨“我花钱养着公摊走廊的灯和保安”的原因。</p>
 
-        <div class="ad-placeholder ad-middle">广告位 - 文章中部内嵌 (AdSense Placeholder)</div>
+
 
         <h3 style="margin: 20px 0 10px; color: #111">70年产权背后的巨额账单</h3>
         <p>以一套 100平米的房子、3元/㎡/月的物业费为例。一个月看起来似乎只有 300 块钱，但一年就是 3600 元。如果您打算在这套房子里住上 30 年，那么您累计交给物业的钱将超过 10 万大关！如果考虑通货膨胀和未来物业费的上调，这笔数字将更加惊人。</p>
@@ -810,7 +790,7 @@ const tools = [
       <h2 style="font-size: 1.5rem; margin-bottom: 20px; color:#111">闭眼买房的时代结束了，你的房产真的赚钱了吗？</h2>
       <article style="font-size: 0.95rem; color: #444; line-height: 1.8">
         <p>在过去房地产暴涨的黄金二十年里，只要买了房就是赚。但很多人算账其实是一笔“糊涂账”：200万买入的房子，5年后250万卖出，就沾沾自喜地以为自己“血赚了 50 万”。但如果把隐性成本算进去，真相往往极其残酷。</p>
-        
+
         <h3 style="margin: 20px 0 10px; color: #111">扒开买房利润的“底裤”</h3>
         <p>真实房产投资回报必须扣减以下高昂的<strong>沉没成本</strong>：</p>
         <ul>
@@ -819,7 +799,7 @@ const tools = [
           <li><strong>交易摩擦成本与折旧：</strong>契税、中介费（买入卖出双向）、几十万的装修折旧，一进一出，能吃掉十几万的利润。</li>
         </ul>
 
-        <div class="ad-placeholder ad-middle">广告位 - 文章中部内嵌 (AdSense Placeholder)</div>
+
 
         <h3 style="margin: 20px 0 10px; color: #111">如何才算一笔成功的房产投资？</h3>
         <p>通过我们的计算器，我们将（卖出价 + 租金收入）减去（买入价 + 已付利息 + 装修杂费），算出真正的净利润，再除以您的实际投入本金和年份，得出<strong>年化投资回报率 (ROI)</strong>。</p>
@@ -838,7 +818,7 @@ const tools = [
         const downPay = parseFloat(document.getElementById('downPay').value);
         const totalInterest = parseFloat(document.getElementById('totalInterest').value);
         const renovation = parseFloat(document.getElementById('renovation').value);
-        
+
         const sellPrice = parseFloat(document.getElementById('sellPrice').value);
         const holdYears = parseFloat(document.getElementById('holdYears').value);
         const totalRent = parseFloat(document.getElementById('totalRent').value);
@@ -854,7 +834,7 @@ const tools = [
 
         // 房屋差价收益
         const capitalGain = sellPrice - buyPrice;
-        
+
         // 净利润 = 房屋增值幅度 + 租金收入 - 利息开销 - 装修折旧费
         // 注意这里计算的是“资本利得”上的净收益，不需要扣减“首付”，因为首付收回来了
         const netProfit = capitalGain + totalRent - totalInterest - renovation;
@@ -863,14 +843,14 @@ const tools = [
         let roi = 0;
         if (downPay > 0) {
           // 以实际动用的初始自有本金(首付+杂费)作为分母计算杠杆收益率
-          const totalReturnRate = netProfit / downPay; 
+          const totalReturnRate = netProfit / downPay;
           roi = (totalReturnRate / holdYears) * 100;
         }
 
         const resBox = document.getElementById('resultBox');
         resBox.classList.remove('active');
         void resBox.offsetWidth;
-        
+
         const resRoiEl = document.getElementById('resROI');
         if (roi >= 0) {
           resRoiEl.textContent = roi.toFixed(2) + '%';
@@ -889,7 +869,7 @@ const tools = [
         else if (roi < 3) desc = '评价：收益极低，甚至没跑赢定期存款或通胀。';
         else if (roi < 6) desc = '评价：跑赢了银行理财，是一笔稳健合格的投资。';
         else desc = '评价：极其卓越的回报！您利用杠杆获得了丰厚的超额收益。';
-        
+
         document.getElementById('roiDesc').textContent = desc;
         document.getElementById('resInvest').innerHTML = downPay.toFixed(2) + ' <span style="font-size:1rem;color:#666">万元</span>';
 
@@ -971,12 +951,12 @@ const tools = [
       <h2 style="font-size: 1.5rem; margin-bottom: 20px; color:#111">悬在楼市头顶的“达摩克利斯之剑”：房产税深度前瞻</h2>
       <article style="font-size: 0.95rem; color: #444; line-height: 1.8">
         <p>一直以来，“中国什么时候全面开征房地产税”是购房者和投资者最关心的话题。这把“达摩克利斯之剑”一旦落下，将彻底改变中国楼市“重购买、轻持有”的底层运行逻辑。</p>
-        
+
         <h3 style="margin: 20px 0 10px; color: #111">目前试点城市的规则揭秘</h3>
         <p>目前只有<strong>上海</strong>和<strong>重庆</strong>等少数城市正在进行房产税试点。它们的共同特点是：<strong>刀口向内，打击囤房，保护刚需。</strong></p>
         <p>以上海为例，政策中设立了极为重要的一项——<strong>免征面积机制</strong>（上海目前暂定为本市户籍居民家庭人均免征60平方米）。这就意味着，一个三口之家，拥有 180 平方米以内的房产是完全免税的。只有当他们买入一套超过免征线的大平层或者二套房时，超出的那部分面积（差额）才会按 0.4% 到 0.6% 的税率计税。</p>
 
-        <div class="ad-placeholder ad-middle">广告位 - 文章中部内嵌 (AdSense Placeholder)</div>
+
 
         <h3 style="margin: 20px 0 10px; color: #111">全面开征后，谁将承受最大压力？</h3>
         <p>未来的房地产税一旦全面推开，其征收的计税基数大概率会是<strong>房屋市场评估价的70%到80%</strong>左右，而不是您当年买房时的历史低价。受冲击最大的将是以下三类人群：</p>
@@ -1007,18 +987,18 @@ const tools = [
 
         const totalFreeArea = people * freePerPerson;
         const taxArea = Math.max(0, totalArea - totalFreeArea);
-        
+
         // 年度房产税额 = 纳税面积 * 计税单价 * 适用税率
         const annualTax = taxArea * unitPrice * rate;
 
         const resBox = document.getElementById('resultBox');
         resBox.classList.remove('active');
         void resBox.offsetWidth;
-        
+
         document.getElementById('resTax').innerHTML = Math.round(annualTax).toLocaleString() + ' <span style="font-size:1.2rem;color:#666">元/年</span>';
         document.getElementById('resFree').innerHTML = totalFreeArea + ' <span style="font-size:1rem;color:#666">平米</span>';
         document.getElementById('resTaxArea').innerHTML = taxArea + ' <span style="font-size:1rem;color:#666">平米 (需缴税部分)</span>';
-        
+
         // 如果不用缴税，显示绿色
         if (annualTax === 0) {
           document.getElementById('resTax').style.color = '#5cb85c';

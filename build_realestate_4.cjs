@@ -213,7 +213,7 @@ const template = (tool) => `<!doctype html>
         background: var(--primary-hover);
         transform: translateY(-1px);
       }
-      
+
       .result-box {
         background: #f0f7ff;
         border: 1px solid #cce5ff;
@@ -374,8 +374,7 @@ const template = (tool) => `<!doctype html>
     </header>
 
     <main class="container">
-      <div class="tool-section">
-        <div class="ad-placeholder ad-top">广告位 - 顶部横幅 (AdSense Placeholder)</div>
+
 
         <div class="tool-header">
           <h1>${tool.title}</h1>
@@ -390,26 +389,7 @@ const template = (tool) => `<!doctype html>
         </section>
       </div>
 
-      <aside class="sidebar-section">
-        <div class="article-card">
-          <h2>使用指南</h2>
-          ${tool.sidebarGuide}
-        </div>
 
-        <div class="ad-placeholder ad-sidebar">广告位 - 侧边栏 (AdSense Placeholder)</div>
-
-        <div class="article-card">
-          <h2>相关房产工具</h2>
-          <ul>
-            <li><a href="mortgage.html">房贷计算器</a></li>
-            <li><a href="combo-loan.html">组合贷款计算器</a></li>
-            <li><a href="lpr-calc.html">LPR房贷计算器</a></li>
-            <li><a href="prepayment.html">提前还贷计算器</a></li>
-            <li><a href="deed-tax.html">契税计算器</a></li>
-            <li><a href="property-tax.html">房产税计算器</a></li>
-          </ul>
-        </div>
-      </aside>
     </main>
 
     <footer class="site-footer">
@@ -493,7 +473,7 @@ const tools = [
             <option value="30">30年</option>
           </select>
         </div>
-        
+
         <div class="form-group full-width" style="margin-top:10px;">
           <h4 style="border-bottom:2px solid #8e44ad; display:inline-block; margin-bottom:10px; color:#8e44ad">增值假设 (极度影响最终结论)</h4>
         </div>
@@ -511,7 +491,7 @@ const tools = [
             <span class="input-group-addon">% / 年</span>
           </div>
         </div>
-        
+
         <div class="form-group full-width">
           <button id="btnCalc" class="btn btn-primary" style="background:#8e44ad; height:50px; font-size:1.1rem;">测算N年后的家庭净资产差距</button>
         </div>
@@ -542,11 +522,11 @@ const tools = [
       <h2 style="font-size: 1.5rem; margin-bottom: 20px; color:#111">掏空六个钱包去买房，真的比一辈子租房好吗？</h2>
       <article style="font-size: 0.95rem; color: #444; line-height: 1.8">
         <p>这是每一个漂泊在一二线城市的年轻人必然会面临的终极拷问。传统观念认为“租房是在帮房东还房贷，买房是给自己强制储蓄”。这种观念在过去房价暴涨的时代是绝对真理，但在今天的房地产新周期里，这本账需要拿计算器仔细算一算了。</p>
-        
+
         <h3 style="margin: 20px 0 10px; color: #111">租房的本质：放弃资产增值，换取现金流自由</h3>
         <p>选择租房的人，并不是“穷得买不起”，有些是极度理性的财务决策。他们手握百万现金，如果不付首付，而是购买年化收益 4% 的稳健理财，光利息一年就有 4 万块，基本可以覆盖很大一部分甚至全部的租金支出。这种“用利息租房”的模式下，百万本金一分不少，而且他们完全不需要背负每个月雷打不动的沉重房贷月供。只要<strong>理财收益率远高于租金回报率</strong>，租房在财务上是绝对占优的。</p>
 
-        <div class="ad-placeholder ad-middle">广告位 - 文章中部内嵌 (AdSense Placeholder)</div>
+
 
         <h3 style="margin: 20px 0 10px; color: #111">买房的本质：利用三倍杠杆下注城市的未来</h3>
         <p>选择买房，核心驱动力除了丈母娘的要求和学区等软性需求外，最大的金融属性是<strong>杠杆</strong>。如果您首付 30 万买了一套 100 万的房子，当房价上涨 10%（变成110万），虽然房子只涨了10万，但相对您 30 万的本金而言，您的实际收益率高达 33%。这种带杠杆的暴击，是任何安全理财都无法比拟的。</p>
@@ -588,7 +568,7 @@ const tools = [
         // 注意：为简化对比，假设贷款期就等于对比的年限
         let endHouseValue = housePrice * Math.pow(1 + houseGrowth, years);
         // 如果贷款刚好还清，净资产就是房子的市值
-        let buyNetAsset = endHouseValue; 
+        let buyNetAsset = endHouseValue;
 
         // 算出每个月的房贷月供
         let monthlyMortgage = (loanAmt * monthLoanRate * Math.pow(1 + monthLoanRate, months)) / (Math.pow(1 + monthLoanRate, months) - 1);
@@ -596,11 +576,11 @@ const tools = [
         // 路线B：租房
         // 1. 首付本金全拿去买理财产生复利
         let investAsset = downPay * Math.pow(1 + investRate, years);
-        
+
         // 2. 每个月“本来要交的月供 - 实际交的租金”这笔差额也存起来定投理财
         let currentRent = initRent;
         let cumulativeRentSavingInvest = 0; // 差额定投积累的财富
-        
+
         // 逐年模拟，因为租金每年上涨
         for (let y = 1; y <= years; y++) {
           // 这一年的每月差额定投计算
@@ -619,14 +599,14 @@ const tools = [
         const resBox = document.getElementById('resultBox');
         resBox.classList.remove('active');
         void resBox.offsetWidth;
-        
+
         document.getElementById('resBuyAsset').innerHTML = (buyNetAsset / 10000).toFixed(2) + ' <span style="font-size:1rem;color:#666">万元</span>';
         document.getElementById('resRentAsset').innerHTML = (rentNetAsset / 10000).toFixed(2) + ' <span style="font-size:1rem;color:#666">万元</span>';
-        
+
         let diff = (buyNetAsset - rentNetAsset) / 10000;
         let decisionEl = document.getElementById('resDecision');
         let diffEl = document.getElementById('resDiff');
-        
+
         if (diff > 0) {
           decisionEl.textContent = '果断买房，上车入场！';
           decisionEl.style.color = 'var(--primary-color)';
@@ -708,12 +688,12 @@ const tools = [
       <h2 style="font-size: 1.5rem; margin-bottom: 20px; color:#111">挤干房价水分的终极指标：什么是健康的租金回报率？</h2>
       <article style="font-size: 0.95rem; color: #444; line-height: 1.8">
         <p>很多长辈热衷于买房收租，认为“一铺养三代”、“收租金是最稳妥的养老方式”。但如果用金融逻辑去深究，很多时候“包租婆”的收益率可能还不如把钱存进银行大额存单里。衡量房产真实变现价值的最核心指标就是：<strong>租金回报率</strong>与<strong>租售比</strong>。</p>
-        
+
         <h3 style="margin: 20px 0 10px; color: #111">国际惯例与中国特色</h3>
         <p>在成熟发达国家的房地产市场中，健康的租金回报率通常在 <strong>4% - 6%</strong> 之间（即租售比约为 1:200 到 1:300 之间，意思是出租两百多个月就能收回买房成本）。只有达到这个水平，买房收租才具备抗击通胀和资产保值的意义。</p>
         <p>而在中国过去十几年的楼市狂热中，一二线城市的房价被不断推高，但老百姓的收入水平（决定了租金购买力）并没有同比例暴涨。这导致了目前中国许多大城市的租金回报率被严重压缩到 <strong>1.5% 甚至 1% 以下</strong>。</p>
 
-        <div class="ad-placeholder ad-middle">广告位 - 文章中部内嵌 (AdSense Placeholder)</div>
+
 
         <h3 style="margin: 20px 0 10px; color: #111">1.5% 的回报率意味着什么？</h3>
         <p>如果一套 200万的房子，扣除物业费和空置期后，一年净租金只有 3万块（回报率1.5%）。这意味着：</p>
@@ -756,19 +736,19 @@ const tools = [
         const resBox = document.getElementById('resultBox');
         resBox.classList.remove('active');
         void resBox.offsetWidth;
-        
+
         document.getElementById('resYield').textContent = yieldRate.toFixed(2) + '%';
         document.getElementById('resRatio').textContent = '1 : ' + ratioMonths;
         document.getElementById('resNetRent').innerHTML = netRent.toLocaleString() + ' <span style="font-size:1rem;color:#666">元</span>';
-        
+
         let desc = '';
         if (yieldRate < 2) desc = '低于2%：严重跑输理财，属于高溢价资产，除非您笃定房价必定大涨，否则收租极不划算。';
         else if (yieldRate < 4) desc = '2% - 4%：中国目前主流城市的平均水准，收租回报勉勉强强。';
         else if (yieldRate < 6) desc = '4% - 6%：非常健康的现金牛资产！具备优秀的抗风险和长期持有价值。';
         else desc = '大于6%：恭喜您挖到了宝藏！属于极度优质的收租神盘。';
-        
+
         document.getElementById('yieldDesc').textContent = desc;
-        
+
         if (yieldRate < 2) document.getElementById('resYield').style.color = '#e74c3c';
         else if (yieldRate > 4) document.getElementById('resYield').style.color = '#27ae60';
         else document.getElementById('resYield').style.color = '#f39c12';
@@ -847,12 +827,12 @@ const tools = [
       <h2 style="font-size: 1.5rem; margin-bottom: 20px; color:#111">避坑防指南：第一次租房，到底要准备几个月的房租？</h2>
       <article style="font-size: 0.95rem; color: #444; line-height: 1.8">
         <p>很多刚毕业的大学生在找房子时，看到 App 上写着“月租金 2000 元”，就天真地以为兜里揣着 2000 块钱就能搬进去住了。到了签合同拿钥匙的那一刻才发现，中介拿出的账单金额可能高达 8000 多块钱！这就是租房市场里残酷的<strong>“入住启动成本”</strong>。</p>
-        
+
         <h3 style="margin: 20px 0 10px; color: #111">万恶之源：押一付三的规矩是怎么来的？</h3>
         <p>目前国内绝大多数传统的二手房中介（如链家、我爱我家等）及个人房东直租，最主流的付款方式就是<strong>“押一付三”</strong>。也就是您在第一天入住时，必须立刻交齐：1个月的房租作为房屋损坏押金，以及未来3个月的预付房租。也就是说，2000的房子，光这笔钱就要 8000 元。</p>
         <p>为什么房东喜欢押一付三？因为按月收租太麻烦，而且一旦租客中途跑路，押一付一的房东损失极大。通过一连收取三个月的租金，房东牢牢地锁死了租客的资金流。</p>
 
-        <div class="ad-placeholder ad-middle">广告位 - 文章中部内嵌 (AdSense Placeholder)</div>
+
 
         <h3 style="margin: 20px 0 10px; color: #111">难以避开的半个月中介费</h3>
         <p>除了押一付三，如果您是通过中介找的房子，还得被抽走一笔中介费。行规一般是<strong>租客和房东各承担 50%</strong>的单月租金（部分强势市场的旺季，中介甚至要求租客承担 100%）。这 1000 块钱是一次性付出的服务费，退房时是绝对不会退给您的。</p>
@@ -898,7 +878,7 @@ const tools = [
         const resBox = document.getElementById('resultBox');
         resBox.classList.remove('active');
         void resBox.offsetWidth;
-        
+
         document.getElementById('resTotal').innerHTML = totalCost.toLocaleString() + ' <span style="font-size:1.2rem;color:#666">元</span>';
         document.getElementById('resDeposit').innerHTML = depositMoney.toLocaleString() + ' <span style="font-size:1rem;color:#666">元</span>';
         document.getElementById('resPrepay').innerHTML = prepayMoney.toLocaleString() + ' <span style="font-size:1rem;color:#666">元</span>';

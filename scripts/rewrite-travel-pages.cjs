@@ -625,28 +625,9 @@ function buildTopBlock() {
 
 function buildBottomBlock(meta) {
   return `
-        <section class="travel-enhanced-block travel-hero" data-travel-enhance-root="hero" aria-label="${escapeHtml(meta.name)} 页面导读">
-          <div class="travel-hero__eyebrow">逐页深度改版 · 静态内容已内置</div>
-          <h2 class="travel-hero__title">${escapeHtml(meta.name)}：先把关键信息理清，再做旅行决定</h2>
-          <p class="travel-hero__lead">${escapeHtml(meta.summary)} ${escapeHtml(meta.pain)}</p>
-          <div class="travel-hero__chips">
-            <span class="travel-hero__chip">手机 / 电脑自适应</span>
-            <span class="travel-hero__chip">长文说明已写入 HTML</span>
-            <span class="travel-hero__chip">SEO / OG / Twitter / JSON-LD</span>
-            ${meta.audience.slice(0, 3).map((item) => `<span class="travel-hero__chip">${escapeHtml(item)}</span>`).join('')}
-          </div>
-          <div class="travel-hero__actions">
-            <a class="travel-hero__action" href="#travel-tool-start">返回工具区</a>
-            <a class="travel-hero__ghost" href="#travel-page-guide">继续查看说明</a>
-          </div>
-          <p class="travel-hero__note">如果你准备把这个页面发给家人、同伴或客户，建议把本页当作“执行说明页”而不仅是工具页：先使用上面的工具，再结合下面的说明、FAQ 和广告位布局做更稳的决定。</p>
-        </section>
 
-        <aside class="travel-enhanced-block travel-ad-slot" data-travel-enhance-root="ad-top" aria-label="Google AdSense 页面顶部预留位">
-          <div class="travel-ad-slot__label">Google AdSense 预留位</div>
-          <div class="travel-ad-slot__text">${escapeHtml(meta.name)} 顶部横幅广告位已下移到工具区之后，适合放置响应式广告代码，不遮挡工具核心操作，同时保留首屏给真正的工具功能。</div>
-          <div class="travel-ad-slot__meta">部署时建议替换为响应式广告单元，并保留当前块级结构，方便同时适配桌面与手机。</div>
-        </aside>
+
+
 
         <section class="travel-enhanced-block travel-article" id="travel-page-guide" data-travel-enhance-root="article" aria-label="${escapeHtml(meta.name)} 深度使用指南">
           <h2 class="travel-article__title">${escapeHtml(meta.name)} 深度使用指南：把结果变成真正可执行的旅行动作</h2>
@@ -684,11 +665,7 @@ function buildBottomBlock(meta) {
           </div>
         </section>
 
-        <aside class="travel-enhanced-block travel-ad-slot" data-travel-enhance-root="ad-bottom" aria-label="Google AdSense 页面底部预留位">
-          <div class="travel-ad-slot__label">Google AdSense 预留位</div>
-          <div class="travel-ad-slot__text">${escapeHtml(meta.name)} 底部信息流广告位，适合放置内容型广告或相关工具推广位，靠近长文说明和 FAQ 区，但不打断主要交互路径。</div>
-          <div class="travel-ad-slot__meta">如果后续接入广告，建议保留当前语义区块结构，方便搜索引擎和用户都更清楚地区分内容区与广告区。</div>
-        </aside>
+
 `;
 }
 

@@ -213,7 +213,7 @@ const template = (tool) => `<!doctype html>
         background: var(--primary-hover);
         transform: translateY(-1px);
       }
-      
+
       .result-box {
         background: #f0f7ff;
         border: 1px solid #cce5ff;
@@ -374,8 +374,7 @@ const template = (tool) => `<!doctype html>
     </header>
 
     <main class="container">
-      <div class="tool-section">
-        <div class="ad-placeholder ad-top">广告位 - 顶部横幅 (AdSense Placeholder)</div>
+
 
         <div class="tool-header">
           <h1>\${tool.title}</h1>
@@ -390,26 +389,7 @@ const template = (tool) => `<!doctype html>
         </section>
       </div>
 
-      <aside class="sidebar-section">
-        <div class="article-card">
-          <h2>使用指南</h2>
-          \${tool.sidebarGuide}
-        </div>
 
-        <div class="ad-placeholder ad-sidebar">广告位 - 侧边栏 (AdSense Placeholder)</div>
-
-        <div class="article-card">
-          <h2>相关房产工具</h2>
-          <ul>
-            <li><a href="mortgage.html">房贷计算器</a></li>
-            <li><a href="combo-loan.html">组合贷款计算器</a></li>
-            <li><a href="lpr-calc.html">LPR房贷计算器</a></li>
-            <li><a href="prepayment.html">提前还贷计算器</a></li>
-            <li><a href="deed-tax.html">契税计算器</a></li>
-            <li><a href="property-tax.html">房产税计算器</a></li>
-          </ul>
-        </div>
-      </aside>
     </main>
 
     <footer class="site-footer">
@@ -526,14 +506,14 @@ const tools = [
       <h2 style="font-size: 1.5rem; margin-bottom: 20px; color:#111">深度解析：组合贷款如何还款最划算？</h2>
       <article style="font-size: 0.95rem; color: #444; line-height: 1.8">
         <p>在目前的房地产交易市场中，纯公积金贷款往往额度受限（如个人最高50万，夫妻100万），而纯商业贷款的利率又相对较高。因此，<strong>组合贷款</strong>（即公积金贷款+商业贷款）成为了绝大多数购房者的黄金首选。如何科学计算两部分贷款的成本并选择合适的还款方式，是买房决策中的重中之重。</p>
-        
+
         <h3 style="margin: 20px 0 10px; color: #111">1. 等额本息 vs 等额本金：到底选哪个？</h3>
         <ul>
           <li><strong>等额本息：</strong>将贷款本金与总利息相加，平摊到每个月中，<strong>每月还款额固定</strong>。前期还款中利息占大头，本金占小头。适合收入稳定、前期资金压力较大的年轻人。</li>
           <li><strong>等额本金：</strong>每月偿还同等数额的本金，利息随本金逐月递减，因此<strong>每月还款额逐月下降</strong>。整体算下来总利息更少，但前期还款压力巨大。适合当前手头资金宽裕、或打算在三五年内提前还贷的人群。</li>
         </ul>
 
-        <div class="ad-placeholder ad-middle">广告位 - 文章中部内嵌 (AdSense Placeholder)</div>
+
 
         <h3 style="margin: 20px 0 10px; color: #111">2. 商业利率与公积金利率的博弈</h3>
         <p>由于LPR（贷款市场报价利率）的动态调整，目前商业贷款利率不断下调，但公积金贷款的利率始终保持在更低的水平（首套五年以上通常在3.1%甚至更低）。在申请组合贷时，我们建议<strong>尽可能拉满公积金的最高贷款额度</strong>，剩余部分再使用商业贷款，以达到整体利息支出的最优化。</p>
@@ -557,7 +537,7 @@ const tools = [
         const fundRate = parseFloat(document.getElementById('fundRate').value) / 100 / 12;
         const months = parseInt(document.getElementById('years').value) * 12;
         const type = document.getElementById('repayType').value;
-        
+
         if (isNaN(commAmount) || isNaN(commRate) || isNaN(fundAmount) || isNaN(fundRate)) {
           alert('请输入正确的数字格式');
           return;
@@ -574,21 +554,21 @@ const tools = [
           const fundEMI = fundAmount > 0 ? calcEMI(fundAmount, fundRate, months) : 0;
           firstMonth = commEMI + fundEMI;
           totalInterest = (firstMonth * months) - totalPrincipal;
-          
+
           document.getElementById('monthlyTitle').textContent = '每月应还本息';
           document.getElementById('resMonthly').innerHTML = firstMonth.toFixed(2) + ' <span style="font-size:1rem;color:#666">元</span>';
           document.getElementById('monthlyDesc').textContent = '每月还款额固定不变';
         } else {
           const commPrincipal = commAmount / months;
           const fundPrincipal = fundAmount / months;
-          
+
           let commFirst = commPrincipal + commAmount * commRate;
           let fundFirst = fundPrincipal + fundAmount * fundRate;
           firstMonth = commFirst + fundFirst;
-          
+
           let commTotalInt = (commAmount * commRate + commAmount / months * commRate) / 2 * months;
           let fundTotalInt = (fundAmount * fundRate + fundAmount / months * fundRate) / 2 * months;
-          
+
           totalInterest = (commAmount > 0 ? commTotalInt : 0) + (fundAmount > 0 ? fundTotalInt : 0);
           diff = (commPrincipal * commRate) + (fundPrincipal * fundRate);
 
@@ -600,11 +580,11 @@ const tools = [
         const resBox = document.getElementById('resultBox');
         resBox.classList.remove('active');
         void resBox.offsetWidth;
-        
+
         document.getElementById('resInterest').innerHTML = (totalInterest / 10000).toFixed(2) + ' <span style="font-size:1rem;color:#666">万元</span>';
         document.getElementById('resTotal').innerHTML = ((totalPrincipal + totalInterest) / 10000).toFixed(2) + ' <span style="font-size:1rem;color:#666">万元</span>';
         document.getElementById('resPrincipal').innerHTML = (totalPrincipal / 10000).toFixed(2) + ' <span style="font-size:1rem;color:#666">万元</span>';
-        
+
         resBox.classList.add('active');
       });
     `
@@ -681,7 +661,7 @@ const tools = [
       <h2 style="font-size: 1.5rem; margin-bottom: 20px; color:#111">家装防坑指南：为什么装修总会严重超支？</h2>
       <article style="font-size: 0.95rem; color: #444; line-height: 1.8">
         <p>几乎所有经历过房子装修的人都会有一句感叹：“装修就是个无底洞”。在做初期预算时明明算得好好的，最后结算时却发现超支了 30% 甚至 50%。这并非巧合，而是家装行业的隐性消费极多。</p>
-        
+
         <h3 style="margin: 20px 0 10px; color: #111">装修超支的三大重灾区</h3>
         <ul>
           <li><strong>水电改造的“按实结算”：</strong>很多装修公司在签合同时，水电部分的报价故意做得极低（比如预估3000元），并标注“按实结算”。到了施工阶段，工人绕线、全屋换线，最终水电可能高达一两万。</li>
@@ -689,7 +669,7 @@ const tools = [
           <li><strong>美缝与特殊工艺：</strong>墙面挂网防裂、异型吊顶、瓷砖美缝、大板瓷砖薄贴工艺等，这些往往不在标准报价体系内，施工时提出增加都需要额外付费。</li>
         </ul>
 
-        <div class="ad-placeholder ad-middle">广告位 - 文章中部内嵌 (AdSense Placeholder)</div>
+
 
         <h3 style="margin: 20px 0 10px; color: #111">如何利用预算计算器控制成本？</h3>
         <p>使用我们的在线装修预算计算器，第一步是<strong>确立心理锚点</strong>。如果您选定了 1500元/平米 的环保品质装，那么对于一套 100 平米的房子，硬装（含主材）的红线就在 15 万元。在购买建材时，一定要实行“此消彼长”策略：如果买沙发超了 5000 元预算，那么买瓷砖就必须从预算里扣减 5000 元，时刻盯紧<strong>总造价</strong>。</p>
@@ -708,7 +688,7 @@ const tools = [
         const level = parseFloat(document.getElementById('level').value);
         const includeSoft = parseFloat(document.getElementById('includeSoft').value);
         const isOld = parseFloat(document.getElementById('isOld').value);
-        
+
         if (isNaN(area) || area <= 0) {
           alert('请输入正确的面积');
           return;
@@ -725,19 +705,19 @@ const tools = [
 
         if (includeSoft > 1) {
           let softDiff = (baseTotal * includeSoft) - baseTotal;
-          main += softDiff; 
+          main += softDiff;
         }
 
         const resBox = document.getElementById('resultBox');
         resBox.classList.remove('active');
         void resBox.offsetWidth;
-        
+
         document.getElementById('resTotal').innerHTML = Math.round(grandTotal).toLocaleString() + ' <span style="font-size:1.2rem;color:#666">元</span>';
         document.getElementById('resHard').innerHTML = Math.round(hard).toLocaleString() + ' <span style="font-size:1rem;color:#666">元</span>';
         document.getElementById('resMain').innerHTML = Math.round(main).toLocaleString() + ' <span style="font-size:1rem;color:#666">元</span>';
         document.getElementById('resDesign').innerHTML = Math.round(design).toLocaleString() + ' <span style="font-size:1rem;color:#666">元</span>';
         document.getElementById('resOther').innerHTML = Math.round(other).toLocaleString() + ' <span style="font-size:1rem;color:#666">元</span>';
-        
+
         resBox.classList.add('active');
       });
     `
@@ -791,7 +771,7 @@ const tools = [
       <h2 style="font-size: 1.5rem; margin-bottom: 20px; color:#111">购房契税科普：90平米为什么是道“分水岭”？</h2>
       <article style="font-size: 0.95rem; color: #444; line-height: 1.8">
         <p>在房屋买卖（无论是新房还是二手房）过户时，<strong>契税</strong>是购房者必须缴纳的一大笔隐性成本。很多第一次买房的年轻人往往只凑齐了首付，到了交房拿证时才发现还要缴纳大几万块的契税，导致手头资金极度紧张。</p>
-        
+
         <h3 style="margin: 20px 0 10px; color: #111">全国通用契税征收标准解析</h3>
         <p>根据国家现行规定，个人购买住房的契税税率主要取决于两个核心指标：<strong>是否为家庭唯一住房（首套/二套）</strong>以及<strong>房屋建筑面积是否超过90平方米</strong>。</p>
         <ul>
@@ -800,7 +780,7 @@ const tools = [
           <li><strong>三套及以上或非住宅（如公寓、商铺）：</strong>不分面积大小，一律按 <strong>3%</strong> 的最高税率征收。</li>
         </ul>
 
-        <div class="ad-placeholder ad-middle">广告位 - 文章中部内嵌 (AdSense Placeholder)</div>
+
 
         <h3 style="margin: 20px 0 10px; color: #111">计税基数：按什么价格来算？</h3>
         <p>很多朋友有疑问，契税是按照我买房的实际成交价算吗？严格来说，契税的计税依据是<strong>网签备案总价（不含增值税）</strong>或者当地税务部门的<strong>核定指导价</strong>。在二手房交易中，如果网签价格为了避税被故意做得很低，税务局会调用其内部系统的“评估最低价”来作为计税依据，以高者为准。因此，“阴阳合同”不仅违规，在过户交税时也往往行不通。</p>
@@ -816,19 +796,19 @@ const tools = [
         const area = parseFloat(document.getElementById('area').value);
         const price = parseFloat(document.getElementById('price').value) * 10000;
         const type = parseInt(document.getElementById('homeType').value);
-        
+
         if (isNaN(area) || isNaN(price) || area <= 0 || price <= 0) {
           alert('请输入正确的面积和总价');
           return;
         }
 
         let rate = 0;
-        
-        if (type === 1) { 
+
+        if (type === 1) {
           rate = area <= 90 ? 0.01 : 0.015;
-        } else if (type === 2) { 
+        } else if (type === 2) {
           rate = area <= 90 ? 0.01 : 0.02;
-        } else { 
+        } else {
           rate = 0.03;
         }
 
@@ -837,10 +817,10 @@ const tools = [
         const resBox = document.getElementById('resultBox');
         resBox.classList.remove('active');
         void resBox.offsetWidth;
-        
+
         document.getElementById('resTax').innerHTML = Math.round(tax).toLocaleString() + ' <span style="font-size:1.2rem;color:#666">元</span>';
         document.getElementById('resRate').textContent = '适用税率：' + (rate * 100) + '%';
-        
+
         resBox.classList.add('active');
       });
     `
@@ -913,7 +893,7 @@ const tools = [
       <h2 style="font-size: 1.5rem; margin-bottom: 20px; color:#111">除了首付，买房到底还要准备多少隐性资金？</h2>
       <article style="font-size: 0.95rem; color: #444; line-height: 1.8">
         <p>很多年轻人在买房时，脑海里只有一个简单的公式：“300万的房子，20%首付，那就是准备60万就够了”。这是一种极其危险的误区，往往会导致在签约甚至过户环节资金断裂。除了净首付，我们还要备好一笔不可忽视的<strong>隐性启动资金</strong>。</p>
-        
+
         <h3 style="margin: 20px 0 10px; color: #111">1. 二手房交易的“三座大山”</h3>
         <ul>
           <li><strong>中介费：</strong>通常占成交总价的 1.5% 到 3% 不等。300万的房子，仅中介费可能就要支出 5 万到 9 万的真金白银。</li>
@@ -921,7 +901,7 @@ const tools = [
           <li><strong>贷款评估费及担保费：</strong>银行为了防范风险，会委托评估公司对房屋进行价值评估，产生千分之几的评估费，这笔钱也需要买家承担。</li>
         </ul>
 
-        <div class="ad-placeholder ad-middle">广告位 - 文章中部内嵌 (AdSense Placeholder)</div>
+
 
         <h3 style="margin: 20px 0 10px; color: #111">2. 新房/期房的额外支出</h3>
         <p>购买新房虽然没有中介费，但也有另外的开销。交房时需要缴纳<strong>房屋维修基金</strong>（一般按建筑面积每平方米一百多元收取）、大半年的预缴<strong>物业费</strong>，以及面积补差款等。因此，购买新房也应在首付款之上，额外预留 1.5% - 2% 的资金缓冲带。</p>
@@ -940,7 +920,7 @@ const tools = [
         const total = parseFloat(document.getElementById('totalPrice').value);
         const ratio = parseFloat(document.getElementById('ratio').value) / 100;
         const extraRatio = parseFloat(document.getElementById('extraFee').value) / 100;
-        
+
         if (isNaN(total) || isNaN(ratio) || isNaN(extraRatio) || total <= 0) {
           alert('请输入正确的金额比例');
           return;
@@ -954,12 +934,12 @@ const tools = [
         const resBox = document.getElementById('resultBox');
         resBox.classList.remove('active');
         void resBox.offsetWidth;
-        
+
         document.getElementById('resCash').innerHTML = totalCash.toFixed(2) + ' <span style="font-size:1rem;color:#666">万元</span>';
         document.getElementById('resDown').innerHTML = downPayment.toFixed(2) + ' <span style="font-size:1rem;color:#666">万元</span>';
         document.getElementById('resExtra').innerHTML = extraFee.toFixed(2) + ' <span style="font-size:1rem;color:#666">万元</span>';
         document.getElementById('resLoan').innerHTML = loan.toFixed(2) + ' <span style="font-size:1rem;color:#666">万元</span>';
-        
+
         resBox.classList.add('active');
       });
     `

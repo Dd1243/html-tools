@@ -581,44 +581,6 @@
         border-color: #cbd5e1;
         color: #0f172a;
       }
-      .travel-ad-slot {
-        border: 1px dashed #cbd5e1;
-        border-radius: 20px;
-        padding: 18px 20px;
-        background: #ffffff;
-        color: #475569;
-        box-shadow: 0 14px 30px rgba(15, 23, 42, 0.06);
-      }
-      .travel-ad-slot__label {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 0.9rem;
-        font-weight: 800;
-        color: #0f172a;
-      }
-      .travel-ad-slot__label::before {
-        content: "AD";
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 30px;
-        height: 22px;
-        border-radius: 999px;
-        background: rgba(37, 99, 235, 0.1);
-        color: #1d4ed8;
-        font-size: 0.74rem;
-        font-weight: 900;
-      }
-      .travel-ad-slot__text {
-        margin-top: 10px;
-        line-height: 1.75;
-      }
-      .travel-ad-slot__meta {
-        margin-top: 10px;
-        font-size: 0.82rem;
-        color: #64748b;
-      }
       .travel-article {
         border: 1px solid #dbe4ea;
         border-radius: 24px;
@@ -719,8 +681,7 @@
       }
       @media (max-width: 640px) {
         .travel-hero,
-        .travel-article,
-        .travel-ad-slot {
+        .travel-article {
           border-radius: 20px;
           padding: 20px 18px;
         }
@@ -969,24 +930,6 @@
     return hero;
   }
 
-  function buildAdSlot(position, summary) {
-    const key = `ad-${position}`;
-    if (document.querySelector(`[data-travel-enhance-root="${key}"]`)) {
-      return null;
-    }
-
-    const slot = document.createElement("aside");
-    slot.className = "travel-enhanced-block travel-ad-slot";
-    slot.setAttribute("data-travel-enhance-root", key);
-    slot.setAttribute("aria-label", "Google AdSense 预留广告位");
-    slot.innerHTML = `
-      <div class="travel-ad-slot__label">Google AdSense 预留位</div>
-      <div class="travel-ad-slot__text">${escapeHtml(summary)}</div>
-      <div class="travel-ad-slot__meta">建议部署时替换为响应式广告代码，优先保留当前块级尺寸与自适应宽度，以兼顾桌面和手机展示。</div>
-    `;
-    return slot;
-  }
-
   function buildArticle(featureLabels, faqItems, howToSteps) {
     if (document.querySelector('[data-travel-enhance-root="article"]')) {
       return null;
@@ -1061,17 +1004,9 @@
       const bottomReference = findBottomReference(surface);
 
       const hero = buildHero(featureLabels);
-      const topAd = buildAdSlot(
-        "top",
-        `${pageTitle} 页面顶部广告位已放到工具区之后，适合放置响应式横幅广告，既保留广告位，也不遮挡用户先使用工具。`
-      );
       const article = buildArticle(featureLabels, faqItems, howToSteps);
-      const bottomAd = buildAdSlot(
-        "bottom",
-        `${pageTitle} 页面底部广告位，适合放置信息流或内容型广告，靠近长文说明区域但不干扰实际工具操作。`
-      );
 
-      [hero, topAd, article, bottomAd].forEach((node) => {
+      [hero, article].forEach((node) => {
         if (node) {
           insertBefore(surface, node, bottomReference);
         }

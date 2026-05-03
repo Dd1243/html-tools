@@ -38,21 +38,21 @@ let addedCount = 0;
 for (const dir of dirs) {
   const dirPath = path.join(toolsDir, dir);
   if (!fs.statSync(dirPath).isDirectory()) continue;
-  
+
   const files = fs.readdirSync(dirPath).filter(f => f.endsWith('.html'));
-  
+
   for (const file of files) {
     const filePath = path.join(toolsDir, dir, file);
-    
+
     if (!registeredPaths.has(filePath)) {
       // Extract tool name from filename
       const toolName = file.replace('.html', '')
         .split('-')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
-      
+
       const category = categoryMap[dir] || dir;
-      
+
       maxId++;
       toolsData.tools[maxId] = {
         path: filePath,
@@ -62,7 +62,7 @@ for (const dir of dirs) {
         icon: '🔧',
         description: toolName
       };
-      
+
       addedCount++;
       console.log('Added: ' + filePath);
     }

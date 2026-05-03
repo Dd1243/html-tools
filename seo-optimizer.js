@@ -253,7 +253,7 @@ function generateToolIntro(config) {
     <section class="tool-intro">
       <h2>工具介绍</h2>
       <p>${config.intro}</p>
-      
+
       <h3>主要特性</h3>
       <ul class="feature-list">
         ${featuresHtml}
@@ -273,7 +273,7 @@ function generateToolReview(config) {
     <!-- 工具测评部分 -->
     <section class="tool-review">
       <h2>工具测评</h2>
-      
+
       <div class="review-item">
         <h3>性能表现 ⭐⭐⭐⭐⭐</h3>
         <p>本工具采用纯JavaScript实现，处理速度极快。对于普通数据可以实现毫秒级处理。性能表现优秀，相比其他在线工具，我们的本地处理方式避免了网络传输延迟，提供了更快的响应速度。</p>

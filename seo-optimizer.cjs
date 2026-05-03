@@ -206,7 +206,7 @@ function generateToolIntro(config) {
     <section class="tool-intro">
       <h2>工具介绍</h2>
       <p>${config.intro}</p>
-      
+
       <h3>主要特性</h3>
       <ul class="feature-list">
         ${featuresHtml}
@@ -226,7 +226,7 @@ function generateToolReview(config) {
     <!-- 工具测评部分 -->
     <section class="tool-review">
       <h2>工具测评</h2>
-      
+
       <div class="review-item">
         <h3>性能表现 ⭐⭐⭐⭐⭐</h3>
         <p>本工具采用纯JavaScript实现，处理速度极快。对于普通数据可以实现毫秒级处理。性能表现优秀，相比其他在线工具，我们的本地处理方式避免了网络传输延迟，提供了更快的响应速度。</p>
@@ -311,11 +311,11 @@ function processHtmlFile(filePath, category) {
 // 递归处理目录
 function processDirectory(dirPath, category) {
   const files = fs.readdirSync(dirPath);
-  
+
   files.forEach(file => {
     const filePath = path.join(dirPath, file);
     const stat = fs.statSync(filePath);
-    
+
     if (stat.isDirectory()) {
       processDirectory(filePath, file);
     } else if (file.endsWith('.html')) {
@@ -327,9 +327,9 @@ function processDirectory(dirPath, category) {
 // 主函数
 function main() {
   const toolsDir = path.join(__dirname, 'tools');
-  
+
   console.log('开始批量优化工具页面SEO...\n');
-  
+
   const categories = fs.readdirSync(toolsDir);
   categories.forEach(category => {
     const categoryPath = path.join(toolsDir, category);
@@ -338,7 +338,7 @@ function main() {
       processDirectory(categoryPath, category);
     }
   });
-  
+
   console.log('\n✓ 批量优化完成！');
 }
 

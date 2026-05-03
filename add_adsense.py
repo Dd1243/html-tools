@@ -1,53 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Add AdSense placeholders and SEO article content to all travel HTML files."""
+"""Add SEO article content to all travel HTML files."""
 
 import os
 import re
 
 travel_dir = r"e:\html-tools\tools\travel"
-
-# AdSense placeholder CSS to add to each file
-adsense_css = """
-      /* ---- Google AdSense Placeholder ---- */
-      .adsense-wrap {
-        margin: 24px 0;
-        text-align: center;
-      }
-      .adsbygoogle {
-        display: block;
-        min-height: 90px;
-        background: var(--bg-surface);
-        border: 1px dashed var(--border-subtle);
-        border-radius: var(--radius-md);
-      }
-      /* ---- End AdSense ---- */"""
-
-# AdSense top banner HTML
-adsense_top = """
-      <!-- Google AdSense - Top Banner -->
-      <div class="adsense-wrap">
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-XXXXXXXXXX"
-             data-ad-slot="XXXXXXXXXX"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-      </div>"""
-
-# AdSense bottom rectangle HTML
-adsense_bottom = """
-      <!-- Google AdSense - Bottom Rectangle -->
-      <div class="adsense-wrap">
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-XXXXXXXXXX"
-             data-ad-slot="XXXXXXXXXX"
-             data-ad-format="rectangle"
-             data-full-width-responsive="true"></ins>
-        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-      </div>"""
 
 # SEO article content per file
 seo_articles = {
@@ -373,25 +331,10 @@ def add_adsense_and_article(filepath):
     filename = os.path.basename(filepath)
     with open(filepath, 'r', encoding='utf-8') as f:
         content = f.read()
-    
+
     original = content
-    
-    # 1. Add AdSense CSS if missing
-    if 'adsbygoogle' not in content:
-        # Add CSS before </style>
-        content = re.sub(r'(</style>)', adsense_css + r'\n    \1', content, count=1)
-        
-        # Add top banner after <main> opening or after first container div
-        # Try to find the main content area opening
-        if '<main' in content:
-            content = re.sub(r'(<main[^>]*>)', r'\1\n' + adsense_top, content, count=1)
-        elif 'class="container"' in content or "class='container'" in content:
-            content = re.sub(r'(<div[^>]+class="container"[^>]*>)', r'\1\n' + adsense_top, content, count=1)
-        
-        # Add bottom ad before </body>
-        content = re.sub(r'(\s*</body>)', '\n' + adsense_bottom + r'\n\1', content, count=1)
-    
-    # 2. Add SEO article content if missing
+
+    # Add SEO article content if missing
     article = get_seo_article(filename)
     if article and 'seo-article' not in content:
         # Insert before </body> or after toast div
@@ -399,12 +342,12 @@ def add_adsense_and_article(filepath):
             content = re.sub(r'(<div[^>]+id="toast"[^>]*/?>)', r'\1\n' + article, content, count=1)
         else:
             content = re.sub(r'(\s*</body>)', '\n' + article + r'\n\1', content, count=1)
-    
+
     # 3. Add font preconnect if missing
     if 'fonts.googleapis.com' in content and 'rel="preconnect" href="https://fonts.googleapis.com"' not in content:
         content = re.sub(r'(<link\s+href="https://fonts\.googleapis\.com)',
                         '<link rel="preconnect" href="https://fonts.googleapis.com" />\n    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />\n    \1', content, count=1)
-    
+
     if content != original:
         with open(filepath, 'w', encoding='utf-8') as f:
             f.write(content)
@@ -418,4 +361,4 @@ for filename in os.listdir(travel_dir):
         filepath = os.path.join(travel_dir, filename)
         add_adsense_and_article(filepath)
 
-print("\nAdSense & article enhancement complete!")
+print("\nArticle enhancement complete!")

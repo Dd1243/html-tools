@@ -249,33 +249,33 @@ files_meta = {
 def fix_file(filepath, meta):
     with open(filepath, 'r', encoding='utf-8') as f:
         content = f.read()
-    
+
     original = content
-    
+
     # 1. Fix title (更丰富的SEO标题)
     old_title_match = re.search(r'<title>([^<]+)</title>', content)
     if old_title_match:
         old_title = old_title_match.group(1)
         if old_title != meta['title']:
             content = re.sub(r'<title>[^<]+</title>', f'<title>{meta["title"]}</title>', content)
-    
+
     # 2. Fix description (更丰富的描述)
-    content = re.sub(r'<meta\s+name="description"\s+content="[^"]*"\s*/>', 
+    content = re.sub(r'<meta\s+name="description"\s+content="[^"]*"\s*/>',
                      f'<meta name="description" content="{meta["desc"]}" />', content)
-    
+
     # 3. Fix og:title
-    content = re.sub(r'<meta\s+property="og:title"\s+content="[^"]*"\s*/>', 
+    content = re.sub(r'<meta\s+property="og:title"\s+content="[^"]*"\s*/>',
                      f'<meta property="og:title" content="{meta["title"]}" />', content)
-    
+
     # 4. Fix og:description
-    content = re.sub(r'<meta\s+property="og:description"\s+content="[^"]*"\s*/>', 
+    content = re.sub(r'<meta\s+property="og:description"\s+content="[^"]*"\s*/>',
                      f'<meta property="og:description" content="{meta["desc"]}" />', content)
-    
+
     # 5. Add robots if missing
     if 'meta name="robots"' not in content:
-        content = re.sub(r'(<link rel="canonical"[^>]+/>)', 
+        content = re.sub(r'(<link rel="canonical"[^>]+/>)',
                         r'\1\n    <meta name="robots" content="index, follow" />', content)
-    
+
     # 6. Add og:image:width/height/type if missing
     if 'og:image:width' not in content:
         if 'og:image"' in content:
@@ -285,12 +285,12 @@ def fix_file(filepath, meta):
             # Add og:image block after og:locale
             content = re.sub(r'(<meta property="og:locale"[^>]+/>)',
                            r'\1\n    <meta property="og:image" content="https://essays4u.net/social-preview.png" />\n    <meta property="og:image:width" content="1280" />\n    <meta property="og:image:height" content="640" />\n    <meta property="og:image:type" content="image/png" />', content)
-    
+
     # 7. Add twitter:image if missing
     if 'twitter:image' not in content:
         content = re.sub(r'(<meta name="twitter:description"[^>]+/>)',
                         r'\1\n    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />', content)
-    
+
     # 8. Add complete Twitter card if missing
     if 'twitter:card' not in content:
         twitter_block = f'''    <!-- Twitter Card -->
@@ -298,7 +298,7 @@ def fix_file(filepath, meta):
     <meta name="twitter:title" content="{meta['title']}" />
     <meta name="twitter:description" content="{meta['desc']}" />
     <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />'''
-        
+
         # Insert before JSON-LD or before font preconnect
         if '<!-- JSON-LD' in content:
             content = content.replace('<!-- JSON-LD', twitter_block + '\n\n    <!-- JSON-LD', 1)
@@ -308,13 +308,13 @@ def fix_file(filepath, meta):
         else:
             content = re.sub(r'(<link rel="preconnect")',
                            twitter_block + r'\n\n    \1', content, count=1)
-    
+
     # 9. Fix twitter:title and twitter:description
-    content = re.sub(r'<meta\s+name="twitter:title"\s+content="[^"]*"\s*/>', 
+    content = re.sub(r'<meta\s+name="twitter:title"\s+content="[^"]*"\s*/>',
                      f'<meta name="twitter:title" content="{meta["title"]}" />', content)
-    content = re.sub(r'<meta\s+name="twitter:description"\s+content="[^"]*"\s*/>', 
+    content = re.sub(r'<meta\s+name="twitter:description"\s+content="[^"]*"\s*/>',
                      f'<meta name="twitter:description" content="{meta["desc"]}" />', content)
-    
+
     # 10. Add JSON-LD if missing
     if 'application/ld+json' not in content:
         json_ld = f'''    <!-- JSON-LD Structured Data -->
@@ -416,7 +416,7 @@ def fix_file(filepath, meta):
     </script>'''
                 content = re.sub(r'(</script>\s*\n\s*\n\s*<link rel="preconnect")',
                                new_web_app_script + r'\n\n    <link rel="preconnect"', content, count=1)
-    
+
     if content != original:
         with open(filepath, 'w', encoding='utf-8') as f:
             f.write(content)

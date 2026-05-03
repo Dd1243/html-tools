@@ -213,7 +213,7 @@ const template = (tool) => `<!doctype html>
         background: var(--primary-hover);
         transform: translateY(-1px);
       }
-      
+
       .result-box {
         background: #f0f7ff;
         border: 1px solid #cce5ff;
@@ -374,8 +374,7 @@ const template = (tool) => `<!doctype html>
     </header>
 
     <main class="container">
-      <div class="tool-section">
-        <div class="ad-placeholder ad-top">广告位 - 顶部横幅 (AdSense Placeholder)</div>
+
 
         <div class="tool-header">
           <h1>${tool.title}</h1>
@@ -390,26 +389,7 @@ const template = (tool) => `<!doctype html>
         </section>
       </div>
 
-      <aside class="sidebar-section">
-        <div class="article-card">
-          <h2>使用指南</h2>
-          ${tool.sidebarGuide}
-        </div>
 
-        <div class="ad-placeholder ad-sidebar">广告位 - 侧边栏 (AdSense Placeholder)</div>
-
-        <div class="article-card">
-          <h2>相关房产工具</h2>
-          <ul>
-            <li><a href="mortgage.html">房贷计算器</a></li>
-            <li><a href="combo-loan.html">组合贷款计算器</a></li>
-            <li><a href="lpr-calc.html">LPR房贷计算器</a></li>
-            <li><a href="prepayment.html">提前还贷计算器</a></li>
-            <li><a href="deed-tax.html">契税计算器</a></li>
-            <li><a href="property-tax.html">房产税计算器</a></li>
-          </ul>
-        </div>
-      </aside>
     </main>
 
     <footer class="site-footer">
@@ -542,11 +522,11 @@ const tools = [
       <h2 style="font-size: 1.5rem; margin-bottom: 20px; color:#111">房贷方案选择困难？一文教你如何做对比决策</h2>
       <article style="font-size: 0.95rem; color: #444; line-height: 1.8">
         <p>面对动辄百万级别的房贷，哪怕是贷款利率相差 0.1%，或者是贷款期限相差 5 年，最终支付给银行的利息总额都有可能相差数万甚至数十万。如何在一众银行给出的贷款方案中挑选出最不亏的那个？这就需要依靠量化的数据对比。</p>
-        
+
         <h3 style="margin: 20px 0 10px; color: #111">对比核心1：贷款期限长短的取舍</h3>
         <p>很多长辈主张“无债一身轻”，认为能借20年绝不借30年。事实上，在当今的通货膨胀背景下，房贷可以说是普通人这辈子能从银行借到的<strong>金额最大、利率最低、期限最长</strong>的一笔钱了。如果您的投资理财年化收益能够跑赢房贷利率，那么<strong>贷款期限越长越好，最好贷满30年</strong>，让通胀来稀释您未来的负债；反之，如果您极度厌恶风险，那可以选择缩短年限以节省利息。</p>
 
-        <div class="ad-placeholder ad-middle">广告位 - 文章中部内嵌 (AdSense Placeholder)</div>
+
 
         <h3 style="margin: 20px 0 10px; color: #111">对比核心2：月供压力与总利息的平衡</h3>
         <p>方案A（等额本息，30年）通常月供最低，能极大缓解每月的现金流压力；而方案B（等额本金，20年）首月月供极高，但整体利息比方案A少得多。通过我们的对比计算器，您可以直观地看到二者的“利息差额”与“月供差额”。</p>
@@ -563,7 +543,7 @@ const tools = [
         amount = amount * 10000;
         rate = rate / 100 / 12;
         const months = years * 12;
-        
+
         let firstMonth = 0;
         let totalInterest = 0;
 
@@ -615,7 +595,7 @@ const tools = [
           let aView = (r.valA / r.div).toFixed(2);
           let bView = (r.valB / r.div).toFixed(2);
           let diff = ((r.valA - r.valB) / r.div).toFixed(2);
-          
+
           let diffText = '';
           if (diff > 0) {
             diffText = 'A 比 B 多 <strong style="color:#d9534f">' + diff + '</strong> ' + r.unit;
@@ -663,7 +643,7 @@ const tools = [
             <span class="input-group-addon">年</span>
           </div>
         </div>
-        
+
         <div class="form-group full-width" style="margin: 10px 0;">
           <h4 style="color:var(--primary-color);">重新定价前（旧利率）</h4>
         </div>
@@ -731,11 +711,11 @@ const tools = [
       <h2 style="font-size: 1.5rem; margin-bottom: 20px; color:#111">LPR降息了，我的房贷到底什么时候降？</h2>
       <article style="font-size: 0.95rem; color: #444; line-height: 1.8">
         <p>每次看到新闻推送“央行宣布 LPR 下调”，很多“房奴”们都会一阵激动，但次月一看自己的扣款短信，怎么还是扣了那么多钱？这就涉及到 LPR 的<strong>“重新定价日”</strong>机制了。</p>
-        
+
         <h3 style="margin: 20px 0 10px; color: #111">什么是重新定价日？</h3>
         <p>个人住房贷款的浮动利率并不是央行今天降息，明天您的贷款就立刻按新利率执行。在签订贷款合同时，银行会和您约定一个“重新定价日”（通常是<strong>每年的1月1日</strong>，或者是<strong>贷款发放日的对月对日</strong>）。只有到了这个重定价日，银行才会根据上一个月（也就是12月20日）最新公布的 LPR 报价，来重新计算您下一年度的执行利率和月供。</p>
 
-        <div class="ad-placeholder ad-middle">广告位 - 文章中部内嵌 (AdSense Placeholder)</div>
+
 
         <h3 style="margin: 20px 0 10px; color: #111">固定加减点（BP）一生相伴</h3>
         <p>您的最终房贷执行利率公式为：<strong>执行利率 = 当期 LPR + 您的固定 BP（基点）</strong>。</p>
@@ -794,7 +774,7 @@ const tools = [
         const resBox = document.getElementById('resultBox');
         resBox.classList.remove('active');
         void resBox.offsetWidth;
-        
+
         const resDiffEl = document.getElementById('resDiff');
         if (diffMonth >= 0) {
           resDiffEl.innerHTML = '减少 ' + diffMonth.toFixed(2) + ' <span style="font-size:1.2rem;color:#666">元</span>';
@@ -808,10 +788,10 @@ const tools = [
 
         document.getElementById('resOldMonth').innerHTML = oldMonth.toFixed(2) + ' <span style="font-size:1rem;color:#666">元</span>';
         document.getElementById('oldRateDesc').textContent = '执行利率: ' + (oldLpr + (bp / 100)).toFixed(2) + '%';
-        
+
         document.getElementById('resNewMonth').innerHTML = newMonth.toFixed(2) + ' <span style="font-size:1rem;color:#666">元</span>';
         document.getElementById('newRateDesc').textContent = '执行利率: ' + (newLpr + (bp / 100)).toFixed(2) + '%';
-        
+
         resBox.classList.add('active');
       });
     `
@@ -908,7 +888,7 @@ const tools = [
       <h2 style="font-size: 1.5rem; margin-bottom: 20px; color:#111">建材购买指南：损耗率是商家赚钱的“潜规则”？</h2>
       <article style="font-size: 0.95rem; color: #444; line-height: 1.8">
         <p>不管是半包还是全包，自己去建材市场买瓷砖或乳胶漆是绝大部分业主的必经之路。面对几十平米的房间，到底该买多少箱砖？买几桶漆？如果全凭商家的一面之词，往往会被故意做高“损耗率”而导致材料严重剩余，而有些特价产品甚至是“不退不换”的，最后只能白白浪费钱。</p>
-        
+
         <h3 style="margin: 20px 0 10px; color: #111">瓷砖与地板的黄金损耗原则</h3>
         <p>在铺贴地砖和木地板时，因为房间尺寸不可能完全是建材规格的整数倍，必然面临切割。一般而言：</p>
         <ul>
@@ -916,7 +896,7 @@ const tools = [
           <li><strong>人字拼、鱼骨拼或斜铺：</strong>这种复杂的造型施工会导致极大的边角废料，损耗率必须预留到 <strong>8% - 10%</strong>，否则绝对会面临买不到同批次色号补砖的惨剧。</li>
         </ul>
 
-        <div class="ad-placeholder ad-middle">广告位 - 文章中部内嵌 (AdSense Placeholder)</div>
+
 
         <h3 style="margin: 20px 0 10px; color: #111">涂料乳胶漆的“一底两面”</h3>
         <p>墙面漆的计算相对复杂，因为要刷墙面+顶面，且要扣除门窗的面积。标准的涂刷工艺是<strong>“一底两面”</strong>，即刷一遍底漆防潮防碱，再刷两遍面漆保证遮盖力和质感。</p>
@@ -935,16 +915,16 @@ const tools = [
         currentTab = tab;
         document.getElementById('tab-tile').style.display = tab === 'tile' ? 'contents' : 'none';
         document.getElementById('tab-paint').style.display = tab === 'paint' ? 'contents' : 'none';
-        
+
         const btns = document.querySelectorAll('.form-group.full-width button.btn');
         btns[0].className = tab === 'tile' ? 'btn btn-primary' : 'btn';
         btns[0].style.background = tab === 'tile' ? '' : '#eee';
         btns[0].style.color = tab === 'tile' ? '#fff' : '#333';
-        
+
         btns[1].className = tab === 'paint' ? 'btn btn-primary' : 'btn';
         btns[1].style.background = tab === 'paint' ? '' : '#eee';
         btns[1].style.color = tab === 'paint' ? '#fff' : '#333';
-        
+
         document.getElementById('resultBox').classList.remove('active');
       }
 
@@ -961,7 +941,7 @@ const tools = [
 
           const netCount = area / singleSize;
           const grossCount = Math.ceil(netCount * (1 + loss));
-          
+
           resGrid.innerHTML = \`
             <div class="result-item" style="grid-column: 1 / -1;">
               <div class="result-item-title">建议购买材料总数量 (已含损耗)</div>
@@ -988,7 +968,7 @@ const tools = [
           const wallArea = (l + w) * 2 * h;
           const roofArea = l * w;
           const netArea = wallArea + roofArea - door;
-          
+
           // 经验值：5L一桶，刷两遍面漆可刷约35平米，底漆一遍可刷70平米
           const mianqi = Math.ceil(netArea / 35);
           const diqi = Math.ceil(netArea / 70);
@@ -1062,7 +1042,7 @@ const tools = [
             <option value="2">等额本金 (每月还款递减)</option>
           </select>
         </div>
-        
+
         <div class="form-group full-width" style="margin-top:10px;">
           <button id="btnCalc" class="btn btn-primary" style="height: 50px; font-size: 1.1rem;">立即计算月供</button>
         </div>
@@ -1090,12 +1070,12 @@ const tools = [
       <h2 style="font-size: 1.5rem; margin-bottom: 20px; color:#111">为什么买房贷款，银行赚走的利息几乎和本金一样多？</h2>
       <article style="font-size: 0.95rem; color: #444; line-height: 1.8">
         <p>当您使用我们的房贷计算器测算一笔 100万、30年期的商业贷款时，您可能会被那个“总利息”数字吓跳：如果是等额本息还款，总利息往往高达 70万 - 80万，几乎快赶上贷款本金了！很多人因此感到愤怒，觉得银行是在“吸血”。但这背后的金融逻辑，其实是<strong>复利与时间</strong>的作用。</p>
-        
+
         <h3 style="margin: 20px 0 10px; color: #111">房贷利息背后的数学真相</h3>
         <p>银行收取利息的核心原则是：<strong>占用本金多少，占用时间多长，就收多少利息。</strong></p>
         <p>在贷款的最初几年，您欠银行的本金最多（将近100万）。以 4% 的利率计算，您一年要给银行的纯利息就有 4 万元左右，折合到每个月就是 3000 多块钱的利息。如果您每个月的月供是 4700 元，这意味着您还的钱里，有 3000 多都是被银行拿走的利息，真正在削减的“本金”只有一千多块钱。</p>
 
-        <div class="ad-placeholder ad-middle">广告位 - 文章中部内嵌 (AdSense Placeholder)</div>
+
 
         <h3 style="margin: 20px 0 10px; color: #111">等额本息 vs 等额本金：到底有没有“吃亏”？</h3>
         <p>网上流传一种说法：“等额本息是银行骗人的，前期还的全是利息，后期才还本金，亏死了”。</p>
@@ -1138,7 +1118,7 @@ const tools = [
         if (type === '1') {
           monthPay = rate > 0 ? (amount * rate * Math.pow(1 + rate, months)) / (Math.pow(1 + rate, months) - 1) : amount / months;
           totalInt = (monthPay * months) - amount;
-          
+
           document.getElementById('monthLabel').textContent = '每月等额月供';
           document.getElementById('resMonth').innerHTML = monthPay.toFixed(2) + ' <span style="font-size:1.2rem;color:#666">元</span>';
           document.getElementById('monthDesc').textContent = '每个月的还款金额固定不变';
@@ -1147,7 +1127,7 @@ const tools = [
           monthPay = principal + amount * rate;
           totalInt = (amount * rate + principal * rate) / 2 * months;
           diff = principal * rate;
-          
+
           document.getElementById('monthLabel').textContent = '首月月供 (最高)';
           document.getElementById('resMonth').innerHTML = monthPay.toFixed(2) + ' <span style="font-size:1.2rem;color:#666">元</span>';
           document.getElementById('monthDesc').innerHTML = '此后每月固定递减约 <strong style="color:#d9534f">' + diff.toFixed(2) + '</strong> 元';
