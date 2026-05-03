@@ -26,6 +26,7 @@ const INDEX_HTML = path.join(ROOT_DIR, 'index.html');
 const README_MD = path.join(ROOT_DIR, 'README.md');
 const SITEMAP_XML = path.join(ROOT_DIR, 'sitemap.xml');
 const MANIFEST_JSON = path.join(ROOT_DIR, 'manifest.json');
+const TOOLS_DIRECTORY_HTML = path.join(ROOT_DIR, 'tools-directory.html');
 
 // 网站域名 (不带尾部斜杠)
 const SITE_URL = 'https://essays4u.net';
@@ -171,6 +172,7 @@ function main() {
   const results = {
     indexHtml: updateIndexHtml(categoriesJs, toolsJs, toolCount, categoryCount),
     readme: updateReadme(toolCount, categoryCount),
+    toolsDirectory: updateToolsDirectory(tools, categories, sortedCategories),
     sitemap: updateSitemap(tools, toolCount),
     manifest: updateManifest(toolCount),
     github: updateGitHubDescription(toolCount)
@@ -293,6 +295,95 @@ function updateReadme(toolCount, categoryCount) {
 /**
  * 更新 sitemap.xml
  */
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function updateToolsDirectory(tools, categories, sortedCategories) {
+  const groupedTools = {};
+  for (const tool of tools) {
+    if (!groupedTools[tool.category]) {
+      groupedTools[tool.category] = [];
+    }
+    groupedTools[tool.category].push(tool);
+  }
+
+  const sections = [];
+  for (const categoryId of sortedCategories) {
+    const categoryTools = groupedTools[categoryId];
+    if (!categoryTools || categoryTools.length === 0) {
+      continue;
+    }
+
+    const categoryName = categories[categoryId]?.name || categoryId;
+    const links = categoryTools
+      .map((tool) => {
+        const href = `/${toPublicUrl(tool.path)}`;
+        const name = escapeHtml(tool.name);
+        const description = escapeHtml(tool.description || tool.keywords || tool.name);
+        return `          <li><a href="${href}">${name}</a><span>${description}</span></li>`;
+      })
+      .join('\n');
+
+    sections.push(`      <section>
+        <h2>${escapeHtml(categoryName)}</h2>
+        <ul>
+${links}
+        </ul>
+      </section>`);
+  }
+
+  const html = `<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>全部工具目录 - WebUtils</title>
+    <meta name="description" content="WebUtils 全部在线工具目录，提供所有工具页面的静态内部链接。" />
+    <link rel="canonical" href="${SITE_URL}/tools-directory" />
+    <style>
+      body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.6; color: #111827; background: #f8fafc; }
+      main { max-width: 1120px; margin: 0 auto; padding: 32px 20px 56px; }
+      header { margin-bottom: 28px; }
+      a { color: #075985; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .home-link { display: inline-block; margin-bottom: 18px; }
+      h1 { margin: 0 0 8px; font-size: clamp(2rem, 4vw, 3rem); }
+      h2 { margin: 32px 0 12px; font-size: 1.35rem; }
+      ul { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px 18px; padding: 0; margin: 0; list-style: none; }
+      li { padding: 12px; border: 1px solid #e5e7eb; background: #fff; border-radius: 8px; }
+      li a { display: block; font-weight: 700; }
+      li span { display: block; margin-top: 4px; color: #64748b; font-size: 0.92rem; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <a class="home-link" href="/">返回首页</a>
+        <h1>全部工具目录</h1>
+        <p>这里列出 WebUtils 的全部 ${tools.length} 个工具页面，供用户和搜索引擎通过静态链接访问。</p>
+      </header>
+${sections.join('\n')}
+    </main>
+  </body>
+</html>
+`;
+
+  if (fs.existsSync(TOOLS_DIRECTORY_HTML)) {
+    const existing = fs.readFileSync(TOOLS_DIRECTORY_HTML, 'utf8');
+    if (existing === html) {
+      return false;
+    }
+  }
+
+  fs.writeFileSync(TOOLS_DIRECTORY_HTML, html);
+  return true;
+}
+
 function updateSitemap(tools, toolCount) {
   const today = new Date().toISOString().split('T')[0];
 
@@ -304,6 +395,12 @@ function updateSitemap(tools, toolCount) {
     <lastmod>${today}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>${SITE_URL}/tools-directory</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
 `;
 
@@ -334,7 +431,7 @@ function updateSitemap(tools, toolCount) {
   }
 
   fs.writeFileSync(SITEMAP_XML, xml);
-  console.log(`✅ sitemap.xml: ${toolCount + 1} URLs`);
+  console.log(`✅ sitemap.xml: ${toolCount + 2} URLs`);
   return true;
 }
 
