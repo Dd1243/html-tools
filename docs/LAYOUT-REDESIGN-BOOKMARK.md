@@ -55,7 +55,7 @@
     <nav class="site-nav">
       <ul>
         <li><a href="/">首页</a></li>
-        <li><a href="/tools">工具</a></li>
+        <li><a href="/tools-directory">工具</a></li>
         <li><a href="/about">关于</a></li>
       </ul>
     </nav>

@@ -87,7 +87,7 @@ function buildLinks(filePath) {
   const links = [
     { href: '/', label: 'WebUtils 首页' },
     { href: '/tools-directory', label: '全部工具目录' },
-    { href: `/tools/${category}`, label: `${category} 工具分类` },
+    { href: '/tools-directory', label: `${category} 工具分类` },
     ...related.map((tool) => ({ href: urlForTool(tool), label: stripBrand(tool.name) || tool.path }))
   ];
 

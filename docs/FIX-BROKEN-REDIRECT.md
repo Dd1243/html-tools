@@ -137,7 +137,7 @@ grep -o '<loc>[^<]*</loc>' sitemap.xml | head -20
 
 **修复前**：
 ```html
-<a href="../../index.html">返回首页</a>
+<a href="/tools-directory">返回首页</a>
 <a href="privacy-policy.html">隐私政策</a>
 ```
 

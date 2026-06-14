@@ -91,7 +91,7 @@
 
 **修复前**:
 ```html
-<a href="../../index.html">返回首页</a>
+<a href="/tools-directory">返回首页</a>
 <!-- 触发 cleanUrls 重定向 -->
 ```
 

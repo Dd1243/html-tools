@@ -270,7 +270,7 @@ function generateUpdateDate() {
       <!-- 更新日期（GEO 优化）-->
       <footer class="tool-footer" style="margin: 2rem 0; padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.875rem; border-top: 1px solid var(--border-color);">
         <p>最后更新：<time datetime="${currentDate}">${formattedDate}</time></p>
-        <p>本工具由 <a href="../../index.html" style="color: var(--accent); text-decoration: none;">WebUtils</a> 提供</p>
+        <p>本工具由 <a href="/tools-directory" style="color: var(--accent); text-decoration: none;">WebUtils</a> 提供</p>
       </footer>
 `;
 }

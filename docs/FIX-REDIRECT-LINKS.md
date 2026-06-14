@@ -28,7 +28,7 @@
 #### 1. 工具页面链接到首页
 ```html
 <!-- ❌ 当前：会重定向 -->
-<a href="../../index.html">返回首页</a>
+<a href="/tools-directory">返回首页</a>
 
 <!-- ✅ 应该改为 -->
 <a href="/">返回首页</a>
@@ -37,7 +37,7 @@
 #### 2. 面包屑导航
 ```html
 <!-- ❌ 当前：会重定向 -->
-<a href="../../index.html">首页</a>
+<a href="/tools-directory">首页</a>
 
 <!-- ✅ 应该改为 -->
 <a href="/">首页</a>
@@ -46,7 +46,7 @@
 #### 3. 工具分类链接
 ```html
 <!-- ❌ 当前：会重定向 -->
-<a href="../../index.html#dev">开发工具</a>
+<a href="/tools-directory#dev">开发工具</a>
 
 <!-- ✅ 应该改为 -->
 <a href="/#dev">开发工具</a>
@@ -166,7 +166,7 @@ sed -i 's|href="privacy-policy\.html"|href="/privacy-policy"|g' index.html
 #### 2.2 修复工具页面
 
 ```bash
-# 修复 ../../index.html 链接
+# 修复 /tools-directory 链接
 find tools -name "*.html" -type f -exec sed -i 's|href="../../index\.html"|href="/"|g' {} +
 
 # 修复带分类的链接
@@ -198,8 +198,8 @@ git commit -m "fix(seo): 移除所有重定向链接
 ## 修复内容
 
 1. 首页：privacy-policy.html → /privacy-policy
-2. 工具页面：../../index.html → /
-3. 分类链接：../../index.html#dev → /#dev
+2. 工具页面：/tools-directory → /
+3. 分类链接：/tools-directory#dev → /#dev
 
 ## 影响
 
@@ -292,7 +292,7 @@ git push origin master
 1. **内部页面链接**
 ```html
 <!-- ❌ -->
-<a href="../../index.html">
+<a href="/tools-directory">
 
 <!-- ✅ -->
 <a href="/">
@@ -314,7 +314,7 @@ git push origin master
 修复后检查：
 
 - [ ] 首页无 .html 链接（除了工具卡片）
-- [ ] 工具页面无 ../../index.html 链接
+- [ ] 工具页面无 /tools-directory 链接
 - [ ] 所有内部链接使用绝对路径（/）
 - [ ] 外部链接保持不变
 - [ ] 页面功能正常

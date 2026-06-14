@@ -24,13 +24,13 @@ function getBreadcrumbHTML(categoryId, categoryName, toolName) {
       <nav class="breadcrumb" aria-label="breadcrumb">
         <ol itemscope itemtype="https://schema.org/BreadcrumbList">
           <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-            <a itemprop="item" href="../../index.html">
+            <a itemprop="item" href="/tools-directory">
               <span itemprop="name">首页</span>
             </a>
             <meta itemprop="position" content="1" />
           </li>
           <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-            <a itemprop="item" href="../../index.html#${categoryId}">
+            <a itemprop="item" href="/tools-directory#${categoryId}">
               <span itemprop="name">${categoryName}</span>
             </a>
             <meta itemprop="position" content="2" />

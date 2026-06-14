@@ -107,7 +107,7 @@ docs: 更新 README 工具列表
   </head>
   <body>
     <main class="container">
-      <a href="../../index.html">← 返回工具列表</a>
+      <a href="/tools-directory">← 返回工具列表</a>
       <h1>工具名称</h1>
       <p>工具描述</p>
 

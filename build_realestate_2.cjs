@@ -362,10 +362,10 @@ const template = (tool) => `<!doctype html>
   <body>
     <header class="site-header">
       <div class="container">
-        <div class="logo"><a href="../../index.html">WebUtils</a></div>
+        <div class="logo"><a href="/tools-directory">WebUtils</a></div>
         <nav class="site-nav">
           <ul>
-            <li><a href="../../index.html">首页</a></li>
+            <li><a href="/tools-directory">首页</a></li>
             <li><a href="mortgage.html">房贷计算</a></li>
             <li><a href="rent-vs-buy.html">租房买房</a></li>
           </ul>
@@ -404,7 +404,7 @@ const template = (tool) => `<!doctype html>
           <div class="footer-section">
             <h3>快速导航</h3>
             <ul>
-              <li><a href="../../index.html">返回首页</a></li>
+              <li><a href="/tools-directory">返回首页</a></li>
               <li><a href="https://github.com/Dd1243/html-tools" target="_blank">获取源码</a></li>
             </ul>
           </div>

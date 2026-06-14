@@ -104,7 +104,7 @@ Each tool in `tools/` follows this pattern:
 
     <div class="container">
       <!-- Back link to index -->
-      <a href="../../index.html" class="back-link">← 返回</a>
+      <a href="/tools-directory" class="back-link">← 返回</a>
 
       <!-- Tool UI -->
 
