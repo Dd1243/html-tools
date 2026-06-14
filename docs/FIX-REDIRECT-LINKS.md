@@ -274,7 +274,7 @@ git push origin master
 
 1. **外部链接** - 保持原样
 ```html
-<a href="https://github.com/chicogong/html-tools">GitHub</a>
+<a href="https://github.com/Dd1243/html-tools">GitHub</a>
 ```
 
 2. **字体链接** - 保持原样

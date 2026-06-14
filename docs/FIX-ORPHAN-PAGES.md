@@ -99,7 +99,7 @@ offline 页面 ← 孤立（没有链接）
 <footer style="margin-top: 60px; padding: 30px 0; border-top: 1px solid var(--border-subtle); text-align: center; color: var(--text-muted);">
   <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 15px;">
     <a href="/privacy-policy" style="color: var(--accent-cyan); text-decoration: none;">隐私政策</a>
-    <a href="https://github.com/chicogong/html-tools" target="_blank" rel="noopener" style="color: var(--accent-cyan); text-decoration: none;">GitHub</a>
+    <a href="https://github.com/Dd1243/html-tools" target="_blank" rel="noopener" style="color: var(--accent-cyan); text-decoration: none;">GitHub</a>
     <a href="mailto:contact@essays4u.net" style="color: var(--accent-cyan); text-decoration: none;">联系我们</a>
   </div>
   <p style="font-size: 0.875rem;">© 2024 WebUtils. All rights reserved.</p>
@@ -118,7 +118,7 @@ offline 页面 ← 孤立（没有链接）
 <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; font-size: 14px; color: #999;">
   <a href="/privacy-policy" style="color: #667eea; text-decoration: none;">隐私政策</a>
   ·
-  <a href="https://github.com/chicogong/html-tools" style="color: #667eea; text-decoration: none;">GitHub</a>
+  <a href="https://github.com/Dd1243/html-tools" style="color: #667eea; text-decoration: none;">GitHub</a>
 </div>
 ```
 

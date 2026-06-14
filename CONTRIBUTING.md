@@ -6,12 +6,12 @@
 
 ### 1. 报告 Bug
 
-- 使用 [Bug 报告模板](https://github.com/chicogong/html-tools/issues/new?template=bug_report.yml) 提交问题
+- 使用 [Bug 报告模板](https://github.com/Dd1243/html-tools/issues/new?template=bug_report.yml) 提交问题
 - 请提供详细的复现步骤
 
 ### 2. 提议新工具
 
-- 使用 [新工具提议模板](https://github.com/chicogong/html-tools/issues/new?template=new_tool.yml)
+- 使用 [新工具提议模板](https://github.com/Dd1243/html-tools/issues/new?template=new_tool.yml)
 - 确保工具可以纯前端实现，数据不需要上传到服务器
 
 ### 3. 提交代码
@@ -20,7 +20,7 @@
 
 ```bash
 # 克隆仓库
-git clone https://github.com/chicogong/html-tools.git
+git clone https://github.com/Dd1243/html-tools.git
 cd html-tools
 
 # 安装依赖
@@ -140,8 +140,8 @@ docs: 更新 README 工具列表
 
 ## 问题反馈
 
-- Issues: https://github.com/chicogong/html-tools/issues
-- Discussions: https://github.com/chicogong/html-tools/discussions
+- Issues: https://github.com/Dd1243/html-tools/issues
+- Discussions: https://github.com/Dd1243/html-tools/discussions
 
 ## 许可证
 

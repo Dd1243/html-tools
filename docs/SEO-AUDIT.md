@@ -216,7 +216,7 @@
 ```html
 <!-- 在页脚添加社交媒体链接 -->
 <a href="https://twitter.com/webutils" rel="noopener">Twitter</a>
-<a href="https://github.com/chicogong/html-tools" rel="noopener">GitHub</a>
+<a href="https://github.com/Dd1243/html-tools" rel="noopener">GitHub</a>
 ```
 
 **影响**:

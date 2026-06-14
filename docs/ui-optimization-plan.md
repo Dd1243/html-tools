@@ -50,7 +50,7 @@
 - [x] `tools/generator/password-generator.html` - 密码生成
 
 **完成状态**: 10/10 工具 (100%)
-**相关 PR**: [#135 - Migrate all 10 P0 tools to Glassmorphism design](https://github.com/chicogong/html-tools/pull/135)
+**相关 PR**: [#135 - Migrate all 10 P0 tools to Glassmorphism design](https://github.com/Dd1243/html-tools/pull/135)
 
 ---
 

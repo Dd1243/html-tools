@@ -4,15 +4,15 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Tools](https://img.shields.io/badge/Tools-1001+-blue.svg)](https://essays4u.net)
-[![Lint](https://github.com/chicogong/html-tools/actions/workflows/lint.yml/badge.svg)](https://github.com/chicogong/html-tools/actions/workflows/lint.yml)
-[![Deploy](https://github.com/chicogong/html-tools/actions/workflows/deploy.yml/badge.svg)](https://github.com/chicogong/html-tools/actions/workflows/deploy.yml)
+[![Lint](https://github.com/Dd1243/html-tools/actions/workflows/lint.yml/badge.svg)](https://github.com/Dd1243/html-tools/actions/workflows/lint.yml)
+[![Deploy](https://github.com/Dd1243/html-tools/actions/workflows/deploy.yml/badge.svg)](https://github.com/Dd1243/html-tools/actions/workflows/deploy.yml)
 [![Vercel](https://img.shields.io/badge/Vercel-deployed-black?logo=vercel)](https://html-tools-jade.vercel.app)
 [![Cloudflare](https://img.shields.io/badge/Cloudflare-deployed-orange?logo=cloudflare)](https://htmltools-bkt.pages.dev)
 
-[![GitHub stars](https://img.shields.io/github/stars/chicogong/html-tools?style=social)](https://github.com/chicogong/html-tools/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/chicogong/html-tools?style=social)](https://github.com/chicogong/html-tools/network/members)
-[![GitHub issues](https://img.shields.io/github/issues/chicogong/html-tools)](https://github.com/chicogong/html-tools/issues)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/chicogong/html-tools/pulls)
+[![GitHub stars](https://img.shields.io/github/stars/Dd1243/html-tools?style=social)](https://github.com/Dd1243/html-tools/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/Dd1243/html-tools?style=social)](https://github.com/Dd1243/html-tools/network/members)
+[![GitHub issues](https://img.shields.io/github/issues/Dd1243/html-tools)](https://github.com/Dd1243/html-tools/issues)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Dd1243/html-tools/pulls)
 
 ### 🚀 1001+ 纯前端在线工具集
 
@@ -391,7 +391,7 @@
 2. 直接在浏览器中打开即可使用
 
 ```bash
-git clone https://github.com/chicogong/html-tools.git
+git clone https://github.com/Dd1243/html-tools.git
 cd html-tools
 open index.html  # macOS
 # 或者
@@ -452,7 +452,7 @@ start index.html  # Windows
 
 ```bash
 # Clone 仓库
-git clone https://github.com/chicogong/html-tools.git
+git clone https://github.com/Dd1243/html-tools.git
 cd html-tools
 
 # 安装依赖（仅用于 lint）
@@ -579,7 +579,7 @@ CI 会自动检查同步状态，如果 `tools.json` 和 `index.html` 不一致�
 
 ### 贡献方式
 
-1. **报告 Bug**: 在 [Issues](https://github.com/chicogong/html-tools/issues) 中描述问题
+1. **报告 Bug**: 在 [Issues](https://github.com/Dd1243/html-tools/issues) 中描述问题
 2. **建议功能**: 在 Issues 中提出新工具或功能建议
 3. **提交代码**: Fork 仓库，创建分支，提交 PR
 

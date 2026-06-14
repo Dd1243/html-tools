@@ -405,7 +405,7 @@ const template = (tool) => `<!doctype html>
             <h3>快速导航</h3>
             <ul>
               <li><a href="../../index.html">返回首页</a></li>
-              <li><a href="https://github.com/chicogong/html-tools" target="_blank">获取源码</a></li>
+              <li><a href="https://github.com/Dd1243/html-tools" target="_blank">获取源码</a></li>
             </ul>
           </div>
         </div>

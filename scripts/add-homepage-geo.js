@@ -63,12 +63,12 @@ function generateOrganizationSchema() {
   "description": "提供 1001+ 个纯前端开发工具的在线工具集",
   "foundingDate": "2024-01-01",
   "sameAs": [
-    "https://github.com/chicogong/html-tools"
+    "https://github.com/Dd1243/html-tools"
   ],
   "contactPoint": {
     "@type": "ContactPoint",
     "contactType": "Customer Service",
-    "url": "https://github.com/chicogong/html-tools/issues"
+    "url": "https://github.com/Dd1243/html-tools/issues"
   }
 }
     </script>`;
@@ -108,7 +108,7 @@ function enhanceWebApplicationSchema(content) {
   "author": {
     "@type": "Person",
     "name": "chicogong",
-    "url": "https://github.com/chicogong"
+    "url": "https://github.com/Dd1243/html-tools"
   },
   "publisher": {
     "@type": "Organization",
@@ -139,7 +139,7 @@ function enhanceWebApplicationSchema(content) {
     "加密解密工具"
   ],
   "screenshot": "https://essays4u.net/social-preview.png",
-  "sameAs": ["https://github.com/chicogong/html-tools"]
+  "sameAs": ["https://github.com/Dd1243/html-tools"]
 }
     </script>`;
 
