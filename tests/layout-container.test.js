@@ -31,6 +31,14 @@ function assert(condition, message) {
   if (!condition) throw new Error(message || 'Assertion failed');
 }
 
+function hasExactClass(html, className) {
+  const classAttrs = html.matchAll(/\bclass=["']([^"']*)["']/g);
+  for (const match of classAttrs) {
+    if (match[1].split(/\s+/).includes(className)) return true;
+  }
+  return false;
+}
+
 console.log('\n=== Layout Container Tests ===\n');
 
 function getHtmlFiles(dir) {
@@ -54,7 +62,7 @@ test('tool pages with .container styles render inside a container element', () =
     .filter((filePath) => {
       const html = fs.readFileSync(filePath, 'utf8');
       const definesContainer = /\.container\s*\{/.test(html);
-      const rendersContainer = /class=["'][^"']*\bcontainer\b/.test(html);
+      const rendersContainer = hasExactClass(html, 'container');
       return definesContainer && !rendersContainer;
     })
     .map((filePath) => path.relative(ROOT, filePath));
