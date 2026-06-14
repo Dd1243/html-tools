@@ -409,7 +409,7 @@ const template = (tool) => `<!doctype html>
             </ul>
           </div>
         </div>
-        <div class="footer-bottom">&copy; 2024 WebUtils - 每一位创作者的效率加速器.</div>
+        <div class="footer-bottom">&copy; 2026 WebUtils - 每一位创作者的效率加速器.</div>
       </div>
     </footer>
 

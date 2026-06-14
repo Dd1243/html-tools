@@ -102,7 +102,7 @@ offline 页面 ← 孤立（没有链接）
     <a href="https://github.com/Dd1243/html-tools" target="_blank" rel="noopener" style="color: var(--accent-cyan); text-decoration: none;">GitHub</a>
     <a href="mailto:contact@essays4u.net" style="color: var(--accent-cyan); text-decoration: none;">联系我们</a>
   </div>
-  <p style="font-size: 0.875rem;">© 2024 WebUtils. All rights reserved.</p>
+  <p style="font-size: 0.875rem;">© 2026 WebUtils. All rights reserved.</p>
 </footer>
 ```
 
