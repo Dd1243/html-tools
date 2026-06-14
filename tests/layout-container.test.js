@@ -10,7 +10,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT = path.join(__dirname, '..');
-const GENERATOR_DIR = path.join(ROOT, 'tools', 'generator');
+const TOOLS_DIR = path.join(ROOT, 'tools');
 
 let passCount = 0;
 let failCount = 0;
@@ -33,11 +33,24 @@ function assert(condition, message) {
 
 console.log('\n=== Layout Container Tests ===\n');
 
-test('generator pages with .container styles render inside a container element', () => {
-  const offenders = fs
-    .readdirSync(GENERATOR_DIR)
-    .filter((file) => file.endsWith('.html'))
-    .map((file) => path.join(GENERATOR_DIR, file))
+function getHtmlFiles(dir) {
+  const files = [];
+  const pending = [dir];
+
+  while (pending.length > 0) {
+    const current = pending.pop();
+    for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+      const entryPath = path.join(current, entry.name);
+      if (entry.isDirectory()) pending.push(entryPath);
+      else if (entry.isFile() && entry.name.endsWith('.html')) files.push(entryPath);
+    }
+  }
+
+  return files;
+}
+
+test('tool pages with .container styles render inside a container element', () => {
+  const offenders = getHtmlFiles(TOOLS_DIR)
     .filter((filePath) => {
       const html = fs.readFileSync(filePath, 'utf8');
       const definesContainer = /\.container\s*\{/.test(html);
