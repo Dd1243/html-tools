@@ -62,8 +62,14 @@ function getHtmlFiles(dir) {
   return files;
 }
 
+function getHeadHtml(html) {
+  const match = html.match(/<head\b[^>]*>([\s\S]*?)<\/head>/i);
+  return match ? match[1] : '';
+}
+
 function getMetaDescription(html) {
-  const tag = html.match(/<meta\s+[^>]*name=["']description["'][^>]*>/i);
+  const head = getHeadHtml(html);
+  const tag = head.match(/<meta\s+[^>]*name=["']description["'][^>]*>/i);
   if (!tag) return null;
   const content = tag[0].match(/content=["']([^"']*)["']/i);
   return content
@@ -90,8 +96,9 @@ test('indexable HTML pages have unique 120-160 character meta descriptions', () 
     .filter((filePath) => !isExcluded(filePath))
     .map((filePath) => {
       const html = fs.readFileSync(filePath, 'utf8');
+      const head = getHeadHtml(html);
       const descriptionTagCount = (
-        html.match(/<meta\s+[^>]*name=["']description["'][^>]*>/gi) || []
+        head.match(/<meta\s+[^>]*name=["']description["'][^>]*>/gi) || []
       ).length;
       const description = getMetaDescription(html);
       return {
