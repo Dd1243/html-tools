@@ -65,13 +65,100 @@ const FALLBACK_DESC = {
   lifestyle: '生活方式小工具：习惯、提醒与日常记录。',
 };
 
+/* hub-desc-v2 */
+function buildHubDescription(catId, name, list) {
+  const CORE = {
+  "dev": "覆盖代码格式化、Base64、正则、JSON、哈希等开发常用能力",
+  "text": "支持字数统计、去重对比、大小写与中英文文本批量处理",
+  "time": "提供倒计时、时区转换、时间戳与工时日期计算",
+  "generator": "可生成二维码、假数据、条码、占位图与创意素材",
+  "media": "包含图片压缩、颜色、PDF 与常见媒体处理能力",
+  "privacy": "侧重加密脱敏、哈希校验与隐私数据处理",
+  "security": "提供安全头、哈希、策略生成与基础安全检查",
+  "network": "支持 IP、DNS、HTTP、端口与网络排查相关查询",
+  "calculator": "覆盖比例、百分比、场景数值等快速计算",
+  "converter": "提供单位、编码、进制与常见格式转换",
+  "extractor": "可从文本中提取链接、邮箱、正则匹配等结构化信息",
+  "ai": "汇集 AI 指南与小工具，覆盖提示、模型与效率场景",
+  "seo": "包含 Meta、标题结构、关键词与社交预览等 SEO 检查",
+  "fun": "提供随机决策、趣味互动等轻松小工具",
+  "game": "收录浏览器小游戏，打开即可玩",
+  "life": "覆盖日常计时、待办、笔记与生活常用计算",
+  "finance": "支持贷款、利率、预算、利润等财务测算",
+  "health": "提供健康估算与记录辅助，结果仅供参考",
+  "education": "包含成绩、公式、闪卡与学习辅助工具",
+  "food": "支持份量换算、烹饪计时与餐饮成本估算",
+  "chinese": "面向中文场景：拼音、证件校验、历法与本地化处理",
+  "ai-coding": "聚焦 AI 编程资源、IDE 实践与开发效率工具",
+  "realestate": "覆盖房贷、税费、租金回报与装修预算测算",
+  "business": "提供 ROI、盈亏平衡、现金流与定价辅助",
+  "crypto": "支持收益、杠杆、定投与仓位等加密货币计算",
+  "legal": "提供清单与模板类合规辅助，非正式法律意见",
+  "social-media": "覆盖文案、预览、标签与运营草稿辅助",
+  "team-tools": "支持站会、议程、任务拆解与团队复盘",
+  "data": "提供数据清洗、转换、图表与校验辅助",
+  "office": "覆盖发票、工时、清单与办公文档模板",
+  "travel": "支持行李、汇率、行程与出行相关计算",
+  "design": "可生成配色、阴影、布局与 CSS 效果",
+  "math": "覆盖方程、统计、进制与数学运算",
+  "productivity": "提供番茄钟、习惯与专注效率工具",
+  "sports": "支持运动记录与健身相关计算",
+  "music": "包含节拍器、和弦等音乐练习辅助",
+  "pets": "覆盖宠物年龄换算、喂食与日常照护",
+  "photography": "提供曝光、焦距等摄影参数辅助",
+  "shopping": "支持单价比价与购物决策计算",
+  "language": "覆盖词汇、拼音与语言学习练习",
+  "art": "提供配色混合与艺术创作辅助",
+  "social": "支持分摊、礼物与活动倒计时等社交场景",
+  "parenting": "覆盖育儿记录与喂养日常辅助",
+  "diy": "提供手工材料与进度计算",
+  "weather": "支持天气查询与穿衣出行参考",
+  "astronomy": "提供月相等天文兴趣查询",
+  "automotive": "覆盖油耗、用车成本等计算",
+  "gardening": "支持浇水提醒与植物护理辅助",
+  "fitness": "提供训练计时与健身记录",
+  "lifestyle": "覆盖习惯、提醒与生活方式记录"
+};
+  const count = list.length;
+  const blurb = CORE[catId] || (name + '常用在线工具合集');
+  const names = list
+    .map((t) => String(t.name || '').replace(/\s+/g, ' ').trim())
+    .filter(Boolean)
+    .sort((a, b) => a.length - b.length)
+    .filter((n, i, arr) => n.length <= 18 && arr.indexOf(n) === i)
+    .slice(0, 4);
+  const examples = names.length
+    ? ('例如' + names.join('、') + (list.length > names.length ? '等' : ''))
+    : '按场景分类整理';
+  let d = name + '分类页收录 ' + count + ' 个免费在线工具，' + blurb + '。' + examples + '；全部在浏览器本地运行，打开即用、无需注册安装。';
+  d = d.replace(/\s+/g, ' ').trim();
+  const extras = [
+    '适合需要快速完成相关任务的个人与团队。',
+    '结果可直接复制或下载，便于日常使用。',
+    '支持桌面与手机浏览器访问。',
+  ];
+  let i = 0;
+  while (d.length < 120 && i < extras.length) {
+    d += extras[(catId.length + i) % extras.length];
+    i++;
+  }
+  if (d.length < 120) d += '当前共 ' + count + ' 款可直接使用。';
+  if (d.length > 160) {
+    let cut = d.slice(0, 160);
+    const p = Math.max(cut.lastIndexOf('。'), cut.lastIndexOf('；'), cut.lastIndexOf('，'));
+    if (p >= 120) cut = cut.slice(0, p + 1);
+    d = cut;
+  }
+  return d;
+}
 function padDesc(s) {
+  // backward-compatible name; no longer pads with repeated filler
   let d = String(s || '').replace(/\s+/g, ' ').trim();
-  const pad = '免费在线使用，浏览器本地处理，无需注册。';
-  while (d.length < 120) d += pad;
+  d = d.replace(/(免费在线使用[，,]浏览器本地处理[，,]无需注册[。.]?\s*)+/g, '');
   if (d.length > 160) d = d.slice(0, 160);
   return d;
 }
+
 
 function escapeHtml(s) {
   return String(s || '')
@@ -136,9 +223,7 @@ function buildPage(catId, cat, list) {
     FALLBACK_DESC[catId] ||
     `${name}在线工具合集，精选常用免费工具，浏览器本地运行。`;
   const count = list.length;
-  const desc = padDesc(
-    `${name}在线工具导航：收录 ${count} 个免费工具。${blurb}纯前端运行，无需安装注册。`
-  );
+  const desc = buildHubDescription(catId, name, list);
   const title = `${name} - ${count} 个免费在线工具 | WebUtils`;
   const url = `https://essays4u.net/tools/${catId}/`;
   const canonical = `https://essays4u.net/tools/${catId}`;
