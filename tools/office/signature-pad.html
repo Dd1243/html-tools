@@ -309,7 +309,68 @@
       
 
 
-    </main>
+    
+<section class="tool-guide" aria-label="使用指南" style="margin:2rem auto;max-width:760px;padding:1.35rem 1.4rem 1.6rem;border:1px solid var(--border-color,var(--border,#333));border-radius:12px;line-height:1.8;background:var(--bg-card,rgba(255,255,255,0.02));color:var(--text-primary,inherit)">
+
+  <h2 style="font-size:1.25rem;margin:0 0 .85rem">电子签名板完整使用指南</h2>
+  <p style="margin:0 0 1rem">本页提供浏览器手写签名画布：可调笔颜色、笔粗细，支持透明背景导出，操作包含「下载签名 (PNG)」「撤销一笔」「清空画布」。笔画保存在内存数组 <code>paths</code> 中，撤销会移除最后一笔并重绘。画布按容器宽度与 <code>devicePixelRatio</code> 缩放以保证清晰度，支持鼠标与触摸。签名在本地 canvas 完成，适合快速生成签名图片，不构成法律意义上的数字证书签名。</p>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">控件说明</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li><code>#penColor</code>：笔迹颜色。</li>
+    <li><code>#penWidth</code>：线宽滑杆，旁侧 <code>#widthVal</code> 显示数值。</li>
+    <li><code>#checkTransparent</code>：导出是否透明背景。</li>
+    <li><code>#btnDownload</code>：导出 PNG。</li>
+    <li><code>#btnUndo</code>：撤销最近一笔路径。</li>
+    <li><code>#btnClear</code>：清空全部路径。</li>
+    <li>绘制：按下开始记录点列，移动描边，抬起结束一笔并压入 <code>paths</code>。</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">推荐步骤</h2>
+  <ol style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>先选颜色与线宽，在画布上签写姓名或花签。</li>
+    <li>写错用「撤销一笔」，不要的整板内容用「清空」。</li>
+    <li>若要贴到深色/复杂背景文档，勾选透明背景再下载。</li>
+    <li>下载 PNG 后插入 Word/PDF/表单；需要矢量签名请另用专业工具。</li>
+  </ol>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">适用场景</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>内部流程单据快速生成签名图</li>
+    <li>演示、教学材料中的手写署名</li>
+    <li>触控板/手机上手写后导出</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">法律与安全边界</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>这是图像签名，不是 PKI/证书数字签名，不提供不可抵赖保证。</li>
+    <li>重要合同请遵循当地电子签名法规与平台要求。</li>
+    <li>签名图片可能被复制粘贴，注意使用场景与水印策略。</li>
+    <li>笔画仅在当前页面内存；刷新会丢失未下载内容。</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">常见问题</h2>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">手机上能签吗？</h3>
+  <p style="margin:0 0 .8rem">支持触摸事件坐标；建议横屏并提高线宽以便书写。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">为什么导出发糊？</h3>
+  <p style="margin:0 0 .8rem">页面已按 devicePixelRatio 缩放；若仍糊，可能是插入文档时被二次拉伸，请按原始像素放置。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">撤销能多步吗？</h3>
+  <p style="margin:0 0 .8rem">可以连续点撤销，每次去掉最后一笔；没有“反撤销/重做”栈。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">透明背景不生效？</h3>
+  <p style="margin:0 0 .8rem">确认已勾选透明选项后再下载；部分查看器会把透明显示成黑/白底，请用支持 alpha 的软件打开。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">签名会上传吗？</h3>
+  <p style="margin:0">绘制与导出在本地 canvas 完成，下载到你的设备；请自行保管生成的 PNG。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">能导出 SVG 吗？</h3>
+  <p style="margin:0">当前主流程是 PNG 下载，不是 SVG 路径导出。</p>
+
+<h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">绘制管线与按钮</h2>
+  <p style="margin:0 0 1rem">画布元素 <code>#signatureCanvas</code> 放在 <code>#canvasBox</code> 内。<code>resize</code> 会按容器宽度与 <code>devicePixelRatio</code> 设置实际像素，保证高分屏清晰。指针事件：<code>start</code> 开笔、<code>draw</code> 记点描边、<code>end</code> 结束并把一笔压入内存路径数组；<code>redraw</code> 在撤销或尺寸变化后整板重绘。<code>#penColor</code> 改颜色，<code>#penWidth</code> 改线宽并同步 <code>#widthVal</code>。<code>#checkTransparent</code> 控制导出是否透明底。<code>#btnDownload</code> 导出 PNG；<code>#btnUndo</code> 去掉最后一笔；<code>#btnClear</code> 清空全部路径。无 localStorage 持久化——刷新即丢未下载笔画。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">导出与嵌入文档</h2>
+  <p style="margin:0 0 1rem">需要贴到彩色页眉/深色页时勾选透明再下载，避免白底方块。插入 Word/PDF 时尽量按原始像素放置，二次放大易发糊。触控设备可提高线宽、横屏书写；鼠标精细签可略降线宽。连续撤销可多步回退，但没有「重做」栈，误撤只能重签。本页主路径是 PNG，不是 SVG 矢量路径，也不是带证书的数字签名。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">合规与使用边界</h2>
+  <p style="margin:0">图像签名可被复制粘贴，重要合同请遵循当地电子签名法规与平台要求。不要把本页当 PKI/不可抵赖方案。公共电脑签完请清空画布并删除本机临时 PNG。内部审批流可用；对外法律文书请走正式电子签平台。</p>
+</section>
+</main>
 
     <footer class="site-footer">
       <div class="container" style="text-align: center; font-size: 0.9rem; color: #bdc3c7">

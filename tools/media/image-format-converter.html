@@ -520,7 +520,65 @@
           <div class="result-grid" id="resultGrid"></div>
         </div>
 
-        <!-- SEO 内容 -->
+        
+<section class="tool-guide" aria-label="使用指南" style="margin:2rem auto;max-width:760px;padding:1.35rem 1.4rem 1.6rem;border:1px solid var(--border-color,var(--border,#333));border-radius:12px;line-height:1.8;background:var(--bg-card,rgba(255,255,255,0.02));color:var(--text-primary,inherit)">
+
+  <h2 style="font-size:1.25rem;margin:0 0 .85rem">图片格式批量转换完整指南</h2>
+  <p style="margin:0 0 1rem">图片格式批量转换器支持在浏览器本地将多张图片转换为常见目标格式（页面定位包含 WebP、AVIF、PNG、JPEG 等，以界面可选格式为准）。拖拽或点击上传多文件后，在结果区查看每张转换状态，并可「下载全部 (ZIP)」。处理强调本地完成以保护隐私，适合把相册/素材统一成网页友好格式，而不是专业色彩管理印刷流程。</p>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">界面模块</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>拖拽区 <code>#dropZone</code> + 隐藏多选 <code>#fileInput</code>。</li>
+    <li>状态文案 <code>#statusMsg</code> 提示当前进度/结果。</li>
+    <li>结果区 <code>#resultSection</code>：显示文件数 <code>#fileCount</code> 与网格 <code>#resultGrid</code>。</li>
+    <li>「下载全部 (ZIP)」调用 <code>downloadZip()</code> 打包导出。</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">推荐步骤</h2>
+  <ol style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>选择目标格式与质量参数（若页面提供质量滑杆/选项）。</li>
+    <li>一次拖入多张图片，等待全部转换完成。</li>
+    <li>在结果网格预览/单张下载，或打包 ZIP 一次带走。</li>
+    <li>上线前抽查透明通道、色彩与体积是否符合预期。</li>
+  </ol>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">适用场景</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>网站静态资源统一为 WebP/AVIF 以减小体积</li>
+    <li>PNG 图标与 JPEG 照片批量互转</li>
+    <li>交付前把混合格式素材整理成同一格式</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">格式与兼容边界</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>AVIF/WebP 编码能力取决于浏览器实现，老旧浏览器可能失败。</li>
+    <li>JPEG 不支持透明；透明图转 JPEG 会丢 alpha。</li>
+    <li>多次有损互转会累积画质损失，尽量基于原图一次转出。</li>
+    <li>超大图/超多文件受内存限制，可能需要分批。</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">常见问题</h2>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">为什么 ZIP 按钮点了没反应？</h3>
+  <p style="margin:0 0 .8rem">确认至少有一张转换成功；若仍在转码，等状态完成后再打包。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">图片会上传吗？</h3>
+  <p style="margin:0 0 .8rem">页面定位为本地处理；文件在浏览器中解码再导出。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">透明背景变黑/白？</h3>
+  <p style="margin:0 0 .8rem">目标格式若不支持透明（如 JPEG），透明区域会被填充。需要透明请用 PNG/WebP（视实现）。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">能保留 EXIF 吗？</h3>
+  <p style="margin:0 0 .8rem">canvas 重编码通常会丢失大部分 EXIF；若需保留元数据请用专门工具。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">和“图片尺寸修改”如何配合？</h3>
+  <p style="margin:0">先缩放再转格式，或先转格式再缩放；避免无意义的多次有损链。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">单次最多多少张？</h3>
+  <p style="margin:0">无严格写死上限时以设备内存为准。卡顿就减少批量，分多次转换。</p>
+
+<h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">批量流程与函数</h2>
+  <p style="margin:0 0 1rem">拖拽区 <code>#dropZone</code> 与多选 <code>#fileInput</code> 进入 <code>addFiles</code>，再 <code>processAll</code> 逐张 <code>convertSingle</code>。状态写在 <code>#statusMsg</code>；完成后 <code>#resultSection</code> 显示 <code>#fileCount</code> 与 <code>#resultGrid</code>（<code>renderResult</code>）。单张 <code>downloadSingle</code>，打包 <code>downloadZip</code>；体积展示用 <code>formatKB</code>。<code>resetAll</code> 清空队列与结果。编码在浏览器本地 canvas/编码器路径完成，能力受当前浏览器对 WebP/AVIF/JPEG/PNG 支持影响。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">格式选择与质量</h2>
+  <p style="margin:0 0 1rem">网页照片优先 WebP/AVIF 减体积；需要最大兼容可出 JPEG；需透明通道用 PNG 或支持 alpha 的 WebP。JPEG 会丢透明。有损互转会累积损伤，尽量基于原图一次转出目标格式。质量滑杆（若界面提供）先预览再批量：质量过高体积收益小，过低出现块效应。超多/超大文件易触内存上限，请分批。canvas 重编码通常丢失大部分 EXIF，要保留元数据请用专门工具。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">失败与 ZIP 排查</h2>
+  <p style="margin:0">ZIP 无反应时先确认至少一张转换成功且状态已完成。单张失败常见于浏览器不支持目标编码或文件损坏。公共场景用完 <code>resetAll</code>，避免结果区残留预览。与「图片尺寸修改」配合时，规划好缩放与转码顺序，避免无意义的多次有损链。本页不是印刷级色彩管理流程，CMYK/专色请走专业软件。</p>
+</section>
+<!-- SEO 内容 -->
 
 
 
