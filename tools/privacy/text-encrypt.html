@@ -588,7 +588,64 @@
             PBKDF2（10万次迭代）派生密钥。加密结果含算法前缀（如 AES-GCM:...），解密时会自动识别。
           </div>
         </div>
-      </main>
+      
+
+<section class="tool-guide" aria-label="使用指南" style="margin:2rem auto;max-width:760px;padding:1.35rem 1.4rem 1.6rem;border:1px solid var(--border-color,var(--border,#333));border-radius:12px;line-height:1.8;background:var(--bg-card,rgba(255,255,255,0.02));color:var(--text-primary,inherit)">
+
+  <h2 style="font-size:1.25rem;margin:0 0 .85rem">文本加密解密（多模式 AES）完整指南</h2>
+  <p style="margin:0 0 1rem">浏览器本地文本加解密：算法网格可选 AES-GCM / CBC / CTR，密钥长度 <code>#keyLength</code>，口令 <code>#password</code> 可显示切换。输入 <code>#inputText</code>、输出 <code>#outputText</code>，计数显示；按钮加密、解密、交换、清空、复制。口令经 PBKDF2 类派生（<code>deriveKey</code>）得到 AES 密钥，操作走 Web Crypto。页面强调本地处理。适合敏感草稿保护，需与协作方约定算法与长度；不是企业 KMS，也不等于「encrypt-decrypt」页若管线参数不同则密文不互通。</p>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">模式差异（概念）</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li><strong>GCM</strong>：带认证的加密，篡改密文易被发现，优先推荐。</li>
+    <li><strong>CBC</strong>：经典模式，需正确 IV 与填充处理，兼容旧资料时可能用到。</li>
+    <li><strong>CTR</strong>：流式计数器模式，注意 nonce/IV 唯一性。</li>
+    <li>加密解密必须同一算法、密钥长度与口令；输出格式以页面打包为准。</li>
+    <li>错误信息显示在 <code>#errorMsg</code>。</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">安全步骤</h2>
+  <ol style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>仅在 HTTPS/localhost 使用，确保 subtle 可用。</li>
+    <li>长随机口令；口令与密文分通道传递。</li>
+    <li>选 GCM + 256（若无兼容包袱）。</li>
+    <li>加密后复制输出，清空输入；忘记口令无法恢复。</li>
+    <li>公共电脑用完清空剪贴板与文本框。</li>
+  </ol>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">边界</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>弱口令可被猜测；工具不强制口令策略。</li>
+    <li>与其他页/其他软件密文格式可能不兼容。</li>
+    <li>大文本可能慢；文件请用专用方案。</li>
+    <li>恶意扩展可窥屏，环境需可信。</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">常见问题</h2>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">解密失败？</h3>
+  <p style="margin:0 0 .8rem">口令错、算法/长度不一致、密文截断或混入空格。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">和 encrypt-decrypt 页如何选？</h3>
+  <p style="margin:0 0 .8rem">看你需要的算法集合与历史密文来源；不要混用未约定的输出。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">交换按钮做什么？</h3>
+  <p style="margin:0 0 .8rem">便于把输出送回输入再处理（以 UI 为准）。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">数据上传吗？</h3>
+  <p style="margin:0">加解密在本地完成。</p>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">协作约定</h2>
+  <p style="margin:0">书面约定：算法、密钥长度、口令传递方式。轮换口令后旧密文重加密。可用随机密钥页生成口令材料。屏幕共享时勿展示明文与口令。</p>
+
+<h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">算法选择速记</h2>
+  <p style="margin:0 0 1rem">默认优先 GCM；只有对接旧系统才考虑 CBC/CTR。密钥长度双方一致。口令用密码管理器。解密失败先查算法与口令，再查密文完整性。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">与密钥/哈希页</h2>
+  <p style="margin:0">随机密钥页产口令材料；文件哈希验完整性；本页藏内容。三者勿混淆。屏幕共享关闭明文窗口。</p>
+<h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">本地数据与使用边界</h2>
+  <p style="margin:0 0 1rem">本页草稿与结果主要保存在当前浏览器环境，清除站点数据、更换设备或隐私模式可能导致丢失，重要工时、冲刺计划、RACI、合同与印章配置请及时导出或截图备份。公共电脑使用完毕后应清空敏感信息。工具用于提升效率，不替代正式人事考勤、项目管理、密钥托管、法律服务或物业合同，请以组织制度与当地法规为准。</p>
+<h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">操作按钮含义</h2>
+  <p style="margin:0 0 1rem">加密把明文变密文；解密反向；交换便于连续处理；清空防残留；复制输出。计数帮助发现漏粘贴。错误区提示算法或口令问题。PBKDF2 派生有短暂等待属正常。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">安全习惯</h2>
+  <p style="margin:0">口令不进聊天明文。GCM 优先。公共电脑无痕模式并清剪贴板。与 encrypt-decrypt 页密文未必互通，协作前试一小段。屏幕共享遮挡密码框。</p>
+</section>
+</main>
 
 
     </div>
