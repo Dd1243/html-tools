@@ -385,29 +385,67 @@
 
       render();
     </script>
-<section class="tool-guide" aria-label="使用指南" style="margin:2rem auto;max-width:720px;padding:1.25rem;border:1px solid var(--border,#333);border-radius:12px;line-height:1.75">
-  <h2 style="font-size:1.2rem;margin:0 0 .75rem">待办事项怎么用</h2>
-  <p style="margin:0 0 1rem">本页是本地待办清单：每条任务含 <code>id</code>、<code>text</code>、<code>completed</code>，保存在 <code>localStorage</code> 键 <code>todos</code>。支持筛选与清除已完成，不提供账号同步。</p>
-  <h2 style="font-size:1.1rem;margin:1.2rem 0 .5rem">操作步骤</h2>
-  <ol style="margin:0 0 1rem;padding-left:1.2rem">
-    <li>在“添加新任务...”输入内容，点击“添加”。</li>
-    <li>点击任务左侧方框切换完成/未完成；完成项会显示删除线样式。</li>
-    <li>用“全部 / 未完成 / 已完成”筛选列表；底部显示“N 项未完成”。</li>
-    <li>点任务右侧 “×” 删除单条；点“清除已完成”批量删除已完成任务。</li>
-  </ol>
-  <h2 style="font-size:1.1rem;margin:1.2rem 0 .5rem">适用场景</h2>
+<section class="tool-guide" aria-label="使用指南" style="margin:2rem auto;max-width:760px;padding:1.35rem 1.4rem 1.6rem;border:1px solid var(--border-color,var(--border,#333));border-radius:12px;line-height:1.8;background:var(--bg-card,rgba(255,255,255,0.02));color:var(--text-primary,inherit)">
+
+  <h2 style="font-size:1.25rem;margin:0 0 .85rem">待办事项完整使用指南</h2>
+  <p style="margin:0 0 1rem">「待办事项」是本地轻量清单：每条任务有 <code>id</code>（时间戳）、<code>text</code>（任务文案）、<code>completed</code>（是否完成）。数据保存在 <code>localStorage</code> 键 <code>todos</code>。页面提供添加、勾选完成、筛选（全部/未完成/已完成）、单条删除、批量清除已完成，以及底部“N 项未完成”统计。任务文案渲染前会经 <code>escapeHtml</code> 转义，降低 HTML 注入风险。它适合“今天要做完哪些事”，不适合“每天重复打卡”。</p>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">界面与真实操作对应关系</h2>
   <ul style="margin:0 0 1rem;padding-left:1.2rem">
-    <li>今天要办的几件小事快速记下</li>
-    <li>会议中临时记录 action items</li>
-    <li>只想在本机浏览器保存，不注册 GTD App</li>
+    <li>输入框 placeholder 为「添加新任务...」，点「添加」或按 Enter 调用 <code>addTodo()</code>。</li>
+    <li>筛选按钮：<code>setFilter('all'|'active'|'completed')</code>，只影响显示，不删除数据。</li>
+    <li>左侧方框：<code>toggleTodo(id)</code> 切换完成状态；完成项带删除线样式。</li>
+    <li>右侧「×」：<code>deleteTodo(id)</code> 删除单条。</li>
+    <li>「清除已完成」：保留未完成，过滤掉 <code>completed === true</code> 的项。</li>
+    <li>空列表时显示「暂无任务」；底部实时显示未完成数量。</li>
   </ul>
-  <h2 style="font-size:1.1rem;margin:1.2rem 0 .5rem">常见问题</h2>
-  <h3 style="font-size:1rem;margin:1rem 0 .35rem">和习惯追踪有何不同？</h3>
-  <p style="margin:0 0 .75rem">待办是一次性任务勾选；习惯追踪按“今日是否完成”累计连续天数。</p>
-  <h3 style="font-size:1rem;margin:1rem 0 .35rem">数据会同步到手机吗？</h3>
-  <p style="margin:0 0 .75rem">不会自动同步。仅当前浏览器本地可读。</p>
-  <h3 style="font-size:1rem;margin:1rem 0 .35rem">任务文本如何防注入？</h3>
-  <p style="margin:0">渲染前会做 HTML 转义（<code>escapeHtml</code>），降低脚本注入风险。</p>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">推荐工作流</h2>
+  <ol style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>早上先写下今天必须完成的 3 件事，保持条目短而可执行。</li>
+    <li>做完就点左侧方框勾选；需要专注未完成时切到「未完成」筛选。</li>
+    <li>复盘时切到「已完成」查看成果，再点「清除已完成」保持清单干净。</li>
+    <li>过期或取消的任务用「×」删除，避免和真实待办混在一起。</li>
+    <li>若任务其实是每日习惯，请改放到习惯追踪，避免待办无限膨胀。</li>
+  </ol>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">适用场景</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>个人今日待办、购物清单、学习任务拆解</li>
+    <li>会议中快速记录 action items（会后逐项勾掉）</li>
+    <li>不想注册 Todo 应用，只在当前浏览器暂存任务</li>
+    <li>把大任务拆成多条短任务，降低启动阻力</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">边界与限制</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>没有截止日期、优先级字段、子任务或提醒推送。</li>
+    <li>没有云同步；换设备不会自动带上 <code>todos</code>。</li>
+    <li>清除站点数据会丢失全部任务。</li>
+    <li>筛选状态存在内存变量 <code>filter</code>，刷新后回到默认「全部」。</li>
+    <li>没有拖拽排序、标签分组或共享协作。</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">常见问题</h2>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">空任务能添加吗？</h3>
+  <p style="margin:0 0 .8rem">不能。 <code>addTodo()</code> 会对输入 <code>trim()</code>，空字符串直接 return。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">和习惯追踪如何选择？</h3>
+  <p style="margin:0 0 .8rem">一次性事务用待办；每天重复的行为用习惯追踪。例如「提交周报」是待办，「每天写日记」是习惯。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">任务里写 HTML 会执行吗？</h3>
+  <p style="margin:0 0 .8rem">展示时通过转义处理，通常会当纯文本显示，而不是当标签执行。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">「清除已完成」能撤销吗？</h3>
+  <p style="margin:0 0 .8rem">不能。执行后立即写回 localStorage，页面无撤销栈。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">数据存在哪？</h3>
+  <p style="margin:0 0 .8rem">当前站点源下的浏览器本地存储键 <code>todos</code>，不会作为任务内容上传到服务器逻辑中。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">为什么刷新后筛选又回到“全部”？</h3>
+  <p style="margin:0">因为筛选条件没有持久化，只保存在页面运行时的 <code>filter</code> 变量里；任务数据本身仍会保留。</p>
+
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">实用技巧与排错</h2>
+  <p style="margin:0 0 1rem">写任务时尽量用“动词 + 对象 + 完成标准”，例如「提交发票报销单（含附件）」比「报销」更容易勾选完成。若列表突然变空，先确认是否点过「清除已完成」或清过站点数据；筛选切到「全部」后再看。同一浏览器多标签同时编辑时，后写入的 <code>todos</code> 会覆盖先写入的版本，建议只开一个标签操作。需要跨设备时，请自行复制文本备份，本页没有导出按钮。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">和本站其他工具如何配合</h2>
+  <p style="margin:0">深度工作可先用番茄钟计时，再用本页勾任务；每日重复事项请放到习惯追踪。字数很长的说明可先在字数统计页检查，再拆成多条短待办，避免一条任务过大导致迟迟不开始。</p>
+
 </section>
 <!-- FAQ（GEO 优化）-->
 <footer class="site-footer">

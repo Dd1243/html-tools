@@ -478,29 +478,69 @@
       renderColorPicker();
       render();
     </script>
-<section class="tool-guide" aria-label="使用指南" style="margin:2rem auto;max-width:720px;padding:1.25rem;border:1px solid var(--border,#333);border-radius:12px;line-height:1.75">
-  <h2 style="font-size:1.2rem;margin:0 0 .75rem">便签笔记怎么用</h2>
-  <p style="margin:0 0 1rem">这是卡片式本地笔记：支持标题、正文、颜色标签、搜索，以及编辑/删除。笔记数组保存在 <code>localStorage</code> 键 <code>notes</code>。新建或编辑通过弹窗完成，不是整页大文本框直写。</p>
-  <h2 style="font-size:1.1rem;margin:1.2rem 0 .5rem">操作步骤</h2>
-  <ol style="margin:0 0 1rem;padding-left:1.2rem">
-    <li>点“+ 新建笔记”，填写标题与内容，选择颜色，点“保存”。</li>
-    <li>在顶部“搜索笔记...”按标题/内容关键词过滤卡片。</li>
-    <li>卡片上点铅笔图标进入编辑；点垃圾桶删除。</li>
-    <li>点“取消”关闭弹窗且不保存当前编辑。</li>
-  </ol>
-  <h2 style="font-size:1.1rem;margin:1.2rem 0 .5rem">适用场景</h2>
+<section class="tool-guide" aria-label="使用指南" style="margin:2rem auto;max-width:760px;padding:1.35rem 1.4rem 1.6rem;border:1px solid var(--border-color,var(--border,#333));border-radius:12px;line-height:1.8;background:var(--bg-card,rgba(255,255,255,0.02));color:var(--text-primary,inherit)">
+
+  <h2 style="font-size:1.25rem;margin:0 0 .85rem">便签笔记完整使用指南</h2>
+  <p style="margin:0 0 1rem">「便签笔记」是卡片式本地笔记墙，不是单页大记事本。每条笔记包含：<code>id</code>、<code>title</code>、<code>content</code>、<code>color</code>、<code>date</code>（ISO 时间）。数据保存在 <code>localStorage.notes</code>。你可以通过弹窗新建/编辑，用顶部搜索框按标题或内容过滤，并在卡片上编辑或删除。颜色提供多种预设，用于视觉分类。它适合短而碎的信息，不适合当长期知识库或团队共享文档。</p>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">功能对照</h2>
   <ul style="margin:0 0 1rem;padding-left:1.2rem">
-    <li>临时灵感、电话要点、待查链接</li>
-    <li>用颜色区分工作/生活便签</li>
-    <li>需要本机快速检索的短笔记</li>
+    <li>「+ 新建笔记」：打开弹窗，标题显示「新建笔记」。</li>
+    <li>弹窗字段：标题输入、内容多行文本、颜色选择器、「取消」「保存」。</li>
+    <li>保存规则：标题和内容都为空则直接 return，不创建空笔记；只要有一项非空即可保存。</li>
+    <li>新建笔记会 <code>unshift</code> 到数组前面，最新笔记优先显示。</li>
+    <li>搜索：对 <code>title</code>/<code>content</code> 做不区分大小写的 includes 过滤。</li>
+    <li>编辑：点铅笔调用 <code>editNote(id)</code>，弹窗标题变为「编辑笔记」。</li>
+    <li>删除：点垃圾桶后确认，确认才删除。</li>
+    <li>无标题时卡片显示「无标题」；内容与标题均经转义展示，降低注入风险。</li>
   </ul>
-  <h2 style="font-size:1.1rem;margin:1.2rem 0 .5rem">常见问题</h2>
-  <h3 style="font-size:1rem;margin:1rem 0 .35rem">支持 Markdown 预览吗？</h3>
-  <p style="margin:0 0 .75rem">当前是纯文本标题+内容存储与展示，没有 Markdown 渲染。</p>
-  <h3 style="font-size:1rem;margin:1rem 0 .35rem">空笔记能保存吗？</h3>
-  <p style="margin:0 0 .75rem">保存时会读取标题与内容；若实现要求非空，空内容可能无法形成有效笔记（以页面校验为准）。无标题时列表显示“无标题”。</p>
-  <h3 style="font-size:1rem;margin:1rem 0 .35rem">数据存在哪？</h3>
-  <p style="margin:0">仅当前浏览器本地 <code>notes</code>，不跨设备同步。</p>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">推荐使用步骤</h2>
+  <ol style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>点新建，写短标题（如「周一会议」），正文写要点，选一个颜色分类。</li>
+    <li>保存后在网格中确认卡片出现在最前。</li>
+    <li>笔记多了用顶部搜索过滤关键词。</li>
+    <li>需要改内容时点铅笔；废弃内容点删除并确认。</li>
+    <li>重要长期资料请迁移到正式笔记软件，本页只做速记层。</li>
+  </ol>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">适用场景</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>灵感碎片、电话记录、临时链接与待查事项</li>
+    <li>用颜色区分工作/生活/学习便签</li>
+    <li>需要本机快速检索，但不想上复杂笔记软件</li>
+    <li>会议中随手记，会后再整理到正式文档</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">边界说明</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>没有 Markdown 预览、附件、文件夹或多端同步。</li>
+    <li>删除需确认，但确认后不可恢复。</li>
+    <li>搜索词存在内存 <code>searchTerm</code>，刷新后清空过滤条件（数据仍在）。</li>
+    <li>本地存储容量有限，不适合当海量知识库。</li>
+    <li>没有标签系统与按颜色筛选按钮，颜色仅视觉提示。</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">常见问题</h2>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">为什么保存没反应？</h3>
+  <p style="margin:0 0 .8rem">若标题和内容都为空，<code>saveNote()</code> 会直接返回。至少填写一项。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">支持 Markdown 吗？</h3>
+  <p style="margin:0 0 .8rem">不支持渲染。内容按纯文本转义显示。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">搜索区分大小写吗？</h3>
+  <p style="margin:0 0 .8rem">不区分。标题与内容都会转成小写后再匹配。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">颜色有什么用？</h3>
+  <p style="margin:0 0 .8rem">仅视觉分类，卡片顶部色条展示；没有按颜色筛选的单独按钮。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">数据会上传吗？</h3>
+  <p style="margin:0 0 .8rem">笔记保存在本地 <code>notes</code> 键，页面用途是本地速记，不提供账号云同步。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">只有标题没有正文可以吗？</h3>
+  <p style="margin:0">可以。只要标题或内容其一非空即可保存；卡片无标题时会显示「无标题」占位。</p>
+
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">整理方法建议</h2>
+  <p style="margin:0 0 1rem">建议建立固定颜色约定，例如青色=工作、绿色=生活、紫色=灵感，避免每张卡片随机上色。标题写成可检索关键词（项目名/人名/日期），正文放细节。周中用搜索回收线索，周末把仍有价值的内容迁移到正式笔记或文档，并删除过期卡片，防止本地存储越堆越乱。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">安全与备份提醒</h2>
+  <p style="margin:0">不要在便签里保存密码、验证码、完整证件号等敏感信息。本页无加密与云备份，清站点数据会丢笔记。若必须记录敏感内容，请使用专门密码管理器或加密笔记。换电脑前，请手动复制重要卡片内容到可靠位置。</p>
+
 </section>
 <!-- FAQ（GEO 优化）-->
 <footer class="site-footer">

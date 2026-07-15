@@ -491,29 +491,60 @@
           </div>
         </div>
 
-        <section class="tool-guide" aria-label="使用指南" style="margin:2rem auto 0;padding:1.25rem;border:1px solid var(--border-color,#ddd);border-radius:12px;line-height:1.75;background:var(--bg-card,#fff)">
-  <h2 style="font-size:1.2rem;margin:0 0 .75rem">字数统计指标说明</h2>
-  <p style="margin:0 0 1rem">在文本框输入或粘贴后，统计会实时更新。页面提供六个指标：总字符数、总字数(不含空格)、中文字数、英文单词数、标点符号、行数。按钮包括“复制统计结果”“清空内容”“粘贴文本”。</p>
-  <h2 style="font-size:1.1rem;margin:1.2rem 0 .5rem">操作步骤</h2>
-  <ol style="margin:0 0 1rem;padding-left:1.2rem">
-    <li>在主文本框输入，或点“粘贴文本”从剪贴板读入。</li>
-    <li>查看下方六宫格统计；中英文混排时分别看“中文字数”与“英文单词数”。</li>
-    <li>点“复制统计结果”把汇总复制到剪贴板。</li>
-    <li>点“清空内容”重置文本与计数。</li>
-  </ol>
-  <h2 style="font-size:1.1rem;margin:1.2rem 0 .5rem">适用场景</h2>
+        <section class="tool-guide" aria-label="使用指南" style="margin:2rem auto;max-width:760px;padding:1.35rem 1.4rem 1.6rem;border:1px solid var(--border-color,var(--border,#333));border-radius:12px;line-height:1.8;background:var(--bg-card,rgba(255,255,255,0.02));color:var(--text-primary,inherit)">
+
+  <h2 style="font-size:1.25rem;margin:0 0 .85rem">字数统计完整说明与指标口径</h2>
+  <p style="margin:0 0 1rem">本工具在文本框 <code>#text-input</code> 中实时统计六项指标：总字符数、总字数(不含空格)、中文字数、英文单词数、标点符号、行数。输入变化会触发 <code>updateStats()</code>，并把原文自动保存到 <code>localStorage.word_counter_content</code>。操作按钮包括「复制统计结果」「清空内容」「粘贴文本」。统计在浏览器本地完成，适合发文前限字自检。不同平台对“字数”定义不同，请按下面口径对照使用，不要只看一个数字。</p>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">每项数字怎么算（与代码一致）</h2>
   <ul style="margin:0 0 1rem;padding-left:1.2rem">
-    <li>社交媒体/广告文案限字检查</li>
-    <li>表单“最多 N 字”提交前自检</li>
-    <li>中英文混排稿件分别估算汉字与英文词量</li>
+    <li><strong>总字符数</strong>：<code>text.length</code>，含空格、换行、标点。</li>
+    <li><strong>总字数(不含空格)</strong>：去掉所有空白后的长度。</li>
+    <li><strong>中文字数</strong>：匹配汉字范围的字符个数。</li>
+    <li><strong>英文单词数</strong>：匹配字母/数字/连字符片段的个数，不是按字母个数。</li>
+    <li><strong>标点符号</strong>：非汉字、非字母数字、非空白的字符个数（粗略口径）。</li>
+    <li><strong>行数</strong>：有内容时按换行分割后的段数；空文本为 0。</li>
   </ul>
-  <h2 style="font-size:1.1rem;margin:1.2rem 0 .5rem">常见问题</h2>
-  <h3 style="font-size:1rem;margin:1rem 0 .35rem">总字符数和“不含空格”差在哪？</h3>
-  <p style="margin:0 0 .75rem">总字符数计入空格等全部字符；“总字数(不含空格)”排除空白后的长度，便于按平台不同规则对照。</p>
-  <h3 style="font-size:1rem;margin:1rem 0 .35rem">英文单词如何切分？</h3>
-  <p style="margin:0 0 .75rem">按页面脚本的英文分词规则统计单词数，不是按字母个数。</p>
-  <h3 style="font-size:1rem;margin:1rem 0 .35rem">文稿会上传吗？</h3>
-  <p style="margin:0">统计在浏览器本地完成，用于自检时不必把草稿发到第三方编辑器。</p>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">操作步骤</h2>
+  <ol style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>直接输入，或点「粘贴文本」调用剪贴板 API；若权限失败会提示改用 Ctrl+V。</li>
+    <li>查看六宫格指标；中英混排时分别看中文字数与英文单词数。</li>
+    <li>点「复制统计结果」获得汇总文本（含六项数字与来源说明）。</li>
+    <li>点「清空内容」需确认；确认后清空输入、刷新统计并删除本地缓存键。</li>
+  </ol>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">适用场景</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>微博/小红书/广告文案限字</li>
+    <li>表单“最多 N 字”提交前检查</li>
+    <li>中英文摘要分别估算汉字与英文词量</li>
+    <li>编辑排版时粗看标点与行数密度</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">口径差异提醒</h2>
+  <p style="margin:0 0 1rem">有的平台算标点，有的不算空格，有的英文按单词。本页把多种口径并列显示。emoji 与特殊符号可能被计入标点。若平台规则不透明，建议以“不含空格字数 + 中文字数”双重核对。复制统计结果便于把口径一并发给协作方，减少“你我数字对不上”的沟通成本。</p>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">常见问题</h2>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">为什么刷新后文本还在？</h3>
+  <p style="margin:0 0 .8rem">因为自动写入 <code>word_counter_content</code>。只有清空并确认才会 removeItem。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">英文缩写或带连字符的词怎么算？</h3>
+  <p style="margin:0 0 .8rem">按字母数字连字符片段整段计为 1 个单词，例如 <code>state-of-the-art</code> 通常计 1。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">粘贴按钮失败怎么办？</h3>
+  <p style="margin:0 0 .8rem">浏览器可能拒绝剪贴板权限。按提示使用 Ctrl+V / Command+V 即可。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">会上传文稿吗？</h3>
+  <p style="margin:0 0 .8rem">统计与本地缓存都在浏览器内完成，逻辑上不需要把正文发到服务器计算。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">复制结果包含什么？</h3>
+  <p style="margin:0 0 .8rem">包含六项指标的纯文本汇总，以及分析工具来源说明，便于粘贴到沟通记录。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">空文本时各项是多少？</h3>
+  <p style="margin:0">空文本时各指标应为 0，行数也为 0；输入任意字符后才会开始累计。</p>
+
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">平台限字对照思路</h2>
+  <p style="margin:0 0 1rem">发微博/短帖时优先看总字符或平台说明是否含标点；写中文标题时重点看中文字数；英文 SEO title 更关注英文单词数与总字符上限。若平台只说“最多 500 字”却未定义空格与标点，建议同时满足“不含空格字数 ≤ 限额”和“总字符不显著超标”，降低被截断风险。复制统计结果时可一并粘贴口径，方便协作方复核。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">输入与缓存注意</h2>
+  <p style="margin:0">草稿会写入 <code>word_counter_content</code>，公共电脑用完请点清空并确认。粘贴权限失败不代表统计失效，直接 Ctrl+V 即可。超大文本可能导致页面变卡，建议分段统计后再汇总。</p>
+
 </section>
 <!-- 长文 SEO 内容 -->
 
