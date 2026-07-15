@@ -195,7 +195,7 @@
         background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
         transition: all 0.3s ease;
         padding: 24px;
-        color: white;
+        color: ${textColor};
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
@@ -256,7 +256,7 @@
 
       .btn-primary {
         background: var(--accent-purple);
-        color: white;
+        color: ${textColor};
       }
 
       .ad-placeholder {
@@ -353,11 +353,11 @@
         <div class="panel">
           <div class="control-group">
             <label class="control-label">背景颜色 1</label>
-            <input type="color" id="color1" value="#7b2cbf" oninput="updateCard()" />
+            <input type="color" id="color1" value="#ffffff" oninput="updateCard()" />
           </div>
           <div class="control-group">
             <label class="control-label">背景颜色 2</label>
-            <input type="color" id="color2" value="#00f5d4" oninput="updateCard()" />
+            <input type="color" id="color2" value="#ffffff" oninput="updateCard()" />
           </div>
           <div class="control-group">
             <label class="control-label">
@@ -478,6 +478,20 @@
     </div>
 
     <script>
+      function pickTextColor(c1, c2) {
+        function lum(hex) {
+          const h = hex.replace('#', '');
+          const full = h.length === 3 ? h.split('').map((x) => x + x).join('') : h;
+          const r = parseInt(full.slice(0, 2), 16) / 255;
+          const g = parseInt(full.slice(2, 4), 16) / 255;
+          const b = parseInt(full.slice(4, 6), 16) / 255;
+          const f = (v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
+          return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+        }
+        const avg = (lum(c1) + lum(c2)) / 2;
+        return avg > 0.62 ? '#1a1a1a' : '#ffffff';
+      }
+
       function updateCard() {
         const c1 = document.getElementById("color1").value;
         const c2 = document.getElementById("color2").value;
@@ -497,6 +511,10 @@
         card.style.background = `linear-gradient(135deg, ${c1}, ${c2})`;
         card.style.borderRadius = radius + "px";
         card.style.boxShadow = `0 ${shadow / 2}px ${shadow}px rgba(0,0,0,0.2)`;
+        const textColor = pickTextColor(c1, c2);
+        card.style.color = textColor;
+        const textColor = pickTextColor(c1, c2);
+        card.style.color = textColor;
 
         const css = `
 .card {
@@ -506,7 +524,7 @@
   border-radius: ${radius}px;
   box-shadow: 0 ${shadow / 2}px ${shadow}px rgba(0,0,0,0.2);
   padding: 24px;
-  color: white;
+  color: ${textColor};
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
