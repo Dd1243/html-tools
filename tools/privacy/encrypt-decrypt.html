@@ -565,7 +565,60 @@
             。 所有加密操作均在浏览器本地完成，数据不会上传到服务器。
           </div>
         </div>
-      </main>
+      
+<section class="tool-guide" aria-label="使用指南" style="margin:2rem auto;max-width:760px;padding:1.35rem 1.4rem 1.6rem;border:1px solid var(--border-color,var(--border,#333));border-radius:12px;line-height:1.8;background:var(--bg-card,rgba(255,255,255,0.02));color:var(--text-primary,inherit)">
+
+  <h2 style="font-size:1.25rem;margin:0 0 .85rem">AES 加密解密完整使用指南</h2>
+  <p style="margin:0 0 1rem">在浏览器本地用 Web Crypto 做文本 AES-GCM 加解密：口令经 PBKDF2（SHA-256，约 100000 次迭代）派生密钥，随机盐与 IV，密文可输出 Base64 或 Hex。可选 AES-128 / AES-256（<code>#keyLength</code>）。界面含明文/密文输入 <code>#input</code>、口令 <code>#password</code>、显示切换、输出格式 <code>#outputFormat</code>、处理/清空/复制。模式在加密与解密间切换（<code>updateMode</code>）。全程 <code>crypto.subtle</code>，数据不上传。适合敏感草稿本地保护演示，不是企业级密钥托管或文件盘加密产品。</p>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">算法管线（与脚本一致）</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li><code>deriveKey</code>：importKey 口令为 PBKDF2 材料 → deriveKey 得 AES-GCM 密钥。</li>
+    <li>加密：生成 salt/IV → encrypt → 打包输出（格式含 salt、iv、密文，具体拼接以脚本为准）。</li>
+    <li>解密：按格式解码 Base64/Hex → 拆分参数 → decrypt → UTF-8 明文。</li>
+    <li>工具函数：<code>arrayBufferToBase64</code>/<code>base64ToArrayBuffer</code>、<code>arrayBufferToHex</code>/<code>hexToArrayBuffer</code>。</li>
+    <li>错误显示在 <code>#error</code>：口令错、格式损毁、非安全上下文等。</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">安全使用步骤</h2>
+  <ol style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>仅在 HTTPS 或 localhost 等安全上下文使用，确保 subtle 可用。</li>
+    <li>口令用长随机句，勿用生日；口令勿与密文一起发送。</li>
+    <li>加密后复制密文单独保存；忘记口令无法找回（设计如此）。</li>
+    <li>解密时格式（Base64/Hex）与密钥长度须与加密时一致。</li>
+    <li>公共电脑用完清空输入输出与剪贴板。</li>
+  </ol>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">边界与误区</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>AES-GCM 提供机密性与完整性，但不替代传输层 TLS 的完整方案设计。</li>
+    <li>弱口令会被暴力猜测；工具无法强迫你用强口令。</li>
+    <li>非本工具产出的任意密文可能格式不兼容。</li>
+    <li>大文本可能较慢；超大文件请用专用工具。</li>
+    <li>页面若被恶意扩展注入则本地也不再可信，请注意浏览器环境。</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">常见问题</h2>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">解密失败最常见原因？</h3>
+  <p style="margin:0 0 .8rem">口令错误、输出格式选错、密文被截断或多了空格换行。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">128 和 256 怎么选？</h3>
+  <p style="margin:0 0 .8rem">一般默认 256；需与协作方约定一致，否则无法互通。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">和「文本加密」其他页区别？</h3>
+  <p style="margin:0 0 .8rem">本页明确 AES-GCM + PBKDF2 管线；其他页可能算法或场景不同，不要混用密文。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">能加密文件吗？</h3>
+  <p style="margin:0">主界面面向文本；二进制文件请先明确是否支持或改用文件类工具。</p>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">协作约定模板</h2>
+  <p style="margin:0">与同事交换密文时书面约定：算法 AES-GCM、密钥长度、输出 Base64 或 Hex、口令传递渠道（线下/密码管理器），绝不要把口令写在同一封邮件正文。轮换口令后旧密文需重新加密归档。</p>
+
+<h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">口令与输出保管</h2>
+  <p style="margin:0 0 1rem">口令只用密码管理器生成与粘贴，避免浏览器记住在公共配置文件。密文可存网盘，口令另通道。Base64 与 Hex 不要混用同一条密文。复制后如需二次分发，确认未把明文留在 <code>#input</code>。清空按钮应同时清输出，防止肩窥。PBKDF2 迭代约十万次会带来可感知延迟，属正常换取慢哈希的成本。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">失败排查清单</h2>
+  <p style="margin:0 0 1rem">1）模式是否在解密；2）密钥长度是否一致；3）格式 Base64/Hex 是否一致；4）密文是否完整；5）是否在安全上下文。扩展程序劫持页面时不要处理真秘密。本工具不上传，但屏幕共享会暴露输入，远程协助时切换窗口。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">与随机密钥页配合</h2>
+  <p style="margin:0">可用随机密钥页生成高熵口令再粘贴到本页密码框。文件哈希页用于完整性校验，不替代加密。概念分离：加密藏内容，哈希验是否被改，随机密钥提供材料。</p>
+</section>
+</main>
 
 
     </div>

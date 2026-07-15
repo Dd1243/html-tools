@@ -421,7 +421,60 @@
     
 
 
-  </main>
+  
+<section class="tool-guide" aria-label="使用指南" style="margin:2rem auto;max-width:760px;padding:1.35rem 1.4rem 1.6rem;border:1px solid var(--border-color,var(--border,#333));border-radius:12px;line-height:1.8;background:var(--bg-card,rgba(255,255,255,0.02));color:var(--text-primary,inherit)">
+
+  <h2 style="font-size:1.25rem;margin:0 0 .85rem">图片与 Base64 互转完整指南</h2>
+  <p style="margin:0 0 1rem">双面板工具：编码把本地图片转为 Base64/Data URL；解码把 Base64 或 Data URL 还原为图片。编码区支持拖拽 <code>#dropZone</code> 与文件选择 <code>#fileInput</code>，预览 <code>#previewImg</code>，信息 <code>#imgInfo</code>/<code>#imgSize</code>，输出 <code>#encodeOutput</code> 与字符计数 <code>#charCount</code>，可复制。格式按钮可在纯 Base64、Data URL、HTML/CSS 片段等之间切换（<code>setFormat</code>/<code>updateOutput</code>）。解码区粘贴到 <code>#decodeInput</code>，预览 <code>#decodedImg</code>，可下载还原图。处理在浏览器本地完成，适合前端内联小图标，不适合把巨大照片塞进代码仓库。</p>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">编码侧行为</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li><code>handleFile</code> 读入图片，生成预览与 Base64 字符串缓存。</li>
+    <li>输出模式：纯 Base64 无前缀；Data URL 带 <code>data:image/...;base64,</code>。</li>
+    <li>HTML/CSS 片段便于粘贴到 img src 或 background-image。</li>
+    <li>字符数用于评估体积膨胀（Base64 约增大 33%）。</li>
+    <li>非图片文件应被忽略或提示（以实现为准）。</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">解码与下载</h2>
+  <ol style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>粘贴完整 Data URL 或纯 Base64（纯 Base64 时需可被浏览器识别的图像数据）。</li>
+    <li>成功后右侧显示图片与信息，点下载保存文件。</li>
+    <li>失败时检查是否缺前缀、是否被截断、是否实为其他编码。</li>
+    <li>敏感截图解码后注意本地文件残留，用完删除。</li>
+  </ol>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">何时该用 / 不该用</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>适合：几 KB 小图标、邮件内联、演示单文件 HTML。</li>
+    <li>不适合：数 MB 照片内联（阻塞 CSS/HTML、缓存差）。</li>
+    <li>大图请用对象存储 URL 或构建链图片优化，而非 Base64。</li>
+    <li>本页不做额外压缩；体积大请先用压缩/转格式工具。</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">常见问题</h2>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">复制到 CSS 不显示？</h3>
+  <p style="margin:0 0 .8rem">确认使用 url("data:image/...") 形式且引号匹配，未截断字符串。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">字符数暴涨正常吗？</h3>
+  <p style="margin:0 0 .8rem">正常，Base64 比二进制大约多三分之一，另加 Data URL 前缀。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">会上传图片吗？</h3>
+  <p style="margin:0 0 .8rem">编码解码在本地；请仍避免在不信任设备处理机密图。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">和 SVG 占位图区别？</h3>
+  <p style="margin:0">占位图生成矢量示意；本页转换已有位图与 Base64 文本。</p>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">工程实践建议</h2>
+  <p style="margin:0">构建工具链里优先 url-loader/asset modules 的阈值策略：小于某 KB 才内联。邮件 HTML 内联需注意客户端裁剪长度。把 Base64 提交进 Git 会使 diff 巨大，应用 LFS 或外链。解码来源不明的字符串前注意恶意内容风险，本工具不做病毒扫描。</p>
+
+<h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">格式按钮怎么选</h2>
+  <p style="margin:0 0 1rem">贴进 JSON/配置多用纯 Base64；浏览器直接当图片地址用 Data URL；写演示 HTML 用 img 片段；写样式用 CSS background 片段。切换格式只改包装，不重新压缩像素。字符计数帮助判断是否超过文档/邮件限制。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">性能与仓库卫生</h2>
+  <p style="margin:0 0 1rem">大图先缩小再编码。避免把几百 KB Base64 提交进 Git 造成仓库膨胀。邮件客户端可能裁剪超长 CSS。解码区对错误字符串失败时不要反复尝试来源不明的巨大粘贴，以免卡顿。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">隐私</h2>
+  <p style="margin:0">截图含证件时，编码后字符串同样敏感，复制到聊天等于传原图。用完清输出。处理在本地，但不等于可以忽视终端安全。</p>
+<h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">本地数据与使用边界</h2>
+  <p style="margin:0 0 1rem">本页结果与草稿主要保存在当前浏览器环境中，清除站点数据、更换设备或使用隐私模式可能导致内容丢失，重要清单、密文、任务与 WBS 请及时导出、复制或截图备份。公共电脑使用完毕后应清空页面上的敏感输入，避免姓名、口令、项目结构等留给下一位用户。工具用于提升个人与小团队效率，不替代组织内正式的项目管理、考勤人事、密钥托管或合规审计系统；请以公司制度与当地法规为准。</p>
+</section>
+</main>
 
   <footer class="site-footer">
     <div class="container">
