@@ -71,6 +71,35 @@
 
     <style>
       :root {
+        color-scheme: light;
+        --bg-deep: #f7f8fb;
+        --bg-surface: #ffffff;
+        --bg-card: #ffffff;
+        --bg-input: #f8fafc;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-muted: #94a3b8;
+        --border-subtle: #e2e8f0;
+        --border-strong: #cbd5e1;
+        --accent-cyan: #0891b2;
+        --accent-magenta: #db2777;
+        --accent-green: #059669;
+        --accent-red: #dc2626;
+        --accent-yellow: #d97706;
+        --accent-blue: #2563eb;
+        --accent-purple: #7c3aed;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 14px;
+        --font-sans:
+          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, "PingFang SC",
+          "Microsoft YaHei", sans-serif;
+        --font-mono: "JetBrains Mono", "Courier New", monospace;
+        --shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      }
+
+      [data-theme="dark"] {
+        color-scheme: dark;
         --bg-deep: #0a0a0f;
         --bg-surface: #12121a;
         --bg-card: #1a1a24;
@@ -80,33 +109,9 @@
         --text-muted: #55556a;
         --border-subtle: #2a2a3a;
         --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
         --accent-green: #10b981;
         --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
         --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-      }
-
-      [data-theme="light"] {
-        --bg-deep: #f8fafc;
-        --bg-surface: #ffffff;
-        --bg-card: #ffffff;
-        --bg-input: #f1f5f9;
-        --text-primary: #0f172a;
-        --text-secondary: #475569;
-        --text-muted: #94a3b8;
-        --border-subtle: #e2e8f0;
-        --border-strong: #cbd5e1;
-        --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
       }
 
       * {
@@ -116,24 +121,30 @@
       }
       body {
         font-family: var(--font-sans);
-        background: var(--bg-deep);
+        background: linear-gradient(180deg, #ffffff 0%, var(--bg-deep) 220px);
         color: var(--text-primary);
         line-height: 1.6;
+        min-height: 100vh;
         transition:
           background 0.3s,
           color 0.3s;
       }
 
       .container {
-        max-width: 1200px;
+        max-width: 1080px;
         margin: 0 auto;
-        padding: 32px 24px 40px;
+        padding: 28px 20px 40px;
         width: 100%;
         overflow-x: clip;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
       }
 
       .header {
-        margin-bottom: 28px;
+        width: 100%;
+        max-width: 760px;
+        margin: 0 auto 24px;
         text-align: center;
       }
       .breadcrumb {
@@ -388,13 +399,18 @@
         min-height: 320px;
         max-height: 560px;
         overflow: auto;
-        background: var(--bg-input);
-        color: var(--accent-green);
+        background: #f8fafc;
+        color: #047857;
         font-family: var(--font-mono);
         font-size: 0.8rem;
         line-height: 1.5;
         white-space: pre;
         word-break: normal;
+      }
+      [data-theme="dark"] #codeOutput,
+      [data-theme="dark"] pre#codeOutput {
+        background: var(--bg-input);
+        color: var(--accent-green);
       }
 
       .hint-list {
@@ -411,8 +427,8 @@
       }
 
       .article-container {
-        max-width: 860px;
-        margin: 48px auto 24px;
+        width: min(100%, 860px);
+        margin: 12px auto 24px;
         padding: 0;
       }
 
@@ -816,18 +832,24 @@
         showToast("sitemap.xml 已开始下载");
       };
 
-      // Theme Toggle
+      // Theme Toggle (default: white/light)
       const themeToggle = document.getElementById("themeToggle");
-      themeToggle.onclick = () => {
-        const current = document.documentElement.getAttribute("data-theme");
-        const next = current === "light" ? "dark" : "light";
-        document.documentElement.setAttribute("data-theme", next);
-        localStorage.setItem("theme", next);
-      };
-
-      if (localStorage.getItem("theme")) {
-        document.documentElement.setAttribute("data-theme", localStorage.getItem("theme"));
+      // Page defaults to white; only honor an explicit dark preference
+      if (localStorage.getItem("sitemap-theme") === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+      } else {
+        document.documentElement.removeAttribute("data-theme");
       }
+      themeToggle.onclick = () => {
+        const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+        if (isDark) {
+          document.documentElement.removeAttribute("data-theme");
+          localStorage.setItem("sitemap-theme", "light");
+        } else {
+          document.documentElement.setAttribute("data-theme", "dark");
+          localStorage.setItem("sitemap-theme", "dark");
+        }
+      };
 
       renderUrls();
     </script>
