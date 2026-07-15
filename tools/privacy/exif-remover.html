@@ -526,7 +526,62 @@
         <div class="image-grid" id="imageGrid">
           <div class="empty-state">暂无图片，请拖拽或点击上方区域添加</div>
         </div>
-      </main>
+      
+
+<section class="tool-guide" aria-label="使用指南" style="margin:2rem auto;max-width:760px;padding:1.35rem 1.4rem 1.6rem;border:1px solid var(--border-color,var(--border,#333));border-radius:12px;line-height:1.8;background:var(--bg-card,rgba(255,255,255,0.02));color:var(--text-primary,inherit)">
+
+  <h2 style="font-size:1.25rem;margin:0 0 .85rem">EXIF 信息移除器完整使用指南</h2>
+  <p style="margin:0 0 1rem">批量去除图片元数据（含 GPS、拍摄设备、时间等 EXIF 线索）。拖拽区 <code>#dropZone</code> 或 <code>#fileInput</code> 多选图片，网格 <code>#imageGrid</code> 展示每张状态；质量滑杆 <code>#quality</code> 影响 JPEG 重编码质量（旁显 <code>#qualityValue</code>）。处理逻辑：用 Image 加载后画到临时 canvas，再 <code>toDataURL</code> 导出——重绘会剥离多数 EXIF。统计 <code>#totalCount</code>/<code>#processedCount</code>。全程浏览器本地，适合发帖前脱敏，不是专业取证级元数据审计工具，也无法保证所有厂商私有块 100% 清除。</p>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">处理管线</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li><code>handleFiles</code> 读入文件列表并进入队列。</li>
+    <li><code>removeExif</code>：drawImage 到与 naturalWidth/Height 相同的 canvas，再导出 PNG 或按 type+quality 导出 JPEG。</li>
+    <li><code>render</code>/<code>updateStats</code> 刷新卡片与计数；<code>formatSize</code> 显示体积。</li>
+    <li>质量仅对有损格式有意义；PNG 路径通常忽略质量参数。</li>
+    <li>大图占内存，建议分批，避免一次丢入上百张超清原图。</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">推荐流程</h2>
+  <ol style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>需要保留原图时先复制副本，再对本页输出图发布。</li>
+    <li>社交发帖、二手交易、证件局部展示前先跑一遍。</li>
+    <li>JPEG 可略降质量减小体积；档案级用 PNG 路径（若可选）。</li>
+    <li>处理后用本机属性/在线 EXIF 查看器抽检一张。</li>
+    <li>公共电脑用完关闭页签，清除下载目录敏感图。</li>
+  </ol>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">边界</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>重编码可能轻微画质损失（JPEG）。</li>
+    <li>截图类本就无 EXIF 时体积变化有限。</li>
+    <li>不处理视频/RAW 专业格式全套元数据。</li>
+    <li>画面本身的门牌人脸仍可能暴露位置，需另打码。</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">常见问题</h2>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">为什么体积变了？</h3>
+  <p style="margin:0 0 .8rem">canvas 重编码与质量参数导致，属预期。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">会上传吗？</h3>
+  <p style="margin:0 0 .8rem">本地处理；仍避免在不信任设备打开机密图。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">和像素化打码区别？</h3>
+  <p style="margin:0 0 .8rem">本页清元数据；打码改像素内容。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">HEIC 支持吗？</h3>
+  <p style="margin:0">取决于浏览器能否解码该格式为 Image。</p>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">隐私实践</h2>
+  <p style="margin:0">旅行照常含 GPS，出售物品图也可能含家中坐标。养成「发布前去 EXIF」习惯。公司内部分享可用原图走加密通道，公开渠道用处理后文件。工具不替代组织 DLP 策略。</p>
+
+<h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">质量与格式选择</h2>
+  <p style="margin:0 0 1rem">JPEG 质量过高体积收益小，过低出块效应；社交分享可中高质。PNG 适合需透明或少损场景。处理前后可用文件大小对比。批量时先抽检一张用属性查看是否仍含 GPS。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">与打码工具配合</h2>
+  <p style="margin:0">去 EXIF 后若画面仍有车牌人脸，再用像素化/马赛克。发布渠道不同策略不同：内网原图、公网脱敏图。工具本地处理，不替代公司泄密防护。</p>
+<h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">补充说明 1</h2>
+  <p style="margin:0 0 1rem">请结合本页真实控件操作：先完成上传、表单填写或参数选择，再使用计算、生成、导出、分享或清空。结果以界面为准；涉及隐私元数据、税务发票、企业估值、隐私政策与工作量承诺时，务必与法规、法务、财务及团队约定一致。重要输出请下载或复制备份，公共环境使用后清空页面数据。</p>
+<h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">补充说明 2</h2>
+  <p style="margin:0 0 1rem">请结合本页真实控件操作：先完成上传、表单填写或参数选择，再使用计算、生成、导出、分享或清空。结果以界面为准；涉及隐私元数据、税务发票、企业估值、隐私政策与工作量承诺时，务必与法规、法务、财务及团队约定一致。重要输出请下载或复制备份，公共环境使用后清空页面数据。</p>
+</section>
+</main>
 
 
     </div>
