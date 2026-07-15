@@ -383,7 +383,55 @@
           <button class="btn btn-outline" id="btnClear" style="color: #dc3545">⚠️ 清空所有数据</button>
         </div>
 
-        <!-- SEO 内容 -->
+        
+<section class="tool-guide" aria-label="使用指南" style="margin:2rem auto;max-width:760px;padding:1.35rem 1.4rem 1.6rem;border:1px solid var(--border-color,var(--border,#333));border-radius:12px;line-height:1.8;background:var(--bg-card,rgba(255,255,255,0.02));color:var(--text-primary,inherit)">
+
+  <h2 style="font-size:1.25rem;margin:0 0 .85rem">在线签到表生成器完整指南</h2>
+  <p style="margin:0 0 1rem">按「花名册 + 按日状态」记录出勤。数据结构 <code>store = { roster, records }</code>：roster 是人员列表，records 以日期字符串为键、人员 id 映射状态。状态四种：出勤 present、缺勤 absent、迟到 late、请假 leave；点同一状态可取消（切换逻辑以脚本为准）。日期用 <code>#attendanceDate</code>；添加姓名进花名册；统计卡显示总人数与四态计数。数据键 <code>attendance_v2_storage</code>。支持导出与打印、清空。适合培训签到、小型班课点名，不是打卡机/GPS 考勤系统。</p>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">操作对照</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>选日期 → 在 <code>#newName</code> 加人到 roster → 表格 <code>#rosterBody</code> 逐人点状态按钮。</li>
+    <li><code>setStatus(pid, status)</code> 写入当天 records；统计 present/absent/late/leave 实时更新。</li>
+    <li><code>saveData</code>/<code>loadData</code> 读写 localStorage；换日期查看历史记录（若已点过）。</li>
+    <li>导出按钮生成表格/CSV 向结果（以页面实现为准）；打印用浏览器打印样式。</li>
+    <li>清空会清除本地 store，操作前先导出。</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">推荐流程</h2>
+  <ol style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>学期/项目开始先建完整花名册，避免每天重复录入。</li>
+    <li>上课时先选对日期，再快速点状态；默认未点可视为未登记。</li>
+    <li>课结束看统计：缺勤与迟到是否异常，必要时备注到导出文件外。</li>
+    <li>周末导出备份；公共电脑不要留真实身份证号，姓名可用化名。</li>
+  </ol>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">边界</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>无账号体系，同浏览器共享一份 store，多人会互相覆盖。</li>
+    <li>不计算工时薪酬，不做排班冲突检测。</li>
+    <li>状态仅四类，无「外勤/居家」等扩展除非自行在姓名备注。</li>
+    <li>日期切换后显示该日 records；无记录则统计为 0。</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">常见问题</h2>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">换手机数据在吗？</h3>
+  <p style="margin:0 0 .8rem">不在。仅当前浏览器 <code>attendance_v2_storage</code>。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">误点状态如何改？</h3>
+  <p style="margin:0 0 .8rem">再点正确状态覆盖；部分实现再点同一状态可取消，以界面反馈为准。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">能扫码签到吗？</h3>
+  <p style="margin:0 0 .8rem">不能。需人工点选或会前导入名单后快速点名。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">和工时表 timesheet 区别？</h3>
+  <p style="margin:0">签到表偏「当天到没到」；工时表偏「做了多久/哪个项目」。</p>
+
+<h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">多日点名与导出习惯</h2>
+  <p style="margin:0 0 1rem">花名册跨日复用，records 按日期分桶，因此同一人周一出勤、周二请假可分别记录。导出前先选目标日期再操作，避免导错天。建议每周五导出备份到网盘表格。点名时可由一人读姓名一人点状态，提高速度。迟到与请假要现场口径一致，避免事后扯皮。键名 <code>attendance_v2_storage</code> 升级时若结构变化，旧数据可能需重建花名册。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">隐私与合规</h2>
+  <p style="margin:0 0 1rem">考勤属于个人信息，勿把浏览器共享账号给无关同事。投屏时注意不要展示与课程无关的敏感备注。未成年人培训班更应最小化采集。本工具无加密存储，设备丢失等于数据暴露风险——重要班级请以学校官方系统为准，本页作轻量辅助。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">统计解读</h2>
+  <p style="margin:0">出勤率可用 present / total 心算；连续缺勤应人工跟进，工具不会自动预警。未点状态的人不会计入四态，汇报时要说明「未登记」与「缺勤」不同。打印适合签字存档，电子存档优先 CSV/导出文件。</p>
+</section>
+<!-- SEO 内容 -->
 
 
 
