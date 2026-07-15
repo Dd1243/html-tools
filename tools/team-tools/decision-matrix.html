@@ -503,7 +503,60 @@
         
 
 
-    </main>
+    
+<section class="tool-guide" aria-label="使用指南" style="margin:2rem auto;max-width:760px;padding:1.35rem 1.4rem 1.6rem;border:1px solid var(--border-color,var(--border,#333));border-radius:12px;line-height:1.8;background:var(--bg-card,rgba(255,255,255,0.02));color:var(--text-primary,inherit)">
+
+  <h2 style="font-size:1.25rem;margin:0 0 .85rem">加权决策矩阵工具完整使用指南</h2>
+  <p style="margin:0 0 1rem">用「评估标准 × 权重 × 方案打分」做结构化比选。默认标准示例：开发成本(8)、用户体验(9)、维护难度(6)；默认方案 A/B。标准权重输入范围按界面为 1–10；矩阵单元格对每个「方案-标准」键 <code>`${optionId}-${criteriaId}`</code> 记录 1–10 分。总分 = Σ(分数 × 权重)。结果区展示胜出方案名、分数与排名列表。数据键 <code>decision-matrix-data</code> 本地保存，支持分享链接、导出结果与清空。适合产品方案/供应商/技术选型讨论，不替代财务模型与合规评审。</p>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">界面与函数</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li><code>#decisionTitle</code>：决策标题，输入即存。</li>
+    <li><code>addCriteria</code>/<code>removeCriteria</code>：维护标准名与权重。</li>
+    <li><code>addOption</code>/<code>removeOption</code>：维护候选方案。</li>
+    <li><code>renderMatrix</code>：表头含权重，行内 score 输入，实时累计总分并高亮较高分。</li>
+    <li><code>calculateResults</code>：排序输出赢家与排名；<code>shareMatrix</code>/<code>exportResult</code>/<code>clearAll</code> 负责共享与清理。</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">推荐决策流程</h2>
+  <ol style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>先写清决策标题与不可妥协约束（预算/合规），约束外方案直接剔除。</li>
+    <li>列 3–7 条标准并设权重：战略更重要的标准权重大。</li>
+    <li>对每个方案在各标准下独立打 1–10，避免先看总分再改分。</li>
+    <li>解读赢家后做敏感性：把关键权重 ±1 看排名是否翻转。</li>
+    <li>导出或分享链接存档讨论结论，再进入执行计划。</li>
+  </ol>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">边界</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>分数主观；垃圾进垃圾出。标准定义不清时结果无意义。</li>
+    <li>不支持复杂约束规划、概率风险树。</li>
+    <li>分享链接可能含标题与评分，注意脱敏。</li>
+    <li>清空会 removeItem 本地数据，操作前先导出。</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">常见问题</h2>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">分数留空怎么算？</h3>
+  <p style="margin:0 0 .8rem">未填按 0 参与（<code>scores[key] || 0</code>），会拉低总分。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">权重可以超过 10 吗？</h3>
+  <p style="margin:0 0 .8rem">界面 number 输入按 1–10 设计；请在该范围内表达相对重要性。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">和随机决策助手区别？</h3>
+  <p style="margin:0 0 .8rem">随机助手用于低风险破冰；本页用于可解释的加权比选。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">刷新后还在吗？</h3>
+  <p style="margin:0">会从 <code>decision-matrix-data</code> 或 URL 恢复（以 <code>loadFromStorage</code>/<code>loadFromUrl</code> 为准）。</p>
+
+<h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">打分校准技巧</h2>
+  <p style="margin:0 0 1rem">开会前先对齐「10 分长什么样、1 分长什么样」，可写一句操作定义贴在标题下。成本类标准建议统一方向：若「分高=更好」，则低成本应打高分，或把标准改名为「成本可控性」。避免同一信息重复计权（如「价格」与「总拥有成本」高度相关）。并列总分时看关键标准上的分差，而不是再加一个模糊标准硬分胜负。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">存储、分享与导出</h2>
+  <p style="margin:0 0 1rem">本地键 <code>decision-matrix-data</code> 保存标准、方案、分数与标题；URL 分享便于远程同事打开同一矩阵。导出结果适合贴进决策记录（ADR）。清空前确认已导出。主题切换只影响皮肤。与回顾工具配合：回顾发现问题 → 矩阵选方案 → 待办拆执行。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">反模式</h2>
+  <p style="margin:0">先内定赢家再回填分数；权重全打 10 导致变相平均；标准超过十项却无数据支撑。本矩阵是沟通框架，遇到合规红线应一票否决，而不是靠加权「平均掉」风险。</p>
+<h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">会议中怎么用矩阵</h2>
+  <p style="margin:0 0 1rem">投屏打开矩阵，先冻结标准与权重再打分，避免边吵边改权重。每人可先私下打分再取整或讨论收敛到一格分数，减少锚定偏见。赢家产生后用一句话写下「为何不是第二名」，写进导出结果备注（可粘贴到文档）。若数据不足，把矩阵结论标为「待验证假设」，并列出需要补的实验或报价，而不是立刻签约。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">维护建议</h2>
+  <p style="margin:0">长期决策可另存多份链接快照对比「当时权重」。标准名称尽量稳定，便于跨项目复用模板。删除方案前确认没有未导出的讨论结论。本页不做多人实时光标协同，远程会以一人录入、全员口头达成为主。</p>
+</section>
+</main>
 
     <footer class="site-footer">
         <div class="container">

@@ -324,7 +324,56 @@
           <button class="btn btn-outline" id="btnClear">🔄 重置设置</button>
         </div>
 
-        <!-- SEO 内容 -->
+        
+<section class="tool-guide" aria-label="使用指南" style="margin:2rem auto;max-width:760px;padding:1.35rem 1.4rem 1.6rem;border:1px solid var(--border-color,var(--border,#333));border-radius:12px;line-height:1.8;background:var(--bg-card,rgba(255,255,255,0.02));color:var(--text-primary,inherit)">
+
+  <h2 style="font-size:1.25rem;margin:0 0 .85rem">在线条形码生成器完整使用指南</h2>
+  <p style="margin:0 0 1rem">本工具在浏览器内用自实现的 CODE128（Code Set B 思路）把文本画到 <code>#barcodeCanvas</code>，不是调用云端条码 API。输入框 <code>#barcodeContent</code> 默认示例 <code>WEBUTILS-2024</code>；可调条宽 <code>#bcWidth</code>（约 1–4）、条高 <code>#bcHeight</code>（约 20–200）、是否显示明文 <code>#bcShowText</code>。生成结果下方 <code>#displayValue</code> 同步文本。提供「下载 PNG」「直接打印」「清空恢复默认」。适合货架标签、内部物料编码、物流样例，不保证所有扫码枪与全部 CODE128 变体的工业级认证。</p>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">编码与绘制行为</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li><code>CODE128.encode(text)</code>：以 START_B 开头，逐字符映射 pattern，累加校验和 <code>% 103</code>，再加 STOP。</li>
+    <li>字符映射用 <code>charCodeAt(i) - 32</code>；超出 0–95 范围时回退为 0，非标准字符可能显示异常。</li>
+    <li>画布宽度 = 编码比特串长度 × 条宽；黑色画 “1” 位，背景白底。</li>
+    <li>内容为空时 <code>generate()</code> 直接返回，不绘制。</li>
+    <li>输入即刷新：内容 <code>oninput</code>，宽高与显示文字 <code>onchange</code> 触发重绘。</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">推荐步骤</h2>
+  <ol style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>粘贴或输入要编码的 SKU/单号，尽量使用可打印 ASCII。</li>
+    <li>按打印介质调条宽与高度：太细难扫，太粗浪费纸宽。</li>
+    <li>需要人眼核对时勾选显示文本；纯机扫可关闭。</li>
+    <li>下载 PNG 嵌入文档，或直接打印当前页标签区域。</li>
+    <li>批量多个码时逐个改内容并下载，文件名形如 <code>barcode_内容.png</code>。</li>
+  </ol>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">适用与边界</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>适用：内部仓管、样品袋、演示文档中的条码图。</li>
+    <li>非 EAN-13/UPC 商品国标主流程；商超上架请用符合 GS1 的专业方案。</li>
+    <li>中文与特殊 Unicode 不在 CODE128-B 常规可映射范围，请改用数字字母编码体系。</li>
+    <li>打印缩放可能导致条宽失真，建议 100% 比例打印并实测扫码。</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">常见问题</h2>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">扫不出来怎么办？</h3>
+  <p style="margin:0 0 .8rem">增大条宽与高度，保证黑白对比，避免屏幕反光；打印后勿过度缩放。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">和二维码页有何不同？</h3>
+  <p style="margin:0 0 .8rem">本页是一维 CODE128 条码；网址/多语言内容请用二维码生成工具。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">校验位正确吗？</h3>
+  <p style="margin:0 0 .8rem">脚本按常见 CODE128 校验和规则生成；极端字符集请用工业软件复核。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">数据会上传吗？</h3>
+  <p style="margin:0">编码与绘制均在本地 canvas 完成。</p>
+
+<h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">打印与扫码实测清单</h2>
+  <p style="margin:0 0 1rem">下载前先在屏幕上用手机扫一版确认内容正确，再 100% 比例打印。标签纸尽量哑光；过塑反光会降低识别率。条宽从 2 起调：物流远距离扫可加高 <code>bcHeight</code>；窄标签则略降条宽但需复测。明文显示便于人工复核入库，但若标签极窄可关闭 <code>bcShowText</code> 只保留条码。清空会恢复示例 <code>WEBUTILS-2024</code> 与默认宽高，避免残留上一次客户单号在公共电脑上。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">字符与编码限制再说明</h2>
+  <p style="margin:0 0 1rem">实现走 CODE128 Start B 与 pattern 表，校验和按位置加权。控制字符与中文不在常规可映射区时会被折叠处理，可能导致扫出来不是你期望的语义——请改用纯 ASCII 业务编码（如内部 SKU）。本页不生成 EAN-13 校验位商品码，也不做批量 CSV 导入；多码请循环改内容下载。与二维码工具分工：一维码适合货架扫枪，二维码适合 URL 与更长载荷。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">故障排查</h2>
+  <p style="margin:0">画布空白：检查内容是否为空。扫码乱码：检查是否含全角字符。打印发虚：关闭浏览器缩放、使用更高 DPI 设置。需要矢量无限缩放时，当前导出是 PNG 光栅，可截取更大条宽再缩印，或改用专业条码套件。</p>
+</section>
+<!-- SEO 内容 -->
 
 
 

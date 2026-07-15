@@ -211,7 +211,56 @@
           <button class="btn btn-outline" id="clearBtn" style="color: #ef4444">清空项目</button>
         </div>
 
-        <!-- SEO 内容 -->
+        
+<section class="tool-guide" aria-label="使用指南" style="margin:2rem auto;max-width:760px;padding:1.35rem 1.4rem 1.6rem;border:1px solid var(--border-color,var(--border,#333));border-radius:12px;line-height:1.8;background:var(--bg-card,rgba(255,255,255,0.02));color:var(--text-primary,inherit)">
+
+  <h2 style="font-size:1.25rem;margin:0 0 .85rem">在线甘特图制作工具完整指南</h2>
+  <p style="margin:0 0 1rem">本页用任务数组 <code>tasks</code> 渲染简易甘特图：每项含名称、开始日期、结束日期。添加区填写 <code>#taskName</code>、<code>#startDate</code>、<code>#endDate</code> 后点添加；时间轴支持 <code>#viewScale</code> 的「按天 / 按周」视图。任务条按调色板循环着色，可删除单行。数据写入 <code>localStorage</code> 键 <code>gantt_chart_data_v2</code>，同时 <code>updateUrl</code> 把任务 JSON 经 Base64 放进 URL hash 便于分享。导出高清图依赖页面引入的 html2canvas。适合轻量排期可视化，不是微软 Project 级依赖/资源管理。</p>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">渲染规则</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li><code>getRange()</code>：取所有任务最早开始与最晚结束，并左右留白（开始前约 2 天、结束后约 5 天）。</li>
+    <li>时间头按天生成单元格，周末加 weekend 样式；按周视图会合并/隐藏非周一列。</li>
+    <li>任务条 left/width 用「天数 × 单元格宽度」估算，时长含结束日（+1 天算法）。</li>
+    <li>左侧任务名列表与右侧时间条同步行；点 ✕ 调用 <code>deleteTask(index)</code>。</li>
+    <li><code>save()</code>：写 localStorage、重绘、更新 hash；加载优先 hash，否则本地缓存。</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">推荐使用步骤</h2>
+  <ol style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>先列 5–15 条关键任务，日期用真实起止，避免全挤在同一天。</li>
+    <li>短项目用按天视图；跨多周项目切换按周看节奏。</li>
+    <li>调整后复制浏览器地址栏分享链接，对方打开即可还原任务。</li>
+    <li>需要贴进周报时用「导出高清图片」；打印用打印按钮。</li>
+    <li>清空前确认：清空会抹掉当前列表（以页面清空逻辑为准）。</li>
+  </ol>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">边界</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>无前置任务依赖线、无关键路径计算、无资源负荷。</li>
+    <li>大量任务或超长跨度会使时间轴很宽，浏览器可能卡顿。</li>
+    <li>hash 分享不含权限控制，勿放入机密项目细节。</li>
+    <li>html2canvas 导出效果受 DOM/跨域字体影响，复杂样式可能略有偏差。</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">常见问题</h2>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">刷新后任务还在吗？</h3>
+  <p style="margin:0 0 .8rem">有 hash 用 hash；否则读 <code>gantt_chart_data_v2</code>。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">结束日当天算不算工期？</h3>
+  <p style="margin:0 0 .8rem">条宽计算对结束日做了 +1 天处理，按「含首尾」理解更贴近显示。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">能导入 Excel 吗？</h3>
+  <p style="margin:0 0 .8rem">当前是表单逐条添加，无 Excel 导入器。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">和里程碑追踪如何分工？</h3>
+  <p style="margin:0">甘特看时间条并行关系；里程碑页更适合节点清单与状态勾选。</p>
+
+<h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">排期建模建议</h2>
+  <p style="margin:0 0 1rem">先写里程碑级任务（需求冻结、开发、联调、上线），再拆并行条。开始/结束用真实日历日，避免用同一天表示整周工作导致条过短。颜色按添加顺序循环调色板，仅作视觉区分，不代表优先级。周末单元格有样式提示，但不会自动跳过工期——是否含周末由你填的日期决定。分享前检查 hash 是否过长：任务极多时 URL 可能不便分享，可改为导出图片。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">本地与链接双通道</h2>
+  <p style="margin:0 0 1rem">键名 <code>gantt_chart_data_v2</code> 存当前浏览器；<code>updateUrl</code> 同步 hash。打开带 hash 的链接会优先解析远程快照，适合评审会投屏。注意：hash 可被转发，勿写入薪资、未公开客户名等敏感字段。导出高清依赖 html2canvas，若按钮无响应检查网络是否加载到 CDN 脚本。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">不适合什么</h2>
+  <p style="margin:0">关键路径、资源冲突、基线对比、进度百分比自动计算都不在本页范围。需要这些请用专业 PM 工具；本页定位是「五分钟画出时间条给会议对齐」。</p>
+</section>
+<!-- SEO 内容 -->
 
 
 

@@ -614,7 +614,59 @@
           <button class="btn btn-outline" id="btnCopy">复制结果</button>
         </div>
 
-        <!-- SEO 内容 -->
+        
+<section class="tool-guide" aria-label="使用指南" style="margin:2rem auto;max-width:760px;padding:1.35rem 1.4rem 1.6rem;border:1px solid var(--border-color,var(--border,#333));border-radius:12px;line-height:1.8;background:var(--bg-card,rgba(255,255,255,0.02));color:var(--text-primary,inherit)">
+
+  <h2 style="font-size:1.25rem;margin:0 0 .85rem">SVG 占位图生成器完整使用指南</h2>
+  <p style="margin:0 0 1rem">前端常用的占位图生成器：按宽高、背景色、文字色、文案、字号、描边宽度实时生成 SVG。宽 <code>#width</code>、高 <code>#height</code> 默认思路为 800×600 量级（以输入框当前值为准）；背景/文字支持 color 与 HEX 双向同步（<code>#bgColor</code>/<code>#bgColorHex</code> 等）。文案空时自动用「宽 × 高」；字号空时按 <code>Math.min(w,h)/8</code> 估算。预览 <code>#previewImg</code>，源码 <code>#outputCode</code> 可复制；可下载 SVG 或栅格化为 PNG。文本经 <code>escapeXml</code> 转义，降低破坏 SVG 的风险。适合原型、骨架屏、响应式断点示意，不是完整设计稿编辑器。</p>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">生成结构</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>根元素 <code>svg</code>：xmlns、width、height、viewBox。</li>
+    <li><code>rect</code> 铺满画布填背景；若描边宽度 &gt; 0，用文字色 stroke。</li>
+    <li><code>text</code> 居中（text-anchor middle + dominant-baseline central），sans-serif 粗体。</li>
+    <li><code>update()</code> 监听各输入的 input/change，同步 HEX 与预览/代码。</li>
+    <li>下载 SVG：Blob + objectURL；PNG：canvas 绘制后再 toDataURL。</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">推荐步骤</h2>
+  <ol style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>按设计栅格设定宽高（如 1200×630 社媒、375×200 移动横幅）。</li>
+    <li>选对比足够的底色与字色，文案写模块名或尺寸。</li>
+    <li>复制 SVG 内嵌到 HTML，或下载 PNG 给不支持内联 SVG 的位置。</li>
+    <li>需要多尺寸时改参数连续导出，统一命名。</li>
+  </ol>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">边界</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>单行居中文本，不做自动换行排版引擎。</li>
+    <li>PNG 导出依赖画布栅格，极大尺寸受内存限制。</li>
+    <li>颜色为屏幕 sRGB 近似，不做印刷 CMYK。</li>
+    <li>不是图片压缩/格式转换器；真实照片请用媒体其他工具。</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">常见问题</h2>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">文案里的 &lt; 会不会弄坏 SVG？</h3>
+  <p style="margin:0 0 .8rem"><code>escapeXml</code> 会转义 &lt;&gt;&amp; 引号等，降低注入式破坏。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">字号不填会怎样？</h3>
+  <p style="margin:0 0 .8rem">按短边 / 8 自动估算，仍可手填覆盖。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">HEX 与取色器不同步？</h3>
+  <p style="margin:0 0 .8rem">改 color 会写回 HEX 大写；改 HEX 在 change 时写回 color 再 update。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">和 SVG 渲染页区别？</h3>
+  <p style="margin:0">本页生成简单占位图；复杂 SVG 预览/调试请用专门 SVG 渲染工具。</p>
+
+<h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">前端接入方式</h2>
+  <p style="margin:0 0 1rem">复制 SVG 源码可内联到组件，或下载 <code>placeholder_宽x高.svg</code> 作静态资源。需要光栅邮件模板时下 PNG。常见尺寸：Open Graph 1200×630、头像 256×256、横幅 1920×400。文案写组件名（如 Hero / Card）比只写像素更利于设计评审。描边可在浅色底上强化边界，避免和页面背景融在一起。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">无障碍与对比度</h2>
+  <p style="margin:0 0 1rem">占位图也尽量保证字色与底色对比足够，避免评审时看不清尺寸标注。装饰性占位可在正式图替换后删除 alt 或改为有意义描述。SVG 文本是可选的，真正上线内容请用业务文案组件，不要长期用占位图冒充真实图片 SEO。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">导出问题排查</h2>
+  <p style="margin:0">PNG 空白：检查宽高是否为有效正数。SVG 打不开：查看是否未转义的特殊字符（工具已 escape，但勿在生成后手工破坏标签）。极大尺寸浏览器卡顿时分档导出。需要圆角/多行文字/图片填充超出本页能力，请改用设计工具后导出。</p>
+<h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">设计协作话术</h2>
+  <p style="margin:0 0 1rem">把占位图当「尺寸契约」：开发按 SVG/PNG 的宽高写 CSS，设计稍后替换真实视觉。文案写「首页 Hero 占位」比写「图片」更能减少误解。多断点时为 375/768/1280 各导一张，避免只出桌面尺寸。若占位长期留在生产环境，应换成真实图并补 alt，否则影响无障碍与观感。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">参数组合示例</h2>
+  <p style="margin:0">深色主题页面可用深底浅字；浅色后台可用浅灰底深字并加细描边。字号过小会看不清尺寸标注，过大则溢出观感差——可先留空让算法按短边估算，再微调。需要品牌色时可把背景设为品牌主色、文字用对比色，快速做活动页骨架。复杂插画请在设计工具完成，本页保持「纯色底 + 居中字」的克制能力边界。</p>
+</section>
+<!-- SEO 内容 -->
 
 
 

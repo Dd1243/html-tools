@@ -501,7 +501,59 @@
             <button class="btn btn-success" id="btnCopy">📋 复制密钥</button>
           </div>
         </div>
-      </main>
+      
+<section class="tool-guide" aria-label="使用指南" style="margin:2rem auto;max-width:760px;padding:1.35rem 1.4rem 1.6rem;border:1px solid var(--border-color,var(--border,#333));border-radius:12px;line-height:1.8;background:var(--bg-card,rgba(255,255,255,0.02));color:var(--text-primary,inherit)">
+
+  <h2 style="font-size:1.25rem;margin:0 0 .85rem">随机密钥生成器完整使用指南</h2>
+  <p style="margin:0 0 1rem">本页用浏览器 <code>crypto.getRandomValues</code> 生成密钥/Token/UUID，强调本地加密安全随机源，而不是 <code>Math.random</code>。可设长度 <code>#length</code>、输出格式 <code>#format</code>（如 hex、base64、alphanumeric/ascii 等），并在自定义字符集模式下勾选大写、小写、数字、符号。预设按钮覆盖 API Key、Secret、Token、UUID、AES128/AES256 常见长度与格式组合。结果在 <code>#output</code>，可一键复制。适合开发调试与本地密钥草稿，生产密钥管理仍应使用专业 KMS/密钥托管。</p>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">生成规则对照</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li><strong>hex</strong>：随机字节转十六进制，截到目标长度。</li>
+    <li><strong>base64</strong>：随机字节 <code>btoa</code> 后去填充并截断到长度。</li>
+    <li><strong>字符集模式</strong>：按勾选项拼 charset；若为空则回退字母数字；用随机字节对 charset 取模取样。</li>
+    <li><strong>UUID</strong>：16 字节随机，按 RFC 版本位设置（version/variant 位），格式 8-4-4-4-12。</li>
+    <li>预设：api=32 字母数字；secret=64；token=128 base64；aes128=32 hex；aes256=64 hex。</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">推荐步骤</h2>
+  <ol style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>先选预设对齐常见场景，再按系统要求微调长度与格式。</li>
+    <li>点生成，确认输出长度与字符集符合接口文档。</li>
+    <li>复制后粘贴到密钥保管位置；不要提交到公开 Git 仓库。</li>
+    <li>公共电脑生成后清理剪贴板与页面输出。</li>
+  </ol>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">安全边界</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>依赖浏览器 Web Crypto 随机源；请在可信设备与最新浏览器使用。</li>
+    <li>字符集取模存在轻微取模偏差，对绝大多数应用密钥足够，但不等于 FIPS 模块认证。</li>
+    <li>页面不负责密钥轮换、权限与泄露监测。</li>
+    <li>生成内容默认不写 localStorage（以当前脚本为准），刷新即无历史归档。</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">常见问题</h2>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">UUID 按钮和生成按钮关系？</h3>
+  <p style="margin:0 0 .8rem">激活 uuid 预设时点生成会走 <code>generateUUID</code>，否则走 <code>generate</code>。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">为何 base64 看不到 = 号？</h3>
+  <p style="margin:0 0 .8rem">脚本去掉了 <code>=</code> 填充并按长度截断，便于当 token 使用。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">能保证全局唯一吗？</h3>
+  <p style="margin:0 0 .8rem">UUID v4 碰撞概率极低但仍是概率模型；业务唯一约束应在服务端再校验。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">和文件哈希工具区别？</h3>
+  <p style="margin:0">哈希是对已有文件摘要；本页是生成新的随机密钥材料。</p>
+
+<h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">场景选型速查</h2>
+  <p style="margin:0 0 1rem">Web API 密钥草稿：预设 API（32 字母数字）。应用签名密钥：Secret 64。高熵 Token：base64 长串。配置里的 AES 测试密钥：AES128/256 对应 32/64 位 hex（表示 16/32 字节密钥的十六进制书写）。实体 ID：UUID 预设。务必再对照你方框架文档：有的系统禁止某些符号，有的要求最低长度与类别。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">使用与保管</h2>
+  <p style="margin:0 0 1rem">生成后立即放入密码管理器或密钥库，不要发到公开群。示例环境与生产环境密钥分离。轮换时同时作废旧密钥。本页不保存历史，刷新媒体即无；这是优点（少泄露面）也是限制（无审计日志）。若需可重复演示，请自行离线记录，勿把真实生产密钥当演示数据。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">技术注意</h2>
+  <p style="margin:0">仅在安全上下文（通常 HTTPS 或 localhost）下 Web Crypto 行为完整。字符集取模不是 CSPRNG 拒绝采样，但对密钥材料通常可接受。不要用本页输出替代证书签发或硬件安全模块中的根密钥流程。</p>
+<h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">复制与二次确认</h2>
+  <p style="margin:0 0 1rem">点复制前先扫一眼长度是否符合预期：hex 只含 0-9a-f；UUID 必须带连字符分段；base64 草稿可能含 +/ 等字符，某些配置文件需再包引号。复制成功按钮会短暂提示已复制。若系统拦截剪贴板权限，请手动选中输出区复制。生成后不要在截图里公开完整密钥；演示可用明显假数据。需要「可复现的伪随机」做单测时，请在测试框架里用固定种子，不要用本页的真随机输出当夹具。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">与加密解密页如何配合</h2>
+  <p style="margin:0">本页只负责生成密钥材料；加解密、对称算法演示请用隐私分类下的加密工具页。文件完整性校验用文件哈希页。三者不要混用概念：随机密钥 ≠ 哈希摘要 ≠ 密文。</p>
+</section>
+</main>
 
 
     </div>
