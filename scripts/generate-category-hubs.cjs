@@ -1,6 +1,6 @@
 /**
  * Generate category hub pages: tools/<category>/index.html
- * Style inspired by tools.realtime-ai.chat category hubs.
+ * Style inspired by essays4u.net category hubs.
  */
 const fs = require('fs');
 const path = require('path');
