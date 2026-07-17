@@ -20,7 +20,16 @@ const KEY = 'e845f78234854930b593635741639f72';
 const KEY_LOCATION = `${SITE_URL}/${KEY}.txt`;
 const DEFAULT_SITEMAP_PATH = 'sitemap.xml';
 const CHUNK_SIZE = 100;
-const SEARCH_ENGINES = ['https://www.bing.com/indexnow', 'https://yandex.com/indexnow'];
+// Universal endpoint first, then engine-specific endpoints for broader coverage.
+// Google/Baidu do not support IndexNow.
+const SEARCH_ENGINES = [
+  'https://api.indexnow.org/indexnow',
+  'https://www.bing.com/indexnow',
+  'https://yandex.com/indexnow',
+  'https://searchadvisor.naver.com/indexnow',
+  'https://search.seznam.cz/indexnow',
+  'https://indexnow.amazonbot.amazon/indexnow'
+];
 const ZERO_SHA = '0000000000000000000000000000000000000000';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, '..');
