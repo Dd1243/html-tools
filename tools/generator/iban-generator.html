@@ -186,9 +186,16 @@
 
       .controls {
         display: grid;
-        grid-template-columns: 1.6fr 0.8fr auto;
+        grid-template-columns: 1fr auto;
         gap: 12px;
         margin-bottom: 14px;
+        align-items: end;
+      }
+
+      .field {
+        position: relative;
+        z-index: 2;
+        min-width: 0;
       }
 
       .field label {
@@ -211,13 +218,71 @@
         font: inherit;
         font-weight: 600;
         transition: 0.2s ease;
+        cursor: pointer;
+        -webkit-appearance: none;
+        appearance: none;
+      }
+
+      .field select {
+        background-image:
+          linear-gradient(45deg, transparent 50%, var(--text-muted) 50%),
+          linear-gradient(135deg, var(--text-muted) 50%, transparent 50%);
+        background-position:
+          calc(100% - 18px) calc(50% - 3px),
+          calc(100% - 12px) calc(50% - 3px);
+        background-size: 6px 6px, 6px 6px;
+        background-repeat: no-repeat;
+        padding-right: 36px;
       }
 
       .field select:focus,
       .field input:focus {
         border-color: var(--primary);
         box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
-        background: var(--bg-elevated);
+        background-color: var(--bg-elevated);
+      }
+
+      .country-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+
+      .country-chip {
+        border: 1px solid var(--border);
+        background: var(--bg-soft);
+        color: var(--text-secondary);
+        border-radius: 12px;
+        padding: 10px 8px;
+        font: inherit;
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+        text-align: center;
+        transition: 0.2s ease;
+        line-height: 1.3;
+      }
+
+      .country-chip:hover {
+        border-color: var(--primary);
+        color: var(--text);
+        transform: translateY(-1px);
+      }
+
+      .country-chip.active {
+        border-color: transparent;
+        background: linear-gradient(135deg, var(--primary), var(--primary-2));
+        color: #fff;
+        box-shadow: 0 8px 18px rgba(37, 99, 235, 0.2);
+      }
+
+      .country-chip small {
+        display: block;
+        margin-top: 2px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        opacity: 0.9;
       }
 
       .btn {
@@ -459,6 +524,10 @@
           grid-template-columns: 1fr;
         }
 
+        .country-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
         .btn-primary {
           width: 100%;
           align-self: stretch;
@@ -532,24 +601,15 @@
           </div>
 
           <div class="panel-section active" id="section-generate">
+            <div class="field" style="margin-bottom: 10px;">
+              <label>国家 / 地区</label>
+              <input type="hidden" id="country" value="DE" />
+              <div class="country-grid" id="countryGrid" role="listbox" aria-label="选择国家或地区"></div>
+            </div>
+
             <div class="controls">
               <div class="field">
-                <label for="country">国家 / 地区</label>
-                <select id="country">
-                  <option value="DE">🇩🇪 德国 DE (22 位)</option>
-                  <option value="GB">🇬🇧 英国 GB (22 位)</option>
-                  <option value="FR">🇫🇷 法国 FR (27 位)</option>
-                  <option value="IT">🇮🇹 意大利 IT (27 位)</option>
-                  <option value="ES">🇪🇸 西班牙 ES (24 位)</option>
-                  <option value="NL">🇳🇱 荷兰 NL (18 位)</option>
-                  <option value="CH">🇨🇭 瑞士 CH (21 位)</option>
-                  <option value="BE">🇧🇪 比利时 BE (16 位)</option>
-                  <option value="AT">🇦🇹 奥地利 AT (20 位)</option>
-                  <option value="PL">🇵🇱 波兰 PL (28 位)</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="count">数量</label>
+                <label for="count">生成数量</label>
                 <input type="number" id="count" value="5" min="1" max="50" />
               </div>
               <button class="btn btn-primary" id="generateBtn" type="button">生成账号</button>
@@ -637,17 +697,55 @@
         let lastIbans = [];
 
         const countrySpecs = {
-          DE: { length: 22, name: "德国" },
-          GB: { length: 22, name: "英国" },
-          FR: { length: 27, name: "法国" },
-          IT: { length: 27, name: "意大利" },
-          ES: { length: 24, name: "西班牙" },
-          NL: { length: 18, name: "荷兰" },
-          CH: { length: 21, name: "瑞士" },
-          BE: { length: 16, name: "比利时" },
-          AT: { length: 20, name: "奥地利" },
-          PL: { length: 28, name: "波兰" }
+          DE: { length: 22, name: "德国", flag: "🇩🇪" },
+          GB: { length: 22, name: "英国", flag: "🇬🇧" },
+          FR: { length: 27, name: "法国", flag: "🇫🇷" },
+          IT: { length: 27, name: "意大利", flag: "🇮🇹" },
+          ES: { length: 24, name: "西班牙", flag: "🇪🇸" },
+          NL: { length: 18, name: "荷兰", flag: "🇳🇱" },
+          CH: { length: 21, name: "瑞士", flag: "🇨🇭" },
+          BE: { length: 16, name: "比利时", flag: "🇧🇪" },
+          AT: { length: 20, name: "奥地利", flag: "🇦🇹" },
+          PL: { length: 28, name: "波兰", flag: "🇵🇱" }
         };
+
+        function getCountry() {
+          const cc = ($("country").value || "DE").toUpperCase();
+          return countrySpecs[cc] ? cc : "DE";
+        }
+
+        function setCountry(cc, autoGenerate) {
+          const next = countrySpecs[cc] ? cc : "DE";
+          $("country").value = next;
+          document.querySelectorAll(".country-chip").forEach((btn) => {
+            const active = btn.getAttribute("data-cc") === next;
+            btn.classList.toggle("active", active);
+            btn.setAttribute("aria-selected", active ? "true" : "false");
+          });
+          if (autoGenerate) generate();
+        }
+
+        function buildCountryGrid() {
+          const grid = $("countryGrid");
+          grid.innerHTML = Object.keys(countrySpecs)
+            .map((cc) => {
+              const item = countrySpecs[cc];
+              return (
+                '<button class="country-chip" type="button" role="option" data-cc="' +
+                cc +
+                '" aria-selected="false">' +
+                item.flag +
+                " " +
+                item.name +
+                " " +
+                cc +
+                "<small>" +
+                item.length +
+                " 位</small></button>"
+              );
+            })
+            .join("");
+        }
 
         function showToast(msg) {
           toast.textContent = msg;
@@ -873,6 +971,12 @@
         });
 
         $("generateBtn").addEventListener("click", generate);
+        $("count").addEventListener("change", generate);
+        $("countryGrid").addEventListener("click", (e) => {
+          const btn = e.target.closest(".country-chip");
+          if (!btn) return;
+          setCountry(btn.getAttribute("data-cc"), true);
+        });
         $("copyAllBtn").addEventListener("click", () => {
           if (!lastIbans.length) {
             setStatus("请先生成账号", "err");
@@ -910,6 +1014,8 @@
 
         const savedTheme = localStorage.getItem(THEME_KEY);
         setTheme(savedTheme === "dark" ? "dark" : "light");
+        buildCountryGrid();
+        setCountry("DE", false);
         generate();
       })();
     </script>
