@@ -2834,13 +2834,12 @@
         二维码: ["qr", "qrcode"]
       };
 
-      // 获取中文拼音 - 使用 pinyin-pro 库
+      // 获取中文拼音 - 使用 pinyin-pro 库（延后加载，未就绪时降级）
       function getPinyin(str) {
-        // 检查 pinyin-pro 是否已加载
         if (typeof pinyinPro !== "undefined" && pinyinPro.pinyin) {
           return pinyinPro.pinyin(str, { toneType: "none" }).replace(/\s+/g, "").toLowerCase();
         }
-        // 降级：直接返回原字符串
+        if (typeof window.__loadPinyinPro === "function") window.__loadPinyinPro();
         return str.toLowerCase();
       }
 
@@ -3237,6 +3236,25 @@
       renderTools();
       applyInitialSearchFromUrl();
       setupCategoriesExpand();
+
+      // 延后加载广告，不改变页面样式
+      function loadAdsDeferred() {
+        if (document.getElementById("adsbygoogle-js")) return;
+        var s = document.createElement("script");
+        s.id = "adsbygoogle-js";
+        s.async = true;
+        s.src =
+          "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9979971494108572";
+        s.crossOrigin = "anonymous";
+        document.body.appendChild(s);
+      }
+      if (document.readyState === "complete") {
+        setTimeout(loadAdsDeferred, 1500);
+      } else {
+        window.addEventListener("load", function () {
+          setTimeout(loadAdsDeferred, 1500);
+        });
+      }
     </script>
   </body>
 </html>
