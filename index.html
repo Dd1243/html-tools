@@ -2757,7 +2757,7 @@
 
       function placeLoadTrigger() {
         let loadTrigger = document.getElementById("load-trigger");
-        if (renderedCount >= TOOLS.length) {
+        if (renderedCount >= DISPLAY_TOOLS.length) {
           if (loadTrigger) loadTrigger.remove();
           toolCards = document.querySelectorAll(".tool-card");
           return;
@@ -2782,10 +2782,11 @@
         isRendering = true;
 
         const fragment = document.createDocumentFragment();
-        const end = Math.min(renderedCount + BATCH_SIZE, TOOLS.length);
+        const end = Math.min(renderedCount + BATCH_SIZE, DISPLAY_TOOLS.length);
 
         for (let i = renderedCount; i < end; i++) {
-          fragment.appendChild(createToolCard(TOOLS[i], i));
+          const item = DISPLAY_TOOLS[i];
+          fragment.appendChild(createToolCard(item.tool, item.index));
         }
 
         toolsGrid.appendChild(fragment);
@@ -2799,15 +2800,35 @@
         toolsGrid.innerHTML = "";
 
         const fragment = document.createDocumentFragment();
-        const initialEnd = Math.min(INITIAL_LOAD, TOOLS.length);
+        const initialEnd = Math.min(INITIAL_LOAD, DISPLAY_TOOLS.length);
 
         for (let i = 0; i < initialEnd; i++) {
-          fragment.appendChild(createToolCard(TOOLS[i], i));
+          const item = DISPLAY_TOOLS[i];
+          fragment.appendChild(createToolCard(item.tool, item.index));
         }
 
         toolsGrid.appendChild(fragment);
         renderedCount = initialEnd;
         placeLoadTrigger();
+      }
+
+      // 确保 DOM 中已有全部工具卡片（点分类/搜索时必须齐全，否则会漏）
+      function ensureAllCardsRendered() {
+        if (renderedCount >= DISPLAY_TOOLS.length) {
+          toolCards = document.querySelectorAll(".tool-card");
+          return;
+        }
+        const fragment = document.createDocumentFragment();
+        for (let i = renderedCount; i < DISPLAY_TOOLS.length; i++) {
+          const item = DISPLAY_TOOLS[i];
+          fragment.appendChild(createToolCard(item.tool, item.index));
+        }
+        toolsGrid.appendChild(fragment);
+        renderedCount = DISPLAY_TOOLS.length;
+        const loadTrigger = document.getElementById("load-trigger");
+        if (loadTrigger) loadTrigger.remove();
+        if (lazyLoadObserver) lazyLoadObserver.disconnect();
+        toolCards = document.querySelectorAll(".tool-card");
       }
 
       // ==================== 增强搜索功能 ====================
@@ -3088,20 +3109,8 @@
 
       // ==================== 过滤工具 ====================
       function filterTools() {
-        // 每次过滤前强制加载所有工具卡片（否则点分类/搜索会缺页）
-        if (renderedCount < DISPLAY_TOOLS.length) {
-          const fragment = document.createDocumentFragment();
-          for (let i = renderedCount; i < DISPLAY_TOOLS.length; i++) {
-            const item = DISPLAY_TOOLS[i];
-            fragment.appendChild(createToolCard(item.tool, item.index));
-          }
-          toolsGrid.appendChild(fragment);
-          renderedCount = DISPLAY_TOOLS.length;
-          const loadTrigger = document.getElementById("load-trigger");
-          if (loadTrigger) loadTrigger.remove();
-        }
-
-        toolCards = document.querySelectorAll(".tool-card");
+        // 点分类/搜索前必须先补齐全部卡片，避免「分类显示有数但列表为空」
+        ensureAllCardsRendered();
 
         const query = searchInput.value.toLowerCase().trim();
         let visibleCount = 0;
