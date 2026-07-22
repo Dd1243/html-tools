@@ -2720,7 +2720,7 @@
           lazyLoadObserver = new IntersectionObserver(
             (entries) => {
               entries.forEach((entry) => {
-                if (entry.isIntersecting && renderedCount < TOOLS.length && !isRendering) {
+                if (entry.isIntersecting && renderedCount < DISPLAY_TOOLS.length && !isRendering) {
                   renderBatch();
                 }
               });
@@ -2730,6 +2730,28 @@
             }
           );
         }
+      }
+
+      function placeLoadTrigger() {
+        let loadTrigger = document.getElementById("load-trigger");
+        if (renderedCount >= TOOLS.length) {
+          if (loadTrigger) loadTrigger.remove();
+          toolCards = document.querySelectorAll(".tool-card");
+          return;
+        }
+        if (!loadTrigger) {
+          loadTrigger = document.createElement("div");
+          loadTrigger.id = "load-trigger";
+          loadTrigger.style.cssText = "height:1px;margin:0;grid-column:1/-1;";
+          loadTrigger.setAttribute("aria-hidden", "true");
+        }
+        // 必须始终放在列表末尾，否则继续加载会中断
+        toolsGrid.appendChild(loadTrigger);
+        if (lazyLoadObserver) {
+          lazyLoadObserver.unobserve(loadTrigger);
+          lazyLoadObserver.observe(loadTrigger);
+        }
+        toolCards = document.querySelectorAll(".tool-card");
       }
 
       function renderBatch() {
@@ -2745,39 +2767,14 @@
 
         toolsGrid.appendChild(fragment);
         renderedCount = end;
-
-        // 如果还有更多内容，创建一个加载触发器
-        if (renderedCount < TOOLS.length) {
-          let loadTrigger = document.getElementById("load-trigger");
-          if (!loadTrigger) {
-            loadTrigger = document.createElement("div");
-            loadTrigger.id = "load-trigger";
-            loadTrigger.style.height = "1px";
-            loadTrigger.style.margin = "0";
-            toolsGrid.appendChild(loadTrigger);
-          }
-
-          if (lazyLoadObserver) {
-            lazyLoadObserver.observe(loadTrigger);
-          }
-        } else {
-          // 渲染完成，清理触发器
-          const loadTrigger = document.getElementById("load-trigger");
-          if (loadTrigger) {
-            loadTrigger.remove();
-          }
-          // 更新卡片引用
-          toolCards = document.querySelectorAll(".tool-card");
-        }
-
+        placeLoadTrigger();
         isRendering = false;
       }
 
       function renderTools() {
         renderedCount = 0;
-        toolsGrid.innerHTML = ""; // 清空现有内容
+        toolsGrid.innerHTML = "";
 
-        // 首屏快速加载
         const fragment = document.createDocumentFragment();
         const initialEnd = Math.min(INITIAL_LOAD, TOOLS.length);
 
@@ -2787,25 +2784,7 @@
 
         toolsGrid.appendChild(fragment);
         renderedCount = initialEnd;
-
-        // 如果还有更多，设置懒加载
-        if (renderedCount < TOOLS.length) {
-          let loadTrigger = document.getElementById("load-trigger");
-          if (!loadTrigger) {
-            loadTrigger = document.createElement("div");
-            loadTrigger.id = "load-trigger";
-            loadTrigger.style.height = "1px";
-            loadTrigger.style.margin = "0";
-            toolsGrid.appendChild(loadTrigger);
-          }
-
-          if (lazyLoadObserver) {
-            lazyLoadObserver.observe(loadTrigger);
-          }
-        }
-
-        // 立即更新卡片引用（用于过滤）
-        toolCards = document.querySelectorAll(".tool-card");
+        placeLoadTrigger();
       }
 
       // ==================== 增强搜索功能 ====================
@@ -3087,15 +3066,14 @@
       // ==================== 过滤工具 ====================
       function filterTools() {
         // 每次过滤前强制加载所有工具卡片
-        if (renderedCount < TOOLS.length) {
-          // 一次性渲染所有剩余工具
+        if (renderedCount < DISPLAY_TOOLS.length) {
           const fragment = document.createDocumentFragment();
-          for (let i = renderedCount; i < TOOLS.length; i++) {
-            fragment.appendChild(createToolCard(TOOLS[i], i));
+          for (let i = renderedCount; i < DISPLAY_TOOLS.length; i++) {
+            const item = DISPLAY_TOOLS[i];
+            fragment.appendChild(createToolCard(item.tool, item.index));
           }
           toolsGrid.appendChild(fragment);
-          renderedCount = TOOLS.length;
-          // 移除懒加载触发器
+          renderedCount = DISPLAY_TOOLS.length;
           const loadTrigger = document.getElementById("load-trigger");
           if (loadTrigger) loadTrigger.remove();
         }
