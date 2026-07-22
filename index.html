@@ -2638,11 +2638,34 @@
       }
 
       // ==================== 渲染工具卡片 (优化版：懒加载 + 分批渲染) ====================
-      const BATCH_SIZE = 30; // 每批渲染数量（减少以提升性能）
-      const INITIAL_LOAD = 60; // 首屏加载数量
+      const BATCH_SIZE = 40;
+      const INITIAL_LOAD = 120; // 首屏多加载一些，避免看起来只有开发工具
       let renderedCount = 0;
       let isRendering = false;
       let lazyLoadObserver = null;
+
+      // 「全部」展示顺序：按分类轮询混排，避免前几百条全是开发工具
+      // 每项保存原始 TOOLS 索引，保证搜索/收藏仍正确
+      const DISPLAY_TOOLS = (function buildDisplayTools(list) {
+        const buckets = new Map();
+        list.forEach((tool, index) => {
+          const key = tool.category || "other";
+          if (!buckets.has(key)) buckets.set(key, []);
+          buckets.get(key).push({ tool, index });
+        });
+        const queues = [...buckets.values()];
+        const mixed = [];
+        let left = list.length;
+        while (left > 0) {
+          for (const q of queues) {
+            if (q.length) {
+              mixed.push(q.shift());
+              left--;
+            }
+          }
+        }
+        return mixed;
+      })(TOOLS);
 
       function createToolCard(tool, index) {
         const card = document.createElement("a");
@@ -3065,7 +3088,7 @@
 
       // ==================== 过滤工具 ====================
       function filterTools() {
-        // 每次过滤前强制加载所有工具卡片
+        // 每次过滤前强制加载所有工具卡片（否则点分类/搜索会缺页）
         if (renderedCount < DISPLAY_TOOLS.length) {
           const fragment = document.createDocumentFragment();
           for (let i = renderedCount; i < DISPLAY_TOOLS.length; i++) {
@@ -3078,19 +3101,19 @@
           if (loadTrigger) loadTrigger.remove();
         }
 
-        // 每次过滤时重新获取卡片引用，确保索引同步
         toolCards = document.querySelectorAll(".tool-card");
 
         const query = searchInput.value.toLowerCase().trim();
         let visibleCount = 0;
-
-        // 计算搜索评分并排序
         const toolsWithScores = [];
 
         toolCards.forEach((card) => {
-          // 使用存储的原始索引而不是DOM迭代索引，避免排序后索引错乱
           const toolIndex = parseInt(card.dataset.index, 10);
           const tool = TOOLS[toolIndex];
+          if (!tool) {
+            card.classList.add("hidden");
+            return;
+          }
           const matchesCategory =
             currentCategory === "all" ||
             (currentCategory === "favorites" && isFavorite(tool.url)) ||
