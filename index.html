@@ -644,9 +644,8 @@
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
         gap: 20px;
-
-        /* 性能优化 */
-        will-change: contents;
+        /* 预留首屏卡片高度，避免 JS 插入后把 FAQ 顶下去（CLS） */
+        min-height: 720px;
         contain: layout style;
       }
 
@@ -661,15 +660,12 @@
         display: flex;
         flex-direction: column;
         gap: 12px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
         overflow: hidden;
-        animation: fade-in-up 0.5s ease backwards;
-
-        /* 性能优化 */
-        transform: translateZ(0);
-        backface-visibility: hidden;
-        will-change: transform;
-        contain: layout paint;
+        min-height: 148px;
+        content-visibility: auto;
+        contain-intrinsic-size: auto 148px;
+        contain: layout paint style;
       }
 
       .tool-card::before {
@@ -689,185 +685,6 @@
         border-color: var(--card-accent, var(--accent-cyan));
         background: var(--bg-card-hover);
         box-shadow: 0 8px 24px -8px rgb(0 0 0 / 40%);
-      }
-
-      .tool-card:hover::before {
-        opacity: 1;
-      }
-
-      .tool-card-header {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-      }
-      .tool-title-group {
-        display: flex;
-        align-items: flex-start;
-        gap: 14px;
-        flex: 1;
-      }
-
-      .tool-icon {
-        width: 44px;
-        height: 44px;
-        background: var(--bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: "JetBrains Mono", monospace;
-        font-size: 18px;
-        color: var(--card-accent, var(--accent-cyan));
-        flex-shrink: 0;
-        transition: all 0.3s ease;
-      }
-
-      .tool-card:hover .tool-icon {
-        background: var(--card-accent, var(--accent-cyan));
-        border-color: var(--card-accent, var(--accent-cyan));
-        color: var(--bg-deep);
-        transform: scale(1.05);
-      }
-
-      .tool-card h3 {
-        font-family: "JetBrains Mono", monospace;
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin: 0;
-        line-height: 1.3;
-      }
-
-      .tool-card p {
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-        line-height: 1.6;
-        margin: 0;
-        flex-grow: 1;
-      }
-
-      .tool-card-footer {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-top: 4px;
-      }
-
-      .tool-tag {
-        font-family: "JetBrains Mono", monospace;
-        font-size: 0.7rem;
-        font-weight: 500;
-        padding: 4px 10px;
-        background: var(--bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-
-      .tool-arrow {
-        font-family: "JetBrains Mono", monospace;
-        font-size: 1.2rem;
-        color: var(--text-muted);
-        transition: all 0.3s ease;
-      }
-
-      .tool-card:hover .tool-arrow {
-        color: var(--card-accent, var(--accent-cyan));
-        transform: translateX(4px);
-      }
-
-      .tool-card.hidden {
-        display: none;
-      }
-
-      /* 分类颜色 */
-      .tool-card[data-category="dev"] {
-        --card-accent: var(--accent-cyan);
-      }
-      .tool-card[data-category="text"] {
-        --card-accent: var(--accent-blue);
-      }
-      .tool-card[data-category="time"] {
-        --card-accent: var(--accent-yellow);
-      }
-      .tool-card[data-category="generator"] {
-        --card-accent: var(--accent-magenta);
-      }
-      .tool-card[data-category="privacy"] {
-        --card-accent: var(--accent-purple);
-      }
-      .tool-card[data-category="media"] {
-        --card-accent: var(--accent-red);
-      }
-      .tool-card[data-category="security"] {
-        --card-accent: var(--accent-orange);
-      }
-      .tool-card[data-category="network"] {
-        --card-accent: var(--accent-green);
-      }
-      .tool-card[data-category="calculator"] {
-        --card-accent: #f97316;
-      }
-      .tool-card[data-category="converter"] {
-        --card-accent: #a855f7;
-      }
-      .tool-card[data-category="extractor"] {
-        --card-accent: #ec4899;
-      }
-      .tool-card[data-category="ai"] {
-        --card-accent: #6366f1;
-      }
-
-      .favorite-btn {
-        width: 36px;
-        height: 36px;
-        background: var(--bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        font-size: 16px;
-        transition: all 0.25s ease;
-        color: var(--text-muted);
-        flex-shrink: 0;
-        margin-left: auto;
-      }
-
-      .favorite-btn:hover {
-        border-color: var(--accent-yellow);
-        background: var(--bg-card-hover);
-        color: var(--accent-yellow);
-        box-shadow: 0 0 0 3px rgb(254 228 64 / 15%);
-      }
-
-      .favorite-btn.active {
-        background: var(--accent-yellow);
-        border-color: var(--accent-yellow);
-        color: var(--bg-deep);
-      }
-
-      .favorite-btn.active:hover {
-        box-shadow: 0 0 0 3px rgb(254 228 64 / 25%);
-      }
-
-      .favorite-btn:focus-visible {
-        outline: none;
-        border-color: var(--accent-yellow);
-        box-shadow: 0 0 0 3px rgb(254 228 64 / 20%);
-      }
-
-      .tool-card:focus-visible {
-        outline: none;
-        border-color: var(--card-accent, var(--accent-cyan));
-        box-shadow:
-          0 0 0 3px rgb(0 245 212 / 15%),
-          0 8px 24px -8px rgb(0 0 0 / 40%);
-        transform: translateY(-3px);
       }
 
       .no-results {
@@ -1175,11 +992,12 @@
           transform: none;
         }
 
-        /* 工具卡片紧凑 - 优化 */
+        /* 工具卡片紧凑 - 预留高度稳住 FAQ */
         .tools-grid {
           grid-template-columns: 1fr;
           gap: 14px;
           margin-bottom: 20px;
+          min-height: 1320px;
         }
 
         .tool-card {
@@ -1381,8 +1199,24 @@
       </footer>
     </div>
 
-    <!-- 拼音转换库 (用于增强搜索，必须在主脚本之前加载) -->
-    <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3/dist/index.js"></script>
+        <!-- 拼音库延后加载，避免阻塞首屏 LCP -->
+    <script>
+      window.__loadPinyinPro = function () {
+        if (window.__pinyinLoading || typeof pinyinPro !== "undefined") return;
+        window.__pinyinLoading = true;
+        var s = document.createElement("script");
+        s.src = "https://cdn.jsdelivr.net/npm/pinyin-pro@3/dist/index.js";
+        s.async = true;
+        s.onload = function () { window.__pinyinLoading = false; };
+        s.onerror = function () { window.__pinyinLoading = false; };
+        document.head.appendChild(s);
+      };
+      if ("requestIdleCallback" in window) {
+        requestIdleCallback(function () { window.__loadPinyinPro(); }, { timeout: 4000 });
+      } else {
+        window.addEventListener("load", function () { setTimeout(window.__loadPinyinPro, 2000); });
+      }
+    </script>
     <script>
       // ==================== 数据定义 ====================
       const CATEGORIES = [
@@ -2623,8 +2457,9 @@
       }
 
       // ==================== 渲染工具卡片 (优化版：懒加载 + 分批渲染) ====================
-      const BATCH_SIZE = 24;
-      const INITIAL_LOAD = 24; // 首屏仅渲染一屏左右，降低 LCP/TBT
+      const BATCH_SIZE = 16;
+      // 首屏只渲染可视区附近的卡片；过大会把下方 FAQ 顶下去拉高 CLS
+      const INITIAL_LOAD = 8;
       let renderedCount = 0;
       let isRendering = false;
       let lazyLoadObserver = null;
@@ -2674,20 +2509,33 @@
         return card;
       }
 
-      // 创建懒加载观察器
+      // 懒加载：用户滚动后才继续加载，避免首屏连环渲染顶掉 FAQ（CLS）
+      let allowLazyLoad = false;
       function setupLazyLoading() {
+        const enableOnScroll = () => {
+          allowLazyLoad = true;
+          placeLoadTrigger();
+        };
+        window.addEventListener("scroll", enableOnScroll, { once: true, passive: true });
+        window.addEventListener("touchstart", enableOnScroll, { once: true, passive: true });
+        window.addEventListener("wheel", enableOnScroll, { once: true, passive: true });
+
         if ("IntersectionObserver" in window) {
           lazyLoadObserver = new IntersectionObserver(
             (entries) => {
               entries.forEach((entry) => {
-                if (entry.isIntersecting && renderedCount < TOOLS.length && !isRendering) {
+                if (
+                  entry.isIntersecting &&
+                  allowLazyLoad &&
+                  renderedCount < TOOLS.length &&
+                  !isRendering
+                ) {
+                  lazyLoadObserver.unobserve(entry.target);
                   renderBatch();
                 }
               });
             },
-            {
-              rootMargin: "200px" // 提前 200px 开始加载
-            }
+            { rootMargin: "120px", threshold: 0 }
           );
         }
       }
@@ -2713,6 +2561,10 @@
       function placeLoadTrigger() {
         let loadTrigger = document.getElementById("load-trigger");
         if (renderedCount >= TOOLS.length) {
+          if (loadTrigger) loadTrigger.remove();
+          return;
+        }
+        if (!allowLazyLoad) {
           if (loadTrigger) loadTrigger.remove();
           return;
         }
@@ -2782,13 +2634,12 @@
         二维码: ["qr", "qrcode"]
       };
 
-      // 获取中文拼音 - 使用 pinyin-pro 库
+      // 获取中文拼音 - 使用 pinyin-pro 库（延后加载，未就绪时降级）
       function getPinyin(str) {
-        // 检查 pinyin-pro 是否已加载
         if (typeof pinyinPro !== "undefined" && pinyinPro.pinyin) {
           return pinyinPro.pinyin(str, { toneType: "none" }).replace(/\s+/g, "").toLowerCase();
         }
-        // 降级：直接返回原字符串
+        if (typeof window.__loadPinyinPro === "function") window.__loadPinyinPro();
         return str.toLowerCase();
       }
 
