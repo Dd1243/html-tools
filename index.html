@@ -644,8 +644,9 @@
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
         gap: 20px;
-        /* 预留首屏卡片高度，避免 JS 插入后把 FAQ 顶下去（CLS） */
-        min-height: 720px;
+
+        /* 性能优化 */
+        will-change: contents;
         contain: layout style;
       }
 
@@ -660,12 +661,15 @@
         display: flex;
         flex-direction: column;
         gap: 12px;
-        transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         overflow: hidden;
-        min-height: 148px;
-        content-visibility: auto;
-        contain-intrinsic-size: auto 148px;
-        contain: layout paint style;
+        animation: fade-in-up 0.5s ease backwards;
+
+        /* 性能优化 */
+        transform: translateZ(0);
+        backface-visibility: hidden;
+        will-change: transform;
+        contain: layout paint;
       }
 
       .tool-card::before {
@@ -2457,9 +2461,8 @@
       }
 
       // ==================== 渲染工具卡片 (优化版：懒加载 + 分批渲染) ====================
-      const BATCH_SIZE = 16;
-      // 首屏只渲染可视区附近的卡片；过大会把下方 FAQ 顶下去拉高 CLS
-      const INITIAL_LOAD = 8;
+      const BATCH_SIZE = 30;
+      const INITIAL_LOAD = 60;
       let renderedCount = 0;
       let isRendering = false;
       let lazyLoadObserver = null;
@@ -2509,33 +2512,20 @@
         return card;
       }
 
-      // 懒加载：用户滚动后才继续加载，避免首屏连环渲染顶掉 FAQ（CLS）
-      let allowLazyLoad = false;
+      // 创建懒加载观察器
       function setupLazyLoading() {
-        const enableOnScroll = () => {
-          allowLazyLoad = true;
-          placeLoadTrigger();
-        };
-        window.addEventListener("scroll", enableOnScroll, { once: true, passive: true });
-        window.addEventListener("touchstart", enableOnScroll, { once: true, passive: true });
-        window.addEventListener("wheel", enableOnScroll, { once: true, passive: true });
-
         if ("IntersectionObserver" in window) {
           lazyLoadObserver = new IntersectionObserver(
             (entries) => {
               entries.forEach((entry) => {
-                if (
-                  entry.isIntersecting &&
-                  allowLazyLoad &&
-                  renderedCount < TOOLS.length &&
-                  !isRendering
-                ) {
-                  lazyLoadObserver.unobserve(entry.target);
+                if (entry.isIntersecting && renderedCount < TOOLS.length && !isRendering) {
                   renderBatch();
                 }
               });
             },
-            { rootMargin: "120px", threshold: 0 }
+            {
+              rootMargin: "200px",
+            }
           );
         }
       }
@@ -2561,10 +2551,6 @@
       function placeLoadTrigger() {
         let loadTrigger = document.getElementById("load-trigger");
         if (renderedCount >= TOOLS.length) {
-          if (loadTrigger) loadTrigger.remove();
-          return;
-        }
-        if (!allowLazyLoad) {
           if (loadTrigger) loadTrigger.remove();
           return;
         }
