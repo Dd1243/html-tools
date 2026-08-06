@@ -2,10 +2,10 @@
 /**
  * 统一同步脚本
  *
- * 从 tools.json 同步到所有相关文件：
+ * 从 tools.json / guides.json 同步到所有相关文件：
  * - index.html: CATEGORIES 数组、TOOLS 数组、SEO meta、统计数字
  * - README.md: 徽章、标题、工具数量
- * - sitemap.xml: 所有工具 URL
+ * - sitemap.xml: 所有工具 URL + 指南 URL
  * - manifest.json: 描述中的工具数量
  * - GitHub 仓库描述
  *
@@ -22,6 +22,7 @@ const __dirname = path.dirname(__filename);
 
 const ROOT_DIR = path.join(__dirname, '..');
 const TOOLS_JSON = path.join(ROOT_DIR, 'tools.json');
+const GUIDES_JSON = path.join(ROOT_DIR, 'guides', 'guides.json');
 const INDEX_HTML = path.join(ROOT_DIR, 'index.html');
 const README_MD = path.join(ROOT_DIR, 'README.md');
 const SITEMAP_XML = path.join(ROOT_DIR, 'sitemap.xml');
@@ -33,6 +34,22 @@ const SITE_URL = 'https://essays4u.net';
 
 function toPublicUrl(filePath) {
   return String(filePath).replace(/\.html$/i, '');
+}
+
+function loadGuides() {
+  if (!fs.existsSync(GUIDES_JSON)) {
+    return { categories: {}, guides: [] };
+  }
+  try {
+    const data = JSON.parse(fs.readFileSync(GUIDES_JSON, 'utf8'));
+    return {
+      categories: data.categories || {},
+      guides: Array.isArray(data.guides) ? data.guides : []
+    };
+  } catch (err) {
+    console.log(`⚠️  guides.json: ${err.message}`);
+    return { categories: {}, guides: [] };
+  }
 }
 
 // 优先显示的分类顺序
@@ -168,12 +185,14 @@ function main() {
 
   const toolsJs = `const TOOLS = [\n${toolsLines.join('\n')}\n    ];`;
 
+  const { guides, categories: guideCategories } = loadGuides();
+
   // 执行所有同步
   const results = {
     indexHtml: updateIndexHtml(categoriesJs, toolsJs, toolCount, categoryCount),
     readme: updateReadme(toolCount, categoryCount),
     toolsDirectory: updateToolsDirectory(tools, categories, sortedCategories),
-    sitemap: updateSitemap(tools, toolCount),
+    sitemap: updateSitemap(tools, toolCount, guides, guideCategories),
     manifest: updateManifest(toolCount),
     github: updateGitHubDescription(toolCount)
   };
@@ -364,8 +383,9 @@ ${links}
     <main>
       <header>
         <a class="home-link" href="/">返回首页</a>
+        <span class="home-link" style="margin-left:16px"><a href="/guides/">使用指南</a></span>
         <h1>全部工具目录</h1>
-        <p>这里列出 WebUtils 的全部 ${tools.length} 个工具页面，供用户和搜索引擎通过静态链接访问。</p>
+        <p>这里列出 WebUtils 的全部 ${tools.length} 个工具页面，供用户和搜索引擎通过静态链接访问。需要教程请看 <a href="/guides/">使用指南</a>。</p>
       </header>
 ${sections.join('\n')}
     </main>
@@ -384,7 +404,7 @@ ${sections.join('\n')}
   return true;
 }
 
-function updateSitemap(tools, toolCount) {
+function updateSitemap(tools, toolCount, guides = [], guideCategories = {}) {
   const today = new Date().toISOString().split('T')[0];
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -402,7 +422,40 @@ function updateSitemap(tools, toolCount) {
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
+  <url>
+    <loc>${SITE_URL}/guides/</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
 `;
+
+  // 指南分类 hub（仅当该分类下有文章时）
+  const guideCatsWithContent = new Set(
+    (guides || []).map((g) => g.category).filter(Boolean)
+  );
+  for (const catId of guideCatsWithContent) {
+    xml += `
+  <url>
+    <loc>${SITE_URL}/guides/${catId}/</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`;
+  }
+
+  // 单篇指南
+  for (const guide of guides || []) {
+    if (!guide.path) continue;
+    const lastmod = guide.dateModified || today;
+    xml += `
+  <url>
+    <loc>${SITE_URL}/${toPublicUrl(guide.path)}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>`;
+  }
 
   // 添加每个工具页面
   for (const tool of tools) {
@@ -431,7 +484,12 @@ function updateSitemap(tools, toolCount) {
   }
 
   fs.writeFileSync(SITEMAP_XML, xml);
-  console.log(`✅ sitemap.xml: ${toolCount + 2} URLs`);
+  const guideUrlCount = 1 + guideCatsWithContent.size + (guides?.length || 0);
+  console.log(
+    `✅ sitemap.xml: ${toolCount + 2 + guideUrlCount} URLs (含指南 ${guideUrlCount})`
+  );
+  // guideCategories 预留扩展（当前仅用于避免未使用告警）
+  void guideCategories;
   return true;
 }
 
