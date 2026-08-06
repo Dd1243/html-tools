@@ -438,21 +438,7 @@ function updateSitemap(tools, toolCount, guides = [], guideCategories = {}) {
   </url>
 `;
 
-  // 指南分类 hub（仅当该分类下有文章时）
-  const guideCatsWithContent = new Set(
-    (guides || []).map((g) => g.category).filter(Boolean)
-  );
-  for (const catId of guideCatsWithContent) {
-    xml += `
-  <url>
-    <loc>${SITE_URL}/guides/${catId}/</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>`;
-  }
-
-  // 单篇指南
+  // 单篇指南（扁平：/guides/{slug}，无分类子目录）
   for (const guide of guides || []) {
     if (!guide.path) continue;
     const lastmod = guide.dateModified || today;
@@ -492,7 +478,7 @@ function updateSitemap(tools, toolCount, guides = [], guideCategories = {}) {
   }
 
   fs.writeFileSync(SITEMAP_XML, xml);
-  const guideUrlCount = 1 + guideCatsWithContent.size + (guides?.length || 0);
+  const guideUrlCount = 1 + (guides?.length || 0);
   console.log(
     `✅ sitemap.xml: ${toolCount + 2 + guideUrlCount} URLs (含指南 ${guideUrlCount})`
   );
