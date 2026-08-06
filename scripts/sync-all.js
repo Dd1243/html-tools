@@ -383,9 +383,8 @@ ${links}
     <main>
       <header>
         <a class="home-link" href="/">返回首页</a>
-        <span class="home-link" style="margin-left:16px"><a href="/guides/">使用指南</a></span>
         <h1>全部工具目录</h1>
-        <p>这里列出 WebUtils 的全部 ${tools.length} 个工具页面，供用户和搜索引擎通过静态链接访问。需要教程请看 <a href="/guides/">使用指南</a>。</p>
+        <p>这里列出 WebUtils 的全部 ${tools.length} 个工具页面，供用户和搜索引擎通过静态链接访问。</p>
       </header>
 ${sections.join('\n')}
     </main>
@@ -393,9 +392,18 @@ ${sections.join('\n')}
 </html>
 `;
 
+  // 若已有完整 SEO 版 tools-directory（CollectionPage 等），勿用简易列表覆盖
   if (fs.existsSync(TOOLS_DIRECTORY_HTML)) {
     const existing = fs.readFileSync(TOOLS_DIRECTORY_HTML, 'utf8');
     if (existing === html) {
+      return false;
+    }
+    if (
+      existing.includes('CollectionPage') ||
+      existing.includes('全部工具目录 - 1000') ||
+      existing.length > 200000
+    ) {
+      console.log('⏭️  tools-directory.html: 保留现有 SEO 完整版，跳过简易重写');
       return false;
     }
   }
