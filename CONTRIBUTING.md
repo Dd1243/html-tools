@@ -91,6 +91,21 @@ docs: 更新 README 工具列表
 - 添加使用示例
 - 改进翻译
 
+### 5. 编写 / 扩写使用指南（`guides/`）
+
+**强制标准**见 [docs/GUIDE-WRITING.md](docs/GUIDE-WRITING.md)，摘要如下：
+
+- 正文（`<article>` 内）**汉字 ≥ 2500**，禁止套话与换皮模板文
+- 内容须绑定真实工具与可操作步骤；场景、错误表、FAQ 按主题原创
+- 版式可复用站点壳与组件，**禁止**复制旧指南只改工具名
+- 提交前运行：
+
+```bash
+npm run verify:guides
+```
+
+- 更新 `guides/guides.json` 中的描述、`dateModified`、`readingMinutes`
+
 ## 工具开发模板
 
 ```html
