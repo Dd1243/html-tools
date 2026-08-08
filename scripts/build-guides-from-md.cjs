@@ -666,6 +666,135 @@ function toGuidesJsonEntry(meta) {
   };
 }
 
+// ── guides/index.html list sync ──────────────────────────────────────
+
+const INDEX_HTML = path.join(OUT_DIR, "index.html");
+
+const GUIDE_ICONS = {
+  "json-formatter-guide": "⚡",
+  "jwt-decoder-guide": "🔐",
+};
+
+function guideIcon(slug) {
+  if (GUIDE_ICONS[slug]) return GUIDE_ICONS[slug];
+  if (/jwt|token|auth|hash|rsa|otp/i.test(slug)) return "🔐";
+  if (/json|yaml|xml/i.test(slug)) return "⚡";
+  if (/image|color|css/i.test(slug)) return "🎨";
+  return "📘";
+}
+
+function toolLabelFromPath(primaryTool) {
+  const href = toHref(primaryTool);
+  const base = href.split("/").filter(Boolean).pop() || "工具";
+  const map = {
+    "json-formatter": "JSON 格式化",
+    "jwt-decoder": "JWT 解码器",
+    "json-minifier": "JSON 压缩",
+    "json-diff": "JSON Diff",
+    base64: "Base64",
+    "hash-generator": "Hash 生成",
+  };
+  return map[base] || base.replace(/-/g, " ");
+}
+
+function sortGuidesForIndex(guides) {
+  return [...guides].sort((a, b) => {
+    const da = String(a.dateModified || a.datePublished || "");
+    const db = String(b.dateModified || b.datePublished || "");
+    if (da !== db) return db.localeCompare(da);
+    return String(a.slug).localeCompare(String(b.slug));
+  });
+}
+
+function renderGuideCards(guides) {
+  return guides
+    .map((g) => {
+      const slug = g.slug;
+      const href = `/guides/${slug}`;
+      const toolHref = toHref(g.primaryTool);
+      const minutes = Number(g.readingMinutes) || 10;
+      const tag = g.tag || "使用指南";
+      const desc = g.description || "";
+      const icon = guideIcon(slug);
+      const toolName = toolLabelFromPath(g.primaryTool);
+      return `          <article class="guide-card">
+            <div class="guide-icon" aria-hidden="true">${icon}</div>
+            <div class="guide-body">
+              <h3 class="guide-title">
+                <a href="${escapeHtml(href)}">${escapeHtml(g.title)}</a>
+              </h3>
+              <p class="guide-desc">
+                ${escapeHtml(desc)}
+              </p>
+              <div class="guide-meta">
+                <span>${escapeHtml(tag)}</span>
+                <span>·</span>
+                <span>约 ${minutes} 分钟</span>
+                <span>·</span>
+                <a href="${escapeHtml(toolHref)}">打开 ${escapeHtml(toolName)}</a>
+              </div>
+            </div>
+          </article>`;
+    })
+    .join("\n");
+}
+
+function renderIndexItemListLd(guides) {
+  return guides.map((g, i) => ({
+    "@type": "ListItem",
+    position: i + 1,
+    name: g.title,
+    url: `${SITE}/guides/${g.slug}`,
+  }));
+}
+
+/** Patch guides/index.html card grid, count pill, and CollectionPage ItemList. */
+function updateGuidesIndex(guides) {
+  if (!fs.existsSync(INDEX_HTML)) {
+    console.warn("guides/index.html missing — skip list sync");
+    return;
+  }
+  let html = fs.readFileSync(INDEX_HTML, "utf8");
+  const list = sortGuidesForIndex(guides);
+  const n = list.length;
+  const cards = renderGuideCards(list);
+
+  // hero count pill
+  html = html.replace(
+    /<span class="pill">\d+\s*篇已发布<\/span>/,
+    `<span class="pill">${n} 篇已发布</span>`,
+  );
+
+  // card grid
+  if (!/<div class="guide-grid">[\s\S]*?<\/div>\s*<\/section>/.test(html)) {
+    console.warn("guides/index.html: guide-grid not found — skip cards");
+  } else {
+    html = html.replace(
+      /<div class="guide-grid">[\s\S]*?<\/div>(\s*<\/section>)/,
+      `<div class="guide-grid">\n${cards}\n        </div>$1`,
+    );
+  }
+
+  // JSON-LD ItemList inside CollectionPage
+  const itemsJson = JSON.stringify(renderIndexItemListLd(list), null, 2)
+    .split("\n")
+    .map((line, idx) => (idx === 0 ? line : "                " + line))
+    .join("\n");
+  if (/("mainEntity"\s*:\s*\{\s*"@type"\s*:\s*"ItemList"[\s\S]*?"itemListElement"\s*:\s*)\[[\s\S]*?\]/.test(html)) {
+    html = html.replace(
+      /("mainEntity"\s*:\s*\{\s*"@type"\s*:\s*"ItemList"[\s\S]*?"numberOfItems"\s*:\s*)\d+/,
+      `$1${n}`,
+    );
+    html = html.replace(
+      /("itemListElement"\s*:\s*)\[[\s\S]*?\](\s*\}\s*,\s*\{\s*"@type"\s*:\s*"BreadcrumbList")/,
+      `$1${itemsJson}$2`,
+    );
+  }
+
+  fs.writeFileSync(INDEX_HTML, html, "utf8");
+  console.log(`updated guides/index.html (${n} cards)`);
+}
+
 // ── main ─────────────────────────────────────────────────────────────
 
 function main() {
@@ -678,14 +807,7 @@ function main() {
     process.exit(1);
   }
 
-  let css = stripBom(fs.readFileSync(CSS_PATH, "utf8"));
-  // normalize indentation for inline <style>
-  css = css
-    .split("\n")
-    .map((l) => "      " + l.replace(/^\s+/, (m) => m)) // keep relative indent loosely
-    .join("\n");
-  // simpler: just indent whole file once
-  css = stripBom(fs.readFileSync(CSS_PATH, "utf8"))
+  const css = stripBom(fs.readFileSync(CSS_PATH, "utf8"))
     .split(/\r?\n/)
     .map((l) => (l.trim() ? "      " + l.replace(/^\uFEFF/, "") : l))
     .join("\n");
@@ -743,6 +865,8 @@ function main() {
   const merged = { guides: [...bySlug.values()].sort((a, b) => a.slug.localeCompare(b.slug)) };
   fs.writeFileSync(GUIDES_JSON, JSON.stringify(merged, null, 2) + "\n", "utf8");
   console.log(`updated guides/guides.json (${merged.guides.length} entries)`);
+
+  updateGuidesIndex(merged.guides);
   console.log(`done: ${built} guide(s) from MD`);
 }
 
