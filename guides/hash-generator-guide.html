@@ -3,35 +3,35 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JWT 解码完全指南：读懂 Header、Payload 与签名 - WebUtils</title>
-    <meta name="description" content="讲清 JWT 三段结构、Base64URL 与加密的区别，给出过期排查、HS256 验签、常见坑与本地解码步骤，配套 WebUtils JWT 解码器。" />
+    <title>Hash 生成器指南：MD5/SHA 用途边界与文件校验 - WebUtils</title>
+    <meta name="description" content="说明哈希不可逆、MD5/SHA 适用边界、文本与文件校验步骤，提醒勿用裸哈希存密码，配套 WebUtils Hash 生成器真实操作与错误对照。" />
     <meta name="robots" content="index,follow" />
     <meta name="author" content="WebUtils" />
-    <meta name="keywords" content="JWT解码,JWT解析,JSON Web Token,Token过期,HS256验签,JWT调试" />
-    <link rel="canonical" href="https://essays4u.net/guides/jwt-decoder-guide" />
+    <meta name="keywords" content="MD5,SHA256,SHA512,哈希校验,文件完整性,Hash生成器" />
+    <link rel="canonical" href="https://essays4u.net/guides/hash-generator-guide" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta property="og:type" content="article" />
-    <meta property="og:title" content="JWT 解码完全指南：读懂 Header、Payload 与签名 - WebUtils" />
-    <meta property="og:description" content="讲清 JWT 三段结构、Base64URL 与加密的区别，给出过期排查、HS256 验签、常见坑与本地解码步骤，配套 WebUtils JWT 解码器。" />
-    <meta property="og:url" content="https://essays4u.net/guides/jwt-decoder-guide" />
+    <meta property="og:title" content="Hash 生成器指南：MD5/SHA 用途边界与文件校验 - WebUtils" />
+    <meta property="og:description" content="说明哈希不可逆、MD5/SHA 适用边界、文本与文件校验步骤，提醒勿用裸哈希存密码，配套 WebUtils Hash 生成器真实操作与错误对照。" />
+    <meta property="og:url" content="https://essays4u.net/guides/hash-generator-guide" />
     <meta property="og:site_name" content="WebUtils" />
     <meta property="og:locale" content="zh_CN" />
     <meta property="og:image" content="https://essays4u.net/social-preview.png" />
     <meta property="article:published_time" content="2026-08-08" />
     <meta property="article:modified_time" content="2026-08-08" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="JWT 解码完全指南：读懂 Header、Payload 与签名 - WebUtils" />
-    <meta name="twitter:description" content="讲清 JWT 三段结构、Base64URL 与加密的区别，给出过期排查、HS256 验签、常见坑与本地解码步骤，配套 WebUtils JWT 解码器。" />
+    <meta name="twitter:title" content="Hash 生成器指南：MD5/SHA 用途边界与文件校验 - WebUtils" />
+    <meta name="twitter:description" content="说明哈希不可逆、MD5/SHA 适用边界、文本与文件校验步骤，提醒勿用裸哈希存密码，配套 WebUtils Hash 生成器真实操作与错误对照。" />
     <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
     <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "TechArticle",
-  "headline": "JWT 解码完全指南：读懂 Header、Payload 与签名",
-  "description": "讲清 JWT 三段结构、Base64URL 与加密的区别，给出过期排查、HS256 验签、常见坑与本地解码步骤，配套 WebUtils JWT 解码器。",
+  "headline": "Hash 生成器指南：MD5/SHA 用途边界与文件校验",
+  "description": "说明哈希不可逆、MD5/SHA 适用边界、文本与文件校验步骤，提醒勿用裸哈希存密码，配套 WebUtils Hash 生成器真实操作与错误对照。",
   "datePublished": "2026-08-08",
   "dateModified": "2026-08-08",
   "author": {
@@ -43,22 +43,22 @@
     "name": "WebUtils",
     "url": "https://essays4u.net/"
   },
-  "mainEntityOfPage": "https://essays4u.net/guides/jwt-decoder-guide"
+  "mainEntityOfPage": "https://essays4u.net/guides/hash-generator-guide"
 }
 </script>
     <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "HowTo",
-  "name": "JWT 解码完全指南：读懂 Header、Payload 与签名",
-  "description": "讲清 JWT 三段结构、Base64URL 与加密的区别，给出过期排查、HS256 验签、常见坑与本地解码步骤，配套 WebUtils JWT 解码器。",
-  "totalTime": "PT12M",
+  "name": "Hash 生成器指南：MD5/SHA 用途边界与文件校验",
+  "description": "说明哈希不可逆、MD5/SHA 适用边界、文本与文件校验步骤，提醒勿用裸哈希存密码，配套 WebUtils Hash 生成器真实操作与错误对照。",
+  "totalTime": "PT13M",
   "step": [
     {
       "@type": "HowToStep",
       "name": "打开工具",
       "text": "打开 WebUtils 相关工具页面。",
-      "url": "https://essays4u.net/tools/dev/jwt-decoder"
+      "url": "https://essays4u.net/tools/dev/hash-generator"
     },
     {
       "@type": "HowToStep",
@@ -93,8 +93,8 @@
     {
       "@type": "ListItem",
       "position": 3,
-      "name": "JWT 解码完全指南",
-      "item": "https://essays4u.net/guides/jwt-decoder-guide"
+      "name": "Hash 生成与校验指南",
+      "item": "https://essays4u.net/guides/hash-generator-guide"
     }
   ]
 }
@@ -106,74 +106,50 @@
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "排错顺序建议",
+      "name": "哈希能解密吗？",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "格式是否为严格三段。 能否解码出 JSON（语法层）。 exp/nbf/iat 与时钟（时间层）。 iss/aud/sub/角色（声明层）。 签名与算法（密码学层）。 最后才是业务接口与前端状态管理。 多数「登录坏了」在前三层就能定位，不必先怀疑整套权限模型。"
+        "text": "不能按加密意义解密。若输入空间很小（如 6 位数字密码），攻击者可暴力枚举使摘要匹配，那是猜输入，不是逆运算。"
       }
     },
     {
       "@type": "Question",
-      "name": "解码 JWT 需要密钥吗？",
+      "name": "为什么 MD5 还在大量系统里？",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "不需要。Header 与 Payload 只是 Base64URL 编码，解码器即可展示。密钥用于 验证签名（以及加密型 JWT，若使用），与「读取声明」不是同一件事。"
+        "text": "历史与性能。文件完整性「防损坏」场景仍可见；防恶意碰撞与密码存储已不适用。新系统不要因为「到处都有」就继续选它做安全关键。"
       }
     },
     {
       "@type": "Question",
-      "name": "为什么我改了 Payload 里的用户 ID，接口还是认旧用户？",
+      "name": "同一文件在不同电脑哈希不同？",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "因为合法服务端会验签。你改了前两段却没能生成匹配签名，请求应被拒绝；若居然成功，说明服务端 没有正确验签，那是严重安全缺陷，而不是解码器的问题。"
+        "text": "通常不是算法平台差异（标准摘要应一致），而是文件其实不同：换行、下载截断、多下了另一语言包。用文件大小与两次计算交叉验证。"
       }
     },
     {
       "@type": "Question",
-      "name": "HS256 和 RS256 怎么选？解码时有何不同？",
+      "name": "文本模式和文件模式对「同一内容」一致吗？",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "HS256 用共享密钥；RS256 用私钥签、公钥验。解码看内容两者相同；本站工具的 验签输入目前面向 HS256。RS256 场景下仍可解码排查过期与声明，验签请用公钥与对应库。"
+        "text": "若文件字节与文本框按所选编码得到的字节完全一致，则一致。编辑器自动改换行或加 BOM 会导致不同。以文件字节为准做发行校验。"
       }
     },
     {
       "@type": "Question",
-      "name": "Token 里的 exp 是秒还是毫秒？",
+      "name": "需要 HMAC 怎么办？",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "JWT 注册声明里的时间一般为 秒。若把秒当毫秒，日期会错得离谱。以解码器给出的本地时间注释为准，并与服务器时间对比。"
+        "text": "本工具不提供密钥输入。用语言自带 crypto 或专门 HMAC 工具；先保证消息原文与密钥管理正确。"
       }
     },
     {
       "@type": "Question",
-      "name": "在线解码安全吗？会不会上传我的 Token？",
+      "name": "在线计算安全吗？",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "WebUtils JWT 解码器在浏览器本地解析，不以此为理由把生产高权限令牌随意粘到不可信环境。公共机器、屏幕分享、录屏演示时改用测试 Token，并在结束后清理输入。"
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "只有两段或四段的字符串是 JWT 吗？",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "标准紧凑序列化是三段。两段可能是其他格式或复制缺失；更多段同样不符合本工具的预期。先恢复完整 header.payload.signature 再解。"
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "解码成功但业务仍失败，下一步看什么？",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "按层排查：网关是否校验 aud、IP 绑定、是否需要 CSRF/额外 Cookie、刷新令牌是否过期、用户是否被禁用。解码只证明「这枚 Token 内容是什么」，不证明「业务允许你做什么」。"
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "可以把 JWT 当加密手段藏机密吗？",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "不可以。需要机密应加密存储于服务端或使用专门的加密令牌方案，并始终配合 HTTPS。JWT 默认是 可解码的声明 + 可选签名。"
+        "text": "该页在本地算。极敏感密钥材料仍建议离线 CLI；也不要把真实密码贴进文本框做「试验」。"
       }
     }
   ]
@@ -754,26 +730,26 @@
         <ol>
           <li><a href="/">首页</a></li>
           <li><a href="/guides/">使用指南</a></li>
-          <li><span>JWT 解码完全指南</span></li>
+          <li><span>Hash 生成与校验指南</span></li>
         </ol>
       </nav>
 
       <article>
         <header class="article-hero">
-          <h1>JWT 解码完全指南：读懂 Header、Payload 与签名</h1>
+          <h1>Hash 生成器指南：MD5/SHA 用途边界与文件校验</h1>
           <div class="meta-row">
             <span class="pill">更新 2026-08-08</span>
-            <span class="pill">约 12 分钟</span>
+            <span class="pill">约 13 分钟</span>
             <span class="pill">开发工具</span>
             <span class="pill">How-to</span>
           </div>
-          <p class="lead">联调接口返回 401、前端「登录态莫名失效」，或后端说「Token 不对」时，最省时间的第一步往往不是改业务代码，而是先把 JWT <strong>拆开看清楚</strong>：算法是什么、<code>exp</code> 是否已过、<code>sub</code>/<code>roles</code> 是否符合预期。本指南说明 JWT 结构、解码与验签的边界，给出可操作步骤与排错表，并直接对接 WebUtils 本地解码工具。</p>
+          <p class="lead">下载系统镜像后要和官网校验码比对、发布安装包需要附带摘要、或联调「签名字符串」与文档不一致时，你需要的是 <strong>哈希（散列）</strong>，不是编码。本指南讲清不可逆与碰撞、MD5/SHA 还能不能用、在 WebUtils 上如何对文本/文件出码，并明确：密码存储不要依赖「裸 MD5/SHA」。</p>
           <div class="cta">
             <div class="cta-copy">
               <strong>立即使用相关工具</strong>
-              <span>JWT 解码 — 浏览器内解析 Header / Payload，可选 HS256 验签</span>
+              <span>Hash 生成器 — 本地 MD5/SHA1/SHA256/SHA512，支持文本与文件</span>
             </div>
-            <a class="cta-btn" href="/tools/dev/jwt-decoder">打开工具 →</a>
+            <a class="cta-btn" href="/tools/dev/hash-generator">打开工具 →</a>
           </div>
         </header>
 
@@ -781,307 +757,248 @@
           <div class="article-main">
 <section class="card key-takeaway" id="tldr">
 <h2>核心一句话</h2>
-<p><strong>JWT 的前两段是可解码的声明，不是加密保险箱；签名才负责防篡改。</strong></p>
-<p>解码能告诉你「里面写了什么、过没过期」；验签才回答「是否被改过、密钥是否匹配」。两者都做完，再谈业务权限与刷新策略。下面按「结构 → 易混概念 → 操作 → 排错 → 场景 → 选型」展开，可直接在 <a href="/tools/dev/jwt-decoder">JWT 解码器</a> 上对照练习。</p>
+<p><strong>哈希是固定长度的指纹：改一丁点输入，摘要就应大变；它不能解密回原文。</strong></p>
+<p>用指纹做完整性校验、去重、内容寻址很合适；把哈希当成加密或唯一密码方案会出事故。主工具：<a href="/tools/dev/hash-generator">Hash 生成器</a>。</p>
 </section>
 
 <section class="card" id="what">
-<h2>1. JWT 到底是什么、不是什么</h2>
-<p>JWT（JSON Web Token，RFC 7519）是一种把 <strong>声明（claims）</strong> 编码成可传输字符串的格式，常见于登录态、API 授权、服务间调用。标准形态是用两个点号分成三段：</p>
-<pre class="code-block">header.payload.signature</pre>
+<h2>哈希是什么、不是什么</h2>
+<p>哈希算法把任意长度输入映射为固定长度摘要：</p>
 <table class="data-table">
 <thead>
 <tr>
-<th>段</th>
-<th>内容</th>
-<th>能否被「看懂」</th>
-<th>作用</th>
+<th>算法</th>
+<th>摘要长度（常见十六进制字符数）</th>
+<th>现状（工程直觉）</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Header</td>
-<td>类型、算法等元数据</td>
-<td>是（Base64URL 解码）</td>
-<td>告诉校验方怎么验</td>
+<td>MD5</td>
+<td>128 bit（32 位 hex）</td>
+<td>快；<strong>碰撞已实用</strong>，勿用于安全签名/密码</td>
 </tr>
 <tr>
-<td>Payload</td>
-<td>业务与标准声明</td>
-<td>是（Base64URL 解码）</td>
-<td>携带身份、过期、权限等</td>
+<td>SHA-1</td>
+<td>160 bit（40 位 hex）</td>
+<td>碰撞攻击已示范；淘汰安全用途</td>
 </tr>
 <tr>
-<td>Signature</td>
-<td>对前两段的密码学摘要</td>
-<td>一般只显示原始串</td>
-<td>防篡改、绑定密钥</td>
+<td>SHA-256</td>
+<td>256 bit（64 位 hex）</td>
+<td>当前常见默认：文件校验、许多签名体系</td>
+</tr>
+<tr>
+<td>SHA-512</td>
+<td>512 bit（128 位 hex）</td>
+<td>更高输出长度；视协议与性能选择</td>
 </tr>
 </tbody>
 </table>
-<p><strong>不是加密。</strong> Header 与 Payload 只做 Base64URL 编码，任何拿到完整 Token 的人都能用解码器读出 JSON。若把密码、身份证号、银行卡写进 Payload，等于明文外传。需要保密应使用加密通道（HTTPS）与服务端保管的敏感数据，而不是指望「JWT 看起来乱码」。</p>
-<p><strong>不是 Session 本身。</strong> JWT 常被当作无状态会话的载体：服务端不存会话表，只校验签名与声明。这带来水平扩展方便，也带来「签发后难即时作废」等问题——吊销、黑名单、短过期 + 刷新令牌是另一层设计，解码工具解决不了策略问题，但能帮你确认当前这枚 Token 里写了什么。</p>
+<p><strong>不是加密：</strong> 没有「密钥解密」过程。能「破解」的是弱口令的字典/暴力与部分算法的碰撞构造，而不是数学上的逆运算公式。</p>
+<p><strong>不是 Base64：</strong> Base64 可逆、变长（约 +33%）；哈希不可逆、定长。运输二进制用 <a href="/tools/dev/base64">Base64</a>；比对是否同一内容用哈希。</p>
+<p><strong>不是 MAC/签名本身：</strong> 单纯 <code>MD5(原文)</code> 任何人都能算。要防篡改且防伪造，需要 HMAC、数字签名或带密钥的方案；本工具给出的是 <strong>无密钥摘要</strong>，便于校验与调试。</p>
+<h3>雪崩与 equalf 文件</h3>
+<p>「只改一个逗号，SHA-256 完全不同」是预期行为。若两个文件哈希相同，在所用算法下可认为内容相同（MD5/SHA-1 在对抗场景要担心碰撞；日常镜像校验仍有人用 MD5，但 <strong>发布软件更推荐 SHA-256</strong>）。</p>
 </section>
 
-<section class="card" id="claims">
-<h2>2. 标准声明与你真正该盯的字段</h2>
-<p>Payload 里常见注册声明（Registered Claims）如下，联调时优先看这些，再看业务自定义字段。</p>
+<section class="card" id="choose">
+<h2>算法怎么选</h2>
 <table class="data-table">
 <thead>
 <tr>
-<th>声明</th>
-<th>含义</th>
-<th>调试时怎么用</th>
+<th>你的目标</th>
+<th>建议</th>
+<th>避免</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>iss</code></td>
-<td>签发者</td>
-<td>是否指向正确的认证服务</td>
+<td>校验下载是否完整/未被改（非对抗极强）</td>
+<td>SHA-256 与官网一致</td>
+<td>仅口头「文件大小一样」</td>
 </tr>
 <tr>
-<td><code>sub</code></td>
-<td>主体（常为用户 ID）</td>
-<td>是否对上当前登录用户</td>
+<td>老接口文档写死 MD5 签名串</td>
+<td>按文档用 MD5 <strong>仅兼容</strong></td>
+<td>新设计继续扩散 MD5</td>
 </tr>
 <tr>
-<td><code>aud</code></td>
-<td>受众</td>
-<td>是否发给了正确的 API 客户端</td>
+<td>内容去重、缓存 key</td>
+<td>SHA-256 足够</td>
+<td>把哈希当保密 transfrom</td>
 </tr>
 <tr>
-<td><code>exp</code></td>
-<td>过期时间（Unix 秒）</td>
-<td>401「过期」的第一证据</td>
+<td>用户密码存储</td>
+<td><strong>专用密码哈希</strong>（Argon2/bcrypt/scrypt 等 + salt）</td>
+<td>裸 MD5/SHA1/SHA256(password)</td>
 </tr>
 <tr>
-<td><code>nbf</code></td>
-<td>生效时间</td>
-<td>时钟/预发 Token 是否「尚未生效」</td>
-</tr>
-<tr>
-<td><code>iat</code></td>
-<td>签发时间</td>
-<td>是否异常超前或落后于服务器时间</td>
-</tr>
-<tr>
-<td><code>jti</code></td>
-<td>Token 唯一 ID</td>
-<td>吊销列表、防重放时定位</td>
+<td>证明「我持有密钥且消息未被改」</td>
+<td>HMAC/签名库</td>
+<td>公开算法无密钥的裸哈希</td>
 </tr>
 </tbody>
 </table>
-<p>业务字段因项目而异，例如 <code>roles</code>、<code>scope</code>、<code>tenant_id</code>。解码后先确认 <strong>类型与层级</strong>：数字 <code>1</code> 与字符串 <code>&quot;1&quot;</code>、数组与单值，经常导致「权限看起来有、代码读不到」。</p>
-<p>时间字段几乎总是 <strong>秒级 Unix 时间戳</strong>，不是毫秒。把 <code>exp</code> 当毫秒解析会得到远未来或荒谬日期，误判「没过期」。WebUtils 解码器在解析到 <code>exp</code>/<code>iat</code> 时会附加本地可读时间与是否已过期提示，减少心算错误。</p>
-</section>
-
-<section class="card" id="encode">
-<h2>3. Base64、Base64URL、加密：三个最容易混的概念</h2>
-<p>JWT 使用 <strong>Base64URL</strong>（RFC 4648）：用 <code>-</code>/<code>_</code> 替代 <code>+</code>/<code>/</code>，并常省略 <code>=</code> 填充，方便放进 URL 与 Header。它和普通 Base64 不是同一套字符集。</p>
-<table class="data-table">
-<thead>
-<tr>
-<th>概念</th>
-<th>做了什么</th>
-<th>是否保密</th>
-<th>典型工具</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Base64 / Base64URL</td>
-<td>二进制 ↔ 可打印文本</td>
-<td>否</td>
-<td><a href="/tools/dev/base64">Base64 工具</a>、JWT 解码器内部</td>
-</tr>
-<tr>
-<td>加密（如 AES）</td>
-<td>无密钥难读出明文</td>
-<td>是（在密钥安全前提下）</td>
-<td>不在「解码 JWT」范围内</td>
-</tr>
-<tr>
-<td>签名（HMAC/RSA 等）</td>
-<td>证明内容未被改、来自持钥方</td>
-<td>不隐藏 Payload 内容</td>
-<td>解码器可选 HS256 验证</td>
-</tr>
-</tbody>
-</table>
-<p>因此：</p>
-<ul>
-<li>只想「看 Payload」→ 解码即可，不必密钥。</li>
-<li>要确认「没被改、密钥对」→ 需要验签，且算法与密钥类型要匹配。</li>
-<li>把整段 JWT 丢进普通 Base64 解码器，常因 URL 安全字符与缺填充而失败；应优先用专用 <a href="/tools/dev/jwt-decoder">JWT 解码器</a>。</li>
-</ul>
+<p>页面 SEO 文案有时把哈希称作「文本加密」——那是检索用语残留；<strong>工程上请坚持：摘要 ≠ 加密。</strong></p>
 </section>
 
 <section class="card" id="steps">
-<h2>4. 用 WebUtils 解码：逐步操作</h2>
-<p>工具页：<a href="/tools/dev/jwt-decoder">JWT 解码器</a>。处理在浏览器本地完成；粘贴生产 Token 前仍建议脱敏或使用测试账号令牌。</p>
+<h2>在 WebUtils 上怎么做</h2>
+<p>工具页：<a href="/tools/dev/hash-generator">Hash 生成器</a>。依赖浏览器内计算（页面引入 CryptoJS）；处理本地完成。</p>
+<h3>文本模式</h3>
 <ol>
-<li><strong>打开工具。</strong> 进入 <a href="/tools/dev/jwt-decoder">/tools/dev/jwt-decoder</a>，确认「输入 JWT 令牌」文本框可见。</li>
-<li><strong>准备 Token。</strong> 从 <code>Authorization: Bearer …</code> 里只复制 <strong>Token 本体</strong>（三段、两个点），不要带上 <code>Bearer</code> 前缀或引号、换行。</li>
-<li><strong>粘贴即解析。</strong> 输入框支持 <code>oninput</code> 实时解码：成功时 Header / Payload / Signature 三区会分别展示；失败时看状态栏错误提示。</li>
-<li><strong>先读 Payload。</strong> 重点看 <code>exp</code> 旁的本地时间与「已过期 / 有效」注释，再看 <code>sub</code>、自定义角色字段。</li>
-<li><strong>再读 Header。</strong> 确认 <code>alg</code>（如 <code>HS256</code>、<code>RS256</code>）与 <code>typ</code>。算法与后端配置不一致时，验签或网关会直接拒绝。</li>
-<li><strong>可选：HS256 验签。</strong> 仅在你 <strong>明确持有共享密钥</strong> 且 Header 为 <code>HS256</code> 时，在「验证签名」框填入密钥。通过显示签名有效；失败则密钥错误、Token 被改，或根本不是该密钥签发。</li>
-<li><strong>需要时复制 JSON。</strong> 各段可用「复制」按钮带走；若要进一步美化或 Diff，可粘到 <a href="/tools/dev/json-formatter">JSON 格式化</a>。</li>
+<li>打开 <a href="/tools/dev/hash-generator">/tools/dev/hash-generator</a>。</li>
+<li>左侧确认选中 <strong>文本模式</strong>（默认）。</li>
+<li>在文本框输入或粘贴内容；<code>oninput</code> 会触发 <strong>calculate</strong>，右侧同时给出 <strong>MD5 / SHA-1 / SHA-256 / SHA-512</strong>。</li>
+<li><strong>编码</strong> 下拉可选 UTF-8 / ASCII（按你要对齐的环境；中文与现代 API 几乎总是 UTF-8）。</li>
+<li><strong>格式</strong> 可选小写 / 大写，以匹配文档里的大小写（有的校验区分大小写字符串比较）。</li>
+<li>点各算法旁的 <strong>复制</strong> 带走；<strong>清空输入</strong> 重置。</li>
 </ol>
-<h3>工具能力边界（对照真实页面）</h3>
+<p>注意：首尾空格、换行符、Windows 的 <code>\r\n</code> 都会改变哈希。与后端比对时先确认「是否 trim、是否含换行」。</p>
+<h3>文件模式</h3>
+<ol>
+<li>切换 <strong>文件模式</strong>。</li>
+<li>点击拖放区或拖入文件；显示文件名与大小。</li>
+<li>工具读入文件后同样计算四类摘要（大文件在浏览器内存与耗时上有现实限制，极特大镜像更适合 <code>sha256sum</code> 等本地 CLI）。</li>
+<li>与官网校验码逐字符比对；只差大小写就改 <strong>格式</strong> 下拉。</li>
+</ol>
+<h3>能力边界</h3>
 <ul>
-<li><strong>支持：</strong> 三段式 JWT 的 Base64URL 解码、Header/Payload 格式化展示、<code>exp</code>/<code>iat</code> 可读时间、HS256 本地验签。</li>
-<li><strong>不宣称支持：</strong> 任意算法全覆盖的验签（页面明确：目前验证侧重 <strong>HS256</strong>）；RSA/ECDSA 公钥验签需其他工具链。</li>
-<li><strong>不替代：</strong> 服务端权威校验、HTTPS、密钥轮换与吊销策略。</li>
+<li><strong>有：</strong> 四算法并行、文本/文件、大小写、UTF-8/ASCII 选项、复制。</li>
+<li><strong>无：</strong> 密码加盐慢哈希、HMAC 密钥框、流式超大文件优化（视浏览器而定）。</li>
+<li><strong>不宣称：</strong> 「用本页存密码就安全」。</li>
 </ul>
 </section>
 
 <section class="card" id="errors">
-<h2>5. 常见问题与处理办法</h2>
+<h2>常见错误与对照</h2>
 <table class="data-table">
 <thead>
 <tr>
 <th>现象</th>
 <th>常见原因</th>
-<th>怎么处理</th>
+<th>处理</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>提示无效格式（不是三部分）</td>
-<td>复制了 <code>Bearer </code> 前缀、少了点号、粘到两行、只复制了半段</td>
-<td>只保留 <code>a.b.c</code> 三段；去掉空格与引号</td>
+<td>与官网差一位都对不上</td>
+<td>下完不完整；或比错算法</td>
+<td>重新下载；确认是 MD5 还是 SHA-256</td>
 </tr>
 <tr>
-<td>解析失败 / JSON 错误</td>
-<td>某段不是合法 Base64URL，或被网关截断</td>
-<td>从网络面板重新复制完整 Response/Header</td>
+<td>文本哈希与后端不同</td>
+<td>字符集、换行、是否 JSON 紧凑、隐藏空格</td>
+<td>统一 UTF-8；用十六进制编辑器或长度先比</td>
 </tr>
 <tr>
-<td>显示已过期</td>
-<td><code>exp</code> 早于当前时间；或客户端时钟不准</td>
-<td>刷新登录拿新 Token；核对本机时间与 NTP</td>
+<td>只有大小写不同</td>
+<td>比较时大小写敏感</td>
+<td>用工具 <strong>格式</strong> 切换后复制</td>
 </tr>
 <tr>
-<td>未过期仍 401</td>
-<td><code>aud</code>/<code>iss</code> 不匹配、权限 claim 不对、网关另有校验</td>
-<td>解码确认声明后，再查服务端策略与中间件</td>
+<td>MD5 相同但文件「看起来」不同</td>
+<td>极少见碰撞或看错文件</td>
+<td>安全场景改 SHA-256；确认路径</td>
 </tr>
 <tr>
-<td>HS256 验签失败</td>
-<td>密钥错、多空格、Token 被改、实际是 RS256</td>
-<td>核对 <code>alg</code>；RS256 不要用 HMAC 密钥硬验</td>
+<td>以为能「解密」哈希</td>
+<td>概念错误</td>
+<td>只能暴力/字典猜输入，且仅对弱输入有效</td>
 </tr>
 <tr>
-<td>验签提示仅支持 HS256</td>
-<td>Header 为 <code>RS256</code> 等</td>
-<td>解码仍可看内容；验签改用对应公钥工具或后端日志</td>
+<td>密码库泄露仍被撞库</td>
+<td>裸哈希无盐、算法太快</td>
+<td>迁移到慢哈希 + 唯一盐；本工具不负责存储方案</td>
 </tr>
 <tr>
-<td>Payload 里「有字段但前端读不到」</td>
-<td>嵌套路径、类型不一致、用了错误的解析库</td>
-<td>复制 Payload 到 JSON 工具核对路径与类型</td>
+<td>文件模式选了却仍像在算旧文本</td>
+<td>未切换模式或未选中文件</td>
+<td>确认 <strong>文件模式</strong> 与文件名展示</td>
 </tr>
 <tr>
-<td>签名一改 Payload 就变</td>
-<td>符合设计：签名绑定前两段</td>
-<td>改声明必须由签发方重新签名，客户端改无效</td>
+<td>ASCII 选项下中文异常</td>
+<td>非 ASCII 被错误处理</td>
+<td>改回 UTF-8</td>
 </tr>
 </tbody>
 </table>
-<div class="faq-item"><h3>排错顺序建议</h3>
-<ol>
-<li>格式是否为严格三段。</li>
-<li>能否解码出 JSON（语法层）。</li>
-<li><code>exp</code>/<code>nbf</code>/<code>iat</code> 与时钟（时间层）。</li>
-<li><code>iss</code>/<code>aud</code>/<code>sub</code>/角色（声明层）。</li>
-<li>签名与算法（密码学层）。</li>
-<li>最后才是业务接口与前端状态管理。</li>
-</ol>
-<p>多数「登录坏了」在前三层就能定位，不必先怀疑整套权限模型。</p></div>
+<h3>联调签名串时的顺序</h3>
+<p>许多支付/开放平台要求：参数排序 → 拼接 → 可能加 key → <strong>MD5/SHA</strong> → 变大写。本工具只做最后「对某段文本出摘要」。拼接规则错了，摘要永远对不齐——先固定「进入哈希的那一行字符串」，再贴进文本框。</p>
 </section>
 
 <section class="card" id="scenarios">
-<h2>6. 真实工作场景</h2>
-<h3>场景 A：接口突然 401</h3>
-<p>从失败请求的 Request Headers 取出 Bearer Token，贴进解码器。若已过期，走刷新或重新登录；若未过期，对比 <code>aud</code>、路径是否打到错误环境（测试 Token 打生产网关很常见）。把解码后的 <code>exp</code> 本地时间写进工单，比只说「Token 有问题」高效。</p>
-<h3>场景 B：前后端对「角色」各执一词</h3>
-<p>解码 Payload，确认角色字段名是 <code>role</code> 还是 <code>roles</code>、是字符串还是数组。用同一枚 Token 在 JSON 视图里对齐，避免在聊天里口头描述结构。必要时把 Payload 贴进 <a href="/tools/dev/json-formatter">JSON 格式化</a> 再 Diff 两份样例。</p>
-<h3>场景 C：怀疑 Token 被中间人改过（仍须 HTTPS）</h3>
-<p>在可控环境用已知 HS256 密钥验签：通过说明内容与密钥一致；失败说明内容或密钥不对。注意：浏览器里粘贴 <strong>生产主密钥</strong> 有运维风险，优先用测试密钥或仅在本地可信机器操作，用完清理输入框。</p>
-<h3>场景 D：迁移算法（HS256 → RS256）</h3>
-<p>先解码确认线上真实 <code>alg</code>，再改网关与签发配置。迁移窗口期常见「旧 Token 仍是 HS256、新服务只认 RS256」——解码一眼能区分，避免只看文档不看实例。</p>
-<h3>场景 E：移动端 / 小程序存储的长 Token</h3>
-<p>从日志或调试桥取出完整串（注意日志脱敏）。若解析失败，检查是否被 URL 编码二次处理、是否存进了带换行的 UserDefaults。先解码验证完整性，再查存储层。</p>
-<h3>场景 F：教学与 Code Review</h3>
-<p>用伪造的 <strong>测试 Token</strong>（切勿用真实用户令牌）演示「改 Payload 不改签名必失败」。Review 签发代码时，对照 Header 的 <code>alg</code> 是否硬编码、是否拒绝 <code>alg: none</code> 等危险配置（服务端校验逻辑，解码器只负责观察）。</p>
+<h2>真实工作场景</h2>
+<h3>场景 A：校验 ISO / 安装包</h3>
+<p>官网写 <code>SHA256: abcd...</code>。下载后用 <strong>文件模式</strong> 拖入安装包，复制 SHA-256 对比。不一致则停止安装，优先怀疑下载损坏或镜像源被替换。把算法名与摘要写进运维台账。</p>
+<h3>场景 B：Release 附校验和</h3>
+<p>发布 zip 前在 <strong>文件模式</strong> 算出 SHA-256，写在 GitHub Release 说明。用户侧同样用本工具或 CLI 复核。MD5 可作辅助，但不要作为唯一安全声明。</p>
+<h3>场景 C：开放平台签名对不上</h3>
+<p>文档给了示例字符串与期望 MD5。把示例原文（注意文档是否用了不可见空格）贴进 <strong>文本模式</strong>，看 MD5 是否与文档一致。一致说明工具与算法理解无误，问题在参数排序或 key 拼接；不一致先查原文。</p>
+<h3>场景 D：两份「应该一样」的导出文件</h3>
+<p>业务说 CSV 相同但用户坚持不同。分别拖进文件模式比 SHA-256：相同则内容一致（争的是打开方式/Excel 显示）；不同再做 Diff。比打开 Excel 肉眼扫更快。</p>
+<h3>场景 E：误区排查——「我们用 SHA-256 存密码」</h3>
+<p>审计发现 <code>sha256(password)</code> 无盐。说明：桌面级 GPU 可高速穷举；加盐也可被逐用户攻。应立项迁移；本工具仅用于证明「相同明文相同摘要」的风险演示（用测试口令）。新口令可用 <a href="/tools/generator/password-generator">密码生成器</a> 提高熵，但仍须服务端正确哈希。</p>
+<h3>场景 F：与 Base64 流水线协作</h3>
+<p>有的接口先哈希再 Base64 传输二进制摘要。本工具输出 hex；若对端要 raw 字节的 Base64，需在程序里转，或明确文档。不要假设「hex 再 Base64」与「raw Base64」相同。</p>
 </section>
 
-<section class="card checklist" id="checklist">
-<h2>7. 安全清单：解码前后都要做</h2>
+<section class="card" id="security">
+<h2>密码与安全提醒</h2>
 <ul>
-<li>默认假设 Payload <strong>任何人可读</strong>；禁止写入密码、完整支付信息、长期密钥</li>
-<li>生产 Token 尽量不进聊天群、不进公开 Issue；工单用脱敏或测试账号</li>
-<li>公共电脑用完清空输入框与剪贴板</li>
-<li>验签密钥当机密：不要提交到前端仓库，不要写进指南截图</li>
-<li>传输必须 HTTPS；解码工具不替代传输层安全</li>
-<li>短过期 + 刷新令牌；仅靠「很长的 exp」换省事会放大泄露窗口</li>
-<li>服务端必须验签并校验 <code>exp</code>/<code>iss</code>/<code>aud</code>；前端解码只作调试</li>
-<li>拒绝接受 Header 被篡改为 <code>alg: none</code> 或算法混淆攻击（服务端库配置）</li>
-<li>时钟同步：容器与宿主机时间偏差会导致「偶发过期」</li>
+<li><strong>不要</strong> 用本页的 MD5/SHA 作为密码存储方案。</li>
+<li>密码应：随机盐 + 慢哈希（Argon2id/bcrypt/scrypt 等）+ 参数随硬件升级。</li>
+<li>传输仍走 HTTPS；哈希不替代信道安全。</li>
+<li>粘贴真实用户密码到任何网页工具都不推荐；演示用假数据。</li>
+<li>文件校验通过 ≠ 软件无毒，只说明与所给摘要一致；摘要来源本身要可信（官网 HTTPS、签名发布）。</li>
+<li>公共电脑用完清空文本框。</li>
 </ul>
 </section>
 
 <section class="card" id="related">
-<h2>8. 相关工具怎么选</h2>
+<h2>相关工具怎么选</h2>
 <div class="tool-grid">
-<a class="tool-card" href="/tools/dev/jwt-decoder"><strong>JWT 解码器</strong><span>看三段结构、过期提示、可选 HS256 验签（本篇主工具）</span></a>
-<a class="tool-card" href="/tools/dev/base64"><strong>Base64 编码解码</strong><span>通用 Base64；不替代 JWT 专用三段解析</span></a>
-<a class="tool-card" href="/tools/dev/json-formatter"><strong>JSON 格式化</strong><span>Payload 过大或需 Diff、压缩时</span></a>
-<a class="tool-card" href="/tools/dev/hash-generator"><strong>Hash 生成</strong><span>理解摘要与 HMAC 思路时作辅助，不直接验 JWT</span></a>
+<a class="tool-card" href="/tools/dev/hash-generator"><strong>Hash 生成器</strong><span>文本/文件多算法摘要（本篇主工具）</span></a>
+<a class="tool-card" href="/tools/dev/base64"><strong>Base64 编码解码</strong><span>可逆编码；与哈希常被一起问，职责相反</span></a>
+<a class="tool-card" href="/tools/generator/password-generator"><strong>密码生成器</strong><span>生成高熵口令；<strong>生成后仍须服务端正确存储</strong></span></a>
 </div>
-<p>选型口诀：<strong>要拆 JWT 用解码器；要处理普通 Base64 文本用 Base64 工具；要整理声明 JSON 用格式化；要服务端结论以网关与签发服务日志为准。</strong></p>
+<p><strong>口诀：</strong> 比是否同一文件 → Hash；把字节当文本传 → Base64；造口令 → 密码生成器；存口令 → 专用密码哈希库，不是本页四个算法裸用。</p>
 </section>
 
-<section class="card" id="practice">
-<h2>9. 和「登录态架构」的边界</h2>
-<p>解码指南解决的是 <strong>观察与排错</strong>，不是替你设计整套认证。落地时建议团队约定：</p>
+<section class="card checklist" id="checklist">
+<h2>实践清单</h2>
 <ul>
-<li>文档中示例 Token 一律伪造，并写明算法与过期策略。</li>
-<li>联调清单增加一步：「401 时先解码再开 Issue」。</li>
-<li>密钥与公钥轮换有记录；解码器里出现的 <code>kid</code>（若有）能对应到密钥版本。</li>
-<li>前端可解码展示用户昵称类声明，但 <strong>授权决定必须在服务端</strong> 重做。</li>
-<li>监控上区分「签名失败」「过期」「声明不合」三类拒绝，避免全打成统一 401 难排查。</li>
+<li>对外发布优先给 SHA-256，并写明算法名。</li>
+<li>比对前统一小写或大写，避免假失败。</li>
+<li>文本签名先冻结「原文」，再哈希。</li>
+<li>MD5 仅兼容遗留，新安全设计绕开。</li>
+<li>密码路径单独评审，不与文件校验混为一谈。</li>
+<li>大文件校验失败时先查下载完整性再查工具。</li>
 </ul>
-<p>把「能读懂 Token」变成习惯后，身份问题从玄学变成可举证的字段与时间戳。</p>
 </section>
 
 <section class="card" id="faq">
 <h2>常见问题</h2>
-<div class="faq-item"><h3>解码 JWT 需要密钥吗？</h3>
-<p>不需要。Header 与 Payload 只是 Base64URL 编码，解码器即可展示。密钥用于 <strong>验证签名</strong>（以及加密型 JWT，若使用），与「读取声明」不是同一件事。</p></div>
-<div class="faq-item"><h3>为什么我改了 Payload 里的用户 ID，接口还是认旧用户？</h3>
-<p>因为合法服务端会验签。你改了前两段却没能生成匹配签名，请求应被拒绝；若居然成功，说明服务端 <strong>没有正确验签</strong>，那是严重安全缺陷，而不是解码器的问题。</p></div>
-<div class="faq-item"><h3>HS256 和 RS256 怎么选？解码时有何不同？</h3>
-<p>HS256 用共享密钥；RS256 用私钥签、公钥验。解码看内容两者相同；本站工具的 <strong>验签输入目前面向 HS256</strong>。RS256 场景下仍可解码排查过期与声明，验签请用公钥与对应库。</p></div>
-<div class="faq-item"><h3>Token 里的 exp 是秒还是毫秒？</h3>
-<p>JWT 注册声明里的时间一般为 <strong>秒</strong>。若把秒当毫秒，日期会错得离谱。以解码器给出的本地时间注释为准，并与服务器时间对比。</p></div>
-<div class="faq-item"><h3>在线解码安全吗？会不会上传我的 Token？</h3>
-<p>WebUtils JWT 解码器在浏览器本地解析，不以此为理由把生产高权限令牌随意粘到不可信环境。公共机器、屏幕分享、录屏演示时改用测试 Token，并在结束后清理输入。</p></div>
-<div class="faq-item"><h3>只有两段或四段的字符串是 JWT 吗？</h3>
-<p>标准紧凑序列化是三段。两段可能是其他格式或复制缺失；更多段同样不符合本工具的预期。先恢复完整 <code>header.payload.signature</code> 再解。</p></div>
-<div class="faq-item"><h3>解码成功但业务仍失败，下一步看什么？</h3>
-<p>按层排查：网关是否校验 <code>aud</code>、IP 绑定、是否需要 CSRF/额外 Cookie、刷新令牌是否过期、用户是否被禁用。解码只证明「这枚 Token 内容是什么」，不证明「业务允许你做什么」。</p></div>
-<div class="faq-item"><h3>可以把 JWT 当加密手段藏机密吗？</h3>
-<p>不可以。需要机密应加密存储于服务端或使用专门的加密令牌方案，并始终配合 HTTPS。JWT 默认是 <strong>可解码的声明 + 可选签名</strong>。</p></div>
+<div class="faq-item"><h3>哈希能解密吗？</h3>
+<p>不能按加密意义解密。若输入空间很小（如 6 位数字密码），攻击者可暴力枚举使摘要匹配，那是猜输入，不是逆运算。</p></div>
+<div class="faq-item"><h3>为什么 MD5 还在大量系统里？</h3>
+<p>历史与性能。文件完整性「防损坏」场景仍可见；防恶意碰撞与密码存储已不适用。新系统不要因为「到处都有」就继续选它做安全关键。</p></div>
+<div class="faq-item"><h3>同一文件在不同电脑哈希不同？</h3>
+<p>通常不是算法平台差异（标准摘要应一致），而是文件其实不同：换行、下载截断、多下了另一语言包。用文件大小与两次计算交叉验证。</p></div>
+<div class="faq-item"><h3>文本模式和文件模式对「同一内容」一致吗？</h3>
+<p>若文件字节与文本框按所选编码得到的字节完全一致，则一致。编辑器自动改换行或加 BOM 会导致不同。以文件字节为准做发行校验。</p></div>
+<div class="faq-item"><h3>需要 HMAC 怎么办？</h3>
+<p>本工具不提供密钥输入。用语言自带 crypto 或专门 HMAC 工具；先保证消息原文与密钥管理正确。</p></div>
+<div class="faq-item"><h3>在线计算安全吗？</h3>
+<p>该页在本地算。极敏感密钥材料仍建议离线 CLI；也不要把真实密码贴进文本框做「试验」。</p></div>
 </section>
 
 <section class="card" id="next">
 <h2>继续浏览</h2>
-<p>先拿一枚 <strong>测试环境</strong> Token 在工具里走通「粘贴 → 看 exp → 可选验签」，再对照错误表处理真实 401。也可返回指南列表或工具目录继续浏览。</p>
+<p>用短文本看四算法长度差异，再拖一个小文件与文本模式对照「换行是否混入」，即可避免最常见的对不上。</p>
 <div class="next-actions">
-<a class="btn btn-primary" href="/tools/dev/jwt-decoder">打开 JWT 解码器</a>
+<a class="btn btn-primary" href="/tools/dev/hash-generator">打开 Hash 生成器</a>
 <a class="btn btn-ghost" href="/guides/">返回指南列表</a>
 <a class="btn btn-ghost" href="/tools-directory">全部工具</a>
 </div>
@@ -1092,20 +1009,19 @@
             <h2>目录</h2>
             <ol class="toc-list">
 <li><a href="#tldr">核心一句话</a></li>
-<li><a href="#what">1. JWT 到底是什么、不是什么</a></li>
-<li><a href="#claims">2. 标准声明与你真正该盯的字段</a></li>
-<li><a href="#encode">3. Base64、Base64…</a></li>
-<li><a href="#steps">4. 用 WebUtils 解码…</a></li>
-<li><a href="#errors">5. 常见问题与处理办法</a></li>
-<li><a href="#scenarios">6. 真实工作场景</a></li>
-<li><a href="#checklist">7. 安全清单：解码前后都要做</a></li>
-<li><a href="#related">8. 相关工具怎么选</a></li>
-<li><a href="#practice">9. 和「登录态架构」的边界</a></li>
+<li><a href="#what">哈希是什么、不是什么</a></li>
+<li><a href="#choose">算法怎么选</a></li>
+<li><a href="#steps">在 WebUtils 上怎么做</a></li>
+<li><a href="#errors">常见错误与对照</a></li>
+<li><a href="#scenarios">真实工作场景</a></li>
+<li><a href="#security">密码与安全提醒</a></li>
+<li><a href="#related">相关工具怎么选</a></li>
+<li><a href="#checklist">实践清单</a></li>
 <li><a href="#faq">常见问题</a></li>
             </ol>
             <div class="side-cta">
               <h3>相关工具</h3>
-              <a href="/tools/dev/jwt-decoder" class="btn btn-primary" style="width:100%;">立即打开 JWT 解码器</a>
+              <a href="/tools/dev/hash-generator" class="btn btn-primary" style="width:100%;">立即打开 Hash 生成器</a>
             </div>
           </aside>
         </div>

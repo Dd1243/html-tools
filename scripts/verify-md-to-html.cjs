@@ -1,0 +1,14 @@
+const fs = require('fs');
+const h = fs.readFileSync('tools/text/md-to-html.html', 'utf8');
+const m = h.match(/name="description" content="([^"]+)"/);
+const d = m ? m[1] : '';
+console.log('desc_len=', [...d].length);
+console.log('desc=', d);
+console.log('has_h1=', /<h1[\s>]/.test(h));
+console.log('has_jsonld=', h.includes('application/ld+json'));
+console.log('has_footer=', /privacy|隐私|terms|条款/i.test(h));
+console.log('has_theme=', h.includes('data-theme'));
+console.log('has_marked=', h.includes('marked'));
+console.log('has_canonical=', h.includes('essays4u.net/tools/text/md-to-html'));
+console.log('has_favicon=', /rel="icon"/.test(h));
+console.log('file_size=', h.length);
