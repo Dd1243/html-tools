@@ -1,0 +1,1134 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RSA 加密完整指南：密钥生成、加密解密示例与安全实践 - WebUtils</title>
+    <meta name="description" content="讲清 RSA 公钥加密原理、密钥对生成、OAEP/PKCS1 填充与本地加解密步骤，给出 WebUtils 工具操作、原创错误表、真实场景与安全边界。" />
+    <meta name="robots" content="index,follow" />
+    <meta name="author" content="WebUtils" />
+    <meta name="keywords" content="RSA加密,RSA密钥生成,RSA加密解密,公钥私钥,RSA-OAEP,PEM密钥" />
+    <link rel="canonical" href="https://essays4u.net/guides/rsa-encryptor-guide" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="RSA 加密完整指南：密钥生成、加密解密示例与安全实践 - WebUtils" />
+    <meta property="og:description" content="讲清 RSA 公钥加密原理、密钥对生成、OAEP/PKCS1 填充与本地加解密步骤，给出 WebUtils 工具操作、原创错误表、真实场景与安全边界。" />
+    <meta property="og:url" content="https://essays4u.net/guides/rsa-encryptor-guide" />
+    <meta property="og:site_name" content="WebUtils" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
+    <meta property="article:published_time" content="2026-08-09" />
+    <meta property="article:modified_time" content="2026-08-09" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="RSA 加密完整指南：密钥生成、加密解密示例与安全实践 - WebUtils" />
+    <meta name="twitter:description" content="讲清 RSA 公钥加密原理、密钥对生成、OAEP/PKCS1 填充与本地加解密步骤，给出 WebUtils 工具操作、原创错误表、真实场景与安全边界。" />
+    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "RSA 加密完整指南：密钥生成、加密解密示例与安全实践",
+  "description": "讲清 RSA 公钥加密原理、密钥对生成、OAEP/PKCS1 填充与本地加解密步骤，给出 WebUtils 工具操作、原创错误表、真实场景与安全边界。",
+  "datePublished": "2026-08-09",
+  "dateModified": "2026-08-09",
+  "author": {
+    "@type": "Organization",
+    "name": "WebUtils"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "WebUtils",
+    "url": "https://essays4u.net/"
+  },
+  "mainEntityOfPage": "https://essays4u.net/guides/rsa-encryptor-guide"
+}
+</script>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "RSA 加密完整指南：密钥生成、加密解密示例与安全实践",
+  "description": "讲清 RSA 公钥加密原理、密钥对生成、OAEP/PKCS1 填充与本地加解密步骤，给出 WebUtils 工具操作、原创错误表、真实场景与安全边界。",
+  "totalTime": "PT14M",
+  "step": [
+    {
+      "@type": "HowToStep",
+      "name": "打开工具",
+      "text": "打开 WebUtils 相关工具页面。",
+      "url": "https://essays4u.net/tools/privacy/rsa-tool"
+    },
+    {
+      "@type": "HowToStep",
+      "name": "按指南操作",
+      "text": "按照本指南中的步骤粘贴、处理并检查结果。"
+    },
+    {
+      "@type": "HowToStep",
+      "name": "核对输出",
+      "text": "确认输出符合预期；如有报错，按错误表排查。"
+    }
+  ]
+}
+</script>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "首页",
+      "item": "https://essays4u.net/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "使用指南",
+      "item": "https://essays4u.net/guides/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "RSA 加密解密指南",
+      "item": "https://essays4u.net/guides/rsa-encryptor-guide"
+    }
+  ]
+}
+</script>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "RSA 和 AES 可以互相替代吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "不可以。AES 适合大量数据；RSA 适合保护短密钥或做签名。常见正确组合是 RSA/ECDH 保护 AES 密钥。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "为什么加密中文有时失败？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "多半是字符串到字节的编码不一致，或明文过长。统一 UTF-8，并只加密短文本。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "公钥可以提交到 Git 吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "可以，但应确认没有把私钥一并提交；公钥仍可能被滥用做「用你的钥加密垃圾数据」之类骚扰，业务上按需绑定身份。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "1024 位密钥解密成功就说明安全吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "只说明数学往返正确，不说明抗攻击强度足够。新系统不要用 1024。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "WebUtils 支持哪些填充？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "以工具页当前选项为准；设计上应优先 OAEP。若页面提供 PKCS1，仅用于兼容旧密文。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "私钥丢了密文还能救吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "一般不能。没有私钥就无法解密；备份策略要在「可恢复」与「备份即泄露面」之间权衡，企业场景用 KMS/HSM。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "RSA 能直接当登录密码存储吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "不能。密码存储应使用慢哈希（Argon2/bcrypt 等），与 RSA 无关。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "和 Base64、Hash 工具怎么配合？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "密文常以 Base64 传输；密钥指纹用 Hash；概念上三者分工不同，见相关工具页。"
+      }
+    }
+  ]
+}
+</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+              --bg: #f4f6fb;
+              --card: #ffffff;
+              --text: #0f172a;
+              --muted: #64748b;
+              --border: #e2e8f0;
+              --primary: #4f46e5;
+              --primary-soft: #eef2ff;
+              --shadow: 0 8px 28px rgba(15, 23, 42, 0.06);
+              --callout-bg: #f8fafc;
+            }
+            * {
+              box-sizing: border-box;
+              margin: 0;
+              padding: 0;
+            }
+            body {
+              font-family: "Space Grotesk", system-ui, -apple-system, sans-serif;
+              background:
+                radial-gradient(circle at 8% 0%, rgba(79, 70, 229, 0.08), transparent 32%),
+                radial-gradient(circle at 92% 8%, rgba(14, 165, 233, 0.08), transparent 28%),
+                var(--bg);
+              color: var(--text);
+              min-height: 100vh;
+              line-height: 1.7;
+            }
+            .site-header {
+              position: sticky;
+              top: 0;
+              z-index: 20;
+              background: rgba(255, 255, 255, 0.92);
+              backdrop-filter: blur(10px);
+              border-bottom: 1px solid var(--border);
+            }
+            .hdr {
+              width: min(1120px, 94%);
+              margin: 0 auto;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 12px;
+              padding: 12px 0;
+            }
+            .logo a {
+              font-weight: 700;
+              font-size: 1.2rem;
+              color: var(--primary);
+              text-decoration: none;
+            }
+            .site-nav {
+              display: flex;
+              gap: 12px;
+              flex-wrap: wrap;
+            }
+            .site-nav a {
+              color: var(--muted);
+              text-decoration: none;
+              font-size: 0.92rem;
+            }
+            .site-nav a:hover,
+            .site-nav a.active {
+              color: var(--primary);
+            }
+            .page {
+              width: min(1120px, 94%);
+              margin: 0 auto;
+              padding: 20px 0 48px;
+            }
+            .breadcrumb {
+              margin-bottom: 16px;
+            }
+            .breadcrumb ol {
+              list-style: none;
+              display: flex;
+              flex-wrap: wrap;
+              gap: 0.4rem;
+              align-items: center;
+              font-size: 0.875rem;
+              color: var(--muted);
+            }
+            .breadcrumb li {
+              display: flex;
+              align-items: center;
+            }
+            .breadcrumb li:not(:last-child)::after {
+              content: "鈥?;
+              margin-left: 0.4rem;
+              opacity: 0.7;
+            }
+            .breadcrumb a {
+              color: var(--muted);
+              text-decoration: none;
+            }
+            .breadcrumb a:hover {
+              color: var(--primary);
+            }
+            .article-hero {
+              background: var(--card);
+              border: 1px solid var(--border);
+              border-radius: 20px;
+              box-shadow: var(--shadow);
+              padding: 28px 24px 22px;
+              margin-bottom: 18px;
+            }
+            .article-hero h1 {
+              font-size: clamp(1.55rem, 3.2vw, 2.05rem);
+              line-height: 1.3;
+              margin-bottom: 12px;
+            }
+            .meta-row {
+              display: flex;
+              flex-wrap: wrap;
+              gap: 8px;
+              margin-bottom: 14px;
+            }
+            .pill {
+              display: inline-flex;
+              align-items: center;
+              padding: 6px 12px;
+              border-radius: 999px;
+              background: var(--bg);
+              border: 1px solid var(--border);
+              color: var(--muted);
+              font-size: 0.84rem;
+            }
+            .lead {
+              color: var(--muted);
+              font-size: 1.02rem;
+              margin-bottom: 16px;
+            }
+            .lead strong {
+              color: var(--text);
+            }
+            .cta {
+              display: flex;
+              flex-wrap: wrap;
+              align-items: center;
+              justify-content: space-between;
+              gap: 14px;
+              padding: 16px 18px;
+              border-radius: 14px;
+              border: 1px solid color-mix(in srgb, var(--primary) 22%, var(--border));
+              background: linear-gradient(135deg, var(--primary-soft), #fff 70%);
+            }
+            .cta-copy strong {
+              display: block;
+              margin-bottom: 4px;
+              font-size: 0.98rem;
+            }
+            .cta-copy span {
+              color: var(--muted);
+              font-size: 0.88rem;
+            }
+            .cta-btn {
+              display: inline-flex;
+              align-items: center;
+              padding: 10px 16px;
+              border-radius: 10px;
+              background: var(--primary);
+              color: #fff;
+              font-weight: 600;
+              font-size: 0.92rem;
+              text-decoration: none;
+              white-space: nowrap;
+            }
+            .cta-btn:hover {
+              filter: brightness(1.05);
+            }
+            .article-layout {
+              display: grid;
+              gap: 24px;
+            }
+            @media (min-width: 980px) {
+              .article-layout {
+                grid-template-columns: 1fr 240px;
+                align-items: start;
+                gap: 32px;
+              }
+              .toc-rail {
+                position: sticky;
+                top: 72px;
+                height: fit-content;
+              }
+            }
+            .key-takeaway h2 {
+              color: var(--primary);
+              font-size: 1.25rem;
+              margin-bottom: 12px;
+            }
+            .key-takeaway p {
+              color: var(--muted);
+              font-size: 1.02rem;
+              line-height: 1.6;
+            }
+            .key-takeaway .bold {
+              color: var(--text);
+              font-weight: 600;
+            }
+            .data-table {
+              width: 100%;
+              border-collapse: collapse;
+              margin: 16px 0;
+              background: var(--card);
+              border: 1px solid var(--border);
+              border-radius: 12px;
+              overflow: hidden;
+            }
+            .data-table th,
+            .data-table td {
+              padding: 12px 16px;
+              text-align: left;
+              border-bottom: 1px solid var(--border);
+            }
+            .data-table th {
+              background: var(--primary-soft);
+              color: var(--primary);
+              font-weight: 600;
+            }
+            .data-table tr:last-child td {
+              border-bottom: none;
+            }
+            .callout {
+              background: var(--callout-bg);
+              border-left: 4px solid var(--primary);
+              padding: 16px 20px;
+              margin: 16px 0;
+              border-radius: 0 8px 8px 0;
+            }
+            .callout code {
+              background: #f1f5f9;
+              padding: 2px 6px;
+              border-radius: 4px;
+            }
+            .checklist {
+              background: var(--card);
+              border: 1px solid var(--border);
+              border-radius: 16px;
+              padding: 20px;
+              margin: 24px 0;
+            }
+            .checklist ul {
+              list-style: none;
+              padding: 0;
+            }
+            .checklist li {
+              display: flex;
+              align-items: flex-start;
+              gap: 12px;
+              margin-bottom: 12px;
+            }
+            .checklist li:before {
+              content: "鉁?;
+              color: var(--primary);
+              font-weight: bold;
+            }
+            .toc-rail {
+              display: none;
+            }
+            @media (min-width: 980px) {
+              .toc-rail {
+                display: block;
+              }
+            }
+            .toc-rail h2 {
+              font-size: 1.1rem;
+              margin-bottom: 16px;
+              color: var(--text);
+            }
+            .toc-list {
+              list-style: none;
+            }
+            .toc-list li {
+              margin-bottom: 8px;
+            }
+            .toc-list a {
+              color: var(--muted);
+              text-decoration: none;
+              display: block;
+              padding: 8px 12px;
+              border-radius: 8px;
+              transition: all 0.2s;
+            }
+            .toc-list a:hover {
+              color: var(--primary);
+              background: var(--primary-soft);
+            }
+            .faq-item {
+              border-bottom: 1px solid var(--border);
+              padding: 20px 0;
+            }
+            .faq-item:last-child {
+              border-bottom: none;
+            }
+            .faq-item h3 {
+              margin-bottom: 8px;
+              color: var(--text);
+            }
+            .faq-item p {
+              color: var(--muted);
+            }
+            /* 姝ｆ枃杩炵画闃呰锛氭暣鏍忎竴寮犵焊锛岀珷鑺傜敤鍒嗛殧绾匡紝閬垮厤姣忚妭涓€寮犲崱鐗?*/
+            .article-main {
+              background: var(--card);
+              border: 1px solid var(--border);
+              border-radius: 16px;
+              box-shadow: var(--shadow);
+              padding: 8px 28px 28px;
+            }
+            .article-main section {
+              background: transparent;
+              border: none;
+              border-radius: 0;
+              box-shadow: none;
+              padding: 28px 0 12px;
+              margin-bottom: 0;
+              border-bottom: 1px solid var(--border);
+            }
+            .article-main section:last-child {
+              border-bottom: none;
+              padding-bottom: 0;
+            }
+            .article-main section.key-takeaway {
+              background: var(--primary-soft);
+              border: 1px solid color-mix(in srgb, var(--primary) 28%, var(--border));
+              border-radius: 14px;
+              padding: 20px 22px;
+              margin: 20px 0 8px;
+            }
+            .article-main section.checklist {
+              background: #f8fafc;
+              border: 1px solid var(--border);
+              border-radius: 14px;
+              padding: 20px 22px;
+              margin: 16px 0 8px;
+            }
+            .article-main section h2 {
+              font-size: 1.28rem;
+              margin: 0 0 14px;
+              line-height: 1.35;
+              color: var(--text);
+            }
+            .article-main section h3 {
+              font-size: 1.05rem;
+              margin: 22px 0 10px;
+              color: var(--text);
+            }
+            .article-main p {
+              color: var(--muted);
+              margin-bottom: 14px;
+              line-height: 1.8;
+            }
+            .article-main p:last-child {
+              margin-bottom: 0;
+            }
+            .article-main ul,
+            .article-main ol {
+              color: var(--muted);
+              padding-left: 1.25rem;
+              margin: 6px 0 16px;
+            }
+            .article-main li {
+              margin-bottom: 6px;
+              line-height: 1.75;
+            }
+            .article-main a {
+              color: var(--primary);
+            }
+            /* 正文链接色不得覆盖按钮（否则紫底紫字看不清） */
+            .article-main a.btn-primary,
+            .article-main a.btn.btn-primary,
+            .page .btn-primary,
+            .page .btn.btn-primary {
+              color: #fff !important;
+              background: var(--primary) !important;
+            }
+            .article-main a.btn-primary:hover,
+            .article-main a.btn.btn-primary:hover,
+            .page .btn-primary:hover,
+            .page .btn.btn-primary:hover {
+              color: #fff !important;
+              background: #4338ca !important;
+            }
+
+            /* Ghost buttons (e.g. "开发工具分类", "联系我们") */
+            .article-main a.btn-ghost,
+            .article-main a.btn.btn-ghost,
+            .page .btn-ghost,
+            .page .btn.btn-ghost {
+              color: var(--text) !important;
+            }
+            .article-main a.btn-ghost:hover,
+            .article-main a.btn.btn-ghost:hover,
+            .page .btn-ghost:hover,
+            .page .btn.btn-ghost:hover {
+              color: var(--primary) !important;
+              border-color: var(--primary) !important;
+            }
+
+            .article-main strong {
+              color: var(--text);
+            }
+            .article-main code {
+              background: #f1f5f9;
+              padding: 2px 6px;
+              border-radius: 4px;
+              font-size: 0.9em;
+            }
+            .code-block {
+              background: #f8fafc;
+              border: 1px solid var(--border);
+              border-radius: 10px;
+              padding: 14px 16px;
+              overflow-x: auto;
+              font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+              font-size: 0.88rem;
+              line-height: 1.55;
+              color: #0f172a;
+              margin: 12px 0 16px;
+              white-space: pre;
+            }
+            .compare-grid {
+              display: grid;
+              gap: 14px;
+            }
+            @media (min-width: 720px) {
+              .compare-grid {
+                grid-template-columns: 1fr 1fr;
+              }
+            }
+            .compare-panel {
+              background: #f8fafc;
+              border: 1px solid var(--border);
+              border-radius: 12px;
+              padding: 14px;
+            }
+            .compare-panel h3 {
+              margin-top: 0 !important;
+              margin-bottom: 8px !important;
+              font-size: 0.98rem !important;
+            }
+            .tool-grid {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+              gap: 12px;
+            }
+            .tool-card {
+              padding: 14px;
+              border: 1px solid var(--border);
+              border-radius: 12px;
+              background: var(--bg);
+              text-decoration: none;
+              color: inherit;
+              display: flex;
+              flex-direction: column;
+              gap: 6px;
+            }
+            .tool-card:hover {
+              border-color: color-mix(in srgb, var(--primary) 35%, var(--border));
+              background: var(--primary-soft);
+            }
+            .tool-card strong {
+              color: var(--text);
+            }
+            .tool-card span {
+              color: var(--muted);
+              font-size: 0.9rem;
+            }
+            .next-actions {
+              display: flex;
+              flex-wrap: wrap;
+              gap: 12px;
+              margin-top: 24px;
+            }
+            .btn {
+              padding: 10px 20px;
+              border-radius: 10px;
+              text-decoration: none;
+              font-weight: 600;
+              font-size: 0.95rem;
+              border: 1px solid var(--border);
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              min-width: 160px;
+            }
+            .btn-primary {
+              background: var(--primary);
+              color: #fff !important;
+              border-color: var(--primary);
+            }
+            .btn-primary:hover {
+              background: #4338ca;
+              color: #fff !important;
+            }
+            .btn-ghost {
+              background: var(--bg);
+              color: var(--text);
+            }
+            .btn-ghost:hover {
+              color: var(--primary);
+              border-color: var(--primary);
+            }
+            .side-cta a.btn-primary {
+              color: #fff !important;
+            }
+            .side-cta {
+              background: var(--card);
+              border: 1px solid var(--border);
+              border-radius: 16px;
+              padding: 20px;
+              margin-top: 24px;
+            }
+            .side-cta h3 {
+              color: var(--primary);
+              margin-bottom: 12px;
+              font-size: 1.1rem;
+            }
+            footer {
+              background: #fff;
+              border-top: 1px solid var(--border);
+              padding: 40px 0 20px;
+            }
+            .footer-inner {
+              width: min(1120px, 94%);
+              margin: 0 auto;
+              text-align: center;
+            }
+            .footer-links {
+              display: flex;
+              flex-wrap: wrap;
+              gap: 20px;
+              justify-content: center;
+              margin: 16px 0;
+            }
+            .footer-links a {
+              color: var(--muted);
+              text-decoration: none;
+              font-size: 0.95rem;
+            }
+            .footer-links a:hover {
+              color: var(--primary);
+            }
+            @media (max-width: 979px) {
+              .toc-rail {
+                display: none;
+              }
+            }
+
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="hdr">
+        <div class="logo"><a href="/">WebUtils</a></div>
+        <nav class="site-nav" aria-label="主导航">
+          <a href="/">首页</a>
+          <a href="/tools-directory">全部工具</a>
+          <a href="/guides/" class="active">使用指南</a>
+          <a href="/about">关于</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page">
+      <nav class="breadcrumb" aria-label="breadcrumb">
+        <ol>
+          <li><a href="/">首页</a></li>
+          <li><a href="/guides/">使用指南</a></li>
+          <li><span>RSA 加密解密指南</span></li>
+        </ol>
+      </nav>
+
+      <article>
+        <header class="article-hero">
+          <h1>RSA 加密完整指南：密钥生成、加密解密示例与安全实践</h1>
+          <div class="meta-row">
+            <span class="pill">更新 2026-08-09</span>
+            <span class="pill">约 14 分钟</span>
+            <span class="pill">开发工具</span>
+            <span class="pill">How-to</span>
+          </div>
+          <p class="lead">接口要在不可信通道上传敏感字段、前后端交换会话密钥，或你只想在本机验证「公钥加密、私钥解密」是否走通时，RSA 几乎是第一选择。本指南分清公钥/私钥职责、密钥长度与填充、PEM 导入导出，给出可对着 WebUtils 完成的步骤、原创错误表与真实场景，避免把 RSA 当对称加密乱用或把 1024 位密钥当成生产可用。</p>
+          <div class="cta">
+            <div class="cta-copy">
+              <strong>立即使用相关工具</strong>
+              <span>RSA 加密解密 — 浏览器内密钥生成与加解密，本地处理</span>
+            </div>
+            <a class="cta-btn" href="/tools/privacy/rsa-tool">打开工具 →</a>
+          </div>
+        </header>
+
+        <div class="article-layout">
+          <div class="article-main">
+<section class="card key-takeaway" id="tldr">
+<h2>核心一句话</h2>
+<p><strong>RSA 用公钥加密、私钥解密；它解决密钥分发，不替代 AES 的高速批量加密。</strong></p>
+<p>非对称加密让「谁都能用公钥封信，只有持钥方能拆」成为可能。生产里更常见的是：用 RSA（或 ECDH）保护一枚短期对称密钥，再用 AES 加密大体积数据。下面按「原理 → 密钥生成 → 工具操作 → 排错 → 场景 → 选型」展开，主工具为 <a href="/tools/privacy/rsa-tool">RSA 加密工具</a>，密钥生成可配合 <a href="/tools/dev/rsa-keygen">RSA 密钥生成器</a>。</p>
+</section>
+
+<section class="card" id="what">
+<h2>RSA 解决什么问题</h2>
+<p>对称算法（如 AES）快，但通信双方必须先共享同一密钥——密钥怎么安全送到对方手里，本身就是难题。RSA 把密钥拆成一对：</p>
+<ul>
+<li><strong>公钥</strong>：可公开分发，用于加密或验签。</li>
+<li><strong>私钥</strong>：严格保密，用于解密或签名。</li>
+</ul>
+<p>典型用途包括：</p>
+<ul>
+<li>前端用后端公钥加密登录凭据或配置片段，后端私钥解密。</li>
+<li>用私钥对摘要签名，对端用公钥验签（JWT RS256、代码签名、软件更新包）。</li>
+<li>TLS 握手历史上曾大量使用 RSA 密钥交换（现代更偏向 ECDHE，但证书里仍常见 RSA 密钥）。</li>
+<li>本地脚本、运维工具在「只能文本通道」里传递短密钥材料。</li>
+</ul>
+<p><strong>它不是万能保险箱。</strong> RSA 运算成本高，明文长度受模数与填充限制，不适合直接加密大文件；大文件应走「RSA 包一层 AES 密钥 + AES 加密载荷」的混合模式。</p>
+<p><strong>它也不是哈希。</strong> 哈希（见 <a href="/tools/dev/hash-generator">Hash 生成器</a>）不可逆、用于指纹；RSA 可逆（持私钥时），用于保密或身份证明。签名流程通常是「先哈希再签」，不要把整篇文档当 m 直接做模幂。</p>
+<h3>数学骨架（够用即可）</h3>
+<ol>
+<li>选两大素数 <code>p</code>、<code>q</code>，令 <code>n = p × q</code>。</li>
+<li>计算欧拉函数 <code>φ(n) = (p-1)(q-1)</code>（实现里也常用 <code>λ(n)</code>）。</li>
+<li>选公钥指数 <code>e</code>（常见 <code>65537</code>），与 <code>φ(n)</code> 互质。</li>
+<li>求私钥指数 <code>d</code>，满足 <code>e × d ≡ 1 (mod φ(n))</code>。</li>
+<li>公钥 <code>(n, e)</code>，私钥至少包含 <code>(n, d)</code>（完整私钥还带 <code>p</code>、<code>q</code> 等 CRT 参数以加速解密）。</li>
+</ol>
+<p>加密：<code>c ≡ m^e (mod n)</code>；解密：<code>m ≡ c^d (mod n)</code>。安全性依赖「已知 <code>n</code> 很难分解出 <code>p</code>、<code>q</code>」。教学可用极小 <code>p</code>、<code>q</code> 手算；<strong>生产永远用经过审慎实现的库与足够长的密钥</strong>，不要自己拼模幂当加密。</p>
+<h3>密钥长度怎么选</h3>
+<table class="data-table">
+<thead>
+<tr>
+<th>模数长度</th>
+<th>现状建议</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1024 bit</td>
+<td>仅演示/遗留兼容</td>
+<td>已被认为过弱，勿用于新系统</td>
+</tr>
+<tr>
+<td>2048 bit</td>
+<td>当前通用默认</td>
+<td>多数证书、SSH、业务接口的底线</td>
+</tr>
+<tr>
+<td>3072 / 4096 bit</td>
+<td>高安全或长生命周期</td>
+<td>更慢，适合根密钥、长期归档</td>
+</tr>
+</tbody>
+</table>
+<p>WebUtils 相关页面用于本地试验时，请按页面选项选择长度；把演示用 1024 密钥拷进生产配置是常见事故来源。</p>
+<h3>填充：为什么不能「裸 RSA」</h3>
+<p>直接对消息整数做 <code>m^e mod n</code> 存在可预测性与可塑性攻击。标准实践是加 <strong>填充（padding）</strong>：</p>
+<table class="data-table">
+<thead>
+<tr>
+<th>方案</th>
+<th>角色</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RSAES-OAEP</td>
+<td>加密首选</td>
+<td>现代库默认；常配合 SHA-256</td>
+</tr>
+<tr>
+<td>RSAES-PKCS1-v1_5</td>
+<td>加密兼容</td>
+<td>旧系统常见；新设计优先 OAEP</td>
+</tr>
+<tr>
+<td>RSASSA-PSS</td>
+<td>签名首选</td>
+<td>优于旧式 PKCS1 v1.5 签名</td>
+</tr>
+<tr>
+<td>RSASSA-PKCS1-v1_5</td>
+<td>签名兼容</td>
+<td>证书、JWT RS256 仍大量使用</td>
+</tr>
+</tbody>
+</table>
+<p>两端必须约定同一填充与哈希；一边 OAEP、一边 PKCS1，结果只能是「解密失败」或更糟的静默错配。</p>
+</section>
+
+<section class="card" id="formats">
+<h2>PEM、Base64 与密钥形态</h2>
+<p>工具与 OpenSSL 生态最常见的是 <strong>PEM</strong>：ASCII 装甲，头尾像 <code>-----BEGIN PUBLIC KEY-----</code> / <code>-----BEGIN PRIVATE KEY-----</code>（或 <code>RSA PRIVATE KEY</code>），中间是 Base64（可配合 <a href="/tools/dev/base64">Base64</a> 理解其文本形态，但<strong>不要</strong>把私钥当普通文本到处贴）。</p>
+<p>注意区分：</p>
+<ul>
+<li><strong>SubjectPublicKeyInfo（SPKI）</strong> 公钥：<code>BEGIN PUBLIC KEY</code>。</li>
+<li><strong>PKCS#8</strong> 私钥：<code>BEGIN PRIVATE KEY</code>（可带口令加密包装）。</li>
+<li><strong>PKCS#1</strong> 传统 RSA 私钥：<code>BEGIN RSA PRIVATE KEY</code>。</li>
+</ul>
+<p>导入失败时，先看头尾标签是否完整、是否多复制了空行或 HTML，再看算法与长度是否被工具支持。私钥一旦进入聊天记录、截图、前端仓库，应视为已泄露并轮换。</p>
+</section>
+
+<section class="card" id="steps">
+<h2>在 WebUtils 上怎么做</h2>
+<h3>A. 生成密钥对</h3>
+<p>打开 <a href="/tools/dev/rsa-keygen">RSA 密钥生成器</a>（或加密页内嵌的生成入口，以页面实际控件为准）：</p>
+<ol>
+<li>选择密钥长度（建议 <strong>2048</strong> 起）。</li>
+<li>生成后分别复制 <strong>公钥 PEM</strong> 与 <strong>私钥 PEM</strong>。</li>
+<li>私钥只保存在本机安全位置；公钥可交给对端或写入配置中的公开字段。</li>
+<li>需要对比指纹时，可对公钥 DER/PEM 做哈希（配合 Hash 工具），用于「是不是同一把钥」的人工核对。</li>
+</ol>
+<h3>B. 加密明文</h3>
+<p>打开 <a href="/tools/privacy/rsa-tool">RSA 加密工具</a>：</p>
+<ol>
+<li>粘贴或导入 <strong>公钥</strong>。</li>
+<li>选择填充（有 OAEP 时优先 OAEP）。</li>
+<li>输入要保护的<strong>短文本</strong>（密钥、令牌、短配置；不是整库 SQL dump）。</li>
+<li>执行加密，得到密文（常为 Base64 或十六进制，按页面输出约定复制）。</li>
+<li>将密文通过原通道发送；通道可被窃听也不应单独还原明文（在私钥未泄露前提下）。</li>
+</ol>
+<h3>C. 解密密文</h3>
+<ol>
+<li>仅在持有对应私钥的环境粘贴 <strong>私钥</strong>。</li>
+<li>选择与加密时一致的填充与编码。</li>
+<li>粘贴密文，解密得到原文。</li>
+<li>用毕清理页面上的私钥与明文（关闭标签、避免同步的剪贴板历史）。</li>
+</ol>
+<h3>D. 和「只编码不加密」划清界限</h3>
+<p>若需求只是把二进制塞进 JSON，那是 Base64 的事，不是 RSA。若需求是「谁都能读但要防篡改」，考虑签名或 MAC，而不是把内容 RSA 加密后再公开存放却不管理私钥生命周期。</p>
+</section>
+
+<section class="card" id="toy-example">
+<h2>可复现的小例子（教学用）</h2>
+<p>下面用<strong>刻意过小</strong>的参数说明公式，<strong>禁止</strong>当作真实密钥：</p>
+<ul>
+<li><code>p = 61</code>，<code>q = 53</code>，则 <code>n = 3233</code>，<code>φ(n) = 3120</code>。</li>
+<li>取 <code>e = 17</code>，可求得 <code>d = 2753</code>（满足 <code>17 × 2753 ≡ 1 (mod 3120)</code>）。</li>
+<li>令消息整数 <code>m = 65</code>（仅示例）。</li>
+<li>密文 <code>c = 65^17 mod 3233 = 2790</code>。</li>
+<li>明文 <code>m' = 2790^2753 mod 3233 = 65</code>。</li>
+</ul>
+<p>真实系统里 <code>m</code> 来自填充后的字节块，长度受 <code>n</code> 与填充开销约束；Web Crypto / OpenSSL 会拒绝过长明文，而不是静默截断——这是特性，不是 bug。</p>
+<h3>浏览器 Web Crypto 思路（对照理解）</h3>
+<p>现代浏览器可用 <code>crypto.subtle</code> 做 RSA-OAEP（需先把 PEM 转成 <code>CryptoKey</code>）。示意：</p>
+<pre class="code-block" data-lang="javascript">// 示意：公钥已导入为 CryptoKey，算法 RSA-OAEP + SHA-256
+const enc = new TextEncoder();
+const cipherBuf = await crypto.subtle.encrypt(
+  { name: 'RSA-OAEP' },
+  publicKey,
+  enc.encode('short-secret')
+);
+// cipherBuf 再经 Base64 便于文本传输</pre>
+<p>生产代码应处理 PEM 解析、错误分支与密钥用途（<code>encrypt</code> / <code>decrypt</code> / <code>sign</code> / <code>verify</code> 分离）。本地快速验证优先用 WebUtils 页面，减少自己解析 ASN.1 的失误。</p>
+<h3>OpenSSL 命令对照</h3>
+<pre class="code-block" data-lang="bash"># 生成 2048 私钥（PKCS#1 传统格式示例）
+openssl genrsa -out private.pem 2048
+# 导出公钥
+openssl rsa -in private.pem -pubout -out public.pem
+# 用公钥 OAEP 加密短文件（版本与参数以本机 openssl 为准）
+openssl pkeyutl -encrypt -pubin -inkey public.pem -in secret.txt -out secret.bin -pkeyopt rsa_padding_mode:oaep</pre>
+<p>把 OpenSSL 产出的 PEM 贴进 WebUtils 时，保持完整头尾；若工具只认某一种私钥标签，用 <code>openssl pkcs8</code> 转换后再试。</p>
+</section>
+
+<section class="card" id="errors">
+<h2>常见错误对照</h2>
+<table class="data-table">
+<thead>
+<tr>
+<th>现象</th>
+<th>常见原因</th>
+<th>处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>解密结果乱码或失败</td>
+<td>填充不一致、公钥私钥不是一对</td>
+<td>两端统一 OAEP/PKCS1；重新用同一生成流程导出</td>
+</tr>
+<tr>
+<td>明文太长报错</td>
+<td>超过模数减去填充开销</td>
+<td>只加密短密钥；大数据改 AES</td>
+</tr>
+<tr>
+<td>导入 PEM 失败</td>
+<td>缺头尾、复制了智能引号、混入 HTML</td>
+<td>纯文本编辑器重拷；核对 BEGIN/END</td>
+</tr>
+<tr>
+<td>1024 密钥「能用」</td>
+<td>遗留系统演示</td>
+<td>新项目升到 2048+ 并轮换</td>
+</tr>
+<tr>
+<td>前端仓库出现私钥</td>
+<td>误提交</td>
+<td>作废该钥、查泄露范围、改用 KMS/环境变量</td>
+</tr>
+<tr>
+<td>中文解密异常</td>
+<td>未按 UTF-8 编解码</td>
+<td>明文先 TextEncoder/UTF-8 字节再加密</td>
+</tr>
+<tr>
+<td>把 Base64 当加密</td>
+<td>概念混淆</td>
+<td>Base64 可逆且无密钥；保密用真加密</td>
+</tr>
+<tr>
+<td>签名验不过</td>
+<td>摘要算法或编码不一致</td>
+<td>统一 SHA-256 等；核对是否签的是哈希而非原文误解</td>
+</tr>
+</tbody>
+</table>
+</section>
+
+<section class="card" id="scenarios">
+<h2>真实场景</h2>
+<h3>1. 前端提交敏感字段</h3>
+<p>登录页或配置页把「短期令牌 / 二次验证码」用服务端下发的公钥加密后提交。服务端私钥仅在后端内存或 KMS。注意：RSA 加密<strong>不能</strong>代替 HTTPS；TLS 仍是传输层必选项，RSA 字段加密是应用层纵深。</p>
+<h3>2. 配置中心下发会话密钥</h3>
+<p>运维用管理员公钥加密一枚 AES-256 密钥，密文入库；目标机器持对应私钥解密后加载。轮换时生成新 RSA 对或新 AES 钥，旧密文按策略重封。</p>
+<h3>3. 本地试验与教学</h3>
+<p>在 WebUtils 生成一对 2048 密钥，加密一句中文短句，换浏览器标签解密，确认往返。适合面试前复习「为什么不能 RSA 加密 10MB 视频」。</p>
+<h3>4. 与 JWT / 签名链路协作</h3>
+<p>JWT 的 RS256 是「私钥签名、公钥验签」，方向与「公钥加密」相反。需要看清载荷时用 <a href="/tools/dev/jwt-decoder">JWT 解码器</a>；本指南的加密工具解决的是保密，不是 JWT 验签全集。</p>
+</section>
+
+<section class="card" id="choose">
+<h2>与 AES、ECC 如何选型</h2>
+<table class="data-table">
+<thead>
+<tr>
+<th>需求</th>
+<th>更合适的选择</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>加密大文件、数据库字段批量</td>
+<td>AES（GCM 等），密钥另议</td>
+</tr>
+<tr>
+<td>首次建立共享密钥、证书体系</td>
+<td>RSA 或 ECC 证书 + 现代握手</td>
+</tr>
+<tr>
+<td>同等安全强度下更短密钥、移动端</td>
+<td>常选 ECC（P-256 等）</td>
+</tr>
+<tr>
+<td>遗留系统只认 RSA PEM</td>
+<td>RSA 2048 + OAEP，计划迁移</td>
+</tr>
+<tr>
+<td>只要防篡改不要保密</td>
+<td>签名 / HMAC，而非加密</td>
+</tr>
+</tbody>
+</table>
+<p>经验法则：<strong>RSA 保护小秘密（尤其是对称密钥）；对称算法保护大数据。</strong></p>
+</section>
+
+<section class="card" id="security">
+<h2>安全边界与 WebUtils 定位</h2>
+<ul>
+<li>计算在浏览器本地完成，不把你的私钥上传到 WebUtils 服务器做运算——但仍可能受恶意扩展、共享电脑、屏幕录制威胁；<strong>高敏感私钥不要在不可信终端粘贴</strong>。</li>
+<li>页面关闭后内存是否残留取决于浏览器与系统；处理完私钥应结束会话。</li>
+<li>本工具用于理解流程与短文本试验，<strong>不是</strong>硬件加密模块、HSM 或企业 KMS 的替代品。</li>
+<li>法律与合规：加密出口管制、数据驻留、日志是否落明文，按你所在行业制度执行；技术指南不构成合规意见。</li>
+</ul>
+</section>
+
+<section class="card checklist" id="checklist">
+<h2>操作清单（发布前自检）</h2>
+<ol>
+<li>密钥长度 ≥ 2048，演示密钥未进入生产。</li>
+<li>加密使用 OAEP（或经评估的兼容填充），两端一致。</li>
+<li>私钥不进 Git、不进前端包、不进群聊。</li>
+<li>明文长度符合填充限制；大数据走混合加密。</li>
+<li>PEM 头尾完整，字符集 UTF-8。</li>
+<li>有轮换与吊销预案（泄露后能换钥重封）。</li>
+<li>传输层仍启用 HTTPS/TLS。</li>
+</ol>
+</section>
+
+<section class="card" id="summary">
+<h2>小结</h2>
+<p>RSA 把「公开的锁」和「私有的钥匙」分开，让不可信通道上的短密文传递成为可能。结合 WebUtils 的 <a href="/tools/dev/rsa-keygen">密钥生成</a> 与 <a href="/tools/privacy/rsa-tool">加解密</a>，你可以在浏览器内走完生成 → 加密 → 解密闭环，并用错误表对照填充、长度与 PEM 问题。记住三句话：密钥要够长、填充要一致、大数据请交给 AES。</p>
+</section>
+
+<section class="card" id="faq">
+<h2>常见问题</h2>
+<div class="faq-item"><h3>RSA 和 AES 可以互相替代吗？</h3>
+<p>不可以。AES 适合大量数据；RSA 适合保护短密钥或做签名。常见正确组合是 RSA/ECDH 保护 AES 密钥。</p></div>
+<div class="faq-item"><h3>为什么加密中文有时失败？</h3>
+<p>多半是字符串到字节的编码不一致，或明文过长。统一 UTF-8，并只加密短文本。</p></div>
+<div class="faq-item"><h3>公钥可以提交到 Git 吗？</h3>
+<p>可以，但应确认没有把私钥一并提交；公钥仍可能被滥用做「用你的钥加密垃圾数据」之类骚扰，业务上按需绑定身份。</p></div>
+<div class="faq-item"><h3>1024 位密钥解密成功就说明安全吗？</h3>
+<p>只说明数学往返正确，不说明抗攻击强度足够。新系统不要用 1024。</p></div>
+<div class="faq-item"><h3>WebUtils 支持哪些填充？</h3>
+<p>以工具页当前选项为准；设计上应优先 OAEP。若页面提供 PKCS1，仅用于兼容旧密文。</p></div>
+<div class="faq-item"><h3>私钥丢了密文还能救吗？</h3>
+<p>一般不能。没有私钥就无法解密；备份策略要在「可恢复」与「备份即泄露面」之间权衡，企业场景用 KMS/HSM。</p></div>
+<div class="faq-item"><h3>RSA 能直接当登录密码存储吗？</h3>
+<p>不能。密码存储应使用慢哈希（Argon2/bcrypt 等），与 RSA 无关。</p></div>
+<div class="faq-item"><h3>和 Base64、Hash 工具怎么配合？</h3>
+<p>密文常以 Base64 传输；密钥指纹用 Hash；概念上三者分工不同，见相关工具页。</p></div>
+</section>
+          </div>
+
+          <aside class="toc-rail">
+            <h2>目录</h2>
+            <ol class="toc-list">
+<li><a href="#tldr">核心一句话</a></li>
+<li><a href="#what">RSA 解决什么问题</a></li>
+<li><a href="#formats">PEM、Base64 与密钥形态</a></li>
+<li><a href="#steps">在 WebUtils 上怎么做</a></li>
+<li><a href="#toy-example">可复现的小例子（教学用）</a></li>
+<li><a href="#errors">常见错误对照</a></li>
+<li><a href="#scenarios">真实场景</a></li>
+<li><a href="#choose">与 AES、ECC 如何选型</a></li>
+<li><a href="#security">安全边界与 WebUtils 定位</a></li>
+<li><a href="#checklist">操作清单（发布前自检）</a></li>
+<li><a href="#summary">小结</a></li>
+<li><a href="#faq">常见问题</a></li>
+            </ol>
+            <div class="side-cta">
+              <h3>相关工具</h3>
+              <a href="/tools/privacy/rsa-tool" class="btn btn-primary" style="width:100%;">立即打开 RSA 工具</a>
+            </div>
+          </aside>
+        </div>
+      </article>
+    </main>
+
+    <footer>
+      <div class="footer-inner">
+        <p>WebUtils · 使用指南</p>
+        <nav class="footer-links" aria-label="网站政策">
+          <a href="/about">关于本站</a>
+          <a href="/guides/">使用指南</a>
+          <a href="/contact">联系我们</a>
+          <a href="/terms">使用条款</a>
+          <a href="/privacy-policy">隐私政策</a>
+          <a href="/">返回首页</a>
+        </nav>
+        <p>&copy; 2026 WebUtils</p>
+      </div>
+    </footer>
+  </body>
+</html>
