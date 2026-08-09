@@ -1,0 +1,1231 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>XML 格式化完全指南：美化、压缩与合式校验 - WebUtils</title>
+    <meta name="description" content="讲清 XML 美化与压缩、合式与合法、实体与命名空间陷阱，给出 WebUtils 操作步骤、错误对照、真实场景与工具选型，方便排错与联调。" />
+    <meta name="robots" content="index,follow" />
+    <meta name="author" content="WebUtils" />
+    <meta name="keywords" content="XML格式化,XML美化,XML压缩,XML校验,标签未闭合,XML实体,SOAP,配置文件" />
+    <link rel="canonical" href="https://essays4u.net/guides/xml-formatter-guide" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="XML 格式化完全指南：美化、压缩与合式校验 - WebUtils" />
+    <meta property="og:description" content="讲清 XML 美化与压缩、合式与合法、实体与命名空间陷阱，给出 WebUtils 操作步骤、错误对照、真实场景与工具选型，方便排错与联调。" />
+    <meta property="og:url" content="https://essays4u.net/guides/xml-formatter-guide" />
+    <meta property="og:site_name" content="WebUtils" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
+    <meta property="article:published_time" content="2026-08-09" />
+    <meta property="article:modified_time" content="2026-08-09" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="XML 格式化完全指南：美化、压缩与合式校验 - WebUtils" />
+    <meta name="twitter:description" content="讲清 XML 美化与压缩、合式与合法、实体与命名空间陷阱，给出 WebUtils 操作步骤、错误对照、真实场景与工具选型，方便排错与联调。" />
+    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "XML 格式化完全指南：美化、压缩与合式校验",
+  "description": "讲清 XML 美化与压缩、合式与合法、实体与命名空间陷阱，给出 WebUtils 操作步骤、错误对照、真实场景与工具选型，方便排错与联调。",
+  "datePublished": "2026-08-09",
+  "dateModified": "2026-08-09",
+  "author": {
+    "@type": "Organization",
+    "name": "WebUtils"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "WebUtils",
+    "url": "https://essays4u.net/"
+  },
+  "mainEntityOfPage": "https://essays4u.net/guides/xml-formatter-guide"
+}
+</script>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "XML 格式化完全指南：美化、压缩与合式校验",
+  "description": "讲清 XML 美化与压缩、合式与合法、实体与命名空间陷阱，给出 WebUtils 操作步骤、错误对照、真实场景与工具选型，方便排错与联调。",
+  "totalTime": "PT13M",
+  "step": [
+    {
+      "@type": "HowToStep",
+      "name": "打开工具",
+      "text": "打开 WebUtils 相关工具页面。",
+      "url": "https://essays4u.net/tools/dev/xml-formatter"
+    },
+    {
+      "@type": "HowToStep",
+      "name": "按指南操作",
+      "text": "按照本指南中的步骤粘贴、处理并检查结果。"
+    },
+    {
+      "@type": "HowToStep",
+      "name": "核对输出",
+      "text": "确认输出符合预期；如有报错，按错误表排查。"
+    }
+  ]
+}
+</script>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "首页",
+      "item": "https://essays4u.net/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "使用指南",
+      "item": "https://essays4u.net/guides/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "XML 格式化完全指南",
+      "item": "https://essays4u.net/guides/xml-formatter-guide"
+    }
+  ]
+}
+</script>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "格式化会改变我的业务数据吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "正常情况下，美化与压缩只调整标签之间的空白和换行，不会改标签名、属性名与属性值文本。例外是：你的应用依赖「文本节点两端的空格」或混合内容里的精确空白——这类需求应在业务层明确 xml:space 或改数据模型，而不是指望通用格式化工具保留每一种空白策略。格式化后应用侧跑一次解析与快照对比，是最稳的确认方式。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "为什么我的 XML 在浏览器里能开，工具里却怪怪的？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "浏览器打开「像 XML 的页面」时，可能按 HTML 容错解析，自动补标签、忽略部分错误。XML 工具与严格解析器走的是合式规则，对交叉嵌套、裸 &amp; 更敏感。以对端服务或标准 XML 解析器为准，不要用浏览器渲染结果当合式证明。若内容本就是 HTML，请改用 HTML 格式化工具。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "需要 XSD 校验怎么办？本工具够不够？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "本工具解决的是可读性与合式层面的结构暴露，不替代 XSD/DTD 校验。字段是否必填、枚举是否合法、类型是否是 xs:date，要在 IDE、CI（如 xmllint --schema）或服务端校验链完成。推荐流程：先在本工具美化并修合式 → 再跑 Schema → 最后联调业务。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "压缩后对端报错，是压缩坏了吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "多数时候不是。先把同一份压缩结果在本地再美化还原，看结构是否与原文一致；再检查 Content-Type、字符编码、是否多了 BOM、网关是否不允许某字符。若还原后与原文结构一致而对端仍挂，问题更可能在 HTTP 头、签名、时间戳或业务字段，而不是 minify 本身。若还原后结构变了，再带着最小样例排查文本节点空白。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "能不能格式化几兆的巨型 XML？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "可以尝试，但浏览器文本域与内存有上限，卡顿或失败都正常。实务上：用 head/grep/日志平台先切出相关 Envelope 或出错偏移附近的片段；或改用桌面编辑器、流式工具。联调排错需要的是最小复现，不是把整库导出美化一遍。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Tab 和空格哪个更好？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "XML 语法本身不强制，团队一致更重要。Java/Android/Maven 生态常见 4 空格；部分前端仓库偏 2 空格；Tab 易在不同编辑器宽度下误判层级。本工具三者都支持，选与仓库 .editorconfig 一致的一项即可。不要在同一文件混用。"
+      }
+    }
+  ]
+}
+</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+              --bg: #f4f6fb;
+              --card: #ffffff;
+              --text: #0f172a;
+              --muted: #64748b;
+              --border: #e2e8f0;
+              --primary: #4f46e5;
+              --primary-soft: #eef2ff;
+              --shadow: 0 8px 28px rgba(15, 23, 42, 0.06);
+              --callout-bg: #f8fafc;
+            }
+            * {
+              box-sizing: border-box;
+              margin: 0;
+              padding: 0;
+            }
+            body {
+              font-family: "Space Grotesk", system-ui, -apple-system, sans-serif;
+              background:
+                radial-gradient(circle at 8% 0%, rgba(79, 70, 229, 0.08), transparent 32%),
+                radial-gradient(circle at 92% 8%, rgba(14, 165, 233, 0.08), transparent 28%),
+                var(--bg);
+              color: var(--text);
+              min-height: 100vh;
+              line-height: 1.7;
+            }
+            .site-header {
+              position: sticky;
+              top: 0;
+              z-index: 20;
+              background: rgba(255, 255, 255, 0.92);
+              backdrop-filter: blur(10px);
+              border-bottom: 1px solid var(--border);
+            }
+            .hdr {
+              width: min(1120px, 94%);
+              margin: 0 auto;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 12px;
+              padding: 12px 0;
+            }
+            .logo a {
+              font-weight: 700;
+              font-size: 1.2rem;
+              color: var(--primary);
+              text-decoration: none;
+            }
+            .site-nav {
+              display: flex;
+              gap: 12px;
+              flex-wrap: wrap;
+            }
+            .site-nav a {
+              color: var(--muted);
+              text-decoration: none;
+              font-size: 0.92rem;
+            }
+            .site-nav a:hover,
+            .site-nav a.active {
+              color: var(--primary);
+            }
+            .page {
+              width: min(1120px, 94%);
+              margin: 0 auto;
+              padding: 20px 0 48px;
+            }
+            .breadcrumb {
+              margin-bottom: 16px;
+            }
+            .breadcrumb ol {
+              list-style: none;
+              display: flex;
+              flex-wrap: wrap;
+              gap: 0.4rem;
+              align-items: center;
+              font-size: 0.875rem;
+              color: var(--muted);
+            }
+            .breadcrumb li {
+              display: flex;
+              align-items: center;
+            }
+            .breadcrumb li:not(:last-child)::after {
+              content: "鈥?;
+              margin-left: 0.4rem;
+              opacity: 0.7;
+            }
+            .breadcrumb a {
+              color: var(--muted);
+              text-decoration: none;
+            }
+            .breadcrumb a:hover {
+              color: var(--primary);
+            }
+            .article-hero {
+              background: var(--card);
+              border: 1px solid var(--border);
+              border-radius: 20px;
+              box-shadow: var(--shadow);
+              padding: 28px 24px 22px;
+              margin-bottom: 18px;
+            }
+            .article-hero h1 {
+              font-size: clamp(1.55rem, 3.2vw, 2.05rem);
+              line-height: 1.3;
+              margin-bottom: 12px;
+            }
+            .meta-row {
+              display: flex;
+              flex-wrap: wrap;
+              gap: 8px;
+              margin-bottom: 14px;
+            }
+            .pill {
+              display: inline-flex;
+              align-items: center;
+              padding: 6px 12px;
+              border-radius: 999px;
+              background: var(--bg);
+              border: 1px solid var(--border);
+              color: var(--muted);
+              font-size: 0.84rem;
+            }
+            .lead {
+              color: var(--muted);
+              font-size: 1.02rem;
+              margin-bottom: 16px;
+            }
+            .lead strong {
+              color: var(--text);
+            }
+            .cta {
+              display: flex;
+              flex-wrap: wrap;
+              align-items: center;
+              justify-content: space-between;
+              gap: 14px;
+              padding: 16px 18px;
+              border-radius: 14px;
+              border: 1px solid color-mix(in srgb, var(--primary) 22%, var(--border));
+              background: linear-gradient(135deg, var(--primary-soft), #fff 70%);
+            }
+            .cta-copy strong {
+              display: block;
+              margin-bottom: 4px;
+              font-size: 0.98rem;
+            }
+            .cta-copy span {
+              color: var(--muted);
+              font-size: 0.88rem;
+            }
+            .cta-btn {
+              display: inline-flex;
+              align-items: center;
+              padding: 10px 16px;
+              border-radius: 10px;
+              background: var(--primary);
+              color: #fff;
+              font-weight: 600;
+              font-size: 0.92rem;
+              text-decoration: none;
+              white-space: nowrap;
+            }
+            .cta-btn:hover {
+              filter: brightness(1.05);
+            }
+            .article-layout {
+              display: grid;
+              gap: 24px;
+            }
+            @media (min-width: 980px) {
+              .article-layout {
+                grid-template-columns: 1fr 240px;
+                align-items: start;
+                gap: 32px;
+              }
+              .toc-rail {
+                position: sticky;
+                top: 72px;
+                height: fit-content;
+              }
+            }
+            .key-takeaway h2 {
+              color: var(--primary);
+              font-size: 1.25rem;
+              margin-bottom: 12px;
+            }
+            .key-takeaway p {
+              color: var(--muted);
+              font-size: 1.02rem;
+              line-height: 1.6;
+            }
+            .key-takeaway .bold {
+              color: var(--text);
+              font-weight: 600;
+            }
+            .data-table {
+              width: 100%;
+              border-collapse: collapse;
+              margin: 16px 0;
+              background: var(--card);
+              border: 1px solid var(--border);
+              border-radius: 12px;
+              overflow: hidden;
+            }
+            .data-table th,
+            .data-table td {
+              padding: 12px 16px;
+              text-align: left;
+              border-bottom: 1px solid var(--border);
+            }
+            .data-table th {
+              background: var(--primary-soft);
+              color: var(--primary);
+              font-weight: 600;
+            }
+            .data-table tr:last-child td {
+              border-bottom: none;
+            }
+            .callout {
+              background: var(--callout-bg);
+              border-left: 4px solid var(--primary);
+              padding: 16px 20px;
+              margin: 16px 0;
+              border-radius: 0 8px 8px 0;
+            }
+            .callout code {
+              background: #f1f5f9;
+              padding: 2px 6px;
+              border-radius: 4px;
+            }
+            .checklist {
+              background: var(--card);
+              border: 1px solid var(--border);
+              border-radius: 16px;
+              padding: 20px;
+              margin: 24px 0;
+            }
+            .checklist ul {
+              list-style: none;
+              padding: 0;
+            }
+            .checklist li {
+              display: flex;
+              align-items: flex-start;
+              gap: 12px;
+              margin-bottom: 12px;
+            }
+            .checklist li:before {
+              content: "鉁?;
+              color: var(--primary);
+              font-weight: bold;
+            }
+            .toc-rail {
+              display: none;
+            }
+            @media (min-width: 980px) {
+              .toc-rail {
+                display: block;
+              }
+            }
+            .toc-rail h2 {
+              font-size: 1.1rem;
+              margin-bottom: 16px;
+              color: var(--text);
+            }
+            .toc-list {
+              list-style: none;
+            }
+            .toc-list li {
+              margin-bottom: 8px;
+            }
+            .toc-list a {
+              color: var(--muted);
+              text-decoration: none;
+              display: block;
+              padding: 8px 12px;
+              border-radius: 8px;
+              transition: all 0.2s;
+            }
+            .toc-list a:hover {
+              color: var(--primary);
+              background: var(--primary-soft);
+            }
+            .faq-item {
+              border-bottom: 1px solid var(--border);
+              padding: 20px 0;
+            }
+            .faq-item:last-child {
+              border-bottom: none;
+            }
+            .faq-item h3 {
+              margin-bottom: 8px;
+              color: var(--text);
+            }
+            .faq-item p {
+              color: var(--muted);
+            }
+            /* 姝ｆ枃杩炵画闃呰锛氭暣鏍忎竴寮犵焊锛岀珷鑺傜敤鍒嗛殧绾匡紝閬垮厤姣忚妭涓€寮犲崱鐗?*/
+            .article-main {
+              background: var(--card);
+              border: 1px solid var(--border);
+              border-radius: 16px;
+              box-shadow: var(--shadow);
+              padding: 8px 28px 28px;
+            }
+            .article-main section {
+              background: transparent;
+              border: none;
+              border-radius: 0;
+              box-shadow: none;
+              padding: 28px 0 12px;
+              margin-bottom: 0;
+              border-bottom: 1px solid var(--border);
+            }
+            .article-main section:last-child {
+              border-bottom: none;
+              padding-bottom: 0;
+            }
+            .article-main section.key-takeaway {
+              background: var(--primary-soft);
+              border: 1px solid color-mix(in srgb, var(--primary) 28%, var(--border));
+              border-radius: 14px;
+              padding: 20px 22px;
+              margin: 20px 0 8px;
+            }
+            .article-main section.checklist {
+              background: #f8fafc;
+              border: 1px solid var(--border);
+              border-radius: 14px;
+              padding: 20px 22px;
+              margin: 16px 0 8px;
+            }
+            .article-main section h2 {
+              font-size: 1.28rem;
+              margin: 0 0 14px;
+              line-height: 1.35;
+              color: var(--text);
+            }
+            .article-main section h3 {
+              font-size: 1.05rem;
+              margin: 22px 0 10px;
+              color: var(--text);
+            }
+            .article-main p {
+              color: var(--muted);
+              margin-bottom: 14px;
+              line-height: 1.8;
+            }
+            .article-main p:last-child {
+              margin-bottom: 0;
+            }
+            .article-main ul,
+            .article-main ol {
+              color: var(--muted);
+              padding-left: 1.25rem;
+              margin: 6px 0 16px;
+            }
+            .article-main li {
+              margin-bottom: 6px;
+              line-height: 1.75;
+            }
+            .article-main a {
+              color: var(--primary);
+            }
+            /* 正文链接色不得覆盖按钮（否则紫底紫字看不清） */
+            .article-main a.btn-primary,
+            .article-main a.btn.btn-primary,
+            .page .btn-primary,
+            .page .btn.btn-primary {
+              color: #fff !important;
+              background: var(--primary) !important;
+            }
+            .article-main a.btn-primary:hover,
+            .article-main a.btn.btn-primary:hover,
+            .page .btn-primary:hover,
+            .page .btn.btn-primary:hover {
+              color: #fff !important;
+              background: #4338ca !important;
+            }
+
+            /* Ghost buttons (e.g. "开发工具分类", "联系我们") */
+            .article-main a.btn-ghost,
+            .article-main a.btn.btn-ghost,
+            .page .btn-ghost,
+            .page .btn.btn-ghost {
+              color: var(--text) !important;
+            }
+            .article-main a.btn-ghost:hover,
+            .article-main a.btn.btn-ghost:hover,
+            .page .btn-ghost:hover,
+            .page .btn.btn-ghost:hover {
+              color: var(--primary) !important;
+              border-color: var(--primary) !important;
+            }
+
+            .article-main strong {
+              color: var(--text);
+            }
+            .article-main code {
+              background: #f1f5f9;
+              padding: 2px 6px;
+              border-radius: 4px;
+              font-size: 0.9em;
+            }
+            .code-block {
+              background: #f8fafc;
+              border: 1px solid var(--border);
+              border-radius: 10px;
+              padding: 14px 16px;
+              overflow-x: auto;
+              font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+              font-size: 0.88rem;
+              line-height: 1.55;
+              color: #0f172a;
+              margin: 12px 0 16px;
+              white-space: pre;
+            }
+            .compare-grid {
+              display: grid;
+              gap: 14px;
+            }
+            @media (min-width: 720px) {
+              .compare-grid {
+                grid-template-columns: 1fr 1fr;
+              }
+            }
+            .compare-panel {
+              background: #f8fafc;
+              border: 1px solid var(--border);
+              border-radius: 12px;
+              padding: 14px;
+            }
+            .compare-panel h3 {
+              margin-top: 0 !important;
+              margin-bottom: 8px !important;
+              font-size: 0.98rem !important;
+            }
+            .tool-grid {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+              gap: 12px;
+            }
+            .tool-card {
+              padding: 14px;
+              border: 1px solid var(--border);
+              border-radius: 12px;
+              background: var(--bg);
+              text-decoration: none;
+              color: inherit;
+              display: flex;
+              flex-direction: column;
+              gap: 6px;
+            }
+            .tool-card:hover {
+              border-color: color-mix(in srgb, var(--primary) 35%, var(--border));
+              background: var(--primary-soft);
+            }
+            .tool-card strong {
+              color: var(--text);
+            }
+            .tool-card span {
+              color: var(--muted);
+              font-size: 0.9rem;
+            }
+            .next-actions {
+              display: flex;
+              flex-wrap: wrap;
+              gap: 12px;
+              margin-top: 24px;
+            }
+            .btn {
+              padding: 10px 20px;
+              border-radius: 10px;
+              text-decoration: none;
+              font-weight: 600;
+              font-size: 0.95rem;
+              border: 1px solid var(--border);
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              min-width: 160px;
+            }
+            .btn-primary {
+              background: var(--primary);
+              color: #fff !important;
+              border-color: var(--primary);
+            }
+            .btn-primary:hover {
+              background: #4338ca;
+              color: #fff !important;
+            }
+            .btn-ghost {
+              background: var(--bg);
+              color: var(--text);
+            }
+            .btn-ghost:hover {
+              color: var(--primary);
+              border-color: var(--primary);
+            }
+            .side-cta a.btn-primary {
+              color: #fff !important;
+            }
+            .side-cta {
+              background: var(--card);
+              border: 1px solid var(--border);
+              border-radius: 16px;
+              padding: 20px;
+              margin-top: 24px;
+            }
+            .side-cta h3 {
+              color: var(--primary);
+              margin-bottom: 12px;
+              font-size: 1.1rem;
+            }
+            footer {
+              background: #fff;
+              border-top: 1px solid var(--border);
+              padding: 40px 0 20px;
+            }
+            .footer-inner {
+              width: min(1120px, 94%);
+              margin: 0 auto;
+              text-align: center;
+            }
+            .footer-links {
+              display: flex;
+              flex-wrap: wrap;
+              gap: 20px;
+              justify-content: center;
+              margin: 16px 0;
+            }
+            .footer-links a {
+              color: var(--muted);
+              text-decoration: none;
+              font-size: 0.95rem;
+            }
+            .footer-links a:hover {
+              color: var(--primary);
+            }
+            @media (max-width: 979px) {
+              .toc-rail {
+                display: none;
+              }
+            }
+
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="hdr">
+        <div class="logo"><a href="/">WebUtils</a></div>
+        <nav class="site-nav" aria-label="主导航">
+          <a href="/">首页</a>
+          <a href="/tools-directory">全部工具</a>
+          <a href="/guides/" class="active">使用指南</a>
+          <a href="/about">关于</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page">
+      <nav class="breadcrumb" aria-label="breadcrumb">
+        <ol>
+          <li><a href="/">首页</a></li>
+          <li><a href="/guides/">使用指南</a></li>
+          <li><span>XML 格式化完全指南</span></li>
+        </ol>
+      </nav>
+
+      <article>
+        <header class="article-hero">
+          <h1>XML 格式化完全指南：美化、压缩与合式校验</h1>
+          <div class="meta-row">
+            <span class="pill">更新 2026-08-09</span>
+            <span class="pill">约 13 分钟</span>
+            <span class="pill">开发工具</span>
+            <span class="pill">How-to</span>
+          </div>
+          <p class="lead">从 SOAP 接口抄回一行挤成一团的报文、Android 的 strings.xml 改乱了层级，或 Maven/Spring 配置「看起来差不多但解析器报错」时，最先该做的往往不是改业务字段，而是把 XML <strong>摊成统一缩进的树形结构</strong>，再核对标签是否成对、实体是否写对。本指南讲清美化与压缩、合式与合法、实体与命名空间，并直接对接 WebUtils 本地 XML 工具。</p>
+          <div class="cta">
+            <div class="cta-copy">
+              <strong>立即使用相关工具</strong>
+              <span>XML 格式化 — 浏览器内美化、压缩与缩进选择</span>
+            </div>
+            <a class="cta-btn" href="/tools/dev/xml-formatter">打开工具 →</a>
+          </div>
+        </header>
+
+        <div class="article-layout">
+          <div class="article-main">
+<section class="card key-takeaway" id="tldr">
+<h2>核心一句话</h2>
+<p><strong>先保证合式（well-formed），再谈业务字段；美化让层级可见，压缩只留给传输与入库。</strong></p>
+<p>XML 比 HTML 更「死板」：标签必须正确嵌套与闭合，属性值要有引号，裸 <code>&amp;</code>、<code>&lt;</code> 会直接让解析失败。WebUtils 的 <a href="/tools/dev/xml-formatter">XML 格式化</a> 在浏览器里完成美化与压缩，可选手动 2 空格、4 空格或 Tab，数据不出本机。它帮你看清结构，但不是完整的 XSD/DTD 模式校验器——「合式」与「符合某个 Schema 合法」是两层概念，下文会拆开讲。</p>
+</section>
+
+<section class="card" id="concepts">
+<h2>1. 美化、压缩与校验各自解决什么</h2>
+<h3>美化（Pretty-print / Beautify）</h3>
+<p>把标签按嵌套层级换行并缩进，让父子关系一眼可读。典型用途：</p>
+<ul>
+<li>读日志里整行挤在一起的 SOAP/REST 报文</li>
+<li>Code Review 配置文件时对齐层级</li>
+<li>排查「少写了结束标签」或「交叉嵌套」</li>
+</ul>
+<p>美化<strong>原则上不改语义</strong>：它调整的是标签之间的空白；<strong>文本节点内部</strong>有意义的空格是否被碰，取决于具体实现。本站工具先把 <code>&gt;…&lt;</code> 之间的空白收紧，再按缩进规则重写，适合「结构文本」为主的报文与配置；若你依赖混合内容里精确空白（少见），应在专用编辑器里再核对。</p>
+<h3>压缩（Minify）</h3>
+<p>去掉标签之间多余空白与换行，缩小体积、方便单行粘贴到请求体或消息队列。压缩同样不应改标签名、属性与文本内容本身。注意：若某段文本节点<strong>故意</strong>包含首尾空白，激进压缩可能影响展示类内容；配置与 API 报文一般无此问题。</p>
+<h3>校验：合式 ≠ 合法</h3>
+<table class="data-table">
+<thead>
+<tr>
+<th>层级</th>
+<th>问的是什么</th>
+<th>谁来判断</th>
+<th>失败例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>合式（well-formed）</strong></td>
+<td>是否满足 XML 基本语法</td>
+<td>任何 XML 解析器</td>
+<td>标签未闭合、交叉嵌套、裸 <code>&amp;</code></td>
+</tr>
+<tr>
+<td><strong>合法（valid）</strong></td>
+<td>是否符合 DTD/XSD/RelaxNG 等模式</td>
+<td>带 Schema 的校验器</td>
+<td>缺必填元素、类型不符、命名空间错</td>
+</tr>
+</tbody>
+</table>
+<p>日常联调 80% 的「XML 坏了」其实是<strong>合式问题</strong>。格式化工具通过缩进把结构摊开，能快速暴露未闭合与交叉嵌套；XSD 业务规则要另用 IDE、<code>xmllint</code> 或服务端校验。本工具在格式化路径上若输入明显异常，可能提示检查语法，但不要把它当成完整 Schema 校验。</p>
+<h3>XML 与 JSON / HTML 的边界</h3>
+<table class="data-table">
+<thead>
+<tr>
+<th>点</th>
+<th>XML</th>
+<th>JSON</th>
+<th>HTML</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>主要用途</td>
+<td>企业集成、配置、文档型数据</td>
+<td>Web API、前端状态</td>
+<td>页面结构</td>
+</tr>
+<tr>
+<td>注释</td>
+<td><code>&lt;!-- --&gt;</code></td>
+<td>无（标准）</td>
+<td><code>&lt;!-- --&gt;</code></td>
+</tr>
+<tr>
+<td>属性</td>
+<td>元素可有属性</td>
+<td>无属性，全靠对象字段</td>
+<td>有属性</td>
+</tr>
+<tr>
+<td>容错</td>
+<td>解析器几乎不容错</td>
+<td>严格</td>
+<td>浏览器高度容错</td>
+</tr>
+<tr>
+<td>命名空间</td>
+<td>一等公民</td>
+<td>无</td>
+<td>有限</td>
+</tr>
+</tbody>
+</table>
+<p>拿到「像标签又像页面」的片段时：若目标是<strong>数据交换/配置</strong>，按 XML 合式规则修；若目标是<strong>浏览器渲染</strong>，更适合 <a href="/tools/dev/html-formatter">HTML 格式化</a>。接口若已迁到 JSON，排错走 <a href="/tools/dev/json-formatter">JSON 格式化</a>。</p>
+</section>
+
+<section class="card" id="rules">
+<h2>2. 必须刻进肌肉记忆的 XML 规则</h2>
+<h3>单一根元素</h3>
+<p>一份合式 XML 只能有一个根。下面非法：</p>
+<pre class="code-block" data-lang="xml">&lt;item&gt;a&lt;/item&gt;
+&lt;item&gt;b&lt;/item&gt;</pre>
+<p>应包在一个根下，例如 <code>&lt;items&gt;…&lt;/items&gt;</code>，或使用多文档/外层信封（SOAP 的 Envelope 就是这种角色）。</p>
+<h3>正确嵌套，禁止交叉</h3>
+<pre class="code-block" data-lang="xml">&lt;!-- 合法 --&gt;
+&lt;a&gt;&lt;b&gt;text&lt;/b&gt;&lt;/a&gt;
+
+&lt;!-- 非法：交叉嵌套 --&gt;
+&lt;a&gt;&lt;b&gt;text&lt;/a&gt;&lt;/b&gt;</pre>
+<p>美化后若缩进「对不齐」或层级突然回退异常，优先怀疑交叉闭合。</p>
+<h3>空元素与自闭合</h3>
+<p><code>&lt;tag&gt;&lt;/tag&gt;</code> 与 <code>&lt;tag/&gt;</code> 在多数场景等价（是否允许还受 DTD/XSD 约束）。团队应统一风格，避免同一文件混用造成 diff 噪音。</p>
+<h3>属性必须加引号</h3>
+<pre class="code-block" data-lang="xml">&lt;!-- 合法 --&gt;
+&lt;item id=&quot;1&quot; name='widget'/&gt;
+
+&lt;!-- 非法：无引号 --&gt;
+&lt;item id=1/&gt;</pre>
+<p>引号内若再含同种引号，需换另一种引号或写成实体（<code>&amp;quot;</code> / <code>&amp;apos;</code>）。</p>
+<h3>五大预定义实体（最常翻车）</h3>
+<table class="data-table">
+<thead>
+<tr>
+<th>字符</th>
+<th>实体</th>
+<th>何时必须</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&amp;</code></td>
+<td><code>&amp;amp;</code></td>
+<td>文本或属性里出现和号</td>
+</tr>
+<tr>
+<td><code>&lt;</code></td>
+<td><code>&amp;lt;</code></td>
+<td>文本中表示小于号</td>
+</tr>
+<tr>
+<td><code>&gt;</code></td>
+<td><code>&amp;gt;</code></td>
+<td>建议转义，部分位置可裸写</td>
+</tr>
+<tr>
+<td><code>&quot;</code></td>
+<td><code>&amp;quot;</code></td>
+<td>双引号属性值内部</td>
+</tr>
+<tr>
+<td><code>'</code></td>
+<td><code>&amp;apos;</code></td>
+<td>单引号属性值内部</td>
+</tr>
+</tbody>
+</table>
+<p>经典事故：URL 查询串 <code>a=1&amp;b=2</code> 原样塞进元素文本，解析器在 <code>&amp;b</code> 处报「实体未定义」。正确写法是 <code>a=1&amp;amp;b=2</code>，或把整段放进 <code>CDATA</code>（见下）。</p>
+<h3>CDATA：什么时候用、什么时候别用</h3>
+<pre class="code-block" data-lang="xml">&lt;scriptDesc&gt;&lt;![CDATA[
+  if (a &lt; b &amp;&amp; c &gt; d) { ... }
+]]&gt;&lt;/scriptDesc&gt;</pre>
+<p><code>CDATA</code> 内几乎原样保留字符（除了不能出现 <code>]]&gt;</code> 序列），适合内嵌代码片段或已含大量 <code>&lt;</code> <code>&amp;</code> 的文本。<strong>不要</strong>用 CDATA 逃避本该结构化的字段；安全敏感内容仍要按业务规则过滤。</p>
+<h3>声明、编码与 BOM</h3>
+<p>常见声明：</p>
+<pre class="code-block" data-lang="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</pre>
+<p>声明若存在，必须在文件最前（前导空白在部分解析器也不欢迎）。编码声明与真实字节编码不一致时，中文会乱码或直接解析失败。Windows 记事本另存为带 BOM 的 UTF-8，偶发导致「首行不是声明」类错误——用十六进制或编辑器「显示不可见字符」排查。</p>
+<h3>命名空间不是装饰</h3>
+<pre class="code-block" data-lang="xml">&lt;soap:Envelope xmlns:soap=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;&gt;
+  &lt;soap:Body&gt;
+    &lt;m:GetPrice xmlns:m=&quot;urn:example&quot;&gt;
+      &lt;m:Item&gt;Book&lt;/m:Item&gt;
+    &lt;/m:GetPrice&gt;
+  &lt;/soap:Body&gt;
+&lt;/soap:Envelope&gt;</pre>
+<p>前缀必须绑定到 URI；复制粘贴时漏了 <code>xmlns:</code>，或把默认命名空间与子元素前缀搞混，常表现为「本地测试能过、对端报未知元素」。格式化能帮你看清层级，但<strong>不会自动补命名空间</strong>。</p>
+</section>
+
+<section class="card" id="steps">
+<h2>3. 用 WebUtils 逐步操作</h2>
+<p>工具页：<a href="/tools/dev/xml-formatter">XML 格式化与压缩</a>。界面为左右（或上下）双栏：<strong>输入 XML</strong> / <strong>输出结果</strong>，中间是操作与缩进设置。</p>
+<h3>3.1 美化一份挤在一起的报文</h3>
+<ol>
+<li>打开工具页，确认主题舒适（右上可切换浅色/深色）。</li>
+<li>在「输入 XML」粘贴原始文本；也可点 <strong>加载示例</strong> 先熟悉输出形态（示例为带 <code>note</code> / <code>items</code> 的演示树）。</li>
+<li>在 <strong>缩进</strong> 下拉里选择：</li>
+</ol>
+<ul>
+<li><strong>2 空格</strong>：偏前端/部分开源项目习惯</li>
+<li><strong>4 空格</strong>（默认）：很多 Java/企业配置与 IDE 默认</li>
+<li><strong>Tab</strong>：仅当仓库明确要求 Tab 时再用</li>
+</ul>
+<ol>
+<li>点击 <strong>格式化 (Beautify)</strong>。</li>
+<li>在「输出结果」检查层级；用 <strong>复制结果</strong> 贴回编辑器、工单或 diff 工具。</li>
+</ol>
+<p>若输入为空，工具会提示先输入 XML。处理异常时会提示检查语法——此时回到「规则」与下文错误表，而不是反复点按钮。</p>
+<h3>3.2 压缩后再发出去</h3>
+<ol>
+<li>确认当前输入已是<strong>合式</strong>内容（可先美化肉眼过一遍，再粘回输入或直接对已合式文本压缩）。</li>
+<li>点击 <strong>压缩 (Minify)</strong>：标签之间的空白被收掉，得到更紧的单行/紧凑串。</li>
+<li>复制到 HTTP 请求体、消息中间件或需要省流量的场景。</li>
+</ol>
+<p>联调建议：<strong>人对着美化版看，线上传压缩版</strong>；两边文本应用同一业务内容，避免「看的是 A、发的是改过的 B」。</p>
+<h3>3.3 推荐排查闭环</h3>
+<pre class="code-block" data-lang="text">粘贴原始 XML
+  → 格式化（选好缩进）
+  → 扫一眼根元素 / 命名空间 / 最深一层是否对齐
+  → 若失败或结构怪异：按错误表改实体、闭合、引号
+  → 再格式化确认
+  → 需要传输时再压缩
+  → 复制前对密钥、Token、身份证号脱敏</pre>
+<h3>3.4 本地处理边界（写进习惯）</h3>
+<ul>
+<li>逻辑在浏览器内完成，<strong>不上传服务器</strong>；仍不要把未脱敏的生产密钥当测试数据到处粘。</li>
+<li>本工具侧重<strong>缩进美化与空白压缩</strong>，不是 XSD 校验、不是 XML 数字签名工具、也不是 SOAP UI。</li>
+<li>极大文件可能受浏览器内存与文本域性能限制；数兆以上的日志建议先截取相关片段或用桌面工具。</li>
+<li>格式化算法按标签边界重排空白，对极端畸形输入的报错信息不如专用解析器精细——以「能否稳定美化 + 肉眼层级」为第一目标。</li>
+</ul>
+</section>
+
+<section class="card" id="errors">
+<h2>4. 常见错误与处理办法</h2>
+<table class="data-table">
+<thead>
+<tr>
+<th>现象 / 报错关键词</th>
+<th>常见原因</th>
+<th>处理办法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>标签未闭合 / unexpected end</td>
+<td>少写 <code>&lt;/tag&gt;</code>，或剪贴时截断</td>
+<td>美化后从最内层往外对括号；编辑器「匹配标签」</td>
+</tr>
+<tr>
+<td>交叉嵌套 / not properly nested</td>
+<td><code>&lt;/a&gt;</code> 与 <code>&lt;/b&gt;</code> 顺序反了</td>
+<td>保证后开先闭，像栈一样</td>
+</tr>
+<tr>
+<td>实体引用未定义</td>
+<td>文本里裸 <code>&amp;</code>，或写成 <code>&amp;foo;</code> 但未声明</td>
+<td>改成 <code>&amp;amp;</code>；自定义实体需 DTD</td>
+</tr>
+<tr>
+<td>属性无引号</td>
+<td><code>id=1</code> 或从 HTML 习惯抄来</td>
+<td>一律 <code>id=&quot;1&quot;</code></td>
+</tr>
+<tr>
+<td>多根元素</td>
+<td>拼接了两段 XML 却无总根</td>
+<td>外包一层，或按多文档处理</td>
+</tr>
+<tr>
+<td>声明不在最前</td>
+<td>BOM、注释或空白在 <code>&lt;?xml</code> 前</td>
+<td>去 BOM；声明置顶</td>
+</tr>
+<tr>
+<td>编码乱码</td>
+<td>声明 UTF-8 实为 GBK 等</td>
+<td>统一另存为 UTF-8；核对通道解码</td>
+</tr>
+<tr>
+<td>命名空间元素「丢失」</td>
+<td>漏 <code>xmlns</code>，或前缀绑定错 URI</td>
+<td>对照 WSDL/XSD 补命名空间</td>
+</tr>
+<tr>
+<td>含 <code>&lt;</code> 的文本直接炸</td>
+<td>把代码/HTML 塞进元素未转义</td>
+<td><code>&amp;lt;</code> 或 CDATA</td>
+</tr>
+<tr>
+<td>格式化后「空了一截」</td>
+<td>输入半截、或注释/字符串里有伪标签</td>
+<td>先截取完整根元素再处理</td>
+</tr>
+<tr>
+<td>压缩后业务异常</td>
+<td>依赖了文本节点边界空白</td>
+<td>对该字段改回保留空白的写法</td>
+</tr>
+<tr>
+<td>Android <code>strings.xml</code> 资源失败</td>
+<td>未转义 <code>'</code> <code>&amp;</code>，或占位符破坏标签</td>
+<td>按平台规则转义；美化后查层级</td>
+</tr>
+<tr>
+<td>SOAP Fault 难读</td>
+<td>Fault 串在一行</td>
+<td>美化 Body；对照 faultcode/faultstring</td>
+</tr>
+<tr>
+<td>Maven <code>pom.xml</code> 解析失败</td>
+<td>标签拼写、依赖节点交叉</td>
+<td>美化后核对 <code>dependency</code> 是否成对</td>
+</tr>
+</tbody>
+</table>
+<p><strong>原则</strong>：格式化失败时，先把输入缩成「最小可复现片段」（保留根与出错节点），修合式，再恢复上下文。不要在几万行里盲改。</p>
+</section>
+
+<section class="card" id="scenarios">
+<h2>5. 真实工作场景</h2>
+<h3>场景 A：SOAP / 企业接口联调</h3>
+<p>对端返回一整行 <code>Envelope</code>，或本地拼装的请求被拒。做法：</p>
+<ol>
+<li>把请求/响应贴进工具 → <strong>格式化</strong>，确认 <code>Header</code> / <code>Body</code> 层级。</li>
+<li>核对命名空间 URI 是否与 WSDL 一致（前缀名可变，URI 不可乱改）。</li>
+<li>检查 Body 业务节点是否多包/少包一层。</li>
+<li>修完后若网关要单行，再 <strong>压缩</strong> 发出；保留一份美化版进工单附件。</li>
+</ol>
+<h3>场景 B：Android <code>strings.xml</code> / 资源 XML</h3>
+<p>翻译或合并分支后构建报 XML 解析错误。做法：</p>
+<ol>
+<li>美化 <code>strings.xml</code> 或 layout，看是否有未闭合的 <code>&lt;string&gt;</code> / <code>&lt;LinearLayout&gt;</code>。</li>
+<li>英文缩写、撇号、<code>&amp;</code> 按 Android 资源规则转义（例如文本中的 <code>'</code>、<code>&amp;</code>）。</li>
+<li>统一缩进（建议 4 空格或与 Android Studio 一致），减少无意义 diff。</li>
+<li>不要对已签名的二进制资源做「压缩」幻想；这里美化的是<strong>源码 XML</strong>。</li>
+</ol>
+<h3>场景 C：Maven <code>pom.xml</code> / Spring 与日志配置</h3>
+<p><code>pom.xml</code> 依赖没生效、<code>logback.xml</code> 不加载 appender。做法：</p>
+<ol>
+<li>美化后确认每个 <code>dependency</code>、<code>appender</code>、<code>logger</code> 开闭成对。</li>
+<li>看是否把注释写进了标签名附近导致半截标签。</li>
+<li>对比「能工作的环境」与「坏环境」两份美化结果（可用文本对比工具），差异通常在漏节点或命名空间。</li>
+<li>提交前压缩<strong>一般没必要</strong>——源码库更在乎可读 diff；压缩留给接口报文。</li>
+</ol>
+<h3>场景 D：RSS/Atom、SVG 片段、导出的 Excel XML</h3>
+<p>内容团队导出 feed，或设计丢来 SVG。做法：</p>
+<ol>
+<li>先美化看根是 <code>rss</code> / <code>feed</code> / <code>svg</code> 哪一种。</li>
+<li>SVG 常含大量路径与属性，美化便于找错标签，但重新压缩前确认查看器是否对空白敏感（多数路径数据在属性里，较安全）。</li>
+<li>Feed 里 HTML 内容常在 CDATA 或实体中；改描述时勿弄破 <code>]]&gt;</code>。</li>
+</ol>
+</section>
+
+<section class="card checklist" id="checklist">
+<h2>6. 提交与分享前检查清单</h2>
+<ul>
+<li>[ ] 能成功 <strong>格式化</strong> 一遍，层级视觉正常</li>
+<li>[ ] 有且仅有一个根元素（或明确的多文档策略）</li>
+<li>[ ] 无交叉嵌套；空元素风格统一</li>
+<li>[ ] 文本与属性中的 <code>&amp;</code> <code>&lt;</code> 已处理；必要处使用 CDATA</li>
+<li>[ ] 声明编码与真实文件编码一致；无烦人 BOM</li>
+<li>[ ] 命名空间 URI 与对端契约一致</li>
+<li>[ ] 脱敏：Token、密码、证件号、内网地址</li>
+<li>[ ] 需要上线传输时再压缩；仓库内配置保持可读</li>
+<li>[ ] 若业务要求合法，另跑 XSD/DTD，不单靠美化</li>
+</ul>
+</section>
+
+<section class="card" id="related">
+<h2>7. 相关工具怎么选</h2>
+<table class="data-table">
+<thead>
+<tr>
+<th>你的目标</th>
+<th>更合适的工具</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>把 XML 报文/配置摊开或压紧</td>
+<td><a href="/tools/dev/xml-formatter">XML 格式化</a></td>
+<td>专为标签层级与缩进</td>
+</tr>
+<tr>
+<td>页面源码、邮件 HTML 模板</td>
+<td><a href="/tools/dev/html-formatter">HTML 格式化</a></td>
+<td>HTML 容错与 void 标签规则不同</td>
+</tr>
+<tr>
+<td>接口已是 JSON</td>
+<td><a href="/tools/dev/json-formatter">JSON 格式化</a></td>
+<td>无标签模型，校验路径不同</td>
+</tr>
+<tr>
+<td>配置是 YAML（K8s、CI）</td>
+<td><a href="/tools/dev/yaml-formatter">YAML 格式化</a></td>
+<td>缩进敏感，且常与 JSON 互转</td>
+</tr>
+<tr>
+<td>需要对照两份 JSON 差异</td>
+<td>JSON Diff（站内相关能力）</td>
+<td>XML 语义 diff 更重，本指南不展开</td>
+</tr>
+<tr>
+<td>只想转义特殊字符</td>
+<td>文本转义类工具</td>
+<td>实体问题可先局部转义再拼回 XML</td>
+</tr>
+</tbody>
+</table>
+<p><strong>决策一句</strong>：数据是不是「带尖括号的树」？是 → XML/HTML；是不是「花括号对象」？→ JSON；是不是「缩进配置」？→ YAML。选错工具会在错误信息上浪费半小时。</p>
+</section>
+
+<section class="card" id="practice">
+<h2>8. 团队协作中的小习惯</h2>
+<ol>
+<li><strong>契约先行</strong>：SOAP/XML API 以 XSD/WSDL 为源，而不是以某次抓包美化结果为源。</li>
+<li><strong>统一缩进</strong>：在编辑器与 CI 里固定 2 或 4 空格，避免 Tab/空格混战。</li>
+<li><strong>评审看美化版</strong>：PR 里对配置 XML 先格式化再 diff，减少「整文件一行」无法 review。</li>
+<li><strong>示例入库</strong>：准备一份已脱敏的最小合式样例，新人联调先跑通格式再填字段。</li>
+<li><strong>日志策略</strong>：生产日志可对 XML body 截断；排障时再拿完整片段本地美化。</li>
+</ol>
+</section>
+
+<section class="card" id="faq">
+<h2>常见问题</h2>
+<div class="faq-item"><h3>格式化会改变我的业务数据吗？</h3>
+<p>正常情况下，美化与压缩只调整<strong>标签之间</strong>的空白和换行，不会改标签名、属性名与属性值文本。例外是：你的应用依赖「文本节点两端的空格」或混合内容里的精确空白——这类需求应在业务层明确 <code>xml:space</code> 或改数据模型，而不是指望通用格式化工具保留每一种空白策略。格式化后应用侧跑一次解析与快照对比，是最稳的确认方式。</p></div>
+<div class="faq-item"><h3>为什么我的 XML 在浏览器里能开，工具里却怪怪的？</h3>
+<p>浏览器打开「像 XML 的页面」时，可能按 HTML 容错解析，自动补标签、忽略部分错误。XML 工具与严格解析器走的是合式规则，对交叉嵌套、裸 <code>&amp;</code> 更敏感。以<strong>对端服务或标准 XML 解析器</strong>为准，不要用浏览器渲染结果当合式证明。若内容本就是 HTML，请改用 HTML 格式化工具。</p></div>
+<div class="faq-item"><h3>需要 XSD 校验怎么办？本工具够不够？</h3>
+<p>本工具解决的是<strong>可读性与合式层面的结构暴露</strong>，不替代 XSD/DTD 校验。字段是否必填、枚举是否合法、类型是否是 <code>xs:date</code>，要在 IDE、CI（如 <code>xmllint --schema</code>）或服务端校验链完成。推荐流程：先在本工具美化并修合式 → 再跑 Schema → 最后联调业务。</p></div>
+<div class="faq-item"><h3>压缩后对端报错，是压缩坏了吗？</h3>
+<p>多数时候不是。先把<strong>同一份</strong>压缩结果在本地再美化还原，看结构是否与原文一致；再检查 Content-Type、字符编码、是否多了 BOM、网关是否不允许某字符。若还原后与原文结构一致而对端仍挂，问题更可能在 HTTP 头、签名、时间戳或业务字段，而不是 minify 本身。若还原后结构变了，再带着最小样例排查文本节点空白。</p></div>
+<div class="faq-item"><h3>能不能格式化几兆的巨型 XML？</h3>
+<p>可以尝试，但浏览器文本域与内存有上限，卡顿或失败都正常。实务上：用 <code>head</code>/<code>grep</code>/日志平台先切出相关 <code>Envelope</code> 或出错偏移附近的片段；或改用桌面编辑器、流式工具。联调排错需要的是<strong>最小复现</strong>，不是把整库导出美化一遍。</p></div>
+<div class="faq-item"><h3>Tab 和空格哪个更好？</h3>
+<p>XML 语法本身不强制，<strong>团队一致</strong>更重要。Java/Android/Maven 生态常见 4 空格；部分前端仓库偏 2 空格；Tab 易在不同编辑器宽度下误判层级。本工具三者都支持，选与仓库 <code>.editorconfig</code> 一致的一项即可。不要在同一文件混用。</p></div>
+</section>
+
+<section class="card" id="next">
+<h2>继续浏览</h2>
+<ul>
+<li>动手：<a href="/tools/dev/xml-formatter">XML 格式化与压缩</a></li>
+<li>页面结构相近：<a href="/guides/html-formatter-guide">HTML 格式化完全指南</a></li>
+<li>接口主流数据：<a href="/guides/json-formatter-guide">JSON 格式化完全指南</a></li>
+<li>配置缩进敏感：<a href="/guides/yaml-formatter-guide">YAML 格式化完全指南</a></li>
+</ul>
+<p>把「合式 → 美化看清 → 再改业务 → 必要时压缩」当成固定手法后，XML 联调会从玄学变成清单题。</p>
+</section>
+          </div>
+
+          <aside class="toc-rail">
+            <h2>目录</h2>
+            <ol class="toc-list">
+<li><a href="#tldr">核心一句话</a></li>
+<li><a href="#concepts">1. 美化、压缩与校验各自解决什么</a></li>
+<li><a href="#rules">2. 必须刻进肌肉记忆的 XML…</a></li>
+<li><a href="#steps">3. 用 WebUtils 逐步操作</a></li>
+<li><a href="#errors">4. 常见错误与处理办法</a></li>
+<li><a href="#scenarios">5. 真实工作场景</a></li>
+<li><a href="#checklist">6. 提交与分享前检查清单</a></li>
+<li><a href="#related">7. 相关工具怎么选</a></li>
+<li><a href="#practice">8. 团队协作中的小习惯</a></li>
+<li><a href="#faq">常见问题</a></li>
+            </ol>
+            <div class="side-cta">
+              <h3>相关工具</h3>
+              <a href="/tools/dev/xml-formatter" class="btn btn-primary" style="width:100%;">立即打开 XML 格式化</a>
+            </div>
+          </aside>
+        </div>
+      </article>
+    </main>
+
+    <footer>
+      <div class="footer-inner">
+        <p>WebUtils · 使用指南</p>
+        <nav class="footer-links" aria-label="网站政策">
+          <a href="/about">关于本站</a>
+          <a href="/guides/">使用指南</a>
+          <a href="/contact">联系我们</a>
+          <a href="/terms">使用条款</a>
+          <a href="/privacy-policy">隐私政策</a>
+          <a href="/">返回首页</a>
+        </nav>
+        <p>&copy; 2026 WebUtils</p>
+      </div>
+    </footer>
+  </body>
+</html>
