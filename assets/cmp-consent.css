@@ -1,0 +1,305 @@
+/* ============================================================
+ * CMP Cookie / 个性化广告同意横幅样式 (GDPR + CCPA Compliant)
+ * 站点：essays4u.net
+ * 兼容深浅色主题，z-index 压过所有工具弹窗
+ * ============================================================ */
+
+#cmp-banner {
+  position: fixed;
+  bottom: 16px;
+  left: auto;
+  right: auto;
+  margin: 0 auto;
+  width: 96%;
+  max-width: 760px;
+  z-index: 2147483000;
+  border-radius: 14px;
+  padding: 18px 20px 16px;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  color: #e2e8f0;
+  background: rgba(15, 23, 42, 0.88);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+  /* 默认隐藏，等 JS 加 cmp-show 再滑入 */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
+}
+
+/* 深色/浅色主题下略微调整，尽量与站点 --accent 对齐 */
+:root {
+  --cmp-accent: #0d9488;
+  --cmp-accent-hover: #0f766e;
+}
+/* 若页面有定义 --accent，优先使用页面主题色 */
+@supports (color: var(--accent)) {
+  #cmp-banner {
+    --cmp-accent: var(--accent, #0d9488);
+    --cmp-accent-hover: var(--accent-hover, #0f766e);
+  }
+}
+
+/* 出现动画：JS 动态加上 cmp-show class */
+#cmp-banner.cmp-show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* 隐藏动画（点击同意后） */
+#cmp-banner.cmp-hide {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  pointer-events: none;
+}
+
+/* ---- 标题 & 正文 ---- */
+.cmp-title {
+  margin: 0 32px 6px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #f8fafc;
+  letter-spacing: 0.1px;
+}
+.cmp-desc {
+  margin: 0 0 14px;
+  color: #cbd5e1;
+  font-size: 13.5px;
+}
+.cmp-desc a {
+  color: var(--cmp-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  opacity: 0.95;
+}
+.cmp-desc a:hover {
+  opacity: 1;
+}
+
+/* ---- 右上角关闭 X 按钮（非唯一拒绝路径） ---- */
+.cmp-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.cmp-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f1f5f9;
+}
+
+/* ---- 按钮容器（两行：主按钮 + 管理选项） ---- */
+.cmp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: stretch;
+}
+
+/* 主按钮：全部同意 + 仅必要，同级大小同高度 */
+.cmp-btn {
+  display: inline-block;
+  flex: 1 1 160px;
+  min-height: 40px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease,
+    transform 0.06s ease, box-shadow 0.18s ease;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+.cmp-btn:active {
+  transform: translateY(1px);
+}
+
+/* 接受按钮（全部同意） — accent 背景 + 白字，突出强调 */
+.cmp-btn.cmp-btn-accept {
+  background: var(--cmp-accent);
+  color: #ffffff;
+  border-color: var(--cmp-accent);
+  box-shadow: 0 4px 14px rgba(13, 148, 136, 0.28);
+}
+.cmp-btn.cmp-btn-accept:hover {
+  background: var(--cmp-accent-hover, var(--cmp-accent));
+  border-color: var(--cmp-accent-hover, var(--cmp-accent));
+}
+
+/* 拒绝按钮（仅必要） — 透明底 + 白边框，与接受按钮同级大小 */
+.cmp-btn.cmp-btn-necessary {
+  background: transparent;
+  color: #e2e8f0;
+  border-color: rgba(226, 232, 240, 0.55);
+}
+.cmp-btn.cmp-btn-necessary:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.9);
+}
+
+/* 管理选项小按钮 */
+.cmp-btn.cmp-btn-manage {
+  flex: 0 0 auto;
+  min-height: 0;
+  padding: 6px 12px;
+  font-size: 12.5px;
+  font-weight: 500;
+  border-radius: 8px;
+  background: transparent;
+  color: #94a3b8;
+  border: 1px dashed rgba(148, 163, 184, 0.45);
+  cursor: pointer;
+  align-self: center;
+}
+.cmp-btn.cmp-btn-manage:hover {
+  color: #e2e8f0;
+  border-color: rgba(226, 232, 240, 0.75);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* ---- 管理选项展开区（三列开关） ---- */
+.cmp-manage {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: none;
+}
+#cmp-banner.cmp-manage-open .cmp-manage {
+  display: block;
+}
+
+.cmp-manage-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+@media (max-width: 640px) {
+  .cmp-manage-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+.cmp-manage-item {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+.cmp-manage-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 13px;
+  color: #f1f5f9;
+  margin-bottom: 4px;
+}
+.cmp-manage-desc {
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.45;
+}
+
+/* 原生开关样式（兼容老浏览器） */
+.cmp-switch {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  min-width: 36px;
+  height: 20px;
+}
+.cmp-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.cmp-switch-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: rgba(148, 163, 184, 0.35);
+  border-radius: 20px;
+  transition: background-color 0.2s ease;
+}
+.cmp-switch-slider::before {
+  content: "";
+  position: absolute;
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background: #ffffff;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+.cmp-switch input:checked + .cmp-switch-slider {
+  background-color: var(--cmp-accent);
+}
+.cmp-switch input:checked + .cmp-switch-slider::before {
+  transform: translateX(16px);
+}
+.cmp-switch input:disabled + .cmp-switch-slider {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+/* 管理区保存按钮 */
+.cmp-manage-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.cmp-btn.cmp-btn-save {
+  flex: 0 0 auto;
+  min-height: 0;
+  padding: 8px 16px;
+  font-size: 13px;
+  border-radius: 8px;
+  background: var(--cmp-accent);
+  color: #fff;
+  border-color: var(--cmp-accent);
+}
+.cmp-btn.cmp-btn-save:hover {
+  background: var(--cmp-accent-hover, var(--cmp-accent));
+}
+
+/* ---- 移动端微调 ---- */
+@media (max-width: 480px) {
+  #cmp-banner {
+    padding: 16px 14px 14px;
+    border-radius: 12px;
+  }
+  .cmp-title {
+    font-size: 15px;
+    margin-right: 28px;
+  }
+  .cmp-btn {
+    flex: 1 1 100%;
+  }
+}
