@@ -175,22 +175,94 @@ function lastmodFor(absPath, guideMeta) {
   return toDay(m) || toDay(new Date());
 }
 
+// Policy / low-value pages that shouldn't consume crawler budget (still indexable,
+// but lowest priority so Googlebot focuses on tools and guides first).
+const LOW_VALUE_LOCS = new Set([
+  `${SITE}/404`,
+  `${SITE}/contact`,
+  `${SITE}/terms`,
+  `${SITE}/privacy-policy`,
+  `${SITE}/offline`,
+  `${SITE}/design-reference`,
+  `${SITE}/design-reference/components`,
+  `${SITE}/design-templates`,
+]);
+
+// Top 100 pages (by expected organic search value). Helps sitemap priority grouping.
+const HIGH_VALUE_TOOL_LOCS = new Set([
+  "/tools/dev/json-formatter", "/tools/dev/base64", "/tools/dev/code-diff",
+  "/tools/dev/regex-tester", "/tools/dev/hash-generator", "/tools/dev/jwt-decoder",
+  "/tools/dev/cron-generator", "/tools/dev/curl-to-code", "/tools/dev/qrcode-generator",
+  "/tools/time/timestamp", "/tools/time/timezone-converter", "/tools/time/date-calculator",
+  "/tools/time/cron-parser", "/tools/time/world-clock",
+  "/tools/text/word-counter", "/tools/text/pinyin", "/tools/text/case-converter",
+  "/tools/text/text-diff", "/tools/text/markdown-preview", "/tools/text/lorem-generator",
+  "/tools/text/slug-generator", "/tools/text/md-to-html", "/tools/text/duplicate-remover",
+  "/tools/text/pangu-spacing", "/tools/text/frequency-analyzer", "/tools/text/morse-code",
+  "/tools/design/contrast-checker", "/tools/design/color-converter", "/tools/design/color-palette-generator",
+  "/tools/design/gradient-generator", "/tools/design/svg-optimizer", "/tools/design/scrollbar-generator",
+  "/tools/finance/compound-interest", "/tools/finance/loan-early-repay", "/tools/finance/loan-calculator",
+  "/tools/finance/mortgage-calculator", "/tools/finance/tip-calculator", "/tools/finance/currency-converter",
+  "/tools/finance/investment-return", "/tools/finance/budget-planner", "/tools/finance/budget-tracker",
+  "/tools/finance/stock-calculator", "/tools/finance/savings-goal", "/tools/finance/tax-calculator",
+  "/tools/converter/base64", "/tools/converter/unit-converter", "/tools/converter/data-size-converter",
+  "/tools/converter/number-base-converter", "/tools/converter/length-converter", "/tools/converter/temperature-converter",
+  "/tools/converter/currency-converter", "/tools/converter/speed-converter", "/tools/converter/area-converter",
+  "/tools/generator/password-generator", "/tools/generator/qrcode-generator", "/tools/generator/uuid-generator",
+  "/tools/generator/otp-generator", "/tools/generator/fake-data-generator", "/tools/generator/barcode-generator",
+  "/tools/generator/favicon-generator", "/tools/generator/avatar-generator", "/tools/generator/ascii-table",
+  "/tools/generator/basic-auth-generator", "/tools/generator/lorem-ipsum",
+  "/tools/network/dns-lookup", "/tools/network/ip-lookup", "/tools/network/whois-lookup",
+  "/tools/network/http-header-parser", "/tools/network/api-tester", "/tools/network/websocket-test",
+  "/tools/security/password-generator", "/tools/security/aes-encryptor", "/tools/security/rsa-encryptor",
+  "/tools/security/hash-generator", "/tools/security/file-permission", "/tools/security/chmod-calculator",
+  "/tools/seo/meta-tag-generator", "/tools/seo/robots-txt-generator", "/tools/seo/subnet-calculator",
+  "/tools/formatter/json-formatter", "/tools/formatter/sql-formatter", "/tools/formatter/xml-formatter",
+  "/tools/formatter/html-formatter", "/tools/formatter/css-formatter", "/tools/formatter/yaml-formatter",
+  "/tools/image/compress", "/tools/image/converter", "/tools/image/resizer",
+  "/tools/calculator/bmi", "/tools/calculator/age", "/tools/calculator/percentage",
+  "/tools/calculator/compound-interest", "/tools/calculator/discount", "/tools/calculator/fuel",
+  "/tools/calculator/electricity", "/tools/calculator/aspect-ratio",
+  "/tools/editor/markdown-editor", "/tools/editor/latex-editor", "/tools/editor/html-editor",
+].map(p => `${SITE}${p}`));
+
 function priorityFor(loc) {
   if (loc === `${SITE}/`) return "1.0";
-  if (loc === `${SITE}/tools-directory`) return "0.9";
-  if (loc === `${SITE}/guides/`) return "0.85";
-  if (loc.includes("/guides/")) return "0.7";
-  if (/\/tools\/[^/]+\/?$/.test(loc) || loc.endsWith("/index")) return "0.8";
-  if (loc.includes("/tools/")) return "0.75";
+  if (loc === `${SITE}/tools-directory`) return "0.95";
+  if (loc === `${SITE}/guides/`) return "0.9";
+  // Category hubs (/tools/<cat>) → 0.8
+  if (/\/tools\/[^/]+\/?$/.test(loc)) return "0.8";
+  // Guide articles (not hub) → 0.8
+  if (loc.includes("/guides/") && loc !== `${SITE}/guides/`) return "0.8";
+  // Top 100 high-value tool landing pages → 0.75
+  if (HIGH_VALUE_TOOL_LOCS.has(loc)) return "0.75";
+  // Regular tool page → 0.65
+  if (loc.includes("/tools/")) return "0.65";
+  // Low-value / policy pages → 0.1 (crawl budget de-prioritisation)
+  if (LOW_VALUE_LOCS.has(loc)) return "0.1";
+  // Other pages (about) → 0.6
   return "0.6";
 }
 
-function changefreqFor(loc) {
-  if (loc === `${SITE}/`) return "weekly";
-  if (loc === `${SITE}/guides/` || loc === `${SITE}/tools-directory`) return "weekly";
+function daysSinceLastmod(lastmod) {
+  if (!lastmod) return 9999;
+  const d = parseDay(lastmod);
+  if (!d) return 9999;
+  return Math.round((Date.now() - d.getTime()) / 86400000);
+}
+
+function changefreqFor(loc, lastmod) {
+  const age = daysSinceLastmod(lastmod);
+  if (loc === `${SITE}/`) return age <= 7 ? "daily" : "weekly";
+  if (loc === `${SITE}/guides/` || loc === `${SITE}/tools-directory`) {
+    return age <= 14 ? "daily" : "weekly";
+  }
+  if (LOW_VALUE_LOCS.has(loc)) return "yearly";
+  if (age <= 14) return "daily";
+  if (age <= 60) return "weekly";
   if (loc.includes("/guides/")) return "monthly";
   if (loc.includes("/tools/")) return "monthly";
-  return "monthly";
+  return "yearly";
 }
 
 function escapeXml(s) {
@@ -218,7 +290,7 @@ function build() {
         lastmod,
         file,
         priority: priorityFor(loc),
-        changefreq: changefreqFor(loc),
+        changefreq: changefreqFor(loc, lastmod),
       });
     }
   }
@@ -237,8 +309,8 @@ function build() {
       loc,
       lastmod,
       file: htmlPath,
-      priority: "0.7",
-      changefreq: "monthly",
+      priority: priorityFor(loc),
+      changefreq: changefreqFor(loc, lastmod),
     });
   }
 
