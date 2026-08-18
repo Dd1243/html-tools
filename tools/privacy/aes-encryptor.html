@@ -1,0 +1,889 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AES 加密器 - 在线 AES-256 文本加密工具｜WebUtils</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <meta name="description" content="被 敏感文本需要加密传输、担心在线工具上传数据、找不到支持 AES-256-GCM 的轻量工具 困扰？来 WebUtils 用 AES 加密器 - 在线 AES-256 文本加密工具。浏览器本地 PBKDF2 派生密钥 + AES-GCM 认证加密，数据不上传服务器 且 处理过程不经过第三方，注重隐私安全。" />
+    <meta
+      name="keywords"
+      content="AES 加密器, AES-256-GCM, 在线文本加密, PBKDF2 密钥派生, 浏览器本地加密, 数据安全加密工具"
+    />
+    <meta name="author" content="WebUtils" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://essays4u.net/tools/privacy/aes-encryptor" />
+    <meta property="og:title" content="AES 加密器 - 在线 AES-256 文本加密工具｜WebUtils" />
+    <meta property="og:description" content="被 敏感文本需要加密传输、担心在线工具上传数据、找不到支持 AES-256-GCM 的轻量工具 困扰？来 WebUtils 用 AES 加密器 - 在线 AES-256 文本加密工具。浏览器本地 PBKDF2 派生密钥 + AES-GCM 认证加密，数据不上传服务器 且 处理过程不经过第三方，注重隐私安全。" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://essays4u.net/tools/privacy/aes-encryptor" />
+    <meta property="og:site_name" content="WebUtils" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
+    <meta property="og:image:width" content="1280" />
+    <meta property="og:image:height" content="640" />
+    <meta property="og:image:type" content="image/png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="AES 加密器 - 在线 AES-256 文本加密工具｜WebUtils" />
+    <meta name="twitter:description" content="被 敏感文本需要加密传输、担心在线工具上传数据、找不到支持 AES-256-GCM 的轻量工具 困扰？来 WebUtils 用 AES 加密器 - 在线 AES-256 文本加密工具。浏览器本地 PBKDF2 派生密钥 + AES-GCM 认证加密，数据不上传服务器 且 处理过程不经过第三方，注重隐私安全。" />
+    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #7c3aed;
+        --primary-light: #ede9fe;
+        --primary-dark: #5b21b6;
+        --bg: #f8fafc;
+        --bg-card: #fff;
+        --bg-input: #f1f5f9;
+        --text: #1e293b;
+        --text-secondary: #475569;
+        --text-muted: #94a3b8;
+        --border: #e2e8f0;
+        --success: #059669;
+        --error: #dc2626;
+        --radius: 8px;
+        --radius-lg: 12px;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        --font-mono: "JetBrains Mono", "Courier New", monospace;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: var(--font);
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        font-size: 15px;
+        line-height: 1.6;
+      }
+      .site-header {
+        background: #fff;
+        border-bottom: 1px solid var(--border);
+        padding: 0 24px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .header-inner {
+        max-width: 1280px;
+        margin: 0 auto;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        padding: 6px 12px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        transition: all 0.15s;
+      }
+      .back-link:hover {
+        color: var(--primary);
+        border-color: var(--primary);
+        background: var(--primary-light);
+      }
+      .header-title {
+        font-size: 1rem;
+        font-weight: 600;
+      }
+      .ad-banner {
+        max-width: 1280px;
+        margin: 16px auto;
+        padding: 0 24px;
+      }
+      .ad-banner-inner {
+        background: #f0f4ff;
+        border: 1px dashed #c7d2fe;
+        border-radius: var(--radius);
+        height: 90px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+      }
+      .page-body {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 24px;
+        display: flex;
+        gap: 24px;
+        align-items: flex-start;
+      }
+      .main-col {
+        flex: 3;
+        min-width: 0;
+      }
+      .side-col {
+        flex: 1;
+        min-width: 280px;
+        max-width: 320px;
+      }
+      .page-title {
+        margin-bottom: 20px;
+      }
+      .page-title h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+      .page-title p {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: var(--primary-light);
+        color: var(--primary-dark);
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 20px;
+        margin-left: 8px;
+      }
+      .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        margin-bottom: 16px;
+        box-shadow: var(--shadow);
+      }
+      .mode-tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 20px;
+      }
+      .mode-tab {
+        flex: 1;
+        padding: 10px 16px;
+        background: var(--bg-input);
+        border: 2px solid var(--border);
+        border-radius: var(--radius);
+        color: var(--text-secondary);
+        font-family: var(--font);
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s;
+        text-align: center;
+      }
+      .mode-tab:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+      .mode-tab.active {
+        border-color: var(--primary);
+        color: var(--primary);
+        background: var(--primary-light);
+      }
+      .form-group {
+        margin-bottom: 16px;
+      }
+      .form-group label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 8px;
+      }
+      textarea,
+      select,
+      input[type="password"],
+      input[type="text"] {
+        width: 100%;
+        padding: 12px 14px;
+        background: var(--bg-input);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        color: var(--text);
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+        transition: border-color 0.15s;
+      }
+      textarea {
+        min-height: 120px;
+        resize: vertical;
+      }
+      input[type="password"],
+      input[type="text"] {
+        padding: 12px 48px 12px 14px;
+      }
+      textarea:focus,
+      select:focus,
+      input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+      }
+      .password-wrapper {
+        position: relative;
+      }
+      .toggle-password {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        font-size: 0.8rem;
+        font-family: var(--font);
+        font-weight: 500;
+        padding: 4px 6px;
+        border-radius: 4px;
+      }
+      .toggle-password:hover {
+        color: var(--primary);
+      }
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .btn-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 16px;
+      }
+      .btn {
+        flex: 1;
+        padding: 11px 16px;
+        font-family: var(--font);
+        font-size: 0.9rem;
+        font-weight: 600;
+        border-radius: var(--radius);
+        cursor: pointer;
+        transition: all 0.15s;
+        border: 2px solid;
+      }
+      .btn-primary {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: var(--primary-dark);
+        border-color: var(--primary-dark);
+      }
+      .btn-secondary {
+        background: transparent;
+        border-color: var(--border);
+        color: var(--text-secondary);
+      }
+      .btn-secondary:hover {
+        border-color: var(--text-secondary);
+        color: var(--text);
+      }
+      .output-section {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border);
+      }
+      .output-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .output-header label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .copy-btn {
+        padding: 5px 12px;
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        color: var(--text-secondary);
+        font-family: var(--font);
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all 0.15s;
+        font-weight: 500;
+      }
+      .copy-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+      .copy-btn.copied {
+        border-color: var(--success);
+        color: var(--success);
+      }
+      .output-box {
+        background: var(--bg-input);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 14px;
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+        word-break: break-all;
+        min-height: 80px;
+        color: var(--text);
+        white-space: pre-wrap;
+      }
+      .error-msg {
+        color: var(--error);
+        font-size: 0.875rem;
+        margin-top: 8px;
+        font-weight: 500;
+      }
+      .info-box {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: var(--radius);
+        padding: 12px 16px;
+        margin-top: 16px;
+        font-size: 0.82rem;
+        color: #1d4ed8;
+        line-height: 1.6;
+      }
+      .info-box code {
+        background: #dbeafe;
+        padding: 1px 5px;
+        border-radius: 3px;
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+      }
+      .ad-sidebar {
+        background: #f0f4ff;
+        border: 1px dashed #c7d2fe;
+        border-radius: var(--radius);
+        height: 250px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        margin-bottom: 16px;
+      }
+      .side-article {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 20px;
+        box-shadow: var(--shadow);
+      }
+      .side-article h2 {
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--primary);
+      }
+      .side-article h3 {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--primary-dark);
+        margin: 16px 0 8px;
+      }
+      .side-article p {
+        font-size: 0.84rem;
+        color: var(--text-secondary);
+        line-height: 1.7;
+        margin-bottom: 10px;
+      }
+      .side-article ul {
+        padding-left: 16px;
+        margin-bottom: 10px;
+      }
+      .side-article li {
+        font-size: 0.84rem;
+        color: var(--text-secondary);
+        line-height: 1.7;
+        margin-bottom: 4px;
+      }
+      .side-article .ad-inline {
+        background: #f0f4ff;
+        border: 1px dashed #c7d2fe;
+        border-radius: var(--radius);
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        margin: 16px 0;
+      }
+      .highlight-box {
+        background: var(--primary-light);
+        border-left: 3px solid var(--primary);
+        border-radius: 0 var(--radius) var(--radius) 0;
+        padding: 10px 14px;
+        margin: 10px 0;
+        font-size: 0.82rem;
+        color: var(--primary-dark);
+        font-family: var(--font-mono);
+      }
+      footer {
+        text-align: center;
+        padding: 24px;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        border-top: 1px solid var(--border);
+        background: #fff;
+      }
+      footer a {
+        color: var(--primary);
+        text-decoration: none;
+      }
+      @media (max-width: 860px) {
+        .page-body {
+          flex-direction: column;
+        }
+        .side-col {
+          max-width: 100%;
+          min-width: 0;
+          width: 100%;
+        }
+      }
+      @media (max-width: 600px) {
+        .page-body {
+          padding: 16px;
+        }
+        .ad-banner {
+          padding: 0 16px;
+        }
+        .row {
+          grid-template-columns: 1fr;
+        }
+        .btn-group {
+          flex-direction: column;
+        }
+      }
+    </style>
+      
+    <!-- CMP Cookie/个性化广告同意（GDPR/EEA/CCPA 合规） -->
+    <link rel="stylesheet" href="/assets/cmp-consent.css">
+    <script src="/assets/cmp-consent.js" defer></script>
+    <script>
+      // [CMP] 在 adsbygoogle 加载前同步应用已有同意状态（防止同意前已发出个性化广告请求）
+      (function () {
+        try {
+          var s = localStorage.getItem('ess_cmp_v1');
+          window.__cmpConsent = s;
+          if (s !== 'a') {
+            // 'n' 或未设置：默认非个性化广告，直到用户选择
+            window.adsbygoogle = window.adsbygoogle || [];
+            window.adsbygoogle.push({ requestNonPersonalizedAds: true });
+          }
+        } catch (e) {
+          // localStorage 禁用：降级到 NPA 模式
+          window.adsbygoogle = window.adsbygoogle || [];
+          window.adsbygoogle.push({ requestNonPersonalizedAds: true });
+        }
+      })();
+    </script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9979971494108572" crossorigin="anonymous"></script>
+      <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "首页",
+      "item": "https://essays4u.net/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "隐私安全",
+      "item": "https://essays4u.net/tools/privacy/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "AES 加密器",
+      "item": "https://essays4u.net/tools/privacy/aes-encryptor"
+    }
+  ]
+}
+    </script>
+      <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "AES 加密器",
+  "url": "https://essays4u.net/tools/privacy/aes-encryptor",
+  "description": "AES 加密器 是 WebUtils 的隐私安全工具，适用于 privacy / aes-encryptor 页面场景，覆盖 AES 加密器、AES-256-GCM、在线文本加密、PBKDF2 密钥派生等关键词，支持浏览器本地 PBKDF2 派生密钥 + AES-GCM 认证加密，数据不上传服务器。适合需要数据安全加密、快速处理和无需安装即可完成任务的用户。",
+  "applicationCategory": "SecurityApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
+  "inLanguage": "zh-CN",
+  "isAccessibleForFree": true,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "CNY"
+  }
+}
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="/" class="back-link">← 返回首页</a>
+        <span class="header-title">AES 加密解密</span>
+        <span style="width: 100px"></span>
+      </div>
+    </header>
+
+
+    
+
+    <div class="page-body">
+      <main class="main-col">
+        <div class="page-title">
+          <article><h1>
+            AES 加密解密
+            <span class="badge">🔒 本地处理</span>
+          </h1>
+          <p>使用 AES-GCM 算法加密解密文本，PBKDF2 密钥派生，随机 IV，数据不离开您的浏览器</p>
+        </div>
+
+        <div class="card">
+          <div class="mode-tabs">
+            <button class="mode-tab active" data-mode="encrypt">🔐 加密</button>
+            <button class="mode-tab" data-mode="decrypt">🔓 解密</button>
+          </div>
+
+          <div class="form-group">
+            <label id="input-label">明文</label>
+            <textarea id="input" placeholder="输入要加密的文本..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>密码</label>
+            <div class="password-wrapper">
+              <input type="password" id="password" placeholder="输入加密密码" />
+              <button type="button" class="toggle-password" id="togglePassword">显示</button>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="form-group">
+              <label>密钥长度</label>
+              <select id="keyLength">
+                <option value="128">AES-128 (128 位)</option>
+                <option value="256" selected>AES-256 (256 位)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>输出格式</label>
+              <select id="outputFormat">
+                <option value="base64" selected>Base64</option>
+                <option value="hex">Hex</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn btn-primary" id="processBtn">加密</button>
+            <button class="btn btn-secondary" id="clearBtn">清空</button>
+          </div>
+
+          <div class="output-section">
+            <div class="output-header">
+              <label id="output-label">密文</label>
+              <button class="copy-btn" id="copyBtn">复制</button>
+            </div>
+            <div class="output-box" id="output"></div>
+            <div class="error-msg" id="error"></div>
+          </div>
+
+          <div class="info-box">
+            <strong>安全说明：</strong>
+            使用 AES-GCM 模式，自动生成随机 IV 和盐值。 输出格式：
+            <code>盐值(16B) + IV(12B) + 密文 + 认证标签(16B)</code>
+            。 所有加密操作均在浏览器本地完成，数据不会上传到服务器。
+          </div>
+        </div>
+      
+<section class="tool-guide" aria-label="使用指南" style="margin:2rem auto;max-width:760px;padding:1.35rem 1.4rem 1.6rem;border:1px solid var(--border-color,var(--border,#333));border-radius:12px;line-height:1.8;background:var(--bg-card,rgba(255,255,255,0.02));color:var(--text-primary,inherit)">
+
+  <h2 style="font-size:1.25rem;margin:0 0 .85rem">AES 加密解密完整使用指南</h2>
+  <p style="margin:0 0 1rem">在浏览器本地用 Web Crypto 做文本 AES-GCM 加解密：口令经 PBKDF2（SHA-256，约 100000 次迭代）派生密钥，随机盐与 IV，密文可输出 Base64 或 Hex。可选 AES-128 / AES-256（<code>#keyLength</code>）。界面含明文/密文输入 <code>#input</code>、口令 <code>#password</code>、显示切换、输出格式 <code>#outputFormat</code>、处理/清空/复制。模式在加密与解密间切换（<code>updateMode</code>）。全程 <code>crypto.subtle</code>，数据不上传。适合敏感草稿本地保护演示，不是企业级密钥托管或文件盘加密产品。</p>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">算法管线（与脚本一致）</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li><code>deriveKey</code>：importKey 口令为 PBKDF2 材料 → deriveKey 得 AES-GCM 密钥。</li>
+    <li>加密：生成 salt/IV → encrypt → 打包输出（格式含 salt、iv、密文，具体拼接以脚本为准）。</li>
+    <li>解密：按格式解码 Base64/Hex → 拆分参数 → decrypt → UTF-8 明文。</li>
+    <li>工具函数：<code>arrayBufferToBase64</code>/<code>base64ToArrayBuffer</code>、<code>arrayBufferToHex</code>/<code>hexToArrayBuffer</code>。</li>
+    <li>错误显示在 <code>#error</code>：口令错、格式损毁、非安全上下文等。</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">安全使用步骤</h2>
+  <ol style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>仅在 HTTPS 或 localhost 等安全上下文使用，确保 subtle 可用。</li>
+    <li>口令用长随机句，勿用生日；口令勿与密文一起发送。</li>
+    <li>加密后复制密文单独保存；忘记口令无法找回（设计如此）。</li>
+    <li>解密时格式（Base64/Hex）与密钥长度须与加密时一致。</li>
+    <li>公共电脑用完清空输入输出与剪贴板。</li>
+  </ol>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">边界与误区</h2>
+  <ul style="margin:0 0 1rem;padding-left:1.2rem">
+    <li>AES-GCM 提供机密性与完整性，但不替代传输层 TLS 的完整方案设计。</li>
+    <li>弱口令会被暴力猜测；工具无法强迫你用强口令。</li>
+    <li>非本工具产出的任意密文可能格式不兼容。</li>
+    <li>大文本可能较慢；超大文件请用专用工具。</li>
+    <li>页面若被恶意扩展注入则本地也不再可信，请注意浏览器环境。</li>
+  </ul>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">常见问题</h2>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">解密失败最常见原因？</h3>
+  <p style="margin:0 0 .8rem">口令错误、输出格式选错、密文被截断或多了空格换行。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">128 和 256 怎么选？</h3>
+  <p style="margin:0 0 .8rem">一般默认 256；需与协作方约定一致，否则无法互通。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">和「文本加密」其他页区别？</h3>
+  <p style="margin:0 0 .8rem">本页明确 AES-GCM + PBKDF2 管线；其他页可能算法或场景不同，不要混用密文。</p>
+  <h3 style="font-size:1.02rem;margin:1rem 0 .35rem">能加密文件吗？</h3>
+  <p style="margin:0">主界面面向文本；二进制文件请先明确是否支持或改用文件类工具。</p>
+
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">协作约定模板</h2>
+  <p style="margin:0">与同事交换密文时书面约定：算法 AES-GCM、密钥长度、输出 Base64 或 Hex、口令传递渠道（线下/密码管理器），绝不要把口令写在同一封邮件正文。轮换口令后旧密文需重新加密归档。</p>
+
+<h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">口令与输出保管</h2>
+  <p style="margin:0 0 1rem">口令只用密码管理器生成与粘贴，避免浏览器记住在公共配置文件。密文可存网盘，口令另通道。Base64 与 Hex 不要混用同一条密文。复制后如需二次分发，确认未把明文留在 <code>#input</code>。清空按钮应同时清输出，防止肩窥。PBKDF2 迭代约十万次会带来可感知延迟，属正常换取慢哈希的成本。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">失败排查清单</h2>
+  <p style="margin:0 0 1rem">1）模式是否在解密；2）密钥长度是否一致；3）格式 Base64/Hex 是否一致；4）密文是否完整；5）是否在安全上下文。扩展程序劫持页面时不要处理真秘密。本工具不上传，但屏幕共享会暴露输入，远程协助时切换窗口。</p>
+  <h2 style="font-size:1.12rem;margin:1.35rem 0 .55rem">与随机密钥页配合</h2>
+  <p style="margin:0">可用随机密钥页生成高熵口令再粘贴到本页密码框。文件哈希页用于完整性校验，不替代加密。概念分离：加密藏内容，哈希验是否被改，随机密钥提供材料。</p>
+</section>
+</article></main>
+
+
+    </div>
+
+    <footer>
+      <a href="https://github.com/Dd1243/html-tools" target="_blank" rel="noopener noreferrer">GitHub</a>
+      · 纯前端 · 无服务器 · 完全本地处理 ·
+      <a href="/">WebUtils</a>
+    
+  <nav data-site-policy-links aria-label="网站政策" style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px 20px;margin:16px auto;padding:0 16px;font-size:14px">
+    <a href="/about">关于本站</a>
+    <a href="/contact">联系我们</a>
+    <a href="/terms">使用条款</a>
+    <a href="/privacy-policy">隐私政策</a>
+  </nav>
+</footer>
+
+    <script>
+      var state = { mode: "encrypt" };
+      var elements = {
+        input: document.getElementById("input"),
+        password: document.getElementById("password"),
+        keyLength: document.getElementById("keyLength"),
+        outputFormat: document.getElementById("outputFormat"),
+        output: document.getElementById("output"),
+        error: document.getElementById("error"),
+        processBtn: document.getElementById("processBtn"),
+        clearBtn: document.getElementById("clearBtn"),
+        copyBtn: document.getElementById("copyBtn"),
+        togglePassword: document.getElementById("togglePassword"),
+        inputLabel: document.getElementById("input-label"),
+        outputLabel: document.getElementById("output-label"),
+        modeTabs: document.querySelectorAll(".mode-tab")
+      };
+
+      function arrayBufferToBase64(buffer) {
+        var bytes = new Uint8Array(buffer),
+          binary = "";
+        for (var i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+        return btoa(binary);
+      }
+      function base64ToArrayBuffer(base64) {
+        var binary = atob(base64),
+          bytes = new Uint8Array(binary.length);
+        for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        return bytes.buffer;
+      }
+      function arrayBufferToHex(buffer) {
+        return Array.from(new Uint8Array(buffer))
+          .map(function (b) {
+            return b.toString(16).padStart(2, "0");
+          })
+          .join("");
+      }
+      function hexToArrayBuffer(hex) {
+        if (hex.length % 2 !== 0) throw new Error("Hex 字符串长度必须为偶数");
+        var bytes = new Uint8Array(hex.length / 2);
+        for (var i = 0; i < hex.length; i += 2) bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
+        return bytes.buffer;
+      }
+
+      async function deriveKey(password, salt, keyLength) {
+        var encoder = new TextEncoder();
+        var passwordKey = await crypto.subtle.importKey(
+          "raw",
+          encoder.encode(password),
+          "PBKDF2",
+          false,
+          ["deriveKey"]
+        );
+        return crypto.subtle.deriveKey(
+          { name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256" },
+          passwordKey,
+          { name: "AES-GCM", length: keyLength },
+          false,
+          ["encrypt", "decrypt"]
+        );
+      }
+
+      async function encrypt(plaintext, password, keyLength, format) {
+        var encoder = new TextEncoder();
+        var salt = crypto.getRandomValues(new Uint8Array(16));
+        var iv = crypto.getRandomValues(new Uint8Array(12));
+        var key = await deriveKey(password, salt, keyLength);
+        var encrypted = await crypto.subtle.encrypt(
+          { name: "AES-GCM", iv: iv },
+          key,
+          encoder.encode(plaintext)
+        );
+        var combined = new Uint8Array(salt.length + iv.length + encrypted.byteLength);
+        combined.set(salt, 0);
+        combined.set(iv, salt.length);
+        combined.set(new Uint8Array(encrypted), salt.length + iv.length);
+        return format === "hex"
+          ? arrayBufferToHex(combined.buffer)
+          : arrayBufferToBase64(combined.buffer);
+      }
+
+      async function decrypt(ciphertext, password, keyLength, format) {
+        var combined = new Uint8Array(
+          format === "hex" ? hexToArrayBuffer(ciphertext) : base64ToArrayBuffer(ciphertext)
+        );
+        var salt = combined.slice(0, 16),
+          iv = combined.slice(16, 28),
+          data = combined.slice(28);
+        var key = await deriveKey(password, salt, keyLength);
+        var decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, key, data);
+        return new TextDecoder().decode(decrypted);
+      }
+
+      function updateMode(mode) {
+        state.mode = mode;
+        elements.modeTabs.forEach(function (tab) {
+          tab.classList.toggle("active", tab.dataset.mode === mode);
+        });
+        if (mode === "encrypt") {
+          elements.inputLabel.textContent = "明文";
+          elements.outputLabel.textContent = "密文";
+          elements.input.placeholder = "输入要加密的文本...";
+          elements.processBtn.textContent = "🔐 加密";
+        } else {
+          elements.inputLabel.textContent = "密文";
+          elements.outputLabel.textContent = "明文";
+          elements.input.placeholder = "输入要解密的密文...";
+          elements.processBtn.textContent = "🔓 解密";
+        }
+        elements.output.textContent = "";
+        elements.error.textContent = "";
+      }
+
+      elements.modeTabs.forEach(function (tab) {
+        tab.addEventListener("click", function () {
+          updateMode(tab.dataset.mode);
+        });
+      });
+
+      elements.processBtn.addEventListener("click", async function () {
+        var input = elements.input.value.trim();
+        var password = elements.password.value;
+        var keyLength = parseInt(elements.keyLength.value);
+        var format = elements.outputFormat.value;
+        if (!input) {
+          elements.error.textContent = "请输入内容";
+          return;
+        }
+        if (!password) {
+          elements.error.textContent = "请输入密码";
+          return;
+        }
+        try {
+          var result =
+            state.mode === "encrypt"
+              ? await encrypt(input, password, keyLength, format)
+              : await decrypt(input, password, keyLength, format);
+          elements.output.textContent = result;
+          elements.error.textContent = "";
+        } catch (err) {
+          elements.output.textContent = "";
+          elements.error.textContent =
+            state.mode === "decrypt"
+              ? "解密失败：密码错误、密钥长度不一致或密文格式不正确"
+              : "加密失败：" + err.message;
+        }
+      });
+
+      elements.clearBtn.addEventListener("click", function () {
+        elements.input.value = "";
+        elements.password.value = "";
+        elements.output.textContent = "";
+        elements.error.textContent = "";
+      });
+
+      elements.copyBtn.addEventListener("click", async function () {
+        var text = elements.output.textContent;
+        if (!text) return;
+        try {
+          await navigator.clipboard.writeText(text);
+          elements.copyBtn.textContent = "已复制";
+          elements.copyBtn.classList.add("copied");
+          setTimeout(function () {
+            elements.copyBtn.textContent = "复制";
+            elements.copyBtn.classList.remove("copied");
+          }, 2000);
+        } catch (err) {
+          elements.error.textContent = "复制失败，请手动复制";
+        }
+      });
+
+      elements.togglePassword.addEventListener("click", function () {
+        var isPass = elements.password.type === "password";
+        elements.password.type = isPass ? "text" : "password";
+        elements.togglePassword.textContent = isPass ? "隐藏" : "显示";
+      });
+
+      updateMode("encrypt");
+    </script>
+<!-- FAQ（GEO 优化）-->
+</body>
+</html>
