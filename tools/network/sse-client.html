@@ -1,0 +1,701 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SSE 事件流调试器 - 在线 Server-Sent Event…｜WebUtils</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="SSE 事件流调试器 - 在线 Server-Sent Event…是 WebUtils 网络检测工具，面向 后端工程师 在 报表制作、批量生成、代码审查 中替代 VSCode 插件，支持 SSE调试、Server-Sent Events、事件流测试。" />
+    <meta
+      name="keywords"
+      content="SSE调试,Server-Sent Events,事件流测试,EventSource,实时推送,在线工具"
+    />
+    <meta name="author" content="WebUtils" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://essays4u.net/tools/network/sse-client" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="SSE 事件流调试器 - 在线 Server-Sent Event…｜WebUtils" />
+    <meta property="og:description" content="SSE 事件流调试器 - 在线 Server-Sent Event…是 WebUtils 网络检测工具，面向 后端工程师 在 报表制作、批量生成、代码审查 中替代 VSCode 插件，支持 SSE调试、Server-Sent Events、事件流测试。" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://essays4u.net/tools/network/sse-client" />
+    <meta property="og:site_name" content="WebUtils" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --bg-body: #0a0a0a;
+        --bg-card: #111;
+        --bg-input: #0d0d0d;
+        --bg-hover: #1a1a1a;
+        --text-primary: #e5e5e5;
+        --text-secondary: #737373;
+        --text-muted: #525252;
+        --border-color: #252525;
+        --border-focus: #404040;
+        --accent: #00f5d4;
+        --accent-hover: #00dfc4;
+        --accent-glow: rgba(0, 245, 212, 0.15);
+        --success: #10b981;
+        --error: #ef4444;
+        --warning: #f59e0b;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 14px;
+        --font-sans: "Inter", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+
+      [data-theme="light"] {
+        --bg-body: #fafafa;
+        --bg-card: #fff;
+        --bg-input: #f5f5f5;
+        --text-primary: #171717;
+        --text-secondary: #525252;
+        --text-muted: #a3a3a3;
+        --border-color: #e5e5e5;
+        --border-focus: #d4d4d4;
+        --accent: #10b981;
+        --accent-hover: #059669;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: var(--font-sans);
+        background: var(--bg-body);
+        color: var(--text-primary);
+        line-height: 1.6;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
+
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-bottom: 24px;
+      }
+      .breadcrumb a {
+        color: var(--text-secondary);
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        color: var(--accent);
+      }
+
+      .header {
+        margin-bottom: 32px;
+        text-align: center;
+      }
+      .header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+        letter-spacing: -0.02em;
+      }
+      .header p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+      }
+
+      .adsense-placeholder {
+        min-height: 90px;
+        background: rgba(128, 128, 128, 0.03);
+        margin: 32px 0;
+        border: 1px dashed var(--border-color);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+      }
+
+      .main-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 32px;
+        margin-bottom: 40px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+      }
+
+      .connection-bar {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+      input {
+        flex: 1;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 12px 16px;
+        color: var(--text-primary);
+        font-family: var(--font-mono);
+        font-size: 1rem;
+      }
+      input:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+
+      .btn {
+        padding: 0 24px;
+        border-radius: var(--radius-sm);
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+        font-size: 0.9rem;
+      }
+      .btn-connect {
+        background: var(--accent);
+        color: #000;
+      }
+      .btn-connect:hover {
+        background: var(--accent-hover);
+        box-shadow: 0 0 15px var(--accent-glow);
+      }
+      .btn-disconnect {
+        background: var(--error);
+        color: #fff;
+        display: none;
+      }
+
+      .status-indicator {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 24px;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+      }
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--text-muted);
+      }
+      .dot.connected {
+        background: var(--success);
+        box-shadow: 0 0 8px var(--success);
+      }
+      .dot.connecting {
+        background: var(--warning);
+        animation: blink 1s infinite;
+      }
+
+      @keyframes blink {
+        50% {
+          opacity: 0.3;
+        }
+      }
+
+      .log-container {
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        height: 400px;
+        overflow-y: auto;
+        padding: 16px;
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .log-entry {
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .log-time {
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        margin-bottom: 4px;
+      }
+      .log-event {
+        display: inline-block;
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: rgba(0, 245, 212, 0.1);
+        color: var(--accent);
+        font-size: 0.7rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+      .log-data {
+        color: var(--text-primary);
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+
+      .controls-bar {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 16px;
+      }
+      .btn-outline {
+        background: transparent;
+        border: 1px solid var(--border-color);
+        color: var(--text-secondary);
+        padding: 6px 16px;
+        font-size: 0.8rem;
+      }
+      .btn-outline:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .article-section {
+        margin-top: 64px;
+        border-top: 1px solid var(--border-color);
+        padding-top: 48px;
+      }
+      .article-section h2 {
+        font-size: 1.75rem;
+        margin-bottom: 24px;
+        color: var(--text-primary);
+      }
+      .article-section h3 {
+        font-size: 1.25rem;
+        margin-top: 32px;
+        margin-bottom: 16px;
+        color: var(--text-primary);
+      }
+      .article-section p {
+        margin-bottom: 16px;
+        color: var(--text-secondary);
+        line-height: 1.8;
+      }
+      .article-section ul {
+        margin-bottom: 24px;
+        padding-left: 20px;
+        color: var(--text-secondary);
+      }
+      .article-section li {
+        margin-bottom: 12px;
+      }
+
+      .theme-toggle {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 8px 12px;
+        cursor: pointer;
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        z-index: 100;
+      }
+
+      @media (max-width: 640px) {
+        .connection-bar {
+          flex-direction: column;
+        }
+        .header h1 {
+          font-size: 2rem;
+        }
+      }
+    </style>
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="SSE 事件流调试器 - 在线 Server-Sent Event…｜WebUtils" />
+    <meta name="twitter:description" content="SSE 事件流调试器 - 在线 Server-Sent Event…是 WebUtils 网络检测工具，面向 后端工程师 在 报表制作、批量生成、代码审查 中替代 VSCode 插件，支持 SSE调试、Server-Sent Events、事件流测试。" />
+    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+      
+    <!-- CMP Cookie/个性化广告同意（GDPR/EEA/CCPA 合规） -->
+    <link rel="stylesheet" href="/assets/cmp-consent.css">
+    <script src="/assets/cmp-consent.js" defer></script>
+    <script>
+      // [CMP] 在 adsbygoogle 加载前同步应用已有同意状态（防止同意前已发出个性化广告请求）
+      (function () {
+        try {
+          var s = localStorage.getItem('ess_cmp_v1');
+          window.__cmpConsent = s;
+          if (s !== 'a') {
+            // 'n' 或未设置：默认非个性化广告，直到用户选择
+            window.adsbygoogle = window.adsbygoogle || [];
+            window.adsbygoogle.push({ requestNonPersonalizedAds: true });
+          }
+        } catch (e) {
+          // localStorage 禁用：降级到 NPA 模式
+          window.adsbygoogle = window.adsbygoogle || [];
+          window.adsbygoogle.push({ requestNonPersonalizedAds: true });
+        }
+      })();
+    </script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9979971494108572" crossorigin="anonymous"></script>
+      <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "首页",
+      "item": "https://essays4u.net/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "网络工具",
+      "item": "https://essays4u.net/tools/network/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "SSE 事件流调试器",
+      "item": "https://essays4u.net/tools/network/sse-client"
+    }
+  ]
+}
+    </script>
+      <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "SSE 事件流调试器",
+  "url": "https://essays4u.net/tools/network/sse-client",
+  "description": "SSE 事件流调试器 - 在线 Server-Sent Events 测试工具是 WebUtils 的网络运维工具，适用于 network / sse-client 页面场景，覆盖 SSE调试、Server-Sent Events、事件流测试、EventSource、实时推送 等关键词，可在浏览器中直接完成操作。",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
+  "inLanguage": "zh-CN",
+  "isAccessibleForFree": true,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "CNY"
+  }
+}
+    </script>
+  </head>
+  <body>
+    <div class="container">
+    <button class="theme-toggle" id="themeToggle">切换主题</button>
+
+
+
+      <main class="main-card">
+        <header class="header">
+        <h1>SSE 事件流调试器</h1>
+      </header>
+
+      <article>
+
+        <div class="connection-bar">
+          <input
+            type="text"
+            id="urlInput"
+            placeholder="请输入 SSE 接口地址 (如: https://api.example.com/events)"
+          />
+          <button class="btn btn-connect" id="connectBtn">开始连接</button>
+          <button class="btn btn-disconnect" id="disconnectBtn">断开连接</button>
+        </div>
+
+        <div class="status-indicator">
+          <div class="dot" id="statusDot"></div>
+          <span id="statusText">未连接</span>
+        </div>
+
+        <div class="log-container" id="logContainer">
+          <div style="color: var(--text-muted); text-align: center; margin-top: 150px">
+            输入 URL 并连接后，推送的消息将显示在这里...
+          </div>
+        </div>
+
+        <div class="controls-bar">
+          <button class="btn btn-outline" id="clearBtn">清空日志</button>
+          <button class="btn btn-outline" id="copyBtn">复制全部</button>
+        </div>
+      </article></main>
+
+
+
+      <section class="article-section">
+        <h2>深度解析：Server-Sent Events (SSE) 技术原理与应用</h2>
+        <p>
+          Server-Sent Events (SSE) 是一种允许服务器通过 HTTP
+          协议向客户端异步推送实时更新的技术。与传统的“拉取”（Polling）模式相比，SSE
+          更加节省资源；而与双向通信的 WebSockets 相比，它更加轻量且易于在现有 HTTP 基础设施上实现。
+        </p>
+
+        <h3>SSE 的核心特点</h3>
+        <ul>
+          <li>
+            <strong>单向通信：</strong>
+            仅支持服务器向客户端发送数据。这种设计非常适合消息通知、股票价格更新等场景。
+          </li>
+          <li>
+            <strong>自动重连：</strong>
+            浏览器端的
+            <code>EventSource</code>
+            API 会在连接意外中断时自动尝试重新建立连接，开发者无需编写复杂的重试逻辑。
+          </li>
+          <li>
+            <strong>基于文本：</strong>
+            传输的数据格式通常为简单的 UTF-8 文本，易于调试和查看。
+          </li>
+          <li>
+            <strong>事件类型支持：</strong>
+            服务器可以指定
+            <code>event</code>
+            字段，让客户端针对不同的事件类型（如
+            <code>message</code>
+            ,
+            <code>update</code>
+            ,
+            <code>error</code>
+            ）触发不同的处理逻辑。
+          </li>
+        </ul>
+
+        <h3>如何解决实时应用中的常见问题？</h3>
+        <p>
+          <strong>场景一：AI 聊天机器人（如 ChatGPT）响应缓慢。</strong>
+          现代 AI 接口通常使用 SSE 返回流式数据。如果您的页面在等待 AI
+          生成完整回答时处于空白状态，可能是由于没有使用 SSE
+          进行渐进式渲染。本工具可以帮助您验证后端是否正确发出了
+          <code>data:</code>
+          段落。
+        </p>
+        <p>
+          <strong>场景二：连接频繁超时或断开。</strong>
+          检查您的服务器或代理服务器（如 Nginx）的超时设置。由于 SSE 保持长连接，您可能需要将
+          <code>proxy_read_timeout</code>
+          设置为较大的值，并确保
+          <code>Cache-Control</code>
+          为
+          <code>no-cache</code>
+          。
+        </p>
+
+        <h3>SSE vs WebSockets：该如何选择？</h3>
+        <p>
+          如果您的应用只需要单向推送（如大屏看板、社交媒体通知），
+          <strong>SSE</strong>
+          是首选，因为它更简单且支持自动重连。如果您需要双向交互（如多人协作编辑、实时游戏），则应当选择
+          <strong>WebSockets</strong>
+          。
+        </p>
+      </section>
+
+
+    </div>
+
+    <script>
+      // 主题切换逻辑
+      const themeToggle = document.getElementById("themeToggle");
+      const html = document.documentElement;
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      html.setAttribute("data-theme", savedTheme);
+      themeToggle.textContent = savedTheme === "dark" ? "切换到亮色" : "切换到暗色";
+      themeToggle.addEventListener("click", () => {
+        const currentTheme = html.getAttribute("data-theme");
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+        html.setAttribute("data-theme", newTheme);
+        localStorage.setItem("theme", newTheme);
+        themeToggle.textContent = newTheme === "dark" ? "切换到亮色" : "切换到暗色";
+      });
+
+      // SSE 调试器逻辑
+      const urlInput = document.getElementById("urlInput");
+      const connectBtn = document.getElementById("connectBtn");
+      const disconnectBtn = document.getElementById("disconnectBtn");
+      const statusDot = document.getElementById("statusDot");
+      const statusText = document.getElementById("statusText");
+      const logContainer = document.getElementById("logContainer");
+      const clearBtn = document.getElementById("clearBtn");
+      const copyBtn = document.getElementById("copyBtn");
+
+      let eventSource = null;
+
+      function addLog(data, event = "message") {
+        if (logContainer.querySelector('div[style*="text-align: center"]')) {
+          logContainer.innerHTML = "";
+        }
+
+        const time = new Date().toLocaleTimeString();
+        const entry = document.createElement("div");
+        entry.className = "log-entry";
+        entry.innerHTML = `
+          <div class="log-time">${time}</div>
+          <div class="log-event">${event}</div>
+          <div class="log-data">${data}</div>
+        `;
+        logContainer.prepend(entry);
+      }
+
+      function updateStatus(state) {
+        statusDot.className = "dot " + state;
+        if (state === "connected") {
+          statusText.textContent = "连接成功";
+          connectBtn.style.display = "none";
+          disconnectBtn.style.display = "block";
+        } else if (state === "connecting") {
+          statusText.textContent = "正在建立连接...";
+        } else {
+          statusText.textContent = "未连接";
+          connectBtn.style.display = "block";
+          disconnectBtn.style.display = "none";
+        }
+      }
+
+      connectBtn.onclick = () => {
+        const url = urlInput.value.trim();
+        if (!url) return alert("请输入有效的接口地址");
+
+        try {
+          updateStatus("connecting");
+          eventSource = new EventSource(url);
+
+          eventSource.onopen = () => {
+            updateStatus("connected");
+            addLog("连接已开启", "SYSTEM");
+          };
+
+          eventSource.onmessage = (e) => {
+            addLog(e.data);
+          };
+
+          eventSource.onerror = (e) => {
+            addLog("连接出现错误或已断开", "ERROR");
+            console.error("SSE Error:", e);
+            if (eventSource.readyState === EventSource.CLOSED) {
+              updateStatus("disconnected");
+            }
+          };
+
+          // 监听通用事件
+          eventSource.addEventListener("ping", (e) => addLog(e.data, "PING"));
+          eventSource.addEventListener("update", (e) => addLog(e.data, "UPDATE"));
+        } catch (err) {
+          alert("连接失败: " + err.message);
+          updateStatus("disconnected");
+        }
+      };
+
+      disconnectBtn.onclick = () => {
+        if (eventSource) {
+          eventSource.close();
+          eventSource = null;
+          updateStatus("disconnected");
+          addLog("连接已手动断开", "SYSTEM");
+        }
+      };
+
+      clearBtn.onclick = () => {
+        logContainer.innerHTML =
+          '<div style="color: var(--text-muted); text-align: center; margin-top: 150px;">日志已清空...</div>';
+      };
+
+      copyBtn.onclick = () => {
+        const logs = Array.from(logContainer.querySelectorAll(".log-entry"))
+          .map(
+            (el) =>
+              `[${el.querySelector(".log-time").textContent}] ${el.querySelector(".log-event").textContent}: ${el.querySelector(".log-data").textContent}`
+          )
+          .join("\n");
+        if (!logs) return;
+        navigator.clipboard.writeText(logs);
+        alert("全部日志已复制");
+      };
+    </script>
+<!-- FAQ（GEO 优化）-->
+    
+<!-- Internal links: outgoing link audit fix -->
+      <nav class="related-links-section" aria-label="相关站内链接">
+        <h2>相关工具与导航</h2>
+        <div class="related-links-list">
+          <a href="/">WebUtils 首页</a>
+          <a href="/tools-directory">全部工具目录</a>
+          <a href="/tools-directory">network 工具分类</a>
+          <a href="/tools/network/device-info">设备信息</a>
+          <a href="/tools/network/dns-lookup">DNS 记录查询工具</a>
+          <a href="/tools/network/http-header-parser">HTTP 头解析器</a>
+          <a href="/tools/network/ip-calculator">IP 地址计算器</a>
+        </div>
+      </nav>
+      <style>
+        /* related-links centered */
+        .related-links-section {
+          width: min(960px, 92%);
+          margin: 40px auto 0;
+          padding: 24px 0 8px;
+          border-top: 1px solid var(--border-subtle, var(--border-color, #e5e7eb));
+          text-align: center;
+        }
+        .related-links-section h2 {
+          margin: 0 0 14px;
+          font-size: 1.15rem;
+          color: var(--text-primary, inherit);
+          text-align: center;
+        }
+        .related-links-list {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+          justify-content: center;
+          align-items: center;
+        }
+        .related-links-list a {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 36px;
+          padding: 8px 14px;
+          border: 1px solid var(--border-subtle, var(--border-color, #e5e7eb));
+          border-radius: var(--radius-md, 8px);
+          color: var(--accent-cyan, var(--accent-blue, var(--accent, #2563eb)));
+          background: var(--bg-card, rgba(255, 255, 255, 0.04));
+          text-decoration: none;
+          font-size: 0.92rem;
+          line-height: 1.3;
+        }
+        .related-links-list a:hover {
+          border-color: var(--border-strong, currentColor);
+          text-decoration: underline;
+        }
+      </style>
+
+  <footer class="site-footer">
+  <nav data-site-policy-links aria-label="网站政策" style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px 20px;margin:16px auto;padding:0 16px;font-size:14px">
+    <a href="/about">关于本站</a>
+    <a href="/contact">联系我们</a>
+    <a href="/terms">使用条款</a>
+    <a href="/privacy-policy">隐私政策</a>
+  </nav>
+</footer>
+</body>
+</html>

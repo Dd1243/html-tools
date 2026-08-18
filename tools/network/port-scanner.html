@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>在线端口扫描器 - 网络服务与安全检测演示工具｜WebUtils</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="在线端口扫描器 - 网络服务与安全检测演示工具是 WebUtils 网络检测工具，面向 学生 在 合同核查、报表制作、接口联调 中替代 繁琐的正则手写，支持 端口扫描、常用端口、网络安全。持续更新的实用小工具合集，支持实时预览，所见即所得，结果可一键复制或下载。" />
+    <meta name="keywords" content="端口扫描,常用端口,网络安全,Nmap,服务检测,在线工具" />
+    <meta name="author" content="WebUtils" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://essays4u.net/tools/network/port-scanner" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="在线端口扫描器 - 网络服务与安全检测演示工具｜WebUtils" />
+    <meta property="og:description" content="在线端口扫描器 - 网络服务与安全检测演示工具是 WebUtils 网络检测工具，面向 学生 在 合同核查、报表制作、接口联调 中替代 繁琐的正则手写，支持 端口扫描、常用端口、网络安全。持续更新的实用小工具合集，支持实时预览，所见即所得，结果可一键复制或下载。" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://essays4u.net/tools/network/port-scanner" />
+    <meta property="og:site_name" content="WebUtils" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --bg-body: #0a0a0a;
+        --bg-card: #111;
+        --bg-input: #0d0d0d;
+        --bg-hover: #1a1a1a;
+        --text-primary: #e5e5e5;
+        --text-secondary: #737373;
+        --text-muted: #525252;
+        --border-color: #252525;
+        --border-focus: #404040;
+        --accent: #00f5d4;
+        --accent-hover: #00dfc4;
+        --accent-glow: rgba(0, 245, 212, 0.15);
+        --success: #10b981;
+        --error: #ef4444;
+        --warning: #f59e0b;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 14px;
+        --font-sans: "Inter", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+
+      [data-theme="light"] {
+        --bg-body: #fafafa;
+        --bg-card: #fff;
+        --bg-input: #f5f5f5;
+        --bg-hover: #f0f0f0;
+        --text-primary: #171717;
+        --text-secondary: #525252;
+        --text-muted: #a3a3a3;
+        --border-color: #e5e5e5;
+        --border-focus: #d4d4d4;
+        --accent: #10b981;
+        --accent-hover: #059669;
+        --accent-glow: rgba(16, 185, 129, 0.15);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: var(--font-sans);
+        background: var(--bg-body);
+        color: var(--text-primary);
+        line-height: 1.6;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
+
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-bottom: 24px;
+      }
+      .breadcrumb a {
+        color: var(--text-secondary);
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        color: var(--accent);
+      }
+
+      .header {
+        margin-bottom: 32px;
+        text-align: center;
+      }
+      .header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+        letter-spacing: -0.02em;
+      }
+      .header p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+      }
+
+      .adsense-placeholder {
+        min-height: 90px;
+        background: rgba(128, 128, 128, 0.03);
+        margin: 32px 0;
+        border: 1px dashed var(--border-color);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+      }
+
+      .main-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 32px;
+        margin-bottom: 40px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 32px;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .filter-group {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .filter-btn {
+        padding: 6px 14px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: var(--text-secondary);
+      }
+      .filter-btn.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #000;
+        font-weight: 600;
+      }
+
+      .btn-scan {
+        background: var(--accent);
+        color: #000;
+        border: none;
+        border-radius: var(--radius-sm);
+        padding: 10px 24px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-scan:hover:not(:disabled) {
+        background: var(--accent-hover);
+        box-shadow: 0 0 15px var(--accent-glow);
+      }
+      .btn-scan:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .port-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 16px;
+      }
+      .port-card {
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 16px;
+        text-align: center;
+        transition: all 0.2s;
+        position: relative;
+      }
+      .port-card.open {
+        border-color: var(--success);
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.1);
+      }
+      .port-card.closed {
+        opacity: 0.6;
+      }
+      .port-card.checking {
+        border-color: var(--warning);
+        animation: pulse 1.5s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      .port-number {
+        font-family: var(--font-mono);
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+        color: var(--text-primary);
+      }
+      .service-name {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .port-status {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+      .status-open {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--success);
+      }
+      .status-closed {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--error);
+      }
+      .status-unknown {
+        background: rgba(128, 128, 128, 0.1);
+        color: var(--text-muted);
+      }
+
+      .info-banner {
+        background: rgba(245, 158, 11, 0.05);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+        border-radius: var(--radius-md);
+        padding: 16px;
+        margin-bottom: 32px;
+        color: var(--warning);
+        font-size: 0.9rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .article-section {
+        margin-top: 64px;
+        border-top: 1px solid var(--border-color);
+        padding-top: 48px;
+      }
+      .article-section h2 {
+        font-size: 1.75rem;
+        margin-bottom: 24px;
+        color: var(--text-primary);
+      }
+      .article-section h3 {
+        font-size: 1.25rem;
+        margin-top: 32px;
+        margin-bottom: 16px;
+        color: var(--text-primary);
+      }
+      .article-section p {
+        margin-bottom: 16px;
+        color: var(--text-secondary);
+        line-height: 1.8;
+      }
+      .article-section ul {
+        margin-bottom: 24px;
+        padding-left: 20px;
+        color: var(--text-secondary);
+      }
+      .article-section li {
+        margin-bottom: 12px;
+      }
+
+      .theme-toggle {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 8px 12px;
+        cursor: pointer;
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        z-index: 100;
+      }
+    </style>
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="在线端口扫描器 - 网络服务与安全检测演示工具｜WebUtils" />
+    <meta name="twitter:description" content="在线端口扫描器 - 网络服务与安全检测演示工具是 WebUtils 网络检测工具，面向 学生 在 合同核查、报表制作、接口联调 中替代 繁琐的正则手写，支持 端口扫描、常用端口、网络安全。持续更新的实用小工具合集，支持实时预览，所见即所得，结果可一键复制或下载。" />
+    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+      
+    <!-- CMP Cookie/个性化广告同意（GDPR/EEA/CCPA 合规） -->
+    <link rel="stylesheet" href="/assets/cmp-consent.css">
+    <script src="/assets/cmp-consent.js" defer></script>
+    <script>
+      // [CMP] 在 adsbygoogle 加载前同步应用已有同意状态（防止同意前已发出个性化广告请求）
+      (function () {
+        try {
+          var s = localStorage.getItem('ess_cmp_v1');
+          window.__cmpConsent = s;
+          if (s !== 'a') {
+            // 'n' 或未设置：默认非个性化广告，直到用户选择
+            window.adsbygoogle = window.adsbygoogle || [];
+            window.adsbygoogle.push({ requestNonPersonalizedAds: true });
+          }
+        } catch (e) {
+          // localStorage 禁用：降级到 NPA 模式
+          window.adsbygoogle = window.adsbygoogle || [];
+          window.adsbygoogle.push({ requestNonPersonalizedAds: true });
+        }
+      })();
+    </script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9979971494108572" crossorigin="anonymous"></script>
+      <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "首页",
+      "item": "https://essays4u.net/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "网络工具",
+      "item": "https://essays4u.net/tools/network/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "在线端口扫描器",
+      "item": "https://essays4u.net/tools/network/port-scanner"
+    }
+  ]
+}
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <button class="theme-toggle" id="themeToggle">切换主题</button>
+
+
+
+      <main class="main-card">
+        <header class="header">
+        <h1>在线端口扫描器</h1>
+      </header>
+
+      <article>
+
+        <div class="info-banner">
+          <span>⚠️</span>
+          <p>
+            <strong>注意：</strong>
+            由于浏览器沙箱安全限制，纯前端网页无法直接对外部服务器进行真实的 TCP/UDP
+            端口扫描。此工具仅用于
+            <strong>模拟演示</strong>
+            常见端口及其对应的服务。如需进行真实扫描，请在本地使用 Nmap 等专业工具。
+          </p>
+        </div>
+
+        <div class="controls">
+          <div class="filter-group" id="filterGroup">
+            <button class="filter-btn active" data-cat="all">全部端口</button>
+            <button class="filter-btn" data-cat="web">Web 服务</button>
+            <button class="filter-btn" data-cat="database">数据库</button>
+            <button class="filter-btn" data-cat="other">基础服务</button>
+          </div>
+          <button class="btn-scan" id="scanBtn">开始模拟扫描</button>
+        </div>
+
+        <div class="port-grid" id="portGrid">
+          <!-- 端口卡片动态生成 -->
+        </div>
+      </article></main>
+
+
+
+      <section class="article-section">
+        <h2>深度解析：端口扫描与网络安全</h2>
+        <p>
+          在网络通信中，端口（Port）是应用层服务与传输层协议之间的逻辑接口。如果把 IP
+          地址比作大厦的地址，那么端口就是进入不同房间的门。端口扫描是网络安全审计的第一步，用于发现目标主机上开放的服务。
+        </p>
+
+        <h3>常见端口及其对应的服务</h3>
+        <ul>
+          <li>
+            <strong>80 (HTTP) & 443 (HTTPS)：</strong>
+            网页服务的标准端口。443 端口通过 SSL/TLS 提供加密传输。
+          </li>
+          <li>
+            <strong>22 (SSH)：</strong>
+            安全外壳协议，用于远程登录和管理 Linux 服务器。
+          </li>
+          <li>
+            <strong>21 (FTP)：</strong>
+            文件传输协议，虽然古老但仍广泛用于某些场景。
+          </li>
+          <li>
+            <strong>3306 (MySQL) & 5432 (PostgreSQL)：</strong>
+            常见的数据库服务端口。
+          </li>
+          <li>
+            <strong>6379 (Redis)：</strong>
+            高性能的内存数据库，常用于缓存。
+          </li>
+        </ul>
+
+        <h3>为什么端口扫描对安全至关重要？</h3>
+        <p>
+          <strong>暴露面分析：</strong>
+          开放的端口意味着开放的服务。每一个开放的服务都可能存在漏洞。通过端口扫描，管理员可以确认是否有不必要的服务暴露在公网上（如数据库端口），从而及时关闭它们以减少受攻击面。
+        </p>
+        <p>
+          <strong>服务指纹识别：</strong>
+          专业扫描工具（如
+          Nmap）不仅能发现开放端口，还能识别出具体运行的服务版本。如果运行的是存在已知 CVE
+          漏洞的旧版本，管理员必须立即升级。
+        </p>
+
+        <h3>如何进行真实的端口扫描？</h3>
+        <p>
+          对于专业的渗透测试或系统维护，建议使用命令行工具
+          <strong>Nmap</strong>
+          。例如，运行
+          <code>nmap -sV example.com</code>
+          可以扫描最常用的 1000
+          个端口并尝试识别服务版本。请注意：未经授权对他人的服务器进行扫描在许多国家和地区是违法的，请务必在合规前提下使用。
+        </p>
+      </section>
+
+
+    </div>
+
+    <script>
+      // 主题切换
+      const themeToggle = document.getElementById("themeToggle");
+      const html = document.documentElement;
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      html.setAttribute("data-theme", savedTheme);
+      themeToggle.textContent = savedTheme === "dark" ? "切换到亮色" : "切换到暗色";
+      themeToggle.addEventListener("click", () => {
+        const currentTheme = html.getAttribute("data-theme");
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+        html.setAttribute("data-theme", newTheme);
+        localStorage.setItem("theme", newTheme);
+        themeToggle.textContent = newTheme === "dark" ? "切换到亮色" : "切换到暗色";
+      });
+
+      const commonPorts = [
+        { port: 21, service: "FTP", cat: "other" },
+        { port: 22, service: "SSH", cat: "other" },
+        { port: 23, service: "Telnet", cat: "other" },
+        { port: 25, service: "SMTP", cat: "other" },
+        { port: 53, service: "DNS", cat: "other" },
+        { port: 80, service: "HTTP", cat: "web" },
+        { port: 110, service: "POP3", cat: "other" },
+        { port: 143, service: "IMAP", cat: "other" },
+        { port: 443, service: "HTTPS", cat: "web" },
+        { port: 1433, service: "SQL Server", cat: "database" },
+        { port: 3306, service: "MySQL", cat: "database" },
+        { port: 3389, service: "RDP", cat: "other" },
+        { port: 5432, service: "PostgreSQL", cat: "database" },
+        { port: 6379, service: "Redis", cat: "database" },
+        { port: 8080, service: "HTTP Proxy", cat: "web" },
+        { port: 27017, service: "MongoDB", cat: "database" }
+      ];
+
+      const portGrid = document.getElementById("portGrid");
+      const scanBtn = document.getElementById("scanBtn");
+      const filterBtns = document.querySelectorAll(".filter-btn");
+      let currentCat = "all";
+
+      function renderPorts(statusMap = {}) {
+        const filtered =
+          currentCat === "all" ? commonPorts : commonPorts.filter((p) => p.cat === currentCat);
+        portGrid.innerHTML = filtered
+          .map((p) => {
+            const status = statusMap[p.port] || "unknown";
+            return `
+            <div class="port-card ${status}">
+              <div class="port-number">${p.port}</div>
+              <div class="service-name">${p.service}</div>
+              <span class="port-status status-${status}">${status === "open" ? "开放" : status === "closed" ? "关闭" : status === "checking" ? "正在扫描" : "待扫描"}</span>
+            </div>
+          `;
+          })
+          .join("");
+      }
+
+      filterBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          filterBtns.forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          currentCat = btn.dataset.cat;
+          renderPorts();
+        });
+      });
+
+      scanBtn.addEventListener("click", async () => {
+        scanBtn.disabled = true;
+        scanBtn.textContent = "正在分析网络包...";
+
+        const statusMap = {};
+        commonPorts.forEach((p) => (statusMap[p.port] = "checking"));
+        renderPorts(statusMap);
+
+        await new Promise((r) => setTimeout(r, 1500));
+
+        commonPorts.forEach((p) => {
+          // 模拟结果：80 和 443 通常是开放的，其他随机
+          if (p.port === 80 || p.port === 443) statusMap[p.port] = "open";
+          else statusMap[p.port] = Math.random() > 0.7 ? "open" : "closed";
+        });
+
+        renderPorts(statusMap);
+        scanBtn.disabled = false;
+        scanBtn.textContent = "再次模拟扫描";
+      });
+
+      renderPorts();
+    </script>
+<!-- FAQ（GEO 优化）-->
+    
+<!-- Internal links: outgoing link audit fix -->
+      <nav class="related-links-section" aria-label="相关站内链接">
+        <h2>相关工具与导航</h2>
+        <div class="related-links-list">
+          <a href="/">WebUtils 首页</a>
+          <a href="/tools-directory">全部工具目录</a>
+          <a href="/tools-directory">network 工具分类</a>
+          <a href="/tools/network/device-info">设备信息</a>
+          <a href="/tools/network/dns-lookup">DNS 记录查询工具</a>
+          <a href="/tools/network/http-header-parser">HTTP 头解析器</a>
+          <a href="/tools/network/ip-calculator">IP 地址计算器</a>
+        </div>
+      </nav>
+      <style>
+        /* related-links centered */
+        .related-links-section {
+          width: min(960px, 92%);
+          margin: 40px auto 0;
+          padding: 24px 0 8px;
+          border-top: 1px solid var(--border-subtle, var(--border-color, #e5e7eb));
+          text-align: center;
+        }
+        .related-links-section h2 {
+          margin: 0 0 14px;
+          font-size: 1.15rem;
+          color: var(--text-primary, inherit);
+          text-align: center;
+        }
+        .related-links-list {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+          justify-content: center;
+          align-items: center;
+        }
+        .related-links-list a {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 36px;
+          padding: 8px 14px;
+          border: 1px solid var(--border-subtle, var(--border-color, #e5e7eb));
+          border-radius: var(--radius-md, 8px);
+          color: var(--accent-cyan, var(--accent-blue, var(--accent, #2563eb)));
+          background: var(--bg-card, rgba(255, 255, 255, 0.04));
+          text-decoration: none;
+          font-size: 0.92rem;
+          line-height: 1.3;
+        }
+        .related-links-list a:hover {
+          border-color: var(--border-strong, currentColor);
+          text-decoration: underline;
+        }
+      </style>
+
+  <footer class="site-footer">
+  <nav data-site-policy-links aria-label="网站政策" style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px 20px;margin:16px auto;padding:0 16px;font-size:14px">
+    <a href="/about">关于本站</a>
+    <a href="/contact">联系我们</a>
+    <a href="/terms">使用条款</a>
+    <a href="/privacy-policy">隐私政策</a>
+  </nav>
+</footer>
+</body>
+</html>

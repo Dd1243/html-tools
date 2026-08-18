@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DNS 记录查询 - 在线域名解析检查工具｜WebUtils</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="DNS 记录查询 - 在线域名解析检查工具是 WebUtils 网络检测工具，面向 DevOps/SRE 在 报表制作、数据对账、日常排版 中替代 手动复制粘贴，支持 DNS查询、域名解析、A记录。浏览器本地处理，数据不上传服务器，持续更新的实用小工具合集，结果可一键复制或下载。" />
+    <meta name="keywords" content="DNS查询,域名解析,A记录,MX记录,CNAME查询,网络诊断,在线工具" />
+    <meta name="author" content="WebUtils" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://essays4u.net/tools/network/dns-lookup" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="DNS 记录查询 - 在线域名解析检查工具｜WebUtils" />
+    <meta property="og:description" content="DNS 记录查询 - 在线域名解析检查工具是 WebUtils 网络检测工具，面向 DevOps/SRE 在 报表制作、数据对账、日常排版 中替代 手动复制粘贴，支持 DNS查询、域名解析、A记录。浏览器本地处理，数据不上传服务器，持续更新的实用小工具合集，结果可一键复制或下载。" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://essays4u.net/tools/network/dns-lookup" />
+    <meta property="og:site_name" content="WebUtils" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --bg-body: #0a0a0a;
+        --bg-card: #111;
+        --bg-input: #0d0d0d;
+        --bg-hover: #1a1a1a;
+        --text-primary: #e5e5e5;
+        --text-secondary: #737373;
+        --text-muted: #525252;
+        --border-color: #252525;
+        --border-focus: #404040;
+        --accent: #00f5d4;
+        --accent-hover: #00dfc4;
+        --accent-glow: rgba(0, 245, 212, 0.15);
+        --success: #10b981;
+        --error: #ef4444;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 14px;
+        --font-sans: "Inter", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+
+      [data-theme="light"] {
+        --bg-body: #fafafa;
+        --bg-card: #fff;
+        --bg-input: #f5f5f5;
+        --bg-hover: #f0f0f0;
+        --text-primary: #171717;
+        --text-secondary: #525252;
+        --text-muted: #a3a3a3;
+        --border-color: #e5e5e5;
+        --border-focus: #d4d4d4;
+        --accent: #10b981;
+        --accent-hover: #059669;
+        --accent-glow: rgba(16, 185, 129, 0.15);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: var(--font-sans);
+        background: var(--bg-body);
+        color: var(--text-primary);
+        line-height: 1.6;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
+
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-bottom: 24px;
+      }
+      .breadcrumb a {
+        color: var(--text-secondary);
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        color: var(--accent);
+      }
+
+      .header {
+        margin-bottom: 32px;
+        text-align: center;
+      }
+      .header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+        letter-spacing: -0.02em;
+      }
+      .header p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+      }
+
+      .adsense-placeholder {
+        min-height: 90px;
+        background: rgba(128, 128, 128, 0.03);
+        margin: 32px 0;
+        border: 1px dashed var(--border-color);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+      }
+
+      .main-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 32px;
+        margin-bottom: 40px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+      }
+
+      .search-group {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+      .search-group input {
+        flex: 1;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 12px 16px;
+        color: var(--text-primary);
+        font-family: var(--font-mono);
+        font-size: 1rem;
+      }
+      .search-group input:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+      .search-group button {
+        background: var(--accent);
+        color: #000;
+        border: none;
+        border-radius: var(--radius-sm);
+        padding: 0 24px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .search-group button:hover {
+        background: var(--accent-hover);
+        box-shadow: 0 0 15px var(--accent-glow);
+      }
+
+      .type-selector {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 32px;
+      }
+      .type-chip {
+        padding: 6px 14px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: var(--text-secondary);
+      }
+      .type-chip:hover {
+        border-color: var(--text-muted);
+      }
+      .type-chip.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #000;
+        font-weight: 600;
+      }
+
+      .results-area {
+        border-top: 1px solid var(--border-color);
+        padding-top: 32px;
+      }
+      .result-section {
+        margin-bottom: 32px;
+      }
+      .result-section h3 {
+        font-size: 1.1rem;
+        margin-bottom: 16px;
+        color: var(--accent);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .record-card {
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 16px;
+        margin-bottom: 12px;
+        font-family: var(--font-mono);
+        font-size: 0.9rem;
+      }
+      .record-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 8px;
+      }
+      .record-type {
+        color: var(--accent);
+        font-weight: 600;
+      }
+      .record-ttl {
+        color: var(--text-muted);
+        font-size: 0.8rem;
+      }
+      .record-data {
+        color: var(--text-primary);
+        word-break: break-all;
+        line-height: 1.6;
+      }
+
+      .article-section {
+        margin-top: 64px;
+        border-top: 1px solid var(--border-color);
+        padding-top: 48px;
+      }
+      .article-section h2 {
+        font-size: 1.75rem;
+        margin-bottom: 24px;
+        color: var(--text-primary);
+      }
+      .article-section h3 {
+        font-size: 1.25rem;
+        margin-top: 32px;
+        margin-bottom: 16px;
+        color: var(--text-primary);
+      }
+      .article-section p {
+        margin-bottom: 16px;
+        color: var(--text-secondary);
+        line-height: 1.8;
+      }
+      .article-section ul {
+        margin-bottom: 24px;
+        padding-left: 20px;
+        color: var(--text-secondary);
+      }
+      .article-section li {
+        margin-bottom: 12px;
+      }
+
+      .theme-toggle {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 8px 12px;
+        cursor: pointer;
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        z-index: 100;
+      }
+
+      @media (max-width: 640px) {
+        .search-group {
+          flex-direction: column;
+        }
+        .header h1 {
+          font-size: 2rem;
+        }
+      }
+    </style>
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="DNS 记录查询 - 在线域名解析检查工具｜WebUtils" />
+    <meta name="twitter:description" content="DNS 记录查询 - 在线域名解析检查工具是 WebUtils 网络检测工具，面向 DevOps/SRE 在 报表制作、数据对账、日常排版 中替代 手动复制粘贴，支持 DNS查询、域名解析、A记录。浏览器本地处理，数据不上传服务器，持续更新的实用小工具合集，结果可一键复制或下载。" />
+    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+      
+    <!-- CMP Cookie/个性化广告同意（GDPR/EEA/CCPA 合规） -->
+    <link rel="stylesheet" href="/assets/cmp-consent.css">
+    <script src="/assets/cmp-consent.js" defer></script>
+    <script>
+      // [CMP] 在 adsbygoogle 加载前同步应用已有同意状态（防止同意前已发出个性化广告请求）
+      (function () {
+        try {
+          var s = localStorage.getItem('ess_cmp_v1');
+          window.__cmpConsent = s;
+          if (s !== 'a') {
+            // 'n' 或未设置：默认非个性化广告，直到用户选择
+            window.adsbygoogle = window.adsbygoogle || [];
+            window.adsbygoogle.push({ requestNonPersonalizedAds: true });
+          }
+        } catch (e) {
+          // localStorage 禁用：降级到 NPA 模式
+          window.adsbygoogle = window.adsbygoogle || [];
+          window.adsbygoogle.push({ requestNonPersonalizedAds: true });
+        }
+      })();
+    </script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9979971494108572" crossorigin="anonymous"></script>
+      <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "首页",
+      "item": "https://essays4u.net/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "网络工具",
+      "item": "https://essays4u.net/tools/network/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "DNS 记录查询",
+      "item": "https://essays4u.net/tools/network/dns-lookup"
+    }
+  ]
+}
+    </script>
+      <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "DNS 记录查询",
+  "url": "https://essays4u.net/tools/network/dns-lookup",
+  "description": "DNS 记录查询 - 在线域名解析检查工具是 WebUtils 的网络运维工具，适用于 network / dns-lookup 页面场景，覆盖 DNS查询、域名解析、A记录、MX记录、CNAME查询 等关键词，覆盖常见使用场景，并保留灵活配置，方便个人和团队复用。适合需要准确结果。",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
+  "inLanguage": "zh-CN",
+  "isAccessibleForFree": true,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "CNY"
+  }
+}
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <button class="theme-toggle" id="themeToggle">切换主题</button>
+
+
+
+      <main class="main-card">
+        <header class="header">
+        <h1>DNS 记录查询</h1>
+      </header>
+
+      <article>
+
+        <div class="search-group">
+          <input
+            type="text"
+            id="domainInput"
+            placeholder="输入域名 (如: google.com)"
+            value="google.com"
+          />
+          <button id="lookupBtn">立即查询</button>
+        </div>
+
+        <div class="type-selector" id="typeSelector">
+          <div class="type-chip active" data-type="A">A</div>
+          <div class="type-chip active" data-type="AAAA">AAAA</div>
+          <div class="type-chip active" data-type="CNAME">CNAME</div>
+          <div class="type-chip active" data-type="MX">MX</div>
+          <div class="type-chip active" data-type="NS">NS</div>
+          <div class="type-chip" data-type="TXT">TXT</div>
+          <div class="type-chip" data-type="SOA">SOA</div>
+        </div>
+
+        <div id="resultsArea" class="results-area" style="display: none">
+          <!-- 结果动态插入 -->
+        </div>
+        <div id="loading" style="display: none; text-align: center; color: var(--text-secondary)">
+          查询中...
+        </div>
+      </article></main>
+
+
+
+      <section class="article-section">
+        <h2>深度解析：DNS 记录在网络中的作用</h2>
+        <p>
+          DNS（Domain Name System，域名系统）是互联网的电话簿。它将人类可读的域名（如
+          essays4u.net）转换为计算机可识别的 IP 地址。当您在浏览器中输入网址时，DNS
+          查询是发生的第一步。
+        </p>
+
+        <h3>常见的 DNS 记录类型及其用途</h3>
+        <ul>
+          <li>
+            <strong>A 记录 (Address)：</strong>
+            最基础的记录，将域名指向一个 IPv4 地址。
+          </li>
+          <li>
+            <strong>AAAA 记录：</strong>
+            将域名指向一个 IPv6 地址，是下一代互联网的标配。
+          </li>
+          <li>
+            <strong>CNAME (Canonical Name)：</strong>
+            别名记录，允许将一个域名指向另一个域名。常用于 CDN 加速或第三方服务接入。
+          </li>
+          <li>
+            <strong>MX (Mail Exchanger)：</strong>
+            邮件交换记录，定义了负责接收该域名电子邮件的服务器。
+          </li>
+          <li>
+            <strong>TXT (Text)：</strong>
+            文本记录，常用于所有权验证（如 Google Search Console）和邮件安全协议（如 SPF, DKIM）。
+          </li>
+          <li>
+            <strong>NS (Name Server)：</strong>
+            域名服务器记录，指定该域名由哪个 DNS 服务器进行解析。
+          </li>
+        </ul>
+
+        <h3>如何解决域名解析问题？</h3>
+        <p>
+          <strong>场景一：网站刚换了服务器，但访问的还是旧内容。</strong>
+          这通常是由于 DNS 缓存导致的。您可以查看查询结果中的 **TTL (Time to Live)**
+          值，它决定了缓存失效的时间。您可以尝试刷新本地 DNS 缓存（如 Windows 下运行 `ipconfig
+          /flushdns`）。
+        </p>
+        <p>
+          <strong>场景二：邮件无法发送或被标记为垃圾邮件。</strong>
+          检查您的 **MX 记录** 是否正确指向了邮件服务器，并确保已配置 **SPF (TXT 记录)**
+          以证明您的服务器有权代表域名发送邮件。
+        </p>
+
+        <h3>为什么选择我们的 DNS 查询工具？</h3>
+        <p>
+          我们的工具直接通过 Cloudflare 的全球 DNS 节点进行查询，结果实时、准确，不受本地运营商 DNS
+          污染的影响。无论您是开发者、系统管理员还是普通的网站所有者，都能在这里获得最专业的技术支持。
+        </p>
+      </section>
+
+
+    </div>
+
+    <script>
+      // 主题切换逻辑
+      const themeToggle = document.getElementById("themeToggle");
+      const html = document.documentElement;
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      html.setAttribute("data-theme", savedTheme);
+      themeToggle.textContent = savedTheme === "dark" ? "切换到亮色" : "切换到暗色";
+
+      themeToggle.addEventListener("click", () => {
+        const currentTheme = html.getAttribute("data-theme");
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+        html.setAttribute("data-theme", newTheme);
+        localStorage.setItem("theme", newTheme);
+        themeToggle.textContent = newTheme === "dark" ? "切换到亮色" : "切换到暗色";
+      });
+
+      // 记录类型选择
+      const typeSelector = document.getElementById("typeSelector");
+      typeSelector.addEventListener("click", (e) => {
+        if (e.target.classList.contains("type-chip")) {
+          e.target.classList.toggle("active");
+        }
+      });
+
+      // 查询逻辑
+      const domainInput = document.getElementById("domainInput");
+      const lookupBtn = document.getElementById("lookupBtn");
+      const resultsArea = document.getElementById("resultsArea");
+      const loading = document.getElementById("loading");
+
+      async function performLookup() {
+        const domain = domainInput.value
+          .trim()
+          .replace(/^https?:\/\//, "")
+          .replace(/\/.*$/, "");
+        if (!domain) return alert("请输入有效域名");
+
+        const types = Array.from(document.querySelectorAll(".type-chip.active")).map(
+          (c) => c.dataset.type
+        );
+        if (types.length === 0) return alert("请至少选择一种记录类型");
+
+        loading.style.display = "block";
+        resultsArea.style.display = "none";
+        resultsArea.innerHTML = "";
+
+        try {
+          const typeNames = {
+            1: "A",
+            28: "AAAA",
+            5: "CNAME",
+            15: "MX",
+            2: "NS",
+            16: "TXT",
+            6: "SOA"
+          };
+
+          for (const type of types) {
+            const response = await fetch(
+              `https://cloudflare-dns.com/dns-query?name=${domain}&type=${type}`,
+              {
+                headers: { Accept: "application/dns-json" }
+              }
+            );
+            const data = await response.json();
+
+            if (data.Answer && data.Answer.length > 0) {
+              const section = document.createElement("div");
+              section.className = "result-section";
+              section.innerHTML = `<h3>${type} 记录 (${data.Answer.length})</h3>`;
+
+              data.Answer.forEach((record) => {
+                const card = document.createElement("div");
+                card.className = "record-card";
+                card.innerHTML = `
+                  <div class="record-header">
+                    <span class="record-type">${typeNames[record.type] || type}</span>
+                    <span class="record-ttl">TTL: ${record.TTL}s</span>
+                  </div>
+                  <div class="record-data">${record.data}</div>
+                `;
+                section.appendChild(card);
+              });
+              resultsArea.appendChild(section);
+            }
+          }
+
+          if (resultsArea.innerHTML === "") {
+            resultsArea.innerHTML =
+              '<div style="text-align:center; color:var(--text-secondary); padding: 40px;">未找到相关 DNS 记录</div>';
+          }
+          resultsArea.style.display = "block";
+        } catch (err) {
+          alert("查询出错: " + err.message);
+        } finally {
+          loading.style.display = "none";
+        }
+      }
+
+      lookupBtn.addEventListener("click", performLookup);
+      domainInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") performLookup();
+      });
+    </script>
+<!-- FAQ（GEO 优化）-->
+    
+<!-- Internal links: outgoing link audit fix -->
+      <nav class="related-links-section" aria-label="相关站内链接">
+        <h2>相关工具与导航</h2>
+        <div class="related-links-list">
+          <a href="/">WebUtils 首页</a>
+          <a href="/tools-directory">全部工具目录</a>
+          <a href="/tools-directory">network 工具分类</a>
+          <a href="/tools/network/device-info">设备信息</a>
+          <a href="/tools/network/http-header-parser">HTTP 头解析器</a>
+          <a href="/tools/network/ip-calculator">IP 地址计算器</a>
+          <a href="/tools/network/ip-lookup">IP 地址查询</a>
+        </div>
+      </nav>
+      <style>
+        /* related-links centered */
+        .related-links-section {
+          width: min(960px, 92%);
+          margin: 40px auto 0;
+          padding: 24px 0 8px;
+          border-top: 1px solid var(--border-subtle, var(--border-color, #e5e7eb));
+          text-align: center;
+        }
+        .related-links-section h2 {
+          margin: 0 0 14px;
+          font-size: 1.15rem;
+          color: var(--text-primary, inherit);
+          text-align: center;
+        }
+        .related-links-list {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+          justify-content: center;
+          align-items: center;
+        }
+        .related-links-list a {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 36px;
+          padding: 8px 14px;
+          border: 1px solid var(--border-subtle, var(--border-color, #e5e7eb));
+          border-radius: var(--radius-md, 8px);
+          color: var(--accent-cyan, var(--accent-blue, var(--accent, #2563eb)));
+          background: var(--bg-card, rgba(255, 255, 255, 0.04));
+          text-decoration: none;
+          font-size: 0.92rem;
+          line-height: 1.3;
+        }
+        .related-links-list a:hover {
+          border-color: var(--border-strong, currentColor);
+          text-decoration: underline;
+        }
+      </style>
+
+  <footer class="site-footer">
+  <nav data-site-policy-links aria-label="网站政策" style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px 20px;margin:16px auto;padding:0 16px;font-size:14px">
+    <a href="/about">关于本站</a>
+    <a href="/contact">联系我们</a>
+    <a href="/terms">使用条款</a>
+    <a href="/privacy-policy">隐私政策</a>
+  </nav>
+</footer>
+</body>
+</html>

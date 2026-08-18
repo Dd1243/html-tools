@@ -1,0 +1,657 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>在线音频可视化器 - 实时频谱显示, 波形图, 多种样式｜WebUtils</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="在线音频可视化器 - 实时频谱显示, 波形图, 多种样式（音视频媒体工具）提供 参数灵活配置、错误定位提示、实时代码高亮 三项核心能力，音频可视化、频谱图、波形图 都能搞定。持续更新的实用小工具合集、一键复制导出，无缝对接工作流。" />
+    <meta
+      name="keywords"
+      content="音频可视化,频谱图,波形图,音频频谱,实时音频分析,audio visualizer,频谱可视化,WebUtils"
+    />
+    <meta name="author" content="WebUtils" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://essays4u.net/tools/media/audio-visualizer" />
+
+    <!-- JSON-LD 结构化数据 -->
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="在线音频可视化器 - 实时频谱显示, 波形图, 多种样式｜WebUtils" />
+    <meta property="og:description" content="在线音频可视化器 - 实时频谱显示, 波形图, 多种样式（音视频媒体工具）提供 参数灵活配置、错误定位提示、实时代码高亮 三项核心能力，音频可视化、频谱图、波形图 都能搞定。持续更新的实用小工具合集、一键复制导出，无缝对接工作流。" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://essays4u.net/tools/media/audio-visualizer" />
+    <meta property="og:site_name" content="WebUtils" />
+    <meta property="og:locale" content="zh_CN" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="在线音频可视化器 - 实时频谱显示, 波形图, 多种样式｜WebUtils" />
+    <meta name="twitter:description" content="在线音频可视化器 - 实时频谱显示, 波形图, 多种样式（音视频媒体工具）提供 参数灵活配置、错误定位提示、实时代码高亮 三项核心能力，音频可视化、频谱图、波形图 都能搞定。持续更新的实用小工具合集、一键复制导出，无缝对接工作流。" />
+    <!-- OG Image -->
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
+    <meta property="og:image:width" content="1280" />
+    <meta property="og:image:height" content="640" />
+    <meta property="og:image:type" content="image/png" />
+    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --color-bg-deep: #0a0a0f;
+        --color-bg-surface: #12121a;
+        --color-bg-card: #1a1a24;
+        --color-bg-input: #0e0e14;
+        --color-text-primary: #e8e8ed;
+        --color-text-secondary: #8888a0;
+        --color-text-muted: #55556a;
+        --border-default: #2a2a3a;
+        --border-focus: #3a3a4a;
+        --color-accent-cyan: #00f5d4;
+        --color-accent-magenta: #f72585;
+        --color-accent-green: #10b981;
+        --color-accent-red: #f43f5e;
+        --color-accent-yellow: #fbbf24;
+        --color-accent-blue: #4cc9f0;
+        --color-accent-purple: #7b2cbf;
+        --radius-sm: 4px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+        --font-sans:
+          "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        --font-mono: "JetBrains Mono", "Courier New", monospace;
+        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      }
+
+      [data-theme="light"] {
+        --color-bg-deep: #fafafa;
+        --color-bg-surface: #fff;
+        --color-bg-card: #fff;
+        --color-bg-input: #f5f5f5;
+        --color-text-primary: #1a1a1a;
+        --color-text-secondary: #666;
+        --color-text-muted: #999;
+        --border-default: #e5e5e5;
+        --border-focus: #d5d5d5;
+        --color-accent-cyan: #00d4b8;
+        --color-accent-magenta: #e63975;
+        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+
+      .theme-toggle {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1px solid var(--border-default);
+        background: var(--color-bg-card);
+        cursor: pointer;
+        font-size: 1.2rem;
+        z-index: 100;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-text-primary);
+      }
+      .theme-toggle:hover {
+        transform: scale(1.1);
+        border-color: var(--color-accent-cyan);
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: var(--font-sans);
+        background: var(--color-bg-deep);
+        color: var(--color-text-primary);
+        min-height: 100vh;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .bg-grid {
+        position: fixed;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(255, 107, 107, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 107, 107, 0.03) 1px, transparent 1px);
+        background-size: 50px 50px;
+        pointer-events: none;
+        z-index: 0;
+      }
+      .container {
+        position: relative;
+        z-index: 1;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+      }
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--color-text-secondary);
+        text-decoration: none;
+        font-size: 0.9rem;
+        margin-bottom: 2rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: var(--radius-sm);
+        transition: all 0.2s;
+      }
+      .back-link:hover {
+        color: var(--color-accent-red);
+        background: var(--color-bg-card);
+      }
+      h1 {
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, var(--color-text-primary), var(--color-accent-red));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .subtitle {
+        color: var(--color-text-secondary);
+        margin-bottom: 2rem;
+      }
+      .card {
+        background: var(--color-bg-card);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+      .canvas-container {
+        background: var(--color-bg-surface);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+      }
+      canvas {
+        display: block;
+        width: 100%;
+        height: 300px;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+      .btn {
+        padding: 0.75rem 1.5rem;
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-sm);
+        background: var(--color-accent-red);
+        color: white;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+      }
+      .btn:hover {
+        opacity: 0.9;
+      }
+      .btn-secondary {
+        background: var(--color-bg-surface);
+        color: var(--color-text-primary);
+      }
+      .form-group {
+        flex: 1;
+        min-width: 150px;
+      }
+      .form-group label {
+        display: block;
+        color: var(--color-text-secondary);
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+      }
+      .form-group select {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-sm);
+        background: var(--color-bg-surface);
+        color: var(--color-text-primary);
+      }
+      .file-input {
+        display: none;
+      }
+      .status {
+        padding: 0.75rem;
+        border-radius: var(--radius-sm);
+        background: var(--color-bg-surface);
+        font-size: 0.85rem;
+        color: var(--color-text-secondary);
+      }
+      footer {
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-default);
+        text-align: center;
+        color: var(--color-text-muted);
+        font-size: 0.85rem;
+      }
+      footer a {
+        color: var(--color-accent-red);
+        text-decoration: none;
+      }
+
+      .breadcrumb {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 8px 15px;
+        border-radius: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        font-size: 0.85rem;
+      }
+      .breadcrumb a {
+        color: #667eea;
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+      .breadcrumb span {
+        color: #999;
+        margin: 0 5px;
+      }
+    </style>
+      
+    <!-- CMP Cookie/个性化广告同意（GDPR/EEA/CCPA 合规） -->
+    <link rel="stylesheet" href="/assets/cmp-consent.css">
+    <script src="/assets/cmp-consent.js" defer></script>
+    <script>
+      // [CMP] 在 adsbygoogle 加载前同步应用已有同意状态（防止同意前已发出个性化广告请求）
+      (function () {
+        try {
+          var s = localStorage.getItem('ess_cmp_v1');
+          window.__cmpConsent = s;
+          if (s !== 'a') {
+            // 'n' 或未设置：默认非个性化广告，直到用户选择
+            window.adsbygoogle = window.adsbygoogle || [];
+            window.adsbygoogle.push({ requestNonPersonalizedAds: true });
+          }
+        } catch (e) {
+          // localStorage 禁用：降级到 NPA 模式
+          window.adsbygoogle = window.adsbygoogle || [];
+          window.adsbygoogle.push({ requestNonPersonalizedAds: true });
+        }
+      })();
+    </script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9979971494108572" crossorigin="anonymous"></script>
+      <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "首页",
+      "item": "https://essays4u.net/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "媒体工具",
+      "item": "https://essays4u.net/tools/media/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "音频可视化器",
+      "item": "https://essays4u.net/tools/media/audio-visualizer"
+    }
+  ]
+}
+    </script>
+      <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "音频可视化器",
+  "url": "https://essays4u.net/tools/media/audio-visualizer",
+  "description": "音频可视化器 工具是 WebUtils 的媒体处理工具，适用于 media / audio-visualizer 页面场景，覆盖 音频可视化、频谱图、波形图、音频频谱、实时音频分析 等关键词，支持快速输入、实时计算、结果复制与本地处理。适合需要准确结果、快速处理和无需安装即可完成任务的用户。",
+  "applicationCategory": "MultimediaApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
+  "inLanguage": "zh-CN",
+  "isAccessibleForFree": true,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "CNY"
+  }
+}
+    </script>
+  </head>
+  <body>
+    <nav class="breadcrumb">
+      <a href="/">首页</a>
+      <span>›</span>
+      音频可视化器
+    </nav>
+    <div class="bg-grid"></div>
+    <main class="container">
+      <a href="/" class="back-link"><article>← 返回</a>
+      <button class="theme-toggle" onclick="toggleTheme()" title="切换主题" aria-label="🌙">
+        🌙
+      </button>
+<div class="card" style="text-align: center; padding: 10px; overflow: hidden">
+        </div>
+
+      <h1>音频可视化器</h1>
+      <p class="subtitle">实时音频频谱可视化</p>
+
+      <div class="card">
+        <div class="canvas-container">
+          <canvas id="canvas"></canvas>
+        </div>
+
+        <div class="controls">
+          <button class="btn" onclick="document.getElementById('fileInput').click()">
+            选择音频文件
+          </button>
+          <button class="btn btn-secondary" onclick="useMicrophone()" aria-label="使用麦克风">
+            使用麦克风
+          </button>
+          <input
+            type="file"
+            id="fileInput"
+            class="file-input"
+            accept="audio/*"
+            onchange="loadFile(event)"
+          />
+        </div>
+
+        <div class="controls">
+          <div class="form-group">
+            <label>可视化样式</label>
+            <select id="vizType" onchange="vizType = this.value">
+              <option value="bars">频谱柱状图</option>
+              <option value="wave">波形图</option>
+              <option value="circle">圆形频谱</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>颜色主题</label>
+            <select id="colorTheme" onchange="colorTheme = this.value">
+              <option value="gradient">渐变</option>
+              <option value="cyan">青色</option>
+              <option value="red">红色</option>
+              <option value="rainbow">彩虹</option>
+            </select>
+          </div>
+        </div>
+
+        <audio id="audio" controls style="width: 100%; margin-bottom: 1rem"></audio>
+        <div class="status" id="status">选择音频文件或使用麦克风开始</div>
+      </div>
+<div class="card" style="text-align: center; padding: 10px; overflow: hidden">
+        </div>
+
+      <!-- SEO Content Section -->
+      <div class="card seo-content" style="margin-top: 20px; line-height: 1.8">
+        <h2 style="font-size: 20px; margin-bottom: 16px; color: var(--color-accent-red)">
+          关于在线音频可视化器
+        </h2>
+        <p style="margin-bottom: 12px">
+          WebUtils
+          提供的在线音频可视化器是一款强大的纯前端工具，能够将您的音频信号实时转化为精美的视觉动画。无论您是音乐爱好者、播客制作人还是
+          Web 开发者，都可以通过它直观地观察音频的频率分布和波形变化。
+        </p>
+
+        <h3 style="font-size: 18px; margin-bottom: 12px; color: var(--color-text-primary)">
+          核心功能
+        </h3>
+        <ul style="margin-left: 20px; margin-bottom: 16px; color: var(--color-text-secondary)">
+          <li>
+            <strong>多种显示模式：</strong>
+            支持频谱柱状图 (Bars)、波形图 (Wave) 和圆形频谱 (Circle) 等多种可视化效果。
+          </li>
+          <li>
+            <strong>实时交互：</strong>
+            支持本地音频文件 (MP3, WAV, OGG 等) 播放，同时支持麦克风实时输入。
+          </li>
+          <li>
+            <strong>个性化定制：</strong>
+            提供多种颜色主题（渐变、青色、红色、彩虹），满足不同的视觉需求。
+          </li>
+          <li>
+            <strong>高性能渲染：</strong>
+            基于 Web Audio API 和 HTML5 Canvas 开发，确保在现代浏览器中流畅运行。
+          </li>
+          <li>
+            <strong>隐私安全：</strong>
+            所有音频数据仅在本地处理，不会上传到任何服务器。
+          </li>
+        </ul>
+
+        <h3 style="font-size: 18px; margin-bottom: 12px; color: var(--color-text-primary)">
+          如何使用
+        </h3>
+        <ol style="margin-left: 20px; margin-bottom: 16px; color: var(--color-text-secondary)">
+          <li>点击“选择音频文件”上传您本地的音乐。</li>
+          <li>或者点击“使用麦克风”授权浏览器访问您的音频输入设备，进行实时可视化。</li>
+          <li>在下方下拉菜单中切换不同的“可视化样式”和“颜色主题”。</li>
+          <li>使用自带的播放器控制音频的播放、暂停和进度。</li>
+        </ol>
+
+        <h3 style="font-size: 18px; margin-bottom: 12px; color: var(--color-text-primary)">
+          常见问题 (FAQ)
+        </h3>
+        <div style="color: var(--color-text-secondary)">
+          <p><strong>Q: 为什么麦克风没有反应？</strong></p>
+          <p style="margin-bottom: 8px">
+            A: 请确保您已在浏览器弹出框中点击了“允许”访问麦克风。部分浏览器可能需要通过 HTTPS
+            协议才能启用该功能。
+          </p>
+
+          <p><strong>Q: 能够导出可视化视频吗？</strong></p>
+          <p style="margin-bottom: 8px">
+            A: 目前该工具仅支持实时显示。您可以结合屏幕录制工具来捕捉可视化画面。
+          </p>
+
+          <p><strong>Q: 它是免费的吗？</strong></p>
+          <p>A: 是的，WebUtils 所有的工具都是完全免费且开源的。</p>
+        </div>
+      </div>
+
+      <footer>
+        <a href="https://github.com/Dd1243/html-tools" target="_blank" rel="noopener noreferrer">GitHub</a>
+      
+  <nav data-site-policy-links aria-label="网站政策" style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px 20px;margin:16px auto;padding:0 16px;font-size:14px">
+    <a href="/about">关于本站</a>
+    <a href="/contact">联系我们</a>
+    <a href="/terms">使用条款</a>
+    <a href="/privacy-policy">隐私政策</a>
+  </nav>
+</footer>
+    </article></main>
+    <script>
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+      const audio = document.getElementById("audio");
+
+      let audioContext, analyser, source, dataArray;
+      let vizType = "bars";
+      let colorTheme = "gradient";
+      let animationId;
+
+      function initCanvas() {
+        canvas.width = canvas.offsetWidth * window.devicePixelRatio;
+        canvas.height = canvas.offsetHeight * window.devicePixelRatio;
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+      }
+      initCanvas();
+      window.addEventListener("resize", initCanvas);
+
+      window.setupAudio = function (sourceNode) {
+        if (audioContext) audioContext.close();
+
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioContext.createAnalyser();
+        analyser.fftSize = 256;
+        dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+        sourceNode.connect(analyser);
+        analyser.connect(audioContext.destination);
+
+        draw();
+      };
+
+      window.loadFile = function (event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        audio.src = URL.createObjectURL(file);
+        audio.play();
+
+        if (!audioContext) {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        // createMediaElementSource 只能对每个 audio 元素调用一次
+        if (!source) {
+          source = audioContext.createMediaElementSource(audio);
+          analyser = audioContext.createAnalyser();
+          analyser.fftSize = 256;
+          source.connect(analyser);
+          analyser.connect(audioContext.destination);
+        }
+        dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+        document.getElementById("status").textContent = "正在播放: " + file.name;
+        draw();
+      };
+
+      window.useMicrophone = async function () {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          source = audioContext.createMediaStreamSource(stream);
+          analyser = audioContext.createAnalyser();
+          analyser.fftSize = 256;
+          dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+          source.connect(analyser);
+
+          document.getElementById("status").textContent = "正在使用麦克风...";
+          draw();
+        } catch (e) {
+          document.getElementById("status").textContent = "无法访问麦克风: " + e.message;
+        }
+      };
+
+      function getColor(i, total) {
+        switch (colorTheme) {
+          case "cyan":
+            return "#00f5d4";
+          case "red":
+            return "#ff6b6b";
+          case "rainbow":
+            return `hsl(${(i / total) * 360}, 70%, 60%)`;
+          case "gradient":
+          default:
+            return `hsl(${180 + (i / total) * 60}, 70%, 60%)`;
+        }
+      }
+
+      function draw() {
+        if (!analyser) return;
+
+        animationId = requestAnimationFrame(draw);
+        analyser.getByteFrequencyData(dataArray);
+
+        const width = canvas.offsetWidth;
+        const height = canvas.offsetHeight;
+
+        ctx.fillStyle = "#12121a";
+        ctx.fillRect(0, 0, width, height);
+
+        const bufferLength = dataArray.length;
+
+        if (vizType === "bars") {
+          const barWidth = (width / bufferLength) * 2;
+          let x = 0;
+          for (let i = 0; i < bufferLength; i++) {
+            const barHeight = (dataArray[i] / 255) * height;
+            ctx.fillStyle = getColor(i, bufferLength);
+            ctx.fillRect(x, height - barHeight, barWidth - 1, barHeight);
+            x += barWidth;
+          }
+        } else if (vizType === "wave") {
+          analyser.getByteTimeDomainData(dataArray);
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = getColor(0, 1);
+          ctx.beginPath();
+          const sliceWidth = width / bufferLength;
+          let x = 0;
+          for (let i = 0; i < bufferLength; i++) {
+            const v = dataArray[i] / 128.0;
+            const y = (v * height) / 2;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+            x += sliceWidth;
+          }
+          ctx.stroke();
+        } else if (vizType === "circle") {
+          const centerX = width / 2;
+          const centerY = height / 2;
+          const radius = Math.min(width, height) / 4;
+
+          for (let i = 0; i < bufferLength; i++) {
+            const angle = (i / bufferLength) * Math.PI * 2;
+            const barHeight = (dataArray[i] / 255) * radius;
+
+            ctx.strokeStyle = getColor(i, bufferLength);
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(centerX + Math.cos(angle) * radius, centerY + Math.sin(angle) * radius);
+            ctx.lineTo(
+              centerX + Math.cos(angle) * (radius + barHeight),
+              centerY + Math.sin(angle) * (radius + barHeight)
+            );
+            ctx.stroke();
+          }
+        }
+      }
+
+      window.toggleTheme = function () {
+        const html = document.documentElement;
+        const btn = document.querySelector(".theme-toggle");
+        const next = html.getAttribute("data-theme") === "light" ? "dark" : "light";
+        html.setAttribute("data-theme", next);
+        btn.textContent = next === "light" ? "☀️" : "🌙";
+        localStorage.setItem("theme", next);
+      };
+
+      (function () {
+        const saved = localStorage.getItem("theme");
+        if (saved) {
+          document.documentElement.setAttribute("data-theme", saved);
+          const btn = document.querySelector(".theme-toggle");
+          if (btn) btn.textContent = saved === "light" ? "☀️" : "🌙";
+        }
+      })();
+    </script>
+<!-- FAQ（GEO 优化）-->
+</body>
+</html>

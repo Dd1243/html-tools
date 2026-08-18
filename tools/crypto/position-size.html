@@ -1,0 +1,759 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>仓位管理计算器 - 风险控制与盈亏比优化交易工具｜WebUtils</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="被 每次都要重复相同的手工计算、结果算完却无法判断对错、中文排版细节（标点/空格）难校正 困扰？来 WebUtils 用 仓位管理计算器 - 风险控制与盈亏比优化交易工具。内置灵活配置解决 仓位管理计算器 问题，支持实时预览，所见即所得 且 零下载零安装，纯前端实现。" />
+    <meta
+      name="keywords"
+      content="仓位管理计算器,风控工具,止损计算,盈亏比计算,交易计划工具,加密货币风控"
+    />
+    <meta name="author" content="WebUtils" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://essays4u.net/tools/crypto/position-size" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="仓位管理计算器 - 风险控制与盈亏比优化交易工具｜WebUtils" />
+    <meta property="og:description" content="被 每次都要重复相同的手工计算、结果算完却无法判断对错、中文排版细节（标点/空格）难校正 困扰？来 WebUtils 用 仓位管理计算器 - 风险控制与盈亏比优化交易工具。内置灵活配置解决 仓位管理计算器 问题，支持实时预览，所见即所得 且 零下载零安装，纯前端实现。" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://essays4u.net/tools/crypto/position-size" />
+    <meta property="og:site_name" content="WebUtils" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --bg-body: #0a0a0a;
+        --bg-card: #111;
+        --bg-input: #0d0d0d;
+        --bg-hover: #1a1a1a;
+        --text-primary: #e5e5e5;
+        --text-secondary: #737373;
+        --text-muted: #525252;
+        --border-color: #252525;
+        --border-focus: #404040;
+        --accent: #6366f1;
+        --accent-hover: #4f46e5;
+        --accent-glow: rgba(99, 102, 241, 0.15);
+        --success: #10b981;
+        --error: #ef4444;
+        --warning: #f59e0b;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 14px;
+        --font-sans: "Inter", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+
+      [data-theme="light"] {
+        --bg-body: #fafafa;
+        --bg-card: #fff;
+        --bg-input: #f5f5f5;
+        --text-primary: #171717;
+        --text-secondary: #525252;
+        --text-muted: #a3a3a3;
+        --border-color: #e5e5e5;
+        --border-focus: #d4d4d4;
+        --accent: #4f46e5;
+        --accent-hover: #4338ca;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: var(--font-sans);
+        background: var(--bg-body);
+        color: var(--text-primary);
+        line-height: 1.6;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
+
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-bottom: 24px;
+      }
+      .breadcrumb a {
+        color: var(--text-secondary);
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        color: var(--accent);
+      }
+
+      .header {
+        margin-bottom: 32px;
+        text-align: center;
+      }
+      .header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+        letter-spacing: -0.02em;
+      }
+      .header p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+      }
+
+      .adsense-placeholder {
+        min-height: 90px;
+        background: rgba(128, 128, 128, 0.03);
+        margin: 32px 0;
+        border: 1px dashed var(--border-color);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+      }
+
+      .main-grid {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 32px;
+        align-items: start;
+      }
+      @media (max-width: 900px) {
+        .main-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 32px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+      }
+      .card-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 24px;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .card-title::before {
+        content: "";
+        width: 4px;
+        height: 18px;
+        background: var(--accent);
+        border-radius: 2px;
+      }
+
+      .field-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .field label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+      }
+
+      input {
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 12px 16px;
+        color: var(--text-primary);
+        font-size: 1rem;
+        font-family: var(--font-mono);
+        transition: all 0.2s;
+        width: 100%;
+      }
+      input:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-glow);
+      }
+
+      .results-area {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 32px;
+        position: sticky;
+        top: 20px;
+      }
+      .res-hero {
+        background: var(--accent-glow);
+        padding: 24px;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--accent);
+        text-align: center;
+        margin-bottom: 24px;
+      }
+      .res-hero-label {
+        font-size: 0.9rem;
+        color: var(--accent);
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      .res-hero-value {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        font-family: var(--font-mono);
+      }
+
+      .stat-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .stat-item {
+        background: rgba(255, 255, 255, 0.02);
+        padding: 16px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+      }
+      .stat-label {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-bottom: 4px;
+      }
+      .stat-value {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        font-family: var(--font-mono);
+      }
+      .stat-value.danger {
+        color: var(--error);
+      }
+      .stat-value.success {
+        color: var(--success);
+      }
+
+      .risk-bar-wrap {
+        margin-top: 24px;
+        padding: 16px;
+        background: var(--bg-input);
+        border-radius: var(--radius-md);
+      }
+      .risk-bar-label {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .risk-bar-container {
+        height: 8px;
+        background: var(--bg-body);
+        border-radius: 4px;
+        overflow: hidden;
+        position: relative;
+      }
+      .risk-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--success), var(--warning), var(--error));
+        width: 0%;
+        transition: width 0.5s ease;
+      }
+      .risk-marker {
+        position: absolute;
+        top: 0;
+        width: 4px;
+        height: 100%;
+        background: #fff;
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+        transition: left 0.5s ease;
+      }
+
+      .article-section {
+        margin-top: 60px;
+        padding: 40px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+      }
+      .article-section h2 {
+        font-size: 1.75rem;
+        margin-bottom: 24px;
+        color: var(--text-primary);
+      }
+      .article-section h3 {
+        font-size: 1.25rem;
+        margin: 32px 0 16px;
+        color: var(--accent);
+      }
+      .article-section p {
+        color: var(--text-secondary);
+        margin-bottom: 16px;
+        line-height: 1.8;
+      }
+      .article-section ul {
+        margin: 0 0 24px 24px;
+        color: var(--text-secondary);
+      }
+      .article-section li {
+        margin-bottom: 12px;
+      }
+
+      .theme-toggle {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--text-primary);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        z-index: 100;
+      }
+
+      @media (max-width: 640px) {
+        .header h1 {
+          font-size: 1.75rem;
+        }
+        .field-group {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="仓位管理计算器 - 风险控制与盈亏比优化交易工具｜WebUtils" />
+    <meta name="twitter:description" content="被 每次都要重复相同的手工计算、结果算完却无法判断对错、中文排版细节（标点/空格）难校正 困扰？来 WebUtils 用 仓位管理计算器 - 风险控制与盈亏比优化交易工具。内置灵活配置解决 仓位管理计算器 问题，支持实时预览，所见即所得 且 零下载零安装，纯前端实现。" />
+    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
+      
+    <!-- CMP Cookie/个性化广告同意（GDPR/EEA/CCPA 合规） -->
+    <link rel="stylesheet" href="/assets/cmp-consent.css">
+    <script src="/assets/cmp-consent.js" defer></script>
+    <script>
+      // [CMP] 在 adsbygoogle 加载前同步应用已有同意状态（防止同意前已发出个性化广告请求）
+      (function () {
+        try {
+          var s = localStorage.getItem('ess_cmp_v1');
+          window.__cmpConsent = s;
+          if (s !== 'a') {
+            // 'n' 或未设置：默认非个性化广告，直到用户选择
+            window.adsbygoogle = window.adsbygoogle || [];
+            window.adsbygoogle.push({ requestNonPersonalizedAds: true });
+          }
+        } catch (e) {
+          // localStorage 禁用：降级到 NPA 模式
+          window.adsbygoogle = window.adsbygoogle || [];
+          window.adsbygoogle.push({ requestNonPersonalizedAds: true });
+        }
+      })();
+    </script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9979971494108572" crossorigin="anonymous"></script>
+      <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "首页",
+      "item": "https://essays4u.net/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "加密货币",
+      "item": "https://essays4u.net/tools/crypto/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "仓位管理计算器",
+      "item": "https://essays4u.net/tools/crypto/position-size"
+    }
+  ]
+}
+    </script>
+      <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "仓位管理计算器",
+  "url": "https://essays4u.net/tools/crypto/position-size",
+  "description": "仓位管理计算器 - 风险控制与盈亏比优化交易工具是 WebUtils 的加密货币工具，适用于 crypto / position-size 页面场景，覆盖 仓位管理计算器、风控工具、止损计算、盈亏比计算、交易计划工具 等关键词，可在浏览器中直接完成操作，无需注册登录，注重效率与隐私。适合需要准确结果。",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
+  "inLanguage": "zh-CN",
+  "isAccessibleForFree": true,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "CNY"
+  }
+}
+    </script>
+  </head>
+  <body>
+    <main class="container">
+      <header class="header">
+        <h1>仓位管理计算器</h1>
+      </header>
+
+      <article>
+
+    <button class="theme-toggle" id="themeToggle" title="切换主题">🌙</button>
+
+
+
+      <div class="main-grid">
+        <div class="card">
+          <div class="card-title">账户风控设置</div>
+          <div class="field-group">
+            <div class="field">
+              <label>账户总资金 (USDT)</label>
+              <input type="number" id="totalCapital" value="10000" oninput="calculate()" />
+            </div>
+            <div class="field">
+              <label>单笔风险比例 (%)</label>
+              <input type="number" id="riskPercent" value="2" step="0.1" oninput="calculate()" />
+            </div>
+          </div>
+
+          <div class="card-title" style="margin-top: 32px">交易计划预设</div>
+          <div class="field">
+            <label>入场价格 (USDT)</label>
+            <input type="number" id="entryPrice" value="30000" oninput="calculate()" />
+          </div>
+          <div class="field-group" style="margin-top: 20px">
+            <div class="field">
+              <label>止损价格 (USDT)</label>
+              <input type="number" id="stopLoss" value="29000" oninput="calculate()" />
+            </div>
+            <div class="field">
+              <label>目标价格 (USDT)</label>
+              <input type="number" id="takeProfit" value="33000" oninput="calculate()" />
+            </div>
+          </div>
+
+          <div
+            style="
+              margin-top: 32px;
+              padding: 16px;
+              background: rgba(255, 255, 255, 0.02);
+              border-radius: var(--radius-md);
+              font-size: 0.85rem;
+              color: var(--text-secondary);
+            "
+          >
+            <strong>提示：</strong>
+            单笔风险比例建议控制在 1%-3%
+            之间。如果止损被触发，您损失的金额将严格限制在预设的比例内。
+          </div>
+        </div>
+
+        <div class="results-area">
+          <div class="res-hero">
+            <div class="res-hero-label">建议仓位大小</div>
+            <div class="res-hero-value" id="posSize">0.2000</div>
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat-item">
+              <div class="stat-label">仓位总价值</div>
+              <div class="stat-value" id="posValue">6,000.00</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">最大亏损金额</div>
+              <div class="stat-value danger" id="maxLoss">-200.00</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">预期盈利金额</div>
+              <div class="stat-value success" id="expectedProfit">+600.00</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">盈亏比 (R:R)</div>
+              <div class="stat-value" id="rrRatio">1:3.00</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">止损幅度 (%)</div>
+              <div class="stat-value" id="stopPercent">3.33%</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">仓位占用比例</div>
+              <div class="stat-value" id="capPercent">60.0%</div>
+            </div>
+          </div>
+
+          <div class="risk-bar-wrap">
+            <div class="risk-bar-label">
+              <span>风险等级</span>
+              <span id="riskLevelText">中等风险</span>
+            </div>
+            <div class="risk-bar-container">
+              <div class="risk-bar-fill" style="width: 100%"></div>
+              <div class="risk-marker" id="riskMarker" style="left: 60%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section class="article-section">
+        <h2>仓位管理：区分赌徒与职业交易者的唯一标准</h2>
+        <p>
+          在加密货币这个高波动市场中，大多数投资者的失败并非因为技术分析不够好，而是因为缺乏科学的仓位管理（Position
+          Sizing）。很多人习惯于“梭哈”或者凭感觉下单，这导致即便胜率超过
+          50%，也会因为一两次重仓亏损而爆仓离场。本计算器的核心逻辑是：**先确定你能承受多少亏损，再反推你应该开多少仓位。**
+        </p>
+
+        <h3>仓位管理工具解决的具体实战难题</h3>
+        <ul>
+          <li>
+            <strong>克服贪婪与恐惧：</strong>
+            当你通过计算器知道即使止损了也只亏损账户的 2%
+            时，你在面对市场波动时会更加冷静，不会因为由于价格回撤而过早平掉盈利单。
+          </li>
+          <li>
+            <strong>自动适配止损空间：</strong>
+            不同的交易机会，止损空间不同。有的止损 1%，有的止损
+            10%。本工具能根据止损幅度自动调整仓位，确保无论止损多宽，亏损的绝对金额始终一致。
+          </li>
+          <li>
+            <strong>优化盈亏比（Risk/Reward）：</strong>
+            职业交易者通常只参与盈亏比大于 1:2
+            的机会。通过输入目标价，你可以瞬间看到这笔交易是否值得冒险。
+          </li>
+        </ul>
+
+        <h3>如何使用“固定百分比风险模型”？</h3>
+        <p>
+          <strong>1. 设定你的“单笔风险”：</strong>
+          通常建议为总资产的 1% 到 2%。如果你有 10,000 USDT，单笔风险 2% 意味着如果止损，你只亏损
+          200 USDT。
+        </p>
+        <p>
+          <strong>2. 寻找技术止损位：</strong>
+          不要随意设定止损，而应根据支撑位、压力位或指标确定。将这个价格输入计算器。
+        </p>
+        <p>
+          <strong>3. 执行计算出的仓位：</strong>
+          计算器会告诉你应该买入多少数量（UNIT）。这个数量已经考虑了止损距离，让你在错误时依然能存活，在正确时获得丰厚回报。
+        </p>
+
+        <h3>解决具体问题的场景</h3>
+        <p>
+          <strong>场景一：高倍杠杆诱惑。</strong>
+          很多新手看到 50x
+          杠杆就想冲。通过本工具，你会发现如果止损很近，你确实可以用高杠杆；但如果止损较远，计算器会警告你降低杠杆以防过早爆仓。杠杆只是工具，仓位才是核心。
+        </p>
+        <p>
+          <strong>场景二：多品种分散投资。</strong>
+          当你同时操作 BTC、ETH 和山寨币时，如何平衡风险？通过为每个品种设定相同的风险比例（如各
+          1%），你可以确保没有一个品种的意外暴跌会重创你的总账户。
+        </p>
+        <p>
+          <strong>场景三：应对黑天鹅事件。</strong>
+          市场出现极端行情时，只有严格执行仓位管理的交易者才能依靠那 98%
+          的剩余资金在底部重新站起来。活下去，才有翻盘的机会。
+        </p>
+
+        <h3>专业建议：关于风险的三个等级</h3>
+        <ul>
+          <li>
+            <strong>低风险 (1% 以下)：</strong>
+            适合大资金账户或刚开始实盘的新手，重点在于学习和生存。
+          </li>
+          <li>
+            <strong>中风险 (2%-3%)：</strong>
+            职业交易者的标准配置，在风险与收益之间取得完美平衡。
+          </li>
+          <li>
+            <strong>高风险 (5% 以上)：</strong>
+            仅适用于极高胜率的确定性机会，或者非常小的试验性账户。长期超过 5%
+            的风险通常会导致资产曲线出现巨大的回撤。
+          </li>
+        </ul>
+      </section>
+
+
+    </article></main>
+
+    <script>
+      // 主题切换
+      const themeToggle = document.getElementById("themeToggle");
+      const html = document.documentElement;
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      html.setAttribute("data-theme", savedTheme);
+      themeToggle.textContent = savedTheme === "dark" ? "☀️" : "🌙";
+
+      themeToggle.addEventListener("click", () => {
+        const currentTheme = html.getAttribute("data-theme");
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+        html.setAttribute("data-theme", newTheme);
+        localStorage.setItem("theme", newTheme);
+        themeToggle.textContent = newTheme === "dark" ? "☀️" : "🌙";
+      });
+
+      function formatMoney(num) {
+        return num.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
+      }
+
+      function calculate() {
+        const capital = parseFloat(document.getElementById("totalCapital").value) || 0;
+        const riskP = (parseFloat(document.getElementById("riskPercent").value) || 0) / 100;
+        const entry = parseFloat(document.getElementById("entryPrice").value) || 0;
+        const sl = parseFloat(document.getElementById("stopLoss").value) || 0;
+        const tp = parseFloat(document.getElementById("takeProfit").value) || 0;
+
+        if (capital <= 0 || entry <= 0 || sl <= 0 || entry === sl) return;
+
+        const maxRiskAmount = capital * riskP;
+        const slDistance = Math.abs(entry - sl);
+        const slPercent = (slDistance / entry) * 100;
+
+        // 仓位数量 = 风险金额 / 止损距离
+        const size = maxRiskAmount / slDistance;
+        const posValue = size * entry;
+        const capPercent = (posValue / capital) * 100;
+
+        const tpDistance = Math.abs(tp - entry);
+        const profit = size * tpDistance;
+        const rr = tpDistance / slDistance;
+
+        // 更新 UI
+        document.getElementById("posSize").textContent = size.toFixed(4);
+        document.getElementById("posValue").textContent = formatMoney(posValue);
+        document.getElementById("maxLoss").textContent = "-" + formatMoney(maxRiskAmount);
+        document.getElementById("expectedProfit").textContent = "+" + formatMoney(profit);
+        document.getElementById("rrRatio").textContent = "1:" + rr.toFixed(2);
+        document.getElementById("stopPercent").textContent = slPercent.toFixed(2) + "%";
+        document.getElementById("capPercent").textContent = capPercent.toFixed(1) + "%";
+
+        // 风险等级
+        const marker = document.getElementById("riskMarker");
+        const text = document.getElementById("riskLevelText");
+        let level = Math.min(capPercent, 100);
+        marker.style.left = level + "%";
+
+        if (capPercent < 20) {
+          text.textContent = "低风险";
+          text.style.color = "var(--success)";
+        } else if (capPercent < 50) {
+          text.textContent = "中等风险";
+          text.style.color = "var(--warning)";
+        } else {
+          text.textContent = "高风险 / 警告";
+          text.style.color = "var(--error)";
+        }
+      }
+
+      calculate();
+    </script>
+<!-- FAQ（GEO 优化）-->
+    
+<!-- Internal links: outgoing link audit fix -->
+      <nav class="related-links-section" aria-label="相关站内链接">
+        <h2>相关工具与导航</h2>
+        <div class="related-links-list">
+          <a href="/">WebUtils 首页</a>
+          <a href="/tools-directory">全部工具目录</a>
+          <a href="/tools-directory">crypto 工具分类</a>
+          <a href="/tools/crypto/profit-loss">持仓盈亏计算器</a>
+          <a href="/tools/crypto/dca">定投收益计算器</a>
+          <a href="/tools/crypto/leverage">杠杆计算器</a>
+          <a href="/tools/crypto/liquidation">爆仓价格计算器</a>
+        </div>
+      </nav>
+      <style>
+        /* related-links centered */
+        .related-links-section {
+          width: min(960px, 92%);
+          margin: 40px auto 0;
+          padding: 24px 0 8px;
+          border-top: 1px solid var(--border-subtle, var(--border-color, #e5e7eb));
+          text-align: center;
+        }
+        .related-links-section h2 {
+          margin: 0 0 14px;
+          font-size: 1.15rem;
+          color: var(--text-primary, inherit);
+          text-align: center;
+        }
+        .related-links-list {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+          justify-content: center;
+          align-items: center;
+        }
+        .related-links-list a {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 36px;
+          padding: 8px 14px;
+          border: 1px solid var(--border-subtle, var(--border-color, #e5e7eb));
+          border-radius: var(--radius-md, 8px);
+          color: var(--accent-cyan, var(--accent-blue, var(--accent, #2563eb)));
+          background: var(--bg-card, rgba(255, 255, 255, 0.04));
+          text-decoration: none;
+          font-size: 0.92rem;
+          line-height: 1.3;
+        }
+        .related-links-list a:hover {
+          border-color: var(--border-strong, currentColor);
+          text-decoration: underline;
+        }
+      </style>
+
+  <footer class="site-footer">
+  <nav data-site-policy-links aria-label="网站政策" style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px 20px;margin:16px auto;padding:0 16px;font-size:14px">
+    <a href="/about">关于本站</a>
+    <a href="/contact">联系我们</a>
+    <a href="/terms">使用条款</a>
+    <a href="/privacy-policy">隐私政策</a>
+  </nav>
+</footer>
+</body>
+</html>
