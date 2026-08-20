@@ -112,12 +112,11 @@ function walkHtml(dir, acc = []) {
 
 /** Map absolute HTML path -> public loc (no .html). */
 function normalizeLoc(loc) {
-  // /tools/art/index -> /tools/art (clean category hub URL)
-  if (loc.endsWith("/index")) loc = loc.slice(0, -"/index".length);
-  // keep only site root and /guides/ with trailing slash
-  if (loc !== `${SITE}/` && loc !== `${SITE}/guides/` && loc.endsWith("/")) {
-    loc = loc.slice(0, -1);
-  }
+  // Directory-backed pages (…/index.html) keep a trailing slash, standalone
+  // .html pages stay slash-less — Cloudflare Pages 308-redirects either form
+  // to its counterpart, so canonical/sitemap must match its convention.
+  // /tools/art/index -> /tools/art/
+  if (loc.endsWith("/index")) return `${loc.slice(0, -"/index".length)}/`;
   return loc;
 }
 

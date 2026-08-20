@@ -226,7 +226,9 @@ function buildPage(catId, cat, list) {
   const desc = buildHubDescription(catId, name, list);
   const title = `${name} - ${count} 个免费在线工具 | WebUtils`;
   const url = `https://essays4u.net/tools/${catId}/`;
-  const canonical = `https://essays4u.net/tools/${catId}`;
+  // Trailing slash is required: the hub is served from tools/<cat>/index.html,
+  // and Cloudflare Pages 308-redirects the slash-less form to the slash form.
+  const canonical = url;
 
   const itemList = list.slice(0, 50).map((t, i) => ({
     '@type': 'ListItem',
@@ -595,10 +597,17 @@ function updateSitemap(hubPaths) {
   const today = new Date().toISOString().slice(0, 10);
   let added = 0;
   for (const loc of hubPaths) {
-    if (sm.includes(`<loc>${loc}</loc>`) || sm.includes(`<loc>${loc.replace(/\/$/, '')}</loc>`)) {
+    if (sm.includes(`<loc>${loc}</loc>`)) {
       continue;
     }
-    const entry = `  <url>\n    <loc>${loc.replace(/\/$/, '')}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
+    // Replace any pre-existing slash-less entry rather than skipping it.
+    const bare = loc.replace(/\/$/, '');
+    if (sm.includes(`<loc>${bare}</loc>`)) {
+      sm = sm.replace(`<loc>${bare}</loc>`, `<loc>${loc}</loc>`);
+      added++;
+      continue;
+    }
+    const entry = `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
     sm = sm.replace('</urlset>', entry + '</urlset>');
     added++;
   }
