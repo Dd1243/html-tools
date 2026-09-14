@@ -19,18 +19,49 @@ const __dirname = path.dirname(__filename);
 const toolsData = JSON.parse(fs.readFileSync(path.join(__dirname, '../tools.json'), 'utf-8'));
 
 /**
- * 获取指定分类的工具列表
+ * 简单的确定性随机数生成器（基于种子）
  */
-function getToolsByCategory(categoryKey, excludeToolId = null, limit = 10) {
-  return Object.entries(toolsData.tools)
+function seededRandom(seed) {
+  const x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+}
+
+/**
+ * 基于种子随机打乱数组（确定性）
+ */
+function shuffleWithSeed(array, seed) {
+  const result = [...array];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(seededRandom(seed + i) * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
+/**
+ * 获取指定分类的工具列表
+ * @param {string} categoryKey - 分类 key
+ * @param {string|null} excludeToolId - 要排除的工具 ID
+ * @param {number} limit - 返回数量
+ * @param {string|null} seedToolId - 用于确定性随机的种子（当前工具ID）
+ */
+function getToolsByCategory(categoryKey, excludeToolId = null, limit = 10, seedToolId = null) {
+  let tools = Object.entries(toolsData.tools)
     .filter(([id, tool]) => {
       return tool.category === categoryKey && id !== excludeToolId;
     })
-    .slice(0, limit)
     .map(([id, tool]) => ({
       id,
       ...tool
     }));
+
+  // 如果提供了种子，进行确定性随机排序
+  if (seedToolId) {
+    const seed = parseInt(seedToolId) || seedToolId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    tools = shuffleWithSeed(tools, seed);
+  }
+
+  return tools.slice(0, limit);
 }
 
 /**
@@ -59,7 +90,8 @@ function generateAccordionHTML(currentToolId) {
   const currentCategoryInfo = toolsData.categories[currentCategory];
 
   // 1. 当前分类的工具（增加到 10-12个，强化同类互链）
-  const sameCategoryTools = getToolsByCategory(currentCategory, currentToolId, 12);
+  // 使用当前工具 ID 作为种子，确保每个工具看到不同但稳定的列表
+  const sameCategoryTools = getToolsByCategory(currentCategory, currentToolId, 12, currentToolId);
 
   // 2. 随机选择其他 3 个分类
   const randomCategories = getRandomCategories(currentCategory, 3);
