@@ -58,6 +58,17 @@ function updateMetaDescription(filePath, newDescription) {
     `<meta name="twitter:description" content="${newDescription}"`
   );
 
+  // 替换 JSON-LD WebApplication schema 中的 description
+  html = html.replace(
+    /"@type":\s*"WebApplication"[\s\S]*?"description":\s*"[^"]*"/,
+    (match) => {
+      return match.replace(
+        /"description":\s*"[^"]*"/,
+        `"description": "${newDescription}"`
+      );
+    }
+  );
+
   fs.writeFileSync(filePath, html, 'utf-8');
   return true;
 }
