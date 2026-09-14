@@ -125,7 +125,7 @@ function generateCategorySection(categoryKey, categoryInfo, tools) {
   if (tools.length === 0) return '';
 
   const linksHTML = tools.map(tool => {
-    const url = tool.path.replace('.html', '');
+    const url = '/' + tool.path.replace('.html', '');
     return `            <a href="${url}" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--bg-card, var(--card, #fff)); border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-sm, 6px); text-decoration: none; color: var(--text-primary, var(--text-main, #333)); font-size: 0.9rem; transition: all 0.2s;">
               <span>${tool.icon}</span><span>${tool.name}</span>
             </a>`;
