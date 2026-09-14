@@ -160,10 +160,9 @@ function injectToToolPage(toolId, filePath) {
 
   let html = fs.readFileSync(filePath, 'utf-8');
 
-  // 检查是否已经有自动生成的内容
-  if (html.includes('<!-- 折叠手风琴式工具导航 - 自动生成 -->')) {
-    // 删除旧的
-    html = html.replace(/<!-- 折叠手风琴式工具导航 - 自动生成 -->[\s\S]*?<\/style>\s*<\/head>/m, '</head>');
+  // 检查是否已经有自动生成的内容，删除所有旧的
+  while (html.includes('<!-- 折叠手风琴式工具导航 - 自动生成 -->')) {
+    html = html.replace(/<!-- 折叠手风琴式工具导航 - 自动生成 -->[\s\S]*?<\/style>/m, '');
   }
 
   // 生成新的手风琴 HTML
