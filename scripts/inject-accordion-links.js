@@ -259,25 +259,15 @@ function main() {
     console.log(`\n分类 "${category}": ✅ 成功: ${success} 个 | ❌ 失败: ${failed} 个`);
 
   } else {
-    // 处理单个或多个工具 ID
-    let success = 0, failed = 0;
-    args.forEach(toolId => {
-      const tool = toolsData.tools[toolId];
-      if (!tool) {
-        console.log(`❌ 工具 ID "${toolId}" 不存在`);
-        failed++;
-        return;
-      }
-      const filePath = path.join(__dirname, '..', tool.path);
-      if (injectToToolPage(toolId, filePath)) {
-        success++;
-      } else {
-        failed++;
-      }
-    });
-    if (args.length > 1) {
-      console.log(`\n✅ 成功: ${success} 个 | ❌ 失败: ${failed} 个`);
+    // 处理单个工具
+    const toolId = args[0];
+    const tool = toolsData.tools[toolId];
+    if (!tool) {
+      console.log(`❌ 工具 ID "${toolId}" 不存在`);
+      return;
     }
+    const filePath = path.join(__dirname, '..', tool.path);
+    injectToToolPage(toolId, filePath);
   }
 }
 
