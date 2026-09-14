@@ -58,8 +58,8 @@ function generateAccordionHTML(currentToolId) {
   const currentCategory = currentTool.category;
   const currentCategoryInfo = toolsData.categories[currentCategory];
 
-  // 1. 当前分类的工具（6-8个）
-  const sameCategoryTools = getToolsByCategory(currentCategory, currentToolId, 8);
+  // 1. 当前分类的工具（增加到 10-12个，强化同类互链）
+  const sameCategoryTools = getToolsByCategory(currentCategory, currentToolId, 12);
 
   // 2. 随机选择其他 3 个分类
   const randomCategories = getRandomCategories(currentCategory, 3);
@@ -79,7 +79,7 @@ function generateAccordionHTML(currentToolId) {
   // 其他 3 个随机分类
   randomCategories.forEach(catKey => {
     const catInfo = toolsData.categories[catKey];
-    const tools = getToolsByCategory(catKey, null, 5);
+    const tools = getToolsByCategory(catKey, null, 4);  // 其他分类保持 4 个
     html += generateCategorySection(catKey, catInfo, tools);
   });
 
