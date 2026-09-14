@@ -67,8 +67,8 @@ function generateAccordionHTML(currentToolId) {
   // 生成 HTML
   let html = `
       <!-- 折叠手风琴式工具导航 - 自动生成 -->
-      <section style="max-width: 960px; margin: 2.5rem auto; padding: 0 24px 0 24px;">
-        <div style="padding: 2rem; background: var(--bg-card, var(--card, #fff)); border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-lg, var(--radius, 12px)); box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);">
+      <section style="max-width: 960px; margin: 0 auto; padding: 0 24px;">
+        <div style="margin: 2.5rem 0; padding: 2rem; background: var(--bg-card, var(--card, #fff)); border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-lg, var(--radius, 12px)); box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);">
         <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--text-primary, var(--text-main, #111)); text-align: center;">
           🗂️ 按分类浏览更多工具
         </h2>
