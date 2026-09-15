@@ -431,6 +431,47 @@ const customDescriptions = {
   731: '提前还贷计算器工具，计算房贷车贷提前还款能节省多少利息费用和还款压力减轻程度。支持提前部分还款全部结清两种方式、缩短年限降低月供两种策略对比分析。结合违约金手续费和资金机会成本综合评估，帮助借款人科学决策是否提前还贷，选择最优还款方案策略。', // 提前还贷计算器
   742: '复利计算器工具，计算复利投资理财的本息总额和投资收益增长曲线趋势图表。输入本金年利率投资期限自动计算复利最终收益，对比单利复利收益差距差异。直观展示复利滚雪球威力效果，帮助理解时间复利对财富增长的巨大作用影响，坚持长期投资积累财富实现财务自由梦想。', // 复利计算器
   979: '个人预算追踪器工具，记录管理每日每月收入支出流水账单和预算执行情况对比。支持支出分类统计图表可视化、预算超支预警提醒、消费习惯分析报告生成。帮助记账理财控制消费冲动，了解钱花在哪里去向明细，优化支出结构合理分配收入，养成良好理财储蓄习惯避免月光。', // 预算追踪器
+
+  // Life 生活工具 (39 tools)
+  297: '年假计算器工具，根据工作年限自动计算法定年休假带薪休假天数和剩余年假额度。支持累计工作年限计算、跨单位工作年限合并、病假事假年假折算规则查询。帮助上班族了解年假权益福利，合理安排年假休假计划，维护劳动者合法休假权利，平衡工作生活劳逸结合身心健康。', // 年假计算器
+  298: '银行卡号校验器工具，快速验证银行卡号格式正确性和真实性有效性合法性。自动识别发卡银行名称、卡片类型借记卡信用卡、卡组织银联 VISA MasterCard 等信息。支持批量验证银行卡号码、Luhn 算法校验码检查，帮助开发者验证用户输入银行卡号格式，防范支付欺诈风险。', // 银行卡号校验
+  299: '课堂弹幕互动工具，教师授课时学生匿名发送实时弹幕评论互动交流提问反馈。支持弹幕速度透明度大小颜色自定义设置、敏感词过滤审核、弹幕暂停清屏管理功能。增强课堂互动氛围活跃度，鼓励内向学生参与课堂讨论，收集学生疑问困惑，提升教学效果和学习体验满意度。', // 课堂弹幕
+  300: '颜色选择器取色器工具，可视化选择调整颜色并获取 HEX RGB HSL 颜色代码值。支持颜色拾取器取色、颜色渐变生成、颜色对比度检查、颜色历史记录保存。适合网页设计平面设计 UI 设计师快速选择配色方案，复制颜色代码应用到项目中，提高设计配色工作效率准确性。', // 颜色选择器
+  301: '日期时间差计算器，计算两个日期之间相差多少年月日天小时分钟秒时间间隔。支持加减日期天数计算未来过去日期、工作日休息日排除计算、时区时差转换计算。适合计算恋爱天数纪念日、项目工期天数、年龄周岁虚岁、签证停留时间等各种日期时间差距计算需求。', // 日期差计算器
+  302: '阶梯电费计算器工具，根据用电量自动计算阶梯电价分档电费金额和总电费支出。支持全国各省市阶梯电价标准查询、峰谷平电价时段计费、季节性阶梯电价计算。帮助居民家庭了解电费计算方法规则，合理控制用电量节约电费开支，养成节能环保用电好习惯降低生活成本。', // 阶梯电费计算器
+  303: '学生体测成绩计算器，根据身高体重肺活量跑步跳远等体测项目成绩自动计算总分等级。支持小学中学大学不同年龄段体测标准评分表、男女生体测标准差异对比、单项成绩提升建议指导。帮助学生了解体测成绩水平排名，针对性提高薄弱项目成绩，顺利通过体育考试达标测试。', // 体测成绩计算器
+  304: '身份证号码校验器，快速验证 15 位或 18 位居民身份证号码格式正确性真实性有效性。自动识别省份地区代码、出生日期年龄、性别男女、校验码正确性等身份信息要素。支持批量验证身份证号码格式、身份证真伪查询入口链接，帮助开发者验证用户输入身份证号准确性。', // 身份证号校验
+  305: '2025 个人所得税计算器，根据工资薪金收入自动计算个税应纳税额和税后实发到手工资。支持最新 2025 个税政策标准、5000 元起征点税率表、专项附加扣除子女教育房贷利息等项目。帮助工薪族准确预估个税金额，合理税务筹划降低税负，了解实际到手收入工资净额。', // 个税计算器 2025
+  306: '车牌号归属地查询工具，根据车牌号码前缀快速查询车辆登记注册所在省份城市地区。涵盖全国 31 省市自治区直辖市车牌号代码对照数据库、新能源车牌绿牌识别、警车军车特种车牌查询。输入车牌号立即显示归属地信息，方便识别车辆来源地区，了解陌生车辆背景资料信息。', // 车牌归属地查询
+  307: '金额大写数字转换器，阿拉伯数字金额与中文大写金额数字快速双向互相转换。支持人民币金额大写转换、财务报销单据金额填写、合同发票金额大写规范格式。自动转换元角分单位、零壹贰叁肆伍陆柒捌玖拾佰仟万亿大写数字，确保金额大写书写标准规范，防止篡改金额数字风险。', // 金额大写转换
+  308: '2025 房贷计算器工具，计算房屋贷款每月月供还款额、利息总额和还款计划明细表。支持等额本息等额本金两种还款方式对比、商业贷款公积金贷款组合贷计算、2025 最新 LPR 利率参考数据。帮助购房者评估还款压力能力，选择最优贷款方案，科学规划购房预算资金安排。', // 房贷计算器 2025
+  309: '随机密码生成器工具，一键生成高强度安全随机密码保护账号信息安全。支持自定义密码长度位数、包含大小写字母数字特殊符号、排除易混淆字符 0Oo1Il、批量生成多个密码。适合注册账号设置密码、定期更换旧密码、企业员工密码策略管理，增强密码安全性防范黑客攻击。', // 随机密码生成器
+  310: '随机数字生成器工具，生成指定范围内的随机整数小数或随机数序列数组。支持自定义最小值最大值区间范围、小数位数精度、不重复随机数生成、批量生成数量设置。适合抽奖摇号随机选取、数学统计模拟实验、游戏开发测试数据、密码学随机种子生成等各类随机数需求场景。', // 随机数生成器
+  311: '随机点名器抽签工具，从学生名单中随机抽取点名提问回答问题互动。支持自定义学生姓名名单导入、权重概率设置、已点名记录历史、点名结果导出保存。适合课堂教学随机点名提问、会议随机发言抽签、活动抽奖随机选人，增加课堂互动趣味性公平性随机性，提高学生参与度。', // 随机点名器
+  312: '亲戚称呼计算器工具，快速查询中国复杂亲戚关系称呼叫法怎么称呼对方。输入你和对方的亲属关系路径自动计算正确称呼叫法，涵盖父系母系亲戚称谓、辈分长幼尊卑、地区方言差异对照。解决过年过节见面不知怎么叫亲戚尴尬，学习中华传统亲属称谓文化礼仪，避免叫错辈分失礼。', // 亲戚称呼计算器
+  313: '2025 退休年龄计算器，根据出生日期性别自动计算法定退休年龄时间和距离退休剩余时长。支持 2025 最新延迟退休政策标准、灵活就业人员退休年龄、特殊工种提前退休条件查询。帮助职工提前规划退休生活安排，了解退休待遇养老金领取资格，做好退休财务准备心理准备。', // 退休年龄计算器 2025
+  314: '学生随机分组工具，将学生名单随机公平分配到不同小组团队进行协作学习活动。支持自定义分组数量人数、避免特定学生分在一组、保存分组结果历史记录。适合课堂小组讨论分组、团队项目分组协作、体育比赛分队对抗，确保分组公平随机合理，提高团队协作学习效果。', // 学生分组工具
+  315: '字数统计工具，实时统计中英文文本的字符数字数词数句数段落数等数据。支持包含/排除空格标点符号统计、中英文字数分别统计、阅读时长预估计算。适合写作文章论文报告字数检查、微博微信字数限制、翻译稿件字数统计计费，帮助控制文本篇幅长度符合字数要求规范。', // 字数统计工具
+  452: '剪贴板历史管理器，记录保存电脑手机复制粘贴的剪贴板历史记录内容。支持剪贴板内容搜索检索查找、快速粘贴历史内容、剪贴板收藏夹星标功能。避免复制新内容覆盖旧内容丢失，快速找回之前复制过的文字链接，提高复制粘贴工作效率，节省重复查找复制内容时间精力。', // 剪贴板历史
+  453: '多文件合并器工具，将多个文本文件 TXT CSV JSON 等合并拼接成一个大文件。支持自定义文件合并顺序排序、添加分隔符标题头部、文件编码格式转换统一。适合日志文件合并分析、数据文件整合处理、代码文件批量合并，简化文件管理操作流程，提高数据处理批处理效率。', // 文件合并器
+  454: '多功能计数器工具，手动点击按钮或自动累加递增计数统计数量次数。支持多个独立计数器同时使用、计数增减重置操作、计数目标提醒、计数历史记录统计。适合人流量统计计数、产品数量盘点清点、运动锻炼次数记录、事件发生频次统计等各类需要计数统计的日常生活场景。', // 多功能计数器
+  455: '快捷便签笔记工具，随时记录保存临时想法灵感待办事项备忘信息。支持便签分类颜色标签管理、便签搜索检索查找、便签置顶排序、便签导出备份恢复。浏览器本地存储数据隐私安全，随时打开浏览器查看编辑便签，替代实体便利贴纸质便签，环保便捷高效管理碎片化信息记录。', // 快捷便签
+  573: '基础代谢率 BMR 计算器，根据身高体重年龄性别计算每日基础代谢消耗热量卡路里。支持多种 BMR 计算公式选择、总消耗 TDEE 热量估算、不同活动水平热量需求。帮助减肥增肌健身人群了解身体基础热量消耗，科学制定饮食热量摄入计划，精准控制热量收支平衡，达成体重目标。', // 基础代谢率计算器
+  574: '预产期计算器工具，根据末次月经日期或受孕日期计算预产期分娩日期和孕周胎龄。自动计算怀孕周数天数、预产期倒计时天数、每周孕期变化提示、产检时间安排建议。帮助准妈妈了解宝宝发育进程情况，提前准备待产物品事宜，合理安排工作生活节奏，迎接新生命诞生降临到来。', // 预产期计算器
+  672: '待办事项清单工具，管理记录每日每周工作学习生活待办任务事项清单。支持任务优先级紧急重要程度标记、任务完成打勾标记、任务分类项目管理、任务提醒推送通知。帮助提高工作学习效率生产力，避免遗忘重要事项任务，养成高效时间管理习惯，清空大脑专注当下事项任务执行。', // 待办事项
+  673: '便签笔记本工具，随时记录保存文字笔记想法灵感备忘录日记摘抄内容。支持笔记分类文件夹管理、笔记搜索全文检索、笔记标签标记、富文本格式编辑。浏览器本地存储数据私密安全，跨设备同步备份导出，替代实体笔记本纸质笔记，数字化管理个人知识信息库笔记资料档案。', // 便签笔记
+  674: '书签收藏夹管理器，整理管理浏览器网页书签收藏夹链接网址资源导航。支持书签分类文件夹层级管理、书签搜索快速查找、书签导入导出备份、书签标签描述备注。解决浏览器书签杂乱无章难以查找问题，高效管理收藏的网站资源网址链接，快速访问常用网页工具，提升上网浏览效率。', // 书签管理器
+  689: '记账本管家工具，记录管理每日收入支出流水账单和家庭财务收支明细。支持收支分类统计图表分析、预算设定超支预警、账单日历月度年度汇总报表。帮助养成记账理财好习惯，了解钱花在哪些地方开销，分析消费支出结构模式，合理控制开支节流增收，改善家庭财务健康状况。', // 记账本
+  700: '番茄钟专注计时器，采用番茄工作法 Pomodoro 提高工作学习专注力效率生产力。支持 25 分钟专注+5 分钟休息循环模式、自定义专注休息时长、每日番茄钟统计、专注目标设定提醒。帮助克服拖延症专注完成任务，劳逸结合避免过度疲劳，养成高效时间管理专注习惯，提升工作学习效率。', // 番茄钟
+  747: '习惯养成打卡追踪器，培养记录坚持良好习惯的每日打卡签到工具。支持多个习惯目标同时追踪、打卡日历可视化展示、连续打卡天数统计、习惯养成数据分析。帮助养成早起健身阅读学习等好习惯，戒掉熬夜刷手机拖延等坏习惯，坚持 21 天 90 天习惯养成挑战，改变人生提升自我。', // 习惯打卡追踪器
+  892: 'Countdown Timer tool - Set countdown timers for deadlines, events, cooking, workouts, and exams. Supports multiple simultaneous timers with custom labels, alarm sound notifications, and visual progress display. Helps manage time effectively, stay on schedule, avoid missing important deadlines, and maintain productivity focus.', // Countdown Timer
+  893: 'Decision Maker tool - Random decision maker for tough choices when you cannot decide between options. Input multiple choices, spin the wheel or flip a coin to get random results. Supports weighted probability, pros/cons comparison, and decision history tracking. Eliminates decision fatigue and helps make quick fair choices for everyday dilemmas.', // Decision Maker
+  894: 'Habit Tracker tool - Track daily habits, build positive routines, and break bad habits with visual progress tracking. Set habit goals, mark daily completion, view streak statistics, and analyze habit patterns. Supports multiple habits, reminder notifications, calendar heatmap visualization. Achieve 21-day 90-day habit formation challenges and improve lifestyle.', // Habit Tracker
+  895: 'Pomodoro Timer tool - Boost productivity with the Pomodoro Technique: 25-minute focus sessions followed by 5-minute breaks. Customize work/break durations, track daily Pomodoros, set session goals, and receive audio/visual alerts. Overcome procrastination, maintain concentration, prevent burnout, and enhance work efficiency with proven time management method.', // Pomodoro Timer
+  896: 'Stopwatch tool - Precision stopwatch timer for sports, fitness, cooking, experiments, and time measurement tasks. Features lap split timing, countdown mode, millisecond precision, and pause/resume controls. Perfect for tracking race times, workout intervals, cooking durations, reaction speeds, and any activity requiring accurate time recording and measurement.', // Stopwatch
+  897: 'Unit Converter tool - Convert units across length, weight, volume, temperature, area, speed, time, and more categories. Supports metric/imperial systems, scientific units, and specialized conversions. Features real-time conversion, unit search, conversion history, and commonly used unit favorites. Essential for cooking, travel, science, engineering, and daily calculations.', // Unit Converter
+  898: 'World Clock tool - Display current time across multiple time zones worldwide for global collaboration and travel planning. Shows time zone offsets, daylight saving time status, city sunrise/sunset times, and time zone abbreviations. Compare times between cities, schedule international meetings, coordinate remote teams, and track time differences easily.', // World Clock
+  993: '重要事件倒计时器，倒数计时距离考试毕业婚礼生日等重要日期剩余天数时间。支持多个事件同时倒计时、倒计时日历视图、到期前提醒通知、倒计时分享生成。帮助珍惜时间规划安排，增强目标紧迫感动力，提前做好充分准备，不错过人生每个重要时刻节点，留下美好回忆纪念。', // 事件倒计时
 };
 
 // 验证字符长度
