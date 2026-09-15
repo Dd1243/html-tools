@@ -472,6 +472,49 @@ const customDescriptions = {
   897: 'Unit Converter tool - Convert units across length, weight, volume, temperature, area, speed, time, and more categories. Supports metric/imperial systems, scientific units, and specialized conversions. Features real-time conversion, unit search, conversion history, and commonly used unit favorites. Essential for cooking, travel, science, engineering, and daily calculations.', // Unit Converter
   898: 'World Clock tool - Display current time across multiple time zones worldwide for global collaboration and travel planning. Shows time zone offsets, daylight saving time status, city sunrise/sunset times, and time zone abbreviations. Compare times between cities, schedule international meetings, coordinate remote teams, and track time differences easily.', // World Clock
   993: '重要事件倒计时器，倒数计时距离考试毕业婚礼生日等重要日期剩余天数时间。支持多个事件同时倒计时、倒计时日历视图、到期前提醒通知、倒计时分享生成。帮助珍惜时间规划安排，增强目标紧迫感动力，提前做好充分准备，不错过人生每个重要时刻节点，留下美好回忆纪念。', // 事件倒计时
+
+  // Game 游戏类 (22 tools)
+  238: '2048 数字合成益智游戏，滑动合并相同数字方块达到 2048 分数目标挑战。经典烧脑数学益智游戏，支持撤销悔棋、最高分记录、游戏存档续玩功能。锻炼逻辑思维数学计算能力，简单规则无尽挑战乐趣，适合碎片时间休闲娱乐，挑战你的大脑极限，打破最高分纪录成就感满满。', // 2048 游戏
+  239: '经典扫雷游戏在线版，根据数字提示标记地雷位置避免踩雷引爆。支持初级中级高级专家等多种难度选择、自定义雷区大小密度、计时排行榜挑战。经典 Windows 扫雷游戏怀旧重温，锻炼逻辑推理观察能力，考验耐心细心专注力，挑战最快通关时间记录，享受扫雷解密成就感。', // 扫雷
+  240: '经典贪吃蛇游戏在线版，控制贪吃蛇移动吃食物不断变长躲避撞墙撞身体。支持多种游戏速度难度调节、最高分记录保存、无尽模式挑战。经典诺基亚手机游戏怀旧情怀，简单操作考验反应速度手眼协调，适合休闲娱乐放松解压，挑战高分记录极限长度，重温童年经典游戏回忆乐趣。', // 贪吃蛇
+  241: '数独九宫格逻辑推理游戏，填入 1-9 数字使每行每列每宫数字不重复。提供简单中等困难专家等多种难度等级、自动检查错误提示、数独解题技巧教程。经典数学益智游戏锻炼逻辑推理能力，培养耐心专注力观察力，适合脑力训练智力开发，享受解谜成功的成就感满足感愉悦。', // 数独
+  242: '经典俄罗斯方块游戏在线版，旋转移动下落方块填满整行消除得分。支持多种游戏速度等级、下一个方块预览、暂停续玩存档功能。世界经典益智游戏怀旧重温，锻炼空间想象反应速度手眼协调，简单规则无穷变化挑战，适合碎片时间休闲解压，挑战最高分记录消除最多行数。', // 俄罗斯方块
+  534: '记忆配对翻牌游戏，翻开卡牌记住图案位置配对消除所有卡牌挑战。支持多种难度卡牌数量选择、计时挑战模式、最少步数记录。锻炼记忆力观察力专注力，训练大脑短期记忆能力，适合儿童益智早教、成人大脑训练，简单好玩趣味性强，提升记忆力反应力，预防记忆衰退健脑益智。', // 记忆配对游戏
+  587: '贪吃蛇经典休闲游戏，控制小蛇移动吃食物身体变长躲避碰撞墙壁和自己身体。支持方向键触摸滑动控制、游戏速度调节、最高分记录排行榜。经典怀旧游戏简单耐玩，锻炼手眼协调反应速度，考验走位技巧策略规划，适合休闲放松打发时间，挑战超长贪吃蛇极限长度分数。', // 贪吃蛇游戏
+  718: '五子棋对弈游戏在线版，黑白双方轮流落子连成五子一线获胜。支持人机对战 AI 电脑难度选择、双人对战模式、悔棋重新开始功能。经典传统益智棋类游戏，锻炼逻辑思维战略布局能力，简单规则变化无穷，适合亲子互动朋友对战，提升棋力水平享受博弈对弈乐趣策略思考过程。', // 五子棋
+  719: '记忆翻牌配对游戏，翻开两张卡牌记忆图案位置找到相同配对消除。提供多种主题图案选择、不同难度卡牌数量、计时挑战最少步数模式。经典儿童益智游戏锻炼记忆力，训练大脑短期工作记忆能力，提高观察力专注力反应力，适合全年龄段玩家，简单好玩趣味性强寓教于乐效果好。', // 记忆翻牌
+  750: '虚拟骰子模拟器工具，在线投掷骰子随机生成 1-6 点数结果。支持同时投掷多个骰子、自定义骰子数量面数、骰子动画效果音效。适合桌游棋牌游戏投骰子、决策选择随机抽签、数学概率统计教学演示，替代实体骰子方便快捷，随时随地在线投骰子，公平公正真随机算法保证。', // 骰子模拟器
+  868: 'Breakout brick breaker arcade game - Control paddle to bounce ball and destroy colorful bricks. Classic Atari-style retro game with multiple levels, power-ups, lives system, and high score tracking. Tests reflexes, hand-eye coordination, timing precision. Addictive arcade gameplay, nostalgic retro graphics, progressive difficulty, casual entertainment fun.', // Breakout Game
+  869: 'Color matching memory game - Match colors quickly under time pressure to test color perception and reaction speed. Features multiple difficulty modes, time challenges, combo scoring, color blindness mode. Trains visual recognition, improves color discrimination ability, sharpens reflexes. Simple addictive gameplay suitable for quick casual gaming sessions and brain training exercises.', // Color Match
+  870: 'Flappy Bird style game - Tap to fly through pipes avoiding obstacles in this challenging endless runner. Features simple one-tap control, progressively difficult obstacles, high score leaderboard, retry motivation. Tests timing precision, patience persistence, hand-eye coordination. Addictive challenging gameplay, frustratingly fun, compete for highest score survival distance records.', // Flappy Bird
+  871: 'Number guessing game - Guess secret random number with hints of too high or too low feedback. Features multiple difficulty ranges, limited guesses mode, optimal strategy hints, guess history tracking. Classic logic deduction game, trains logical reasoning, binary search thinking, improves number sense intuition. Educational brain teaser suitable for all ages.', // Guess Number
+  872: 'Math challenge game - Solve arithmetic problems quickly under time pressure to test mental calculation speed. Features addition, subtraction, multiplication, division operations, multiple difficulty levels, timed challenges, accuracy tracking. Improves mental math skills, enhances calculation speed, trains number fluency. Educational game for students, adults keeping math sharp, competitive scoring system.', // Math Challenge
+  873: 'Pinball arcade game - Launch ball with flippers to hit bumpers, targets, ramps for points. Features realistic physics simulation, multiple table layouts, combo multipliers, high score tracking. Classic arcade entertainment, tests reflexes timing, hand-eye coordination, strategic ball control. Nostalgic retro gaming experience, addictive casual gameplay, compete for leaderboard rankings.', // Pinball Game
+  874: 'Reaction time test game - Click button immediately when color changes to measure reaction speed. Features multiple test rounds, average reaction time calculation, percentile ranking, reaction training mode. Tests reflexes, hand-eye coordination, attention focus. Compare results with others, track improvement over time, scientific measurement tool, gamified reflex training exercise.', // Reaction Game
+  875: 'Space shooter arcade game - Control spaceship shooting enemies dodging bullets in classic shmup style. Features wave-based enemies, power-up upgrades, boss battles, lives health system. Tests reflexes, shooting accuracy, dodging skills, strategic positioning. Retro arcade action, progressive difficulty, high score challenges, nostalgic space shooter entertainment fun.', // Shooter Game
+  876: 'Tic Tac Toe game - Classic 3x3 grid game where three in a row wins. Features player vs AI computer opponent with difficulty levels, two-player mode, undo moves, match statistics. Simple strategy game, teaches logical thinking, pattern recognition, strategic planning. Quick casual entertainment, suitable for all ages, nostalgic childhood game reimagined online.', // Tic Tac Toe
+  877: 'Typing speed game - Type words sentences quickly to test and improve typing speed accuracy. Features multiple difficulty text types, WPM calculation, accuracy tracking, progress statistics. Gamified typing practice, improves keyboard proficiency, builds muscle memory, competitive scoring. Educational productivity tool, fun way to practice touch typing skills, suitable for students professionals.', // Typing Game
+
+  // Fun 娱乐工具 (22 tools)
+  229: '瞄准精度训练工具，快速点击移动目标测试提升鼠标手眼协调能力和反应速度。支持多种目标大小速度难度调节、训练模式挑战模式、精准度统计分析报告。适合 FPS 射击游戏玩家瞄准练习、电竞职业选手基础训练，提高鼠标定位精确度点击速度，增强游戏操作水平竞技实力表现。', // 瞄准训练
+  230: '抛硬币在线工具，虚拟投掷硬币随机产生正面或反面结果做决策选择。支持连续多次抛硬币统计、自定义硬币图案文字、抛硬币动画效果音效。适合二选一犹豫不决时随机决策、公平抽签猜拳、概率统计教学演示，替代实体硬币方便快捷，真随机算法保证公平公正性不作弊。', // 抛硬币
+  231: '虚拟骰子投掷器工具，在线掷骰子随机生成 1-6 点数做游戏决策抽签。支持同时投多个骰子、自定义骰子面数、3D 动画效果音效、投掷历史记录统计。适合桌游棋牌游戏扔骰子、随机决策选择抽签、数学概率教学，替代实体骰子更方便，真随机公平算法，随时随地在线投骰子。', // 骰子模拟器
+  232: '数字记忆力测试工具，记住随机数字序列并复述测试短期记忆容量极限能力。提供不同难度长度数字序列、记忆时间限制、记忆力评分等级、训练提升模式。科学测试大脑工作记忆广度，锻炼提升记忆力专注力，了解自己记忆水平排名，通过训练改善记忆衰退预防老年痴呆症。', // 数字记忆测试
+  233: '反应速度测试工具，点击按钮测量视觉反应时间检验手眼协调能力快慢。支持多轮测试平均值计算、反应时间排名对照、反应力训练提升模式。科学测试神经反应速度，了解反应力水平排名，通过训练提高反应敏捷度，适合游戏玩家电竞选手司机飞行员反应力检测评估训练提升。', // 反应时间测试
+  234: '序列记忆测试游戏，记住闪烁按钮顺序并按序重复测试短期记忆能力极限。提供不同难度序列长度、记忆时间限制、记忆力评分等级、西蒙记忆游戏模式。经典记忆力训练游戏锻炼大脑，提升工作记忆容量空间，增强专注力观察力反应力，预防记忆衰退老年痴呆，寓教于乐趣味性强。', // 序列记忆测试
+  235: '今天吃什么决策器，随机推荐美食菜品帮助选择困难症解决吃什么难题。支持自定义美食菜品列表库、餐厅类型筛选、转盘抽奖动画效果。解决每日三餐吃什么纠结烦恼，探索发现新美食餐厅，增加饮食多样性趣味，避免总吃老几样，让选择吃什么变得简单快乐有趣不再纠结焦虑。', // 今天吃什么
+  236: '转盘抽奖工具，自定义选项内容旋转转盘随机抽取决策选择。支持自定义转盘选项数量内容、抽奖动画音效、中奖结果记录历史。适合活动抽奖抽奖游戏、多选一犹豫决策、随机点名选人，公平公正真随机算法，增加抽奖趣味性仪式感，让决策选择变得有趣好玩不纠结焦虑。', // 转盘抽奖
+  237: '是或否随机决策器，犹豫不决时随机给出 Yes 或 No 建议帮助做决定。支持自定义问题选项、决策动画效果、决策历史记录、概率权重调整。适合二选一犹豫纠结时快速决策、娱乐游戏真心话大冒险，摆脱选择困难症焦虑，让决策变得简单轻松，把选择交给命运随机幸运女神决定。', // 是或否决策器
+  533: '每日运势占卜工具，查询今日星座运势爱情事业财运健康各方面运势指数。提供十二星座每日运势预测、幸运颜色数字、注意事项建议、运势指数评分。娱乐休闲趣味占卜，增添生活仪式感趣味性，调节心态给予心理暗示，仅供娱乐参考切勿迷信，积极心态创造美好每一天生活。', // 今日运势
+  670: '倒计时计时器工具，设定时间倒数计时到期提醒适用各种场景需求。支持多个倒计时同时运行、自定义标签名称、到期声音震动提醒、暂停继续重置操作。适合工作学习番茄钟、烹饪烘焙计时、运动健身间歇、会议时间控制，帮助时间管理提高效率，养成守时习惯不错过重要时刻。', // 倒计时器
+  671: '秒表计时器工具，精准记录时间间隔适用运动训练比赛计时测速。支持开始暂停重置操作、计次分段记录、毫秒精度显示、历史记录保存。适合体育运动比赛计时、跑步健身训练、烹饪实验计时、工作效率统计，高精度时间测量工具，简洁易用界面操作，随时随地在线秒表计时功能。', // 秒表计时器
+  684: '记忆翻牌配对游戏，翻开卡牌记住图案位置配对相同卡牌消除挑战。提供多种主题图案、不同难度卡牌数量、计时挑战、最少步数模式。经典记忆力训练游戏，锻炼大脑短期工作记忆，提升观察力专注力反应力，适合儿童益智早教成人脑力训练，简单好玩寓教于乐预防记忆衰退健脑益智。', // 记忆翻牌
+  685: '点击计数器工具，手动点击按钮累加统计数量次数记录工具。支持点击增加减少重置、多个独立计数器、计数目标提醒、历史记录统计。适合人流量统计、产品盘点清点、运动锻炼次数记录、念经诵经计数、事件发生频次统计等各类需要手动计数统计的日常生活工作学习场景应用。', // 点击计数器
+  686: '指尖反应游戏，快速点击移动目标按钮考验手指反应速度灵活度。支持多种游戏模式难度、倒计时挑战、得分排行榜、反应训练模式。锻炼手指灵活性手眼协调能力，提升反应速度敏捷度，适合碎片时间休闲娱乐、游戏玩家反应训练，简单好玩挑战性强让人欲罢不能上瘾停不下来。', // 指尖大冒险
+  687: '打字速度测试工具，测试中英文打字速度 WPM 每分钟字数和准确率水平。提供不同难度文章段落、实时速度统计、错误率分析、打字练习模式。科学评估打字水平能力，了解打字速度排名，通过练习提升键盘盲打速度，适合学生职场人士提高打字效率，建立肌肉记忆提升工作学习效率。', // 打字测试
+  691: '反应力测试工具，点击按钮测试视觉反应时间评估手眼协调能力。支持多轮测试平均计算、反应时间排名、反应训练模式、测试结果分享。科学测量神经系统反应速度，了解反应力水平排名位置，通过训练提高反应敏捷，适合游戏玩家电竞选手司机等职业反应力检测评估训练提升需求。', // 反应测试
+  692: '色盲色弱测试工具，通过石原氏色盲检查图测试辨别红绿蓝色盲色弱。提供多种色盲检测图卡、色觉类型判断、色盲程度评估、色觉异常科普知识。自我筛查色觉异常问题，了解色觉缺陷类型程度，及时发现视觉问题就医，仅供初步筛查参考，准确诊断需专业眼科医生检查确诊治疗。', // 色盲测试
+  698: '猜数字游戏，猜测随机生成的神秘数字根据大小提示逻辑推理。支持多种难度数字范围、有限次数挑战、最优策略提示、猜测历史记录。经典逻辑推理益智游戏，锻炼逻辑思维能力，学习二分查找算法思想，培养数感直觉判断力，简单好玩适合全年龄，挑战最少次数猜中记录智力脑力训练。', // 猜数字
 };
 
 // 验证字符长度
