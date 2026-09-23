@@ -178,10 +178,32 @@ ${topTools.map(t => `    <item>
   fs.writeFileSync(OUT, feedXml.trim() + "\n", "utf8");
   console.log(`Successfully generated feed.xml with top ${topTools.length} tools!`);
 
-  // 同时输出 atom.xml 供 Google Search Console 使用，规避 feed.xml 缓存死锁
+  // 生成符合标准 IETF RFC 4287 的纯正 Atom 1.0 XML (命名为 atom-0.xml 破解 GSC 缓存)
+  const ATOM_0_OUT = path.join(ROOT, "atom-0.xml");
+  const atomXml = `<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>WebUtils 在线工具精选与最新发布</title>
+  <subtitle>WebUtils 精选纯前端免安装在线工具：涵盖多媒体图片处理、文本分析排版、现代前端开发、网络排障与实用计算工具，即开即用、零隐私上传。</subtitle>
+  <link href="${SITE}/atom-0.xml" rel="self" type="application/atom+xml"/>
+  <link href="${SITE}/tools-directory" rel="alternate"/>
+  <id>${SITE}/</id>
+  <updated>${now.toISOString()}</updated>
+${topTools.map(t => `  <entry>
+    <title>${escapeXml(t.title)}</title>
+    <link href="${escapeXml(t.link)}" rel="alternate"/>
+    <id>${escapeXml(t.link)}</id>
+    <updated>${t.date.toISOString()}</updated>
+    <summary>${escapeXml(t.description)}</summary>
+    <category term="${escapeXml(t.category)}"/>
+  </entry>`).join("\n")}
+</feed>
+`;
+  fs.writeFileSync(ATOM_0_OUT, atomXml.trim() + "\n", "utf8");
+  console.log(`Successfully generated true Atom 1.0: atom-0.xml!`);
+
+  // 同时保留 atom.xml 保持同步
   const ATOM_OUT = path.join(ROOT, "atom.xml");
-  fs.writeFileSync(ATOM_OUT, feedXml.trim() + "\n", "utf8");
-  console.log(`Successfully generated atom.xml for Google Search Console!`);
+  fs.writeFileSync(ATOM_OUT, atomXml.trim() + "\n", "utf8");
 
   // 同时生成符合 Google 标准的 sitemap-tools.xml 专属分卷
   const SITEMAP_TOOLS_OUT = path.join(ROOT, "sitemap-tools.xml");
