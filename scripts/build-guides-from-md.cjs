@@ -427,9 +427,64 @@ function shortTocTitle(title) {
   return title.slice(0, 16) + "…";
 }
 
+// ── related guides resolver ──────────────────────────────────────────
+
+function resolveRelatedGuides(currentMeta, allGuides) {
+  // 1. 如果 frontmatter 明确配置了 relatedGuides 且有内容，优先使用
+  if (Array.isArray(currentMeta.relatedGuides) && currentMeta.relatedGuides.length > 0) {
+    const list = currentMeta.relatedGuides
+      .map((slugOrPath) => {
+        const cleanSlug = String(slugOrPath).replace(/^(\/guides\/|guides\/)/, "").replace(/\.html$/, "");
+        return allGuides.find((g) => g.slug === cleanSlug);
+      })
+      .filter(Boolean);
+    if (list.length > 0) return list.slice(0, 4);
+  }
+
+  // 2. 否则基于 tag（相同分类）及标题关键词自动匹配最相关的 3~4 篇
+  const curSlug = currentMeta.slug;
+  const curTag = currentMeta.tag || "使用指南";
+  const candidates = allGuides.filter((g) => g.slug !== curSlug);
+
+  // 优先同 tag
+  const sameTag = candidates.filter((g) => (g.tag || "使用指南") === curTag);
+  const diffTag = candidates.filter((g) => (g.tag || "使用指南") !== curTag);
+
+  const merged = [...sameTag, ...diffTag];
+  return merged.slice(0, 4);
+}
+
+function renderRelatedGuidesHtml(relatedList) {
+  if (!relatedList || relatedList.length === 0) return "";
+  const cardsHtml = relatedList
+    .map((g) => {
+      const minutes = Number(g.readingMinutes) || 10;
+      const tag = g.tag || "使用指南";
+      return `              <a href="/guides/${escapeHtml(g.slug)}" class="related-guide-card">
+                <div>
+                  <div class="related-guide-title">${escapeHtml(g.title)}</div>
+                  <div class="related-guide-desc">${escapeHtml(g.description || "")}</div>
+                </div>
+                <div class="related-guide-meta">
+                  <span>${escapeHtml(tag)} · 约 ${minutes} 分钟</span>
+                  <span>阅读指南 →</span>
+                </div>
+              </a>`;
+    })
+    .join("\n");
+
+  return `
+            <section class="related-guides-section">
+              <h2 class="related-guides-title">📚 延伸阅读：相关深度技术指南</h2>
+              <div class="related-guides-grid">
+${cardsHtml}
+              </div>
+            </section>`;
+}
+
 // ── page shell ───────────────────────────────────────────────────────
 
-function buildPage(meta, sectionsHtml, toc, faq, css) {
+function buildPage(meta, sectionsHtml, toc, faq, css, relatedGuidesList = []) {
   const title = meta.title || meta.slug || "指南";
   const description = meta.description || "";
   const slug = meta.slug;
@@ -609,6 +664,7 @@ ${css}
         <div class="article-layout">
           <div class="article-main">
 ${sectionsHtml}
+${renderRelatedGuidesHtml(relatedGuidesList)}
           </div>
 
           <aside class="toc-rail">
@@ -822,8 +878,9 @@ function main() {
     process.exit(0);
   }
 
+  // 第一阶段：预解析所有指南的 meta 与 body，构建全量指南知识图谱
+  const parsedItems = [];
   const entries = [];
-  let built = 0;
 
   for (const file of files) {
     const full = path.join(SRC_DIR, file);
@@ -837,13 +894,8 @@ function main() {
       continue;
     }
 
-    const { sectionsHtml, toc, faq } = mdToSections(body);
-    const html = buildPage(meta, sectionsHtml, toc, faq, css);
-    const outPath = path.join(OUT_DIR, `${slug}.html`);
-    fs.writeFileSync(outPath, html, "utf8");
+    parsedItems.push({ file, meta, body, slug });
     entries.push(toGuidesJsonEntry(meta));
-    built++;
-    console.log(`built guides/${slug}.html  (toc=${toc.length}, faq=${faq.length})`);
   }
 
   // merge guides.json: keep entries without src, overwrite those with src
@@ -865,6 +917,19 @@ function main() {
   const merged = { guides: [...bySlug.values()].sort((a, b) => a.slug.localeCompare(b.slug)) };
   fs.writeFileSync(GUIDES_JSON, JSON.stringify(merged, null, 2) + "\n", "utf8");
   console.log(`updated guides/guides.json (${merged.guides.length} entries)`);
+
+  // 第二阶段：利用全量指南库计算互相推荐链接，渲染出互相织网的完整 HTML
+  let built = 0;
+  for (const item of parsedItems) {
+    const { meta, body, slug } = item;
+    const { sectionsHtml, toc, faq } = mdToSections(body);
+    const relatedList = resolveRelatedGuides(meta, merged.guides);
+    const html = buildPage(meta, sectionsHtml, toc, faq, css, relatedList);
+    const outPath = path.join(OUT_DIR, `${slug}.html`);
+    fs.writeFileSync(outPath, html, "utf8");
+    built++;
+    console.log(`built guides/${slug}.html (toc=${toc.length}, faq=${faq.length}, related=${relatedList.length})`);
+  }
 
   updateGuidesIndex(merged.guides);
   console.log(`done: ${built} guide(s) from MD`);
