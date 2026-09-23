@@ -4,10 +4,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Tools](https://img.shields.io/badge/Tools-1001+-blue.svg)](https://essays4u.net)
-[![Lint](https://github.com/Dd1243/html-tools/actions/workflows/lint.yml/badge.svg)](https://github.com/Dd1243/html-tools/actions/workflows/lint.yml)
 [![Deploy](https://github.com/Dd1243/html-tools/actions/workflows/deploy.yml/badge.svg)](https://github.com/Dd1243/html-tools/actions/workflows/deploy.yml)
-[![Vercel](https://img.shields.io/badge/Vercel-deployed-black?logo=vercel)](https://html-tools-jade.vercel.app)
-[![Cloudflare](https://img.shields.io/badge/Cloudflare-deployed-orange?logo=cloudflare)](https://htmltools-bkt.pages.dev)
+[![Cloudflare](https://img.shields.io/badge/Cloudflare-deployed-orange?logo=cloudflare)](https://html-tools-bz2.pages.dev)
 
 [![GitHub stars](https://img.shields.io/github/stars/Dd1243/html-tools?style=social)](https://github.com/Dd1243/html-tools/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/Dd1243/html-tools?style=social)](https://github.com/Dd1243/html-tools/network/members)
@@ -97,17 +95,14 @@
 
 ---
 
-## 在线体验
+## 🌐 在线体验
 
-| 平台              | 链接                                    | 状态    |
-| ----------------- | --------------------------------------- | ------- |
-| **🌐 自定义域名** | https://essays4u.net                    | ✅      |
-| GitHub Pages      | https://essays4u.net/                   | ✅      |
-| Cloudflare Pages  | https://htmltools-bkt.pages.dev         | ✅      |
-| Vercel            | https://html-tools-jade.vercel.app      | ✅      |
-| Render            | https://webutils-uj15.onrender.com      | ✅      |
-| Surge             | https://webutils.surge.sh               | ✅      |
-| Netlify           | https://localtools.netlify.app          | ⏸️ 暂停 |
+| 平台 | 访问链接 | 说明 |
+| :--- | :--- | :--- |
+| **⭐ 官方自定义域名 (主站)** | **[https://essays4u.net](https://essays4u.net)** | 权威访问地址，全球高速 CDN 加速 |
+| **🚀 Cloudflare Pages 节点** | [https://html-tools-bz2.pages.dev](https://html-tools-bz2.pages.dev) | 官方边缘部署源站 |
+| **📚 深度使用指南专区** | [https://essays4u.net/guides/](https://essays4u.net/guides/) | 3000+ 字核心技术指南与排坑实战 |
+| **📑 全部工具完整大厅** | [https://essays4u.net/tools-directory](https://essays4u.net/tools-directory) | 1000+ 款工具按分类全量索引 |
 
 ## 工具列表 (1001 个)
 
