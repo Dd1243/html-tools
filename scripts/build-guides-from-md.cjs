@@ -143,7 +143,7 @@ function unquote(s) {
 
 function renderInline(text) {
   let s = escapeHtml(text);
-  // links [text](url) — after escape, brackets still plain
+  // links [text](url)
   s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, t, url) => {
     const href = escapeHtml(url.trim());
     return `<a href="${href}">${t}</a>`;
@@ -151,7 +151,7 @@ function renderInline(text) {
   // bold ** **
   s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
   // italic * * (avoid bold leftovers)
-  s = s.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, "<em>$1</em>");
+  s = s.replace(/(?<!\*)\*([^\s*][^*]*[^\s*]|[^\s*])\*(?!\*)/g, "<em>$1</em>");
   // inline code
   s = s.replace(/`([^`]+)`/g, "<code>$1</code>");
   return s;
@@ -160,13 +160,15 @@ function renderInline(text) {
 // ── block markdown ───────────────────────────────────────────────────
 
 function parseHeading(line) {
-  const m = line.match(/^(#{1,3})\s+(.+?)(?:\s+\{\#([a-zA-Z0-9_-]+)\})?\s*$/);
+  const m = line.match(/^(#{1,6})\s+(.+?)(?:\s+\{\#([a-zA-Z0-9_-]+)\})?\s*$/);
   if (!m) return null;
   return { level: m[1].length, title: m[2].trim(), id: m[3] || null };
 }
 
 function isTableSep(line) {
-  return /^\|?[\s:|-]+\|[\s:|-]*\|?$/.test(line.trim()) && line.includes("-");
+  const s = line.trim();
+  // 严格匹配表头分割线：必须是由 |、-、: 和空格构成的标准分割行
+  return /^\|?(\s*:?-{2,}:?\s*\|)+\s*:?-{2,}:?\s*\|?$/.test(s);
 }
 
 function splitTableRow(line) {
@@ -282,14 +284,15 @@ function mdToSections(body) {
         i++;
         continue;
       }
-      if (h.level === 3) {
+      if (h.level >= 3) {
         ensureSection();
         const title = h.title.replace(/\s*\{#[a-zA-Z0-9_-]+\}\s*$/, "");
         if (cur.isFaq) {
           flushFaqItem();
           faqBuf = { q: title, paras: [] };
         } else {
-          cur.parts.push(`<h3>${renderInline(title)}</h3>`);
+          const tag = h.level === 3 ? "h3" : "h4";
+          cur.parts.push(`<${tag}>${renderInline(title)}</${tag}>`);
         }
         i++;
         continue;
@@ -406,6 +409,9 @@ function mdToSections(body) {
     }
     if (pLines.length) {
       pushBlock(`<p>${renderInline(pLines.join(" "))}</p>`);
+    } else {
+      // 保底自增，绝对杜绝死循环
+      i++;
     }
   }
 
@@ -935,4 +941,16 @@ function main() {
   console.log(`done: ${built} guide(s) from MD`);
 }
 
-main();
+// ── exports for programmatic use ────────────────────────────────────
+module.exports = {
+  parseFrontmatter,
+  mdToSections,
+  renderInline,
+  buildPage,
+  resolveRelatedGuides,
+  main,
+};
+
+if (require.main === module) {
+  main();
+}

@@ -133,7 +133,7 @@
       "name": "6 位 Cron 怎么办？",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Linux 默认 5 位。sudo crontab -e 后在最后一行加秒字段（如 0 0 0 0 0 0 ）。"
+        "text": "Linux 默认 5 位。sudo crontab -e 后在最后一行加秒字段（如 0 0 0 0 0 0 * * * *）。"
       }
     },
     {
@@ -141,7 +141,7 @@
       "name": "时区坑是什么？",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "服务器与客户端时区不同。0 3 * 在 UTC+8 跑 03:00，在 UTC+0 跑 15:00。生产 crontab 显式指定 TZ。"
+        "text": "服务器与客户端时区不同。0 3 * * * 在 UTC+8 跑 03:00，在 UTC+0 跑 15:00。生产 crontab 显式指定 TZ。"
       }
     },
     {
@@ -687,6 +687,70 @@
               margin-bottom: 12px;
               font-size: 1.1rem;
             }
+            /* 相关指南互相链接块 */
+            .related-guides-section {
+              margin-top: 36px;
+              padding-top: 24px;
+              border-top: 1px solid var(--border);
+            }
+            .related-guides-title {
+              font-size: 1.25rem;
+              margin-bottom: 18px;
+              color: var(--text);
+              display: flex;
+              align-items: center;
+              gap: 8px;
+            }
+            .related-guides-grid {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+              gap: 16px;
+            }
+            .related-guide-card {
+              background: var(--bg);
+              border: 1px solid var(--border);
+              border-radius: 14px;
+              padding: 16px;
+              text-decoration: none;
+              color: inherit;
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
+              transition: all 0.2s ease;
+            }
+            .related-guide-card:hover {
+              border-color: var(--primary);
+              transform: translateY(-2px);
+              box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+            }
+            .related-guide-title {
+              font-size: 1.02rem;
+              font-weight: 600;
+              color: var(--text);
+              margin-bottom: 8px;
+              line-height: 1.4;
+            }
+            .related-guide-card:hover .related-guide-title {
+              color: var(--primary);
+            }
+            .related-guide-desc {
+              font-size: 0.86rem;
+              color: var(--muted);
+              line-height: 1.5;
+              margin-bottom: 14px;
+              display: -webkit-box;
+              -webkit-line-clamp: 2;
+              -webkit-box-orient: vertical;
+              overflow: hidden;
+            }
+            .related-guide-meta {
+              font-size: 0.8rem;
+              color: var(--primary);
+              font-weight: 500;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+            }
             footer {
               background: #fff;
               border-top: 1px solid var(--border);
@@ -831,9 +895,9 @@
 <h3>预设</h3>
 <p>页面有 <strong>常用预设</strong> 网格，点击按钮即自动填字段并刷新描述。示例：</p>
 <ul>
-<li><code><em> </em> <em> </em> *</code> → 每分钟</li>
-<li><code>0 9 <em> </em> 1-5</code> → 每天 9:00-17:00 工作时间</li>
-<li><code>0 0 1 <em> </em></code> → 每月 1 号午夜</li>
+<li><code>* * * * *</code> → 每分钟</li>
+<li><code>0 9 * * 1-5</code> → 每天 9:00-17:00 工作时间</li>
+<li><code>0 0 1 * *</code> → 每月 1 号午夜</li>
 </ul>
 <h3>能力边界</h3>
 <ul>
@@ -865,7 +929,7 @@
 <td>服务器端 crontab 文件需确认时区</td>
 </tr>
 <tr>
-<td>预设 <code>0 9-17 <em> </em> 1-5</code> 没按预期</td>
+<td>预设 <code>0 9-17 * * 1-5</code> 没按预期</td>
 <td>日期字段用了 <code>9-17</code>（非法）</td>
 <td>只用合法范围，日期用 <code>*</code></td>
 </tr>
@@ -898,17 +962,17 @@
 <section class="card" id="scenarios">
 <h2>真实工作场景</h2>
 <h3>场景 A：每天凌晨 3 点清理缓存</h3>
-<p><code>0 3 <em> </em> *</code> → 每天 03:00 执行。描述区显示「每天凌晨 3:00」。若服务器时区是 UTC+8，任务在 03:00 触发。</p>
+<p><code>0 3 * * *</code> → 每天 03:00 执行。描述区显示「每天凌晨 3:00」。若服务器时区是 UTC+8，任务在 03:00 触发。</p>
 <h3>场景 B：每周一 9 点同步数据</h3>
-<p><code>0 9 <em> </em> 1</code> → 星期一（0=周日）09:00。预设网格里「每周一」即选此。避免用 <code>1</code>（日期）混 <code>1</code>（星期）。</p>
+<p><code>0 9 * * 1</code> → 星期一（0=周日）09:00。预设网格里「每周一」即选此。避免用 <code>1</code>（日期）混 <code>1</code>（星期）。</p>
 <h3>场景 C：每 5 分钟刷新一次</h3>
-<p><code><em>/5 </em> <em> </em> *</code> → 每分钟 0、5、10、15、20、25、30、35、40、45、50、55 分钟执行。描述区「每隔 5 分钟」。</p>
+<p><code>*/5 * * * *</code> → 每分钟 0、5、10、15、20、25、30、35、40、45、50、55 分钟执行。描述区「每隔 5 分钟」。</p>
 <h3>场景 D：每月 1 号 0 点备份</h3>
-<p><code>0 0 1 <em> </em></code> → 每月 1 号午夜。日期字段 <code>1</code>，月份 <code>*</code>。</p>
+<p><code>0 0 1 * <em></code> → 每月 1 号午夜。日期字段 <code>1</code>，月份 <code></em></code>。</p>
 <h3>场景 E：工作时间 9:00-17:00 每小时</h3>
-<p><code>0 9-17 <em> </em> 1-5</code> → 星期一至五，09:00-17:00 每小时。日期用 <code>*</code>。若日期也填 <code>9-17</code> 会报错或非法。</p>
+<p><code>0 9-17 * * 1-5</code> → 星期一至五，09:00-17:00 每小时。日期用 <code>*</code>。若日期也填 <code>9-17</code> 会报错或非法。</p>
 <h3>场景 F：时区坑</h3>
-<p>服务器时区 UTC+8，<code>0 3 <em> </em> *</code> 跑 03:00；若你本地电脑 UTC+0，描述看「每天凌晨 3:00」但实际可能跑 15:00。生产 crontab 需确认 <code>date</code> 命令显示的时区。</p>
+<p>服务器时区 UTC+8，<code>0 3 * * *</code> 跑 03:00；若你本地电脑 UTC+0，描述看「每天凌晨 3:00」但实际可能跑 15:00。生产 crontab 需确认 <code>date</code> 命令显示的时区。</p>
 </section>
 
 <section class="card" id="security">
@@ -956,9 +1020,9 @@
 <div class="faq-item"><h3>预设 `0 9-17 * * 1-5` 是什么意思？</h3>
 <p>每天 09:00-17:00（每小时）在星期一至五执行。日期用 <code>*</code>。</p></div>
 <div class="faq-item"><h3>6 位 Cron 怎么办？</h3>
-<p>Linux 默认 5 位。<code>sudo crontab -e</code> 后在最后一行加秒字段（如 <code>0 0 0 0 0 0 <em> </em> <em> </em></code>）。</p></div>
+<p>Linux 默认 5 位。<code>sudo crontab -e</code> 后在最后一行加秒字段（如 <code>0 0 0 0 0 0 * * * *</code>）。</p></div>
 <div class="faq-item"><h3>时区坑是什么？</h3>
-<p>服务器与客户端时区不同。<code>0 3 <em> </em> *</code> 在 UTC+8 跑 03:00，在 UTC+0 跑 15:00。生产 crontab 显式指定 TZ。</p></div>
+<p>服务器与客户端时区不同。<code>0 3 * * *</code> 在 UTC+8 跑 03:00，在 UTC+0 跑 15:00。生产 crontab 显式指定 TZ。</p></div>
 <div class="faq-item"><h3>描述区与实际执行不一致怎么办？</h3>
 <p>表达式写对了，描述应一致。描述区由工具推导，若有特殊符号（如 <code>*/2</code>）描述可能简化为「每隔 2 分钟」。</p></div>
 <div class="faq-item"><h3>在线工具会上传我的 cron 吗？</h3>
@@ -967,8 +1031,8 @@
 
 <section class="card" id="production">
 <h2>生产环境的时间与并发边界</h2>
-<p>Cron 只负责在某个时间点启动命令，不负责保证上一次任务已经结束。如果 <code><em>/5 </em> <em> </em> *</code> 的脚本偶尔运行超过 5 分钟，下一次触发可能与上一实例重叠，造成重复扣款、同时写同一文件或把外部接口打爆。对有副作用的任务，应在脚本内加锁，或使用系统提供的 <code>flock</code>、队列和幂等键；生成器只能生成时间表达式，不能替你解决并发控制。</p>
-<p>夏令时切换也会产生特殊结果。跳过一个小时的日期里，<code>0 2 <em> </em> *</code> 可能不会执行；重复一个小时的日期里，它可能执行两次，具体行为取决于 cron 实现。涉及结算、提醒或跨地区业务时，优先使用带时区和日历语义的调度平台，并在测试环境模拟切换日。普通服务器的 <code>date</code> 输出和应用容器的时区设置也可能不同，不能只看笔记本电脑的时钟。</p>
+<p>Cron 只负责在某个时间点启动命令，不负责保证上一次任务已经结束。如果 <code>*/5 * * * *</code> 的脚本偶尔运行超过 5 分钟，下一次触发可能与上一实例重叠，造成重复扣款、同时写同一文件或把外部接口打爆。对有副作用的任务，应在脚本内加锁，或使用系统提供的 <code>flock</code>、队列和幂等键；生成器只能生成时间表达式，不能替你解决并发控制。</p>
+<p>夏令时切换也会产生特殊结果。跳过一个小时的日期里，<code>0 2 * * *</code> 可能不会执行；重复一个小时的日期里，它可能执行两次，具体行为取决于 cron 实现。涉及结算、提醒或跨地区业务时，优先使用带时区和日历语义的调度平台，并在测试环境模拟切换日。普通服务器的 <code>date</code> 输出和应用容器的时区设置也可能不同，不能只看笔记本电脑的时钟。</p>
 <p>上线前先把命令改成写入时间戳的探针，例如 <code>echo $(date) &gt;&gt; /tmp/job.log</code>，确认用户、路径和时区后再替换为正式脚本。Cron 的环境变量通常比交互式终端少，<code>PATH</code>、工作目录、凭据和代理地址可能缺失；脚本应使用绝对路径并显式加载必要配置。日志要包含开始、结束、退出码和输入批次，失败时设置非零退出码，方便监控系统报警。</p>
 <p>如果同一表达式既配置在用户 crontab 又配置在 <code>/etc/cron.d</code>，任务会重复运行。排查时把 <code>crontab -l</code>、系统目录和容器编排配置一起搜索，再临时禁用副本。生成器输出通过语法检查只是第一关，真正上线还要进行一次小范围、可回滚的演练。</p>
 </section>
@@ -983,13 +1047,59 @@
 <h2>继续浏览</h2>
 <p>另外要检查任务使用的权限。Cron 可能以不同于登录用户的账号运行，读取配置文件、访问网络和写入目录的权限也会不同。把脚本需要的目录、凭据和代理配置列成清单，使用最小权限账号做一次演练；不要为了让任务“先跑起来”就给出全盘写权限。容器环境还要确认容器是否会重启、时区是否继承宿主机，以及持久化日志是否会在实例销毁后丢失。</p>
 <p>排查时还要确认命令的退出码。很多脚本打印了错误却仍然返回 <code>0</code>，监控系统会把失败当成成功；相反，依赖外部服务的短暂超时也不应无限重试。为每个任务写清重试次数、退避间隔和最终告警条件，并把重复执行的影响记录在运维手册中。这样生成器负责表达“什么时候运行”，脚本和监控才负责表达“运行失败后怎么办”。</p>
-<p>用 <code>0 3 <em> </em> <em></code> 走一次「预设 → 描述 → 复制」，再用 <code>0 0 1 </em> *</code> 测试每月 1 号，即可覆盖最常见坑。</p>
+<p>用 <code>0 3 * * *</code> 走一次「预设 → 描述 → 复制」，再用 <code>0 0 1 * *</code> 测试每月 1 号，即可覆盖最常见坑。</p>
 <div class="next-actions">
 <a class="btn btn-primary" href="/tools/dev/cron-generator">打开 Cron 生成器</a>
 <a class="btn btn-ghost" href="/guides/">返回指南列表</a>
 <a class="btn btn-ghost" href="/tools-directory">全部工具</a>
 </div>
 </section>
+
+            <section class="related-guides-section">
+              <h2 class="related-guides-title">📚 延伸阅读：相关深度技术指南</h2>
+              <div class="related-guides-grid">
+              <a href="/guides/api-tester-guide" class="related-guide-card">
+                <div>
+                  <div class="related-guide-title">API 测试完全指南：请求方法、头与响应排障</div>
+                  <div class="related-guide-desc">围绕 WebUtils API 测试 工具，讲清概念边界、可操作步骤、错误对照、真实场景与 FAQ，帮助你在本地快速完成任务并避开常见坑。</div>
+                </div>
+                <div class="related-guide-meta">
+                  <span>开发工具 · 约 13 分钟</span>
+                  <span>阅读指南 →</span>
+                </div>
+              </a>
+              <a href="/guides/ascii-table-guide" class="related-guide-card">
+                <div>
+                  <div class="related-guide-title">ASCII 码表完全指南：控制符、可打印字符与对照</div>
+                  <div class="related-guide-desc">围绕 WebUtils ASCII 表 工具，讲清概念边界、可操作步骤、错误对照、真实场景与 FAQ，帮助你在本地快速完成任务并避开常见坑。</div>
+                </div>
+                <div class="related-guide-meta">
+                  <span>开发工具 · 约 13 分钟</span>
+                  <span>阅读指南 →</span>
+                </div>
+              </a>
+              <a href="/guides/base64-converter-guide" class="related-guide-card">
+                <div>
+                  <div class="related-guide-title">在线 Base64 编码与解码完全指南：原理、URL 安全与工程实践</div>
+                  <div class="related-guide-desc">深入解析 Base64 编码的数学映射原理、Padding 补位逻辑、URL 安全变体（RFC 4648）、Data URL 资源内联开销以及前端与服务端的正确转码方案。</div>
+                </div>
+                <div class="related-guide-meta">
+                  <span>开发工具 · 约 16 分钟</span>
+                  <span>阅读指南 →</span>
+                </div>
+              </a>
+              <a href="/guides/base64-guide" class="related-guide-card">
+                <div>
+                  <div class="related-guide-title">Base64 编码解码完全指南：文本、图片与 URL-safe</div>
+                  <div class="related-guide-desc">讲清 Base64 与加密的区别、标准与 URL-safe 变体、文本/图片 Data URI 用法，给出 WebUtils 本地编解码步骤、错误对照与安全边界。</div>
+                </div>
+                <div class="related-guide-meta">
+                  <span>开发工具 · 约 12 分钟</span>
+                  <span>阅读指南 →</span>
+                </div>
+              </a>
+              </div>
+            </section>
           </div>
 
           <aside class="toc-rail">
