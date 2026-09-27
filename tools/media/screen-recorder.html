@@ -164,16 +164,8 @@
       }
 
       .tool-layout {
-        display: grid;
-        grid-template-columns: 1fr 350px;
-        gap: 32px;
-        margin-bottom: 64px;
-      }
-
-      @media (max-width: 1024px) {
-        .tool-layout {
-          grid-template-columns: 1fr;
-        }
+        max-width: 960px;
+        margin: 0 auto 64px;
       }
 
       .main-panel {
@@ -571,7 +563,44 @@
 
             <div class="placeholder-ui" id="placeholderUI">
               <span class="placeholder-icon">🖥️</span>
-              <p>准备就绪，点击下方按钮开始录制</p>
+              <p>准备就绪，选择配置后点击下方按钮开始录制</p>
+            </div>
+          </div>
+
+          <!-- 录制参数配置栏（响应式居中控制） -->
+          <div class="panel" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin: 20px 0;">
+            <div>
+              <label style="display: block; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">录制画质</label>
+              <select id="qualitySelect" style="width: 100%; padding: 8px 12px; background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); font-family: inherit;">
+                <option value="high" selected>超清 1080P</option>
+                <option value="medium">高清 720P</option>
+                <option value="low">标清 480P</option>
+              </select>
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">帧率 (FPS)</label>
+              <select id="fpsSelect" style="width: 100%; padding: 8px 12px; background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); font-family: inherit;">
+                <option value="60">60 FPS (流畅游戏/动态)</option>
+                <option value="30" selected>30 FPS (标准演示/教学)</option>
+                <option value="15">15 FPS (极低体积)</option>
+              </select>
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">导出格式</label>
+              <select id="formatSelect" style="width: 100%; padding: 8px 12px; background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); font-family: inherit;">
+                <option value="webm" selected>WebM (推荐高压缩)</option>
+                <option value="mp4">MP4 (兼容模式)</option>
+              </select>
+            </div>
+            <div style="display: flex; flex-direction: column; justify-content: center; gap: 8px;">
+              <label style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; cursor: pointer;">
+                <input type="checkbox" id="checkSystemAudio" checked style="accent-color: var(--accent-red);">
+                <span>录制系统声音</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; cursor: pointer;">
+                <input type="checkbox" id="checkMic" style="accent-color: var(--accent-red);">
+                <span>录制麦克风 (解说)</span>
+              </label>
             </div>
           </div>
 
@@ -893,10 +922,14 @@
 
       startBtn.onclick = async () => {
         try {
-          const quality = document.getElementById("qualitySelect").value;
-          const fps = parseInt(document.getElementById("fpsSelect").value);
-          const systemAudio = document.getElementById("checkSystemAudio").checked;
-          const micAudio = document.getElementById("checkMic").checked;
+          const qualityEl = document.getElementById("qualitySelect");
+          const quality = qualityEl ? qualityEl.value : "high";
+          const fpsEl = document.getElementById("fpsSelect");
+          const fps = fpsEl ? parseInt(fpsEl.value, 10) : 30;
+          const sysAudioEl = document.getElementById("checkSystemAudio");
+          const systemAudio = sysAudioEl ? sysAudioEl.checked : true;
+          const micAudioEl = document.getElementById("checkMic");
+          const micAudio = micAudioEl ? micAudioEl.checked : false;
 
           const constraints = {
             high: { width: 1920, height: 1080 },
@@ -994,7 +1027,8 @@
 
       function saveRecording() {
         if (recordedChunks.length === 0) return;
-        const format = document.getElementById("formatSelect").value;
+        const formatEl = document.getElementById("formatSelect");
+        const format = formatEl ? formatEl.value : "webm";
         const blob = new Blob(recordedChunks, {
           type: format === "mp4" ? "video/mp4" : "video/webm"
         });
