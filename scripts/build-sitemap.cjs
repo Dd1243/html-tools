@@ -19,6 +19,7 @@ const path = require("path");
 
 const ROOT = path.join(__dirname, "..");
 const OUT = path.join(ROOT, "sitemap.xml");
+const OUT_TXT = path.join(ROOT, "sitemap.txt");
 const SITE = "https://essays4u.net";
 const GUIDES_JSON = path.join(ROOT, "guides", "guides.json");
 
@@ -347,12 +348,16 @@ ${body}
 
   fs.writeFileSync(OUT, xml, "utf8");
 
+  // Plain-text sitemap: one absolute URL per line (Bing / Yandex support it).
+  fs.writeFileSync(OUT_TXT, `${urls.map((u) => u.loc).join("\n")}\n`, "utf8");
+
   const guideUrls = urls.filter((u) => u.loc.includes("/guides/"));
   const lastmodSet = new Set(urls.map((u) => u.lastmod));
   console.log(
     `sitemap.xml: ${urls.length} URLs (${guideUrls.length} guide-related), distinct lastmod days=${lastmodSet.size}`
   );
   console.log(`wrote ${path.relative(ROOT, OUT)}`);
+  console.log(`wrote ${path.relative(ROOT, OUT_TXT)} (${urls.length} URLs)`);
 }
 
 build();
