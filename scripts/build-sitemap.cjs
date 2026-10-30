@@ -40,6 +40,10 @@ const SKIP_DIR_NAMES = new Set([
   "dist",
   "tmp",
   "temp",
+  // 非内容页目录：模板 / 设计参考 / 设计模板 不对外索引，不进 sitemap
+  "templates",
+  "design-reference",
+  "design-templates",
 ]);
 
 const SKIP_FILE_SUBSTR = [
@@ -48,6 +52,9 @@ const SKIP_FILE_SUBSTR = [
   "google",
   "sitemap-generator",
 ];
+
+// 非内容页：错误页 / 离线页 / 纯链接目录页，不放进 sitemap
+const SKIP_FILE_NAMES = new Set(["404.html", "offline.html", "tools-directory.html"]);
 
 function pad(n) {
   return String(n).padStart(2, "0");
@@ -82,6 +89,8 @@ function shouldSkipFile(absPath) {
   for (const s of SKIP_FILE_SUBSTR) {
     if (lower.includes(s.toLowerCase())) return true;
   }
+  // 非内容页（404 / offline / 纯链接目录）不进 sitemap
+  if (SKIP_FILE_NAMES.has(lower)) return true;
   // skip nested guide layout/src if any leak
   const norm = absPath.replace(/\\/g, "/");
   if (norm.includes("/guides/layout/")) return true;
