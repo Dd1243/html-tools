@@ -1,1039 +1,1799 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="dark">
+<html lang="zh-CN" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>在线ICO图标查看器 - 提取ICO文件所有尺寸｜WebUtils</title>
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-
-
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="ICO 图标查看器工具，在线查看预览 ICO 图标文件内所有尺寸图标资源。上传 ICO Favicon 图标文件自动解析提取 16x16、32x32、48x48、64x64 等全部尺寸图标图像。支持单独导出保存特定尺寸图标为 PNG 格式，查看应用图标网站 Favicon 完整图标资源内容。" />
+    <title>ICO 图标查看器 - 解析 ICO/CUR 图层与导出 PNG｜WebUtils</title>
     <meta
-      name="keywords"
-      content="ICO查看器, ICO提取器, ICO转PNG, Favicon查看, 图标解析, 提取ICO尺寸, CUR文件查看, ico viewer online"
+      name="description"
+      content="ICO 图标查看器，在浏览器本地解析 ICO 与 CUR 文件，按原目录查看尺寸、编码、位深和光标热点。支持透明背景预览、像素缩放、单层 PNG 下载、复制图片及全部成功图层打包 ZIP；兼容 PNG 图层和常见未压缩 DIB，逐层提示损坏或不支持的格式。文件不上传，核心功能可离线使用。"
     />
     <meta name="author" content="WebUtils" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://essays4u.net/tools/media/ico-viewer" />
-
-    <!-- Open Graph -->
-    <meta property="og:title" content="在线ICO图标查看器 - 提取ICO文件所有尺寸｜WebUtils" />
-    <meta property="og:description" content="ICO 图标查看器工具，在线查看预览 ICO 图标文件内所有尺寸图标资源。上传 ICO Favicon 图标文件自动解析提取 16x16、32x32、48x48、64x64 等全部尺寸图标图像。支持单独导出保存特定尺寸图标为 PNG 格式，查看应用图标网站 Favicon 完整图标资源内容。" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta property="og:type" content="website" />
+    <meta property="og:title" content="ICO 图标查看器 - 解析 ICO/CUR 图层与导出 PNG｜WebUtils" />
+    <meta
+      property="og:description"
+      content="ICO 图标查看器，在浏览器本地解析 ICO 与 CUR 文件，按原目录查看尺寸、编码、位深和光标热点。支持透明背景预览、像素缩放、单层 PNG 下载、复制图片及全部成功图层打包 ZIP；兼容 PNG 图层和常见未压缩 DIB，逐层提示损坏或不支持的格式。文件不上传，核心功能可离线使用。"
+    />
     <meta property="og:url" content="https://essays4u.net/tools/media/ico-viewer" />
     <meta property="og:site_name" content="WebUtils" />
     <meta property="og:locale" content="zh_CN" />
-
-    <!-- JSON-LD for WebApplication -->
-
+    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
+    <meta property="og:image:alt" content="WebUtils 在线工具集" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="ICO 图标查看器 - 解析 ICO/CUR 图层与导出 PNG｜WebUtils" />
+    <meta
+      name="twitter:description"
+      content="ICO 图标查看器，在浏览器本地解析 ICO 与 CUR 文件，按原目录查看尺寸、编码、位深和光标热点。支持透明背景预览、像素缩放、单层 PNG 下载、复制图片及全部成功图层打包 ZIP；兼容 PNG 图层和常见未压缩 DIB，逐层提示损坏或不支持的格式。文件不上传，核心功能可离线使用。"
+    />
+    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
     <style>
       :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-        --transition: all 0.2s ease;
+        color-scheme: light;
+        --page: #f5f6f7;
+        --surface: #fff;
+        --subtle: #eef1f4;
+        --ink: #24303b;
+        --secondary: #596879;
+        --line: #d7dee5;
+        --strong: #a8b5c2;
+        --blue: #2d5f89;
+        --tint: #eaf1f7;
+        --error: #a32e39;
+        --error-bg: #fff4f4;
       }
-
-      [data-theme="light"] {
-        --bg-deep: #f8fafc;
-        --bg-surface: #ffffff;
-        --bg-card: #ffffff;
-        --bg-input: #f1f5f9;
-        --text-primary: #1e293b;
-        --text-secondary: #64748b;
-        --text-muted: #94a3b8;
-        --border-subtle: #e2e8f0;
-        --border-strong: #cbd5e1;
-        --accent-cyan: #0d9488;
-        --accent-magenta: #db2777;
-        --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      [data-theme="dark"] {
+        color-scheme: dark;
+        --page: #1b222a;
+        --surface: #242e39;
+        --subtle: #2e3946;
+        --ink: #e6ebf1;
+        --secondary: #b0bdca;
+        --line: #435261;
+        --strong: #6c8195;
+        --blue: #a4c8e6;
+        --tint: #2c4256;
+        --error: #ffb3bc;
+        --error-bg: #432d35;
       }
-
       * {
-        margin: 0;
-        padding: 0;
         box-sizing: border-box;
       }
+      [hidden] {
+        display: none !important;
+      }
       body {
-        font-family: var(--font-sans);
-        background: var(--bg-deep);
-        color: var(--text-primary);
-        line-height: 1.6;
-        min-height: 100vh;
-        padding-bottom: 4rem;
+        margin: 0;
+        color: var(--ink);
+        background: var(--page);
+        font:
+          15px/1.65 -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          "PingFang SC",
+          "Microsoft YaHei",
+          sans-serif;
       }
-
+      a {
+        color: var(--blue);
+        text-underline-offset: 3px;
+      }
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+      button,
+      select,
+      input[type="checkbox"] {
+        cursor: pointer;
+      }
+      button {
+        min-height: 38px;
+        padding: 7px 13px;
+        border: 1px solid var(--strong);
+        border-radius: 4px;
+        background: var(--surface);
+        color: var(--ink);
+      }
+      button:hover {
+        background: var(--subtle);
+      }
+      button:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      :focus-visible {
+        outline: 3px solid var(--blue);
+        outline-offset: 3px;
+      }
       .container {
-        max-width: 1000px;
+        width: min(1180px, calc(100% - 64px));
         margin: 0 auto;
-        padding: 2rem 1.5rem;
       }
-
-      /* Header */
-      header {
-        text-align: center;
-        margin-bottom: 3rem;
-        position: relative;
+      .skip-link {
+        position: absolute;
+        top: -80px;
+        left: 12px;
+        padding: 10px;
+        background: var(--surface);
+        z-index: 20;
+      }
+      .skip-link:focus {
+        top: 8px;
+      }
+      .site-header {
+        border-bottom: 1px solid var(--line);
+        background: var(--surface);
+      }
+      .header-inner {
+        min-height: 65px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+      }
+      .brand {
+        color: var(--ink);
+        font-size: 19px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        text-decoration: none;
+      }
+      .header-nav {
+        display: flex;
+        gap: 24px;
+        align-items: center;
+        font-size: 14px;
       }
       .theme-toggle {
-        position: absolute;
-        top: 0;
-        right: 0;
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        color: var(--text-primary);
-        padding: 0.6rem 1rem;
-        border-radius: var(--radius-md);
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 0.9rem;
-        transition: var(--transition);
+        min-height: 34px;
+        padding: 4px 10px;
+        font-size: 13px;
+        border-color: var(--line);
       }
-      .theme-toggle:hover {
-        border-color: var(--accent-cyan);
-      }
-      h1 {
-        font-size: 2.5rem;
-        margin-bottom: 0.5rem;
-        background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-      .subtitle {
-        color: var(--text-secondary);
-        font-size: 1.1rem;
-      }
-.ads-container {
-        margin: 2rem 0;
-        padding: 1rem;
-        background: var(--bg-card);
-        border: 1px dashed var(--border-subtle);
-        border-radius: var(--radius-lg);
-        text-align: center;
-        min-height: 90px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--text-muted);
-        font-size: 0.85rem;
-      }
-
-      /* Main App Card */
-      .app-card {
-        background: var(--bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-lg);
-        padding: 2rem;
-        box-shadow: var(--shadow);
-      }
-
-      /* Drop Zone */
-      .drop-zone {
-        border: 2px dashed var(--border-subtle);
-        border-radius: var(--radius-lg);
-        padding: 3rem 2rem;
-        text-align: center;
-        cursor: pointer;
-        transition: var(--transition);
-        background: var(--bg-input);
-        margin-bottom: 2rem;
-      }
-      .drop-zone:hover,
-      .drop-zone.dragover {
-        border-color: var(--accent-cyan);
-        background: rgba(0, 245, 212, 0.05);
-      }
-      .drop-icon {
-        font-size: 3.5rem;
-        margin-bottom: 1rem;
-        display: block;
-      }
-      .drop-text {
-        font-weight: 600;
-        font-size: 1.2rem;
-        margin-bottom: 0.5rem;
-      }
-      .drop-hint {
-        color: var(--text-secondary);
-        font-size: 0.9rem;
-      }
-      #fileInput {
-        display: none;
-      }
-
-      /* File Info */
-      .file-info {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 1rem;
-        margin-bottom: 2rem;
-        padding: 1.5rem;
-        background: var(--bg-input);
-        border-radius: var(--radius-md);
-        border: 1px solid var(--border-subtle);
-      }
-      .info-item .label {
-        font-size: 0.8rem;
-        color: var(--text-secondary);
-        text-transform: uppercase;
-        display: block;
-      }
-      .info-item .value {
-        font-family: var(--font-mono);
-        font-weight: 600;
-        color: var(--accent-cyan);
-      }
-
-      /* Icons Grid */
-      .icons-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 1.5rem;
-        margin-top: 2.5rem;
-      }
-      .icon-card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-lg);
-        padding: 1.5rem;
-        text-align: center;
-        transition: var(--transition);
-      }
-      .icon-card:hover {
-        border-color: var(--accent-cyan);
-        transform: translateY(-4px);
-      }
-      .icon-preview {
-        width: 100%;
-        aspect-ratio: 1;
-        background: repeating-conic-gradient(var(--bg-input) 0% 25%, var(--bg-surface) 0% 50%) 50% /
-          16px 16px;
-        border-radius: var(--radius-md);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 1rem;
-        overflow: hidden;
-        border: 1px solid var(--border-subtle);
-      }
-      .icon-preview img {
-        max-width: 90%;
-        max-height: 90%;
-        image-rendering: pixelated;
-      }
-      .icon-meta {
-        margin-bottom: 1.25rem;
-      }
-      .icon-size {
-        font-size: 1.2rem;
-        font-weight: 700;
-        color: var(--text-primary);
-        font-family: var(--font-mono);
-      }
-      .icon-type {
-        font-size: 0.8rem;
-        color: var(--text-secondary);
-      }
-      .icon-actions {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.75rem;
-      }
-      .btn-action {
-        padding: 0.6rem;
-        border-radius: var(--radius-sm);
-        border: 1px solid var(--border-subtle);
-        background: var(--bg-input);
-        color: var(--text-primary);
-        cursor: pointer;
-        font-size: 0.85rem;
-        transition: var(--transition);
-      }
-      .btn-action:hover {
-        border-color: var(--accent-cyan);
-        color: var(--accent-cyan);
-      }
-
-      /* Content Section */
-      .content-section {
-        max-width: 1200px;
-        margin: 0 auto;
-        margin-top: 4rem;
-      }
-      .content-section h2 {
-        margin-bottom: 1.5rem;
-        font-size: 1.8rem;
-        color: var(--accent-cyan);
-      }
-      .content-section h3 {
-        margin: 2rem 0 1rem;
-        font-size: 1.3rem;
-        color: var(--text-primary);
-      }
-      .content-section p {
-        margin-bottom: 1rem;
-        color: var(--text-secondary);
-      }
-      .feature-list {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
-        margin: 2rem 0;
-      }
-      .feature-card-info {
-        background: var(--bg-card);
-        padding: 1.5rem;
-        border-radius: var(--radius-lg);
-        border: 1px solid var(--border-subtle);
-      }
-      .feature-card-info h4 {
-        color: var(--accent-cyan);
-        margin-bottom: 0.75rem;
-        font-size: 1.1rem;
-      }
-
-      .status-msg {
-        padding: 1rem;
-        border-radius: var(--radius-md);
-        text-align: center;
-        margin-bottom: 1rem;
-      }
-      .status-error {
-        background: rgba(244, 63, 94, 0.1);
-        border: 1px solid var(--accent-red);
-        color: var(--accent-red);
-      }
-
-      .hidden {
-        display: none;
-      }
-
-      @media (max-width: 768px) {
-        h1 {
-          font-size: 2rem;
-        }
-        .container {
-          padding: 1rem;
-        }
-        .app-card {
-          padding: 1.5rem;
-        }
-      }
-
-      /* 面包屑导航样式 */
       .breadcrumb {
-        margin: 1rem 0;
-        padding: 0.75rem 1rem;
-        background: var(--bg-card);
-        border-radius: var(--radius-sm);
-        border: 1px solid var(--border-color);
-      }
-
-      .breadcrumb ol {
-        list-style: none;
-        padding: 0;
-        margin: 0;
         display: flex;
         flex-wrap: wrap;
-        gap: 0.5rem;
-        align-items: center;
-        font-size: 0.875rem;
+        gap: 9px;
+        font-size: 13px;
+        color: var(--secondary);
+        margin: 25px 0 20px;
       }
-
-      .breadcrumb li {
+      .breadcrumb a {
+        color: var(--secondary);
+        text-decoration: none;
+      }
+      h1 {
+        font-size: 30px;
+        line-height: 1.35;
+        margin: 0 0 8px;
+        letter-spacing: -0.5px;
+      }
+      .page-intro {
+        margin-bottom: 24px;
+      }
+      .page-intro p {
+        margin: 0;
+        color: var(--secondary);
+        max-width: 800px;
+      }
+      .drop-zone {
+        border: 1px dashed var(--strong);
+        border-radius: 4px;
+        background: var(--surface);
+        padding: 21px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+      }
+      .drop-zone.drag-over {
+        border-color: var(--blue);
+        background: var(--tint);
+      }
+      .drop-heading {
+        display: block;
+        font-size: 15px;
+        font-weight: 600;
+        margin: 0 0 4px;
+      }
+      .hint {
+        font-size: 12px;
+        color: var(--secondary);
+        margin: 0;
+        line-height: 1.65;
+      }
+      .file-buttons {
+        display: flex;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+      .file-label {
+        position: relative;
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+        min-height: 38px;
+        padding: 7px 14px;
+        border: 1px solid var(--blue);
+        border-radius: 4px;
+        color: var(--surface);
+        background: var(--blue);
+        font-size: 14px;
+        cursor: pointer;
+      }
+      .file-label:focus-within {
+        outline: 3px solid var(--blue);
+        outline-offset: 3px;
+      }
+      #fileInput {
+        position: absolute;
+        opacity: 0;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+      }
+      .status {
+        margin: 9px 0 0;
+        min-height: 22px;
+        color: var(--secondary);
+        font-size: 13px;
+        overflow-wrap: anywhere;
+      }
+      .status[data-state="error"],
+      #selectedInfo[data-state="error"] {
+        color: var(--error);
+      }
+      .file-summary {
+        font-size: 13px;
+        color: var(--secondary);
+        margin: 23px 0 11px;
+        overflow-wrap: anywhere;
+      }
+      .viewer {
+        display: grid;
+        grid-template-columns: 295px minmax(0, 1fr);
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        overflow: hidden;
+        min-height: 500px;
+      }
+      .layers {
+        min-width: 0;
+        border-right: 1px solid var(--line);
+      }
+      .panel-heading {
+        padding: 15px 18px;
+        border-bottom: 1px solid var(--line);
+      }
+      h2 {
+        margin: 0;
+        font-size: 16px;
+        line-height: 1.5;
+      }
+      #layerList {
+        min-height: 340px;
+        max-height: 560px;
+        overflow: auto;
+        padding: 6px 0;
+      }
+      #layerList:empty::before {
+        content: "文件中的图层会按目录顺序列在这里。";
+        display: block;
+        padding: 18px;
+        font-size: 13px;
+        color: var(--secondary);
+        line-height: 1.8;
+      }
+      .layer-row {
         display: flex;
         align-items: center;
-        color: var(--text-secondary);
+        gap: 10px;
+        width: 100%;
+        padding: 13px 13px;
+        border: 0;
+        border-left: 3px solid transparent;
+        border-bottom: 1px solid var(--line);
+        border-radius: 0;
+        text-align: left;
+        min-height: 72px;
       }
-
-      .breadcrumb li:not(:last-child)::after {
-        content: "›";
-        margin-left: 0.5rem;
-        color: var(--text-muted);
+      .layer-row:last-child {
+        border-bottom: 0;
       }
-
-      .breadcrumb a {
-        color: var(--text-secondary);
+      .layer-row[aria-selected="true"] {
+        border-left-color: var(--blue);
+        background: var(--tint);
+      }
+      .layer-number {
+        color: var(--secondary);
+        font-size: 12px;
+        width: 23px;
+        flex-shrink: 0;
+        font-variant-numeric: tabular-nums;
+      }
+      .layer-information {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        flex: 1;
+      }
+      .layer-information strong {
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .layer-information > span {
+        color: var(--secondary);
+        font-size: 11px;
+        overflow-wrap: anywhere;
+      }
+      .layer-status {
+        font-size: 11px;
+        color: var(--secondary);
+        flex-shrink: 0;
+      }
+      .layer-status[data-state="error"] {
+        color: var(--error);
+      }
+      .preview-panel {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      .preview-toolbar {
+        padding: 12px 17px;
+        min-height: 60px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 13px 17px;
+        border-bottom: 1px solid var(--line);
+      }
+      .control {
+        display: flex;
+        gap: 7px;
+        align-items: center;
+        font-size: 12px;
+        color: var(--secondary);
+      }
+      select {
+        border: 1px solid var(--strong);
+        border-radius: 4px;
+        padding: 5px 8px;
+        background: var(--surface);
+        color: var(--ink);
+        min-height: 34px;
+        max-width: 100%;
+      }
+      .control input {
+        accent-color: var(--blue);
+        margin: 0;
+        width: 15px;
+        height: 15px;
+      }
+      .preview-viewport {
+        min-width: 0;
+        flex: 1;
+        min-height: 330px;
+        max-height: 650px;
+        overflow: auto;
+        padding: 30px;
+        display: grid;
+        align-items: center;
+        justify-items: center;
+        background-color: #fff;
+      }
+      .preview-viewport[data-background="checker"] {
+        background-image: conic-gradient(#e2e7ed 25%, #fff 0 50%, #e2e7ed 0 75%, #fff 0);
+        background-size: 16px 16px;
+      }
+      .preview-viewport[data-background="white"] {
+        background: #fff;
+      }
+      .preview-viewport[data-background="dark"] {
+        background: #28323d;
+      }
+      #previewCanvas {
+        display: block;
+        max-width: none;
+        max-height: none;
+        image-rendering: pixelated;
+      }
+      .preview-empty {
+        color: #536272;
+        background: #fff;
+        padding: 9px 13px;
+        max-width: 370px;
+        font-size: 13px;
+        text-align: center;
+        border: 1px solid #d9e0e7;
+        border-radius: 3px;
+        overflow-wrap: anywhere;
+      }
+      .selected-info {
+        padding: 12px 17px;
+        margin: 0;
+        border-top: 1px solid var(--line);
+        color: var(--secondary);
+        font-size: 12px;
+        overflow-wrap: anywhere;
+        min-height: 47px;
+      }
+      .export-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin: 18px 0 0;
+      }
+      .export-buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .export-buttons .primary {
+        color: var(--surface);
+        background: var(--blue);
+        border-color: var(--blue);
+      }
+      .local-note {
+        margin: 14px 0 0;
+        color: var(--secondary);
+        font-size: 12px;
+      }
+      .seo-content {
+        margin: 45px 0 32px;
+        padding-top: 27px;
+        border-top: 1px solid var(--line);
+        max-width: 920px;
+      }
+      .seo-content h2 {
+        margin-bottom: 14px;
+        font-size: 21px;
+      }
+      .seo-content h3 {
+        font-size: 16px;
+        margin: 23px 0 8px;
+      }
+      .seo-content p,
+      .seo-content li {
+        font-size: 14px;
+        color: var(--secondary);
+      }
+      .seo-content p {
+        margin: 0 0 12px;
+      }
+      .seo-content code {
+        color: var(--ink);
+        font-size: 0.92em;
+        overflow-wrap: anywhere;
+      }
+      .seo-content summary {
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        padding: 9px 0;
+      }
+      .site-footer {
+        border-top: 1px solid var(--line);
+        padding: 22px 0 30px;
+      }
+      .site-footer nav {
+        display: flex;
+        gap: 12px 25px;
+        flex-wrap: wrap;
+      }
+      .site-footer a {
+        color: var(--secondary);
         text-decoration: none;
-        transition: color 0.2s;
+        font-size: 13px;
       }
-
-      .breadcrumb a:hover {
-        color: var(--accent);
+      noscript p {
+        border: 1px solid var(--line);
+        background: var(--surface);
+        padding: 16px;
       }
-
-      .breadcrumb li:last-child span {
-        color: var(--text-primary);
-        font-weight: 500;
+      @media (max-width: 850px) {
+        .container {
+          width: calc(100% - 40px);
+        }
+        .viewer {
+          grid-template-columns: 250px minmax(0, 1fr);
+        }
+        .drop-zone {
+          align-items: flex-start;
+          gap: 15px;
+        }
+        .file-buttons {
+          flex-wrap: wrap;
+        }
+        .preview-toolbar {
+          gap: 10px;
+        }
       }
-
+      @media (max-width: 640px) {
+        .container {
+          width: calc(100% - 28px);
+        }
+        .header-inner {
+          min-height: 58px;
+        }
+        .header-nav {
+          gap: 12px;
+        }
+        .header-nav > a {
+          display: none;
+        }
+        .breadcrumb {
+          margin: 20px 0 16px;
+          font-size: 12px;
+          gap: 7px;
+        }
+        h1 {
+          font-size: 28px;
+        }
+        .page-intro p {
+          font-size: 14px;
+        }
+        .drop-zone {
+          flex-direction: column;
+          padding: 18px;
+        }
+        .file-buttons {
+          gap: 7px;
+        }
+        .viewer {
+          grid-template-columns: 1fr;
+          min-height: 0;
+        }
+        .layers {
+          border-right: 0;
+          border-bottom: 1px solid var(--line);
+        }
+        #layerList {
+          min-height: 0;
+          max-height: 245px;
+        }
+        #layerList:empty::before {
+          padding: 15px 18px;
+        }
+        .layer-row {
+          padding: 10px 14px;
+          min-height: 61px;
+        }
+        .preview-viewport {
+          min-height: 300px;
+          padding: 22px;
+        }
+        .preview-toolbar {
+          padding: 12px 14px;
+          gap: 9px 12px;
+        }
+        .export-bar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+        .export-buttons {
+          width: 100%;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation: none !important;
+          transition: none !important;
+          scroll-behavior: auto !important;
+        }
+      }
     </style>
-    <meta property="og:image" content="https://essays4u.net/social-preview.png" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="在线ICO图标查看器 - 提取ICO文件所有尺寸｜WebUtils" />
-    <meta name="twitter:description" content="ICO 图标查看器工具，在线查看预览 ICO 图标文件内所有尺寸图标资源。上传 ICO Favicon 图标文件自动解析提取 16x16、32x32、48x48、64x64 等全部尺寸图标图像。支持单独导出保存特定尺寸图标为 PNG 格式，查看应用图标网站 Favicon 完整图标资源内容。" />
-    <meta name="twitter:image" content="https://essays4u.net/social-preview.png" />
-
-    <!-- 面包屑结构化数据 -->
-    <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position": 1,
-      "name": "首页",
-      "item": "https://essays4u.net/"
-    },
-    {
-      "@type": "ListItem",
-      "position": 2,
-      "name": "媒体工具",
-      "item": "https://essays4u.net/tools/media/"
-    },
-    {
-      "@type": "ListItem",
-      "position": 3,
-      "name": "ICO 图标查看器"
-    }
-  ]
-}
-    </script>
-      
-    <!-- CMP Cookie/个性化广告同意（GDPR/EEA/CCPA 合规） -->
-    <link rel="stylesheet" href="/assets/cmp-consent.css">
+    <link rel="stylesheet" href="/assets/cmp-consent.css" />
     <script src="/assets/cmp-consent.js" defer></script>
     <script>
-      // [CMP] 在 adsbygoogle 加载前同步应用已有同意状态（防止同意前已发出个性化广告请求）
       (function () {
         try {
-          var s = localStorage.getItem('ess_cmp_v1');
+          var s = localStorage.getItem("ess_cmp_v1");
           window.__cmpConsent = s;
-          if (s !== 'a') {
-            // 'n' 或未设置：默认非个性化广告，直到用户选择
+          if (s !== "a") {
             window.adsbygoogle = window.adsbygoogle || [];
             window.adsbygoogle.push({ requestNonPersonalizedAds: true });
           }
         } catch (e) {
-          // localStorage 禁用：降级到 NPA 模式
           window.adsbygoogle = window.adsbygoogle || [];
           window.adsbygoogle.push({ requestNonPersonalizedAds: true });
         }
       })();
     </script>
-
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9979971494108572" crossorigin="anonymous"></script>
-      <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "在线ICO图标查看器",
-  "url": "https://essays4u.net/tools/media/ico-viewer",
-  "description": "ICO 图标查看器工具，在线查看预览 ICO 图标文件内所有尺寸图标资源。上传 ICO Favicon 图标文件自动解析提取 16x16、32x32、48x48、64x64 等全部尺寸图标图像。支持单独导出保存特定尺寸图标为 PNG 格式，查看应用图标网站 Favicon 完整图标资源内容。",
-  "applicationCategory": "MultimediaApplication",
-  "operatingSystem": "Any",
-  "browserRequirements": "Requires JavaScript. Requires HTML5.",
-  "inLanguage": "zh-CN",
-  "isAccessibleForFree": true,
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "CNY"
-  },
-  "datePublished": "2026-04-02",
-  "dateModified": "2026-09-16"
-}
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9979971494108572"
+      crossorigin="anonymous"
+    ></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebApplication",
+            "@id": "https://essays4u.net/tools/media/ico-viewer#application",
+            "name": "ICO 图标查看器",
+            "url": "https://essays4u.net/tools/media/ico-viewer",
+            "description": "ICO 图标查看器，在浏览器本地解析 ICO 与 CUR 文件，按原目录查看尺寸、编码、位深和光标热点。支持透明背景预览、像素缩放、单层 PNG 下载、复制图片及全部成功图层打包 ZIP；兼容 PNG 图层和常见未压缩 DIB，逐层提示损坏或不支持的格式。文件不上传，核心功能可离线使用。",
+            "applicationCategory": "MultimediaApplication",
+            "operatingSystem": "Any",
+            "browserRequirements": "Requires JavaScript and Canvas",
+            "inLanguage": "zh-CN",
+            "isAccessibleForFree": true,
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
+            "datePublished": "2026-04-02",
+            "dateModified": "2026-11-06",
+            "featureList": [
+              "ICO 与 CUR 目录解析",
+              "PNG 与常见 BI_RGB 图层预览",
+              "透明与像素缩放",
+              "CUR 热点显示",
+              "PNG 下载与复制",
+              "成功图层 ZIP 打包"
+            ]
+          },
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "首页",
+                "item": "https://essays4u.net/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "图片工具",
+                "item": "https://essays4u.net/tools/media/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "ICO 图标查看器",
+                "item": "https://essays4u.net/tools/media/ico-viewer"
+              }
+            ]
+          }
+        ]
+      }
     </script>
   </head>
   <body>
-    <div class="container">
-      <main class="app-card">
-        <header class="header">
-        <h1>在线ICO图标查看器</h1>
-      </header>
-
-      <article>
-
-        <!-- Drop Zone -->
-        <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
-          <input
-            type="file"
-            id="fileInput"
-            accept=".ico,.cur"
-            onchange="handleFiles(this.files[0])"
-          />
-          <span class="drop-icon">🎨</span>
-          <p class="drop-text">点击或拖拽 ICO 文件到这里</p>
-          <p class="drop-hint">支持 .ico 和 .cur 格式，纯本地处理</p>
+    <a class="skip-link" href="#dropZone">跳到文件选择</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="/">WebUtils</a>
+        <nav class="header-nav" aria-label="主导航">
+          <a href="/tools/media/">图片工具</a>
+          <button id="themeToggle" class="theme-toggle" type="button" aria-pressed="false">
+            深色外观
+          </button>
+        </nav>
+      </div>
+    </header>
+    <main class="container">
+      <nav class="breadcrumb" aria-label="面包屑">
+        <a href="/">首页</a>
+        <span aria-hidden="true">/</span>
+        <a href="/tools/media/">图片工具</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">ICO 图标查看器</span>
+      </nav>
+      <div class="page-intro">
+        <h1>ICO 图标查看器</h1>
+        <p>展开 ICO / CUR 文件中的每一个图层，检查像素、透明效果与光标热点，再按需导出。</p>
+      </div>
+      <noscript><p>图层解析与导出需要启用 JavaScript。下方格式说明仍可阅读。</p></noscript>
+      <section
+        id="dropZone"
+        class="drop-zone"
+        tabindex="0"
+        aria-label="拖放 ICO 或 CUR 文件，按 Enter 或空格选择文件"
+        aria-describedby="fileLimits"
+      >
+        <div>
+          <span class="drop-heading">拖入图标文件，或从本机选择</span>
+          <p class="hint" id="fileLimits">
+            ICO / CUR，最大 20 MiB。按文件内容识别，保留原目录图层顺序。
+          </p>
         </div>
-
-        <div id="errorStatus" class="status-msg status-error hidden"></div>
-
-        <!-- File Info -->
-        <div id="fileInfo" class="file-info hidden">
-          <div class="info-item">
-            <span class="label">文件名</span>
-            <span class="value" id="infoName">-</span>
-          </div>
-          <div class="info-item">
-            <span class="label">大小</span>
-            <span class="value" id="infoSize">-</span>
-          </div>
-          <div class="info-item">
-            <span class="label">图标数量</span>
-            <span class="value" id="infoCount">-</span>
-          </div>
-          <div class="info-item">
-            <span class="label">类型</span>
-            <span class="value" id="infoType">-</span>
-          </div>
+        <div class="file-buttons">
+          <label class="file-label">
+            选择文件
+            <input
+              id="fileInput"
+              type="file"
+              accept=".ico,.cur,image/x-icon,image/vnd.microsoft.icon"
+              aria-label="选择 ICO 或 CUR 文件"
+            />
+          </label>
+          <button id="loadExample" type="button">查看示例</button>
+          <button id="clearFile" type="button">清空</button>
         </div>
-
-        <!-- Icons Grid -->
-        <div class="icons-grid hidden" id="iconsGrid"></div>
-      </article></main>
-
-
-
-      <!-- SEO Content -->
-      <section class="content-section">
-        <h2>关于在线ICO图标查看器</h2>
-        <p>
-          ICO 图标查看器是一个专业的 Web 工具，专门用于查看、解析和提取 ICO（Windows 图标）和
-          CUR（静态光标）文件。ICO
-          文件通常包含多个不同分辨率和色深的图标，以便在不同场景下（如桌面、任务栏、浏览器标签页）显示最佳效果。我们的工具可以帮您把这些隐藏的尺寸全部找出来。
-        </p>
-
-        <div class="feature-list">
-          <div class="feature-card-info">
-            <h4>🔍 深度多尺寸解析</h4>
-            <p>
-              自动识别 ICO 文件中包含的所有分辨率（如 16x16, 32x32, 48x48, 64x64, 128x128, 256x256
-              等），不遗漏任何细节。
-            </p>
-          </div>
-          <div class="feature-card-info">
-            <h4>⚡ 一键转换为 PNG</h4>
-            <p>
-              支持将提取出的图标即时转换为高清 PNG 格式下载，非常适合 UI 设计师和开发者提取网站
-              Favicon 或软件图标。
-            </p>
-          </div>
-          <div class="feature-card-info">
-            <h4>🔒 纯本地安全处理</h4>
-            <p>
-              文件解析完全在您的浏览器前端进行，无需上传到任何服务器。您的隐私和素材安全得到 100%
-              保障，且处理速度极快。
-            </p>
-          </div>
-        </div>
-
-        <h3>如何使用 ICO 查看器？</h3>
-        <p>
-          1.
-          <strong>上传文件：</strong>
-          点击上传区域或直接将 .ico/.cur 文件拖入页面。
-        </p>
-        <p>
-          2.
-          <strong>预览图标：</strong>
-          工具会立即列出该文件中包含的所有图标尺寸及其格式（PNG 或 BMP）。
-        </p>
-        <p>
-          3.
-          <strong>下载或复制：</strong>
-          点击“下载 PNG”将特定尺寸保存到本地，或点击“复制”直接将图片存入剪贴板。
-        </p>
-
-        <h3>什么是 ICO 文件？</h3>
-        <p>
-          ICO 是 Windows 系统的图标格式。它与普通图片格式（如
-          JPG/PNG）最大的区别在于它是一个“容器”。一个 .ico 文件内部可以存储多张不同大小的图片。当
-          Windows 需要显示图标时，它会根据当前显示比例（如缩放 150%）自动从 ICO
-          文件中挑选最合适的尺寸，从而避免拉伸造成的模糊。
-        </p>
       </section>
-    </div>
-
-    <!-- Scripts -->
+      <p id="fileStatus" class="status" role="status" aria-live="polite"></p>
+      <p id="fileSummary" class="file-summary">尚未选择文件</p>
+      <div class="viewer">
+        <section class="layers" aria-labelledby="layersHeading">
+          <div class="panel-heading"><h2 id="layersHeading">图层目录</h2></div>
+          <div id="layerList" role="listbox" aria-label="文件图层" aria-busy="false"></div>
+        </section>
+        <section class="preview-panel" aria-label="选中图层预览">
+          <div class="preview-toolbar">
+            <label class="control" for="backgroundSelect">
+              背景
+              <select id="backgroundSelect">
+                <option value="checker">透明棋盘</option>
+                <option value="white">白色</option>
+                <option value="dark">暗色</option>
+              </select>
+            </label>
+            <label class="control" for="zoomSelect">
+              缩放
+              <select id="zoomSelect">
+                <option value="1">1×</option>
+                <option value="2">2×</option>
+                <option value="4" selected>4×</option>
+                <option value="8">8×</option>
+              </select>
+            </label>
+            <label class="control">
+              <input id="pixelMode" type="checkbox" checked />
+              像素模式
+            </label>
+          </div>
+          <div id="previewViewport" class="preview-viewport" data-background="checker">
+            <canvas
+              id="previewCanvas"
+              width="1"
+              height="1"
+              role="img"
+              aria-label="选中图层的原始尺寸像素预览"
+              hidden
+            ></canvas>
+            <p id="previewEmpty" class="preview-empty">
+              选择一个 ICO 或 CUR 文件，查看其中的图层。
+            </p>
+          </div>
+          <p id="selectedInfo" class="selected-info">选择图层后查看详细信息</p>
+        </section>
+      </div>
+      <div class="export-bar">
+        <div class="export-buttons">
+          <button id="downloadPng" class="primary" type="button" disabled>下载 PNG</button>
+          <button id="copyPng" type="button" disabled>复制 PNG</button>
+          <button id="downloadZip" type="button" disabled>打包成功图层 ZIP</button>
+        </div>
+        <p class="hint">导出保持原始像素尺寸，背景和缩放只影响预览。</p>
+      </div>
+      <p id="actionStatus" class="status" role="status" aria-live="polite"></p>
+      <p class="local-note">
+        文件仅在当前浏览器内存中处理，不上传、不自动保存。核心功能可离线使用；刷新页面将清除当前文件。
+      </p>
+      <article class="seo-content">
+        <h2>一个 ICO 文件，为什么会有多个图层？</h2>
+        <p>
+          ICO
+          是图标容器，不是把一张图片改了扩展名。同一个文件可以保存多份尺寸或位深不同的图像，让系统在任务栏、快捷方式或浏览器标签页等位置选择合适版本。查看器按目录逐项列出，不会把同为
+          32 × 32 的两层合并。检查交付文件时，应同时看尺寸、编码和图层序号，不能只数有多少种分辨率。
+        </p>
+        <p>
+          选择文件后，左侧列出目录顺序，右侧显示选中图层。列表中的位深来自图层内部数据；若与目录记录不一致，会在详情中提示。同尺寸的低色彩图层可能是为旧环境准备的，较大图层也不一定适合直接缩小使用。比较边缘与笔画时，可切换原始尺寸和放大预览，再决定是否需要回到设计文件重新调整。
+        </p>
+        <h3>PNG 与 DIB 的区别</h3>
+        <p>
+          较新的 ICO 可以在图层内直接嵌入 PNG；传统图层通常使用
+          DIB，颜色数据、调色板与透明掩码分开存储。本工具支持 PNG，以及 40、108、124
+          字节信息头的未压缩 BI_RGB DIB：1、4、8 位调色板，16 位 RGB555，24 位 BGR 和 32 位
+          BGRA。RLE、BITFIELDS 及其他信息头会明确提示不支持；单个图层失败不会阻止其他有效图层导出。
+        </p>
+        <p>
+          解码时会检查目录偏移、长度和实际尺寸，DIB
+          行数据按四字节对齐读取，底部行先存储的内容会还原为正常方向。PNG
+          图层仍需通过浏览器的图片解码，因此文件头正确但图像内容损坏时，也可能单独失败。错误提示不代表文件在所有软件中都无法使用，只说明当前查看器未能安全解析这一层。
+        </p>
+        <h3>怎样判断透明边缘？</h3>
+        <p>
+          透明棋盘方便辨认空白区域，白色与暗色背景则能帮助发现边缘杂色。背景切换只改变画布后方的显示，不会把颜色烘焙进导出
+          PNG。像素模式使用清晰的像素格显示；关闭后由浏览器平滑放大。无论选 1×、2×、4× 还是
+          8×，导出始终保持图层的原始宽高。
+        </p>
+        <p>
+          传统 DIB 用 AND mask 表示遮罩。32 位图层若存在非零 alpha，则按各像素 alpha 显示；当所有
+          alpha 都为零时，按旧式 0RGB 数据结合 AND mask
+          恢复透明。部分旧光标使用背景反色运算，这种效果无法等价写进普通 RGBA
+          PNG，工具会提示并近似为透明，不模拟随背景变化的反色。
+        </p>
+        <h3>CUR 热点与 PNG 导出</h3>
+        <p>
+          CUR 的目录与 ICO
+          相似，但相关字段表示光标热点，即点击位置相对图像左上角的坐标。本工具根据二进制类型区分两者，在列表和详情中显示热点，而不会误把它当作颜色位深。热点必须落在图层尺寸内；越界数据会标为失败，以免对损坏目录作出猜测。
+        </p>
+        <p>
+          下载 PNG 或复制图片时，图层会经过浏览器 Canvas 重新编码为标准 RGBA 图像。它不保留原
+          ICO/CUR 容器、调色板或 CUR
+          热点，也不是原文件的无损备份。需要继续作为系统光标或多尺寸图标分发时，应保留原文件；需要制作新图标，可使用
+          <a href="/tools/media/favicon-generator">Favicon 生成器</a>
+          ，其他格式处理可前往
+          <a href="/tools/media/image-format-converter">图片格式转换</a>
+          。
+        </p>
+        <h3>导出与文件限制</h3>
+        <p>
+          单层下载的文件名包含原名、目录层号、尺寸和位深，同尺寸图层不会互相覆盖。ZIP 使用 STORE
+          方式打包全部成功解码的 PNG，不包含失败图层，也不额外压缩已经编码的图片。复制 PNG
+          依赖浏览器剪贴板权限；无法复制时，页面会提示改用下载。批量保存前，建议先核对每层的透明效果和尺寸。
+        </p>
+        <p>
+          单个文件最多 20 MiB，目录限制为 1–256 层，每层宽高不超过 256 像素，目录总像素不得超过
+          4,194,304。超出整体限制时会停止读取并清空旧结果；损坏偏移、截断调色板或不支持压缩通常按图层单独报告。文件始终在浏览器本地处理，页面不抓取远程图标，也不上传你选择的内容。
+        </p>
+        <h3>常见问题</h3>
+        <details>
+          <summary>为什么看起来一样大，却有两份图层？</summary>
+          <p>
+            尺寸相同不代表内容、位深或编码相同。工具保留每个目录条目与其层号，选中后可分别比较，并在导出文件名中区分。
+          </p>
+        </details>
+        <details>
+          <summary>为什么原文件能打开，这里有一层失败？</summary>
+          <p>
+            不同软件兼容的头部、压缩方式和损坏容忍程度不同。请先阅读该层错误原因，确认是否超出本工具支持范围，不要把失败层导出成空白图片。
+          </p>
+        </details>
+        <details>
+          <summary>为什么透明部分在其他软件里变黑了？</summary>
+          <p>
+            先确认对方是否支持 PNG alpha，再尝试白、暗背景检查边缘。CUR
+            的旧式背景运算与普通透明不是同一种效果，转换到 PNG 可能只能得到近似结果。
+          </p>
+        </details>
+        <p>
+          格式依据：
+          <a
+            href="https://learn.microsoft.com/en-us/previous-versions/ms997538(v=msdn.10)"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Microsoft Windows 图标格式说明
+          </a>
+          、
+          <a
+            href="https://devblogs.microsoft.com/oldnewthing/20101021-00/?p=12483"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            32 位图标 alpha 处理
+          </a>
+          与
+          <a
+            href="https://devblogs.microsoft.com/oldnewthing/20101022-00/?p=12473"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            ICO 中的 PNG 图层
+          </a>
+          。
+        </p>
+      </article>
+      <footer class="site-footer">
+        <nav data-site-policy-links aria-label="网站政策">
+          <a href="/about">关于本站</a>
+          <a href="/contact">联系我们</a>
+          <a href="/terms">使用条款</a>
+          <a href="/privacy-policy">隐私政策</a>
+        </nav>
+      </footer>
+    </main>
     <script>
-      // Theme Management
-      function toggleTheme() {
-        const html = document.documentElement;
-        const current = html.getAttribute("data-theme");
-        const next = current === "dark" ? "light" : "dark";
-        html.setAttribute("data-theme", next);
-        localStorage.setItem("theme", next);
-        updateThemeUI(next);
+      const ICO_LIMITS = Object.freeze({
+        file: 20 * 1024 * 1024,
+        entries: 256,
+        dimension: 256,
+        pixels: 4 * 1024 * 1024
+      });
+      const PNG_SIGNATURE = [137, 80, 78, 71, 13, 10, 26, 10];
+      function icoBytes(buffer) {
+        if (buffer instanceof ArrayBuffer) return new Uint8Array(buffer);
+        if (ArrayBuffer.isView(buffer))
+          return new Uint8Array(buffer.buffer, buffer.byteOffset, buffer.byteLength);
+        throw new Error("文件数据不是有效的二进制内容。");
       }
-
-      function updateThemeUI(theme) {
-        const icon = document.getElementById("themeIcon");
-        const text = document.getElementById("themeText");
-        if (theme === "light") {
-          icon.textContent = "☀️";
-          text.textContent = "浅色模式";
-        } else {
-          icon.textContent = "🌙";
-          text.textContent = "深色模式";
+      function isPng(bytes) {
+        return bytes.length >= 8 && PNG_SIGNATURE.every((value, i) => bytes[i] === value);
+      }
+      function validatePngChunks(bytes) {
+        const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+        let offset = 8,
+          hasData = false,
+          ended = false;
+        while (offset < bytes.length) {
+          if (bytes.length - offset < 12) throw new Error("PNG 块头或 CRC 区域已截断。");
+          const length = view.getUint32(offset);
+          if (length > bytes.length - offset - 12) throw new Error("PNG 块长度超出图层数据范围。");
+          const type = String.fromCharCode(...bytes.subarray(offset + 4, offset + 8));
+          if (!/^[A-Za-z]{4}$/.test(type)) throw new Error("PNG 块类型格式无效。");
+          if (type === "IHDR" && offset !== 8) throw new Error("PNG 含重复 IHDR 头部。");
+          if (type === "IDAT") hasData = true;
+          offset += length + 12;
+          if (type === "IEND") {
+            if (length !== 0 || !hasData || offset !== bytes.length)
+              throw new Error("PNG IEND 结束块不正确，或缺少 IDAT 图像数据。");
+            ended = true;
+            break;
+          }
         }
+        if (!ended) throw new Error("PNG 缺少完整 IEND 结束块。");
+      }
+      function validatePng(input, entry) {
+        const bytes = icoBytes(input);
+        if (!isPng(bytes)) throw new Error("PNG 的 8 字节签名不完整或不正确。");
+        if (bytes.length < 33) throw new Error("PNG IHDR 头部已截断。");
+        const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+        if (view.getUint32(8) !== 13 || String.fromCharCode(...bytes.subarray(12, 16)) !== "IHDR")
+          throw new Error("PNG 缺少有效的首个 IHDR 块。");
+        const width = view.getUint32(16),
+          height = view.getUint32(20);
+        if (
+          !width ||
+          !height ||
+          width > ICO_LIMITS.dimension ||
+          height > ICO_LIMITS.dimension ||
+          width !== entry.width ||
+          height !== entry.height
+        )
+          throw new Error("PNG 实际尺寸须与目录一致，且每边不超过 256 像素。");
+        const sampleDepth = bytes[24],
+          colorType = bytes[25];
+        const depths = { 0: [1, 2, 4, 8, 16], 2: [8, 16], 3: [1, 2, 4, 8], 4: [8, 16], 6: [8, 16] };
+        if (
+          !depths[colorType] ||
+          !depths[colorType].includes(sampleDepth) ||
+          bytes[26] !== 0 ||
+          bytes[27] !== 0 ||
+          bytes[28] > 1
+        )
+          throw new Error("PNG 的位深、颜色类型或压缩参数不受支持。");
+        validatePngChunks(bytes);
+        return {
+          width,
+          height,
+          bitDepth: sampleDepth * { 0: 1, 2: 3, 3: 1, 4: 2, 6: 4 }[colorType],
+          sampleDepth,
+          colorType
+        };
+      }
+      function readDibInfo(entry) {
+        if (entry.error) throw new Error(entry.error);
+        const bytes = icoBytes(entry.bytes);
+        if (bytes.length < 40) throw new Error("DIB 头部不足 40 字节或格式不受支持。");
+        const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+        const headerSize = view.getUint32(0, true);
+        if (![40, 108, 124].includes(headerSize))
+          throw new Error("仅支持 40、108、124 字节 DIB 信息头，不支持此头部格式。");
+        if (bytes.length < headerSize) throw new Error("DIB 扩展信息头已截断。");
+        const width = view.getInt32(4, true),
+          doubledHeight = view.getInt32(8, true);
+        const planes = view.getUint16(12, true),
+          bitDepth = view.getUint16(14, true),
+          compression = view.getUint32(16, true);
+        if (
+          width !== entry.width ||
+          doubledHeight !== entry.height * 2 ||
+          width < 1 ||
+          doubledHeight < 2 ||
+          width > 256 ||
+          doubledHeight > 512
+        )
+          throw new Error("DIB 尺寸与目录不一致，须为正向存储且头内高度为图像高度的两倍。");
+        if (planes !== 1) throw new Error("DIB 色彩平面数必须为 1。");
+        if (![1, 4, 8, 16, 24, 32].includes(bitDepth))
+          throw new Error("不支持此 DIB 位深；支持 1/4/8/16/24/32 位。");
+        if (compression !== 0)
+          throw new Error("仅支持未压缩 BI_RGB；不支持 RLE、BITFIELDS 或其他 DIB 压缩方式。");
+        const colorsUsed = view.getUint32(32, true);
+        if (colorsUsed > 256 || (bitDepth <= 8 && colorsUsed > 2 ** bitDepth))
+          throw new Error("DIB 调色板条目数量超出位深允许范围。");
+        const paletteCount = colorsUsed || (bitDepth <= 8 ? 2 ** bitDepth : 0);
+        const pixelOffset = headerSize + paletteCount * 4;
+        if (bytes.length < pixelOffset) throw new Error("DIB 调色板数据已截断。");
+        const xorStride = Math.ceil((width * bitDepth) / 32) * 4;
+        const maskStride = Math.ceil(width / 32) * 4;
+        const maskOffset = pixelOffset + xorStride * entry.height;
+        if (bytes.length < maskOffset) throw new Error("DIB 像素数据不足或已截断。");
+        const imageSize = view.getUint32(20, true);
+        if (
+          imageSize &&
+          (imageSize < xorStride * entry.height || imageSize > bytes.length - pixelOffset)
+        )
+          throw new Error("DIB biSizeImage 与可用像素数据不一致。");
+        return {
+          bytes,
+          view,
+          width,
+          height: entry.height,
+          bitDepth,
+          headerSize,
+          paletteCount,
+          pixelOffset,
+          xorStride,
+          maskStride,
+          maskOffset,
+          hasMask: bytes.length >= maskOffset + maskStride * entry.height
+        };
+      }
+      function decodeDib(entry) {
+        const info = readDibInfo(entry);
+        const {
+          bytes,
+          view,
+          width,
+          height,
+          bitDepth,
+          paletteCount,
+          pixelOffset,
+          xorStride,
+          maskStride,
+          maskOffset,
+          hasMask
+        } = info;
+        const rgba = new Uint8ClampedArray(width * height * 4);
+        let hasAlpha = false;
+        if (bitDepth === 32)
+          for (let y = 0; y < height; y++)
+            for (let x = 0; x < width; x++)
+              if (bytes[pixelOffset + y * xorStride + x * 4 + 3]) hasAlpha = true;
+        if (!hasMask && !(bitDepth === 32 && hasAlpha))
+          throw new Error("DIB 的 AND mask 数据不足或已截断。");
+        const warnings = [];
+        if (!hasMask) warnings.push("32 位图层使用有效 alpha，缺少 AND mask；仅按 RGBA 预览。");
+        let hasInversion = false;
+        for (let y = 0; y < height; y++) {
+          const row = pixelOffset + (height - y - 1) * xorStride;
+          const maskRow = maskOffset + (height - y - 1) * maskStride;
+          for (let x = 0; x < width; x++) {
+            const at = (y * width + x) * 4;
+            let r = 0,
+              g = 0,
+              b = 0,
+              a = 255;
+            if (bitDepth <= 8) {
+              const color =
+                bitDepth === 8
+                  ? bytes[row + x]
+                  : bitDepth === 4
+                    ? (bytes[row + (x >> 1)] >> (x % 2 ? 0 : 4)) & 15
+                    : (bytes[row + (x >> 3)] >> (7 - (x % 8))) & 1;
+              if (color >= paletteCount) throw new Error("DIB 像素引用了不存在的调色板条目。");
+              const p = info.headerSize + color * 4;
+              b = bytes[p];
+              g = bytes[p + 1];
+              r = bytes[p + 2];
+            } else if (bitDepth === 16) {
+              const value = view.getUint16(row + x * 2, true);
+              r = Math.round((((value >> 10) & 31) * 255) / 31);
+              g = Math.round((((value >> 5) & 31) * 255) / 31);
+              b = Math.round(((value & 31) * 255) / 31);
+            } else {
+              const p = row + x * (bitDepth / 8);
+              b = bytes[p];
+              g = bytes[p + 1];
+              r = bytes[p + 2];
+              if (bitDepth === 32 && hasAlpha) a = bytes[p + 3];
+            }
+            const mask = hasMask && Boolean(bytes[maskRow + (x >> 3)] & (1 << (7 - (x % 8))));
+            if (!(bitDepth === 32 && hasAlpha) && mask) {
+              a = 0;
+              if (r || g || b) hasInversion = true;
+            }
+            rgba[at] = r;
+            rgba[at + 1] = g;
+            rgba[at + 2] = b;
+            rgba[at + 3] = a;
+          }
+        }
+        if (hasInversion)
+          warnings.push(
+            "此图层含 AND=1 且 XOR 非黑的传统背景运算；预览与 PNG 将其近似为透明，不模拟背景反色。"
+          );
+        return { width, height, bitDepth, rgba, warnings };
+      }
+      function parseIco(input) {
+        const bytes = icoBytes(input);
+        if (bytes.length > ICO_LIMITS.file)
+          throw new Error("文件超过 20 MiB，请选择较小的 ICO 或 CUR。");
+        if (bytes.length < 6) throw new Error("文件头不足 6 字节，无法识别 ICO/CUR。");
+        const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+        const kind = view.getUint16(2, true),
+          count = view.getUint16(4, true);
+        if (view.getUint16(0, true) !== 0 || ![1, 2].includes(kind))
+          throw new Error("文件二进制标识不是有效的 ICO 或 CUR。");
+        if (!count || count > ICO_LIMITS.entries) throw new Error("图层数必须在 1–256 之间。");
+        const directoryEnd = 6 + count * 16;
+        if (bytes.length < directoryEnd) throw new Error("图层目录已截断，无法安全读取文件。");
+        const entries = [];
+        let totalPixels = 0;
+        for (let i = 0; i < count; i++) {
+          const at = 6 + i * 16;
+          const entry = {
+            index: i + 1,
+            width: bytes[at] || 256,
+            height: bytes[at + 1] || 256,
+            encoding: "DIB",
+            bitDepth: 0,
+            error: "",
+            warnings: []
+          };
+          totalPixels += entry.width * entry.height;
+          if (totalPixels > ICO_LIMITS.pixels)
+            throw new Error("文件聚合像素超过 4,194,304 上限，请减少图层后再查看。");
+          if (kind === 2) {
+            entry.hotspotX = view.getUint16(at + 4, true);
+            entry.hotspotY = view.getUint16(at + 6, true);
+          }
+          const length = view.getUint32(at + 8, true),
+            offset = view.getUint32(at + 12, true);
+          entry.length = length;
+          entry.offset = offset;
+          try {
+            if (bytes[at + 3] !== 0) throw new Error("目录保留字节不为 0。");
+            if (
+              !length ||
+              offset < directoryEnd ||
+              offset > bytes.length ||
+              length > bytes.length - offset
+            )
+              throw new Error("图层 offset/length 越界或指向目录。");
+            if (kind === 2 && (entry.hotspotX >= entry.width || entry.hotspotY >= entry.height))
+              throw new Error("CUR 光标热点超出该图层范围。");
+            entry.bytes = bytes.subarray(offset, offset + length);
+            if (isPng(entry.bytes)) {
+              entry.encoding = "PNG";
+              Object.assign(entry, validatePng(entry.bytes, entry));
+            } else {
+              const info = readDibInfo(entry);
+              entry.bitDepth = info.bitDepth;
+            }
+            if (kind === 1) {
+              const directoryPlanes = view.getUint16(at + 4, true),
+                directoryDepth = view.getUint16(at + 6, true);
+              if (directoryPlanes > 1)
+                entry.warnings.push("目录 planes 与常规单平面不符，以图层内部头为准。");
+              if (directoryDepth && directoryDepth !== entry.bitDepth)
+                entry.warnings.push("目录位深与图层内部头不一致，以实际图层位深为准。");
+            }
+          } catch (error) {
+            entry.error = error.message || "图层解析失败。";
+          }
+          entries.push(entry);
+        }
+        return { type: kind === 1 ? "ICO" : "CUR", entries, totalPixels };
+      }
+      function crc32(bytes) {
+        let crc = 0xffffffff;
+        for (const byte of bytes) {
+          crc ^= byte;
+          for (let i = 0; i < 8; i++) crc = (crc >>> 1) ^ (crc & 1 ? 0xedb88320 : 0);
+        }
+        return (crc ^ 0xffffffff) >>> 0;
+      }
+      function safeIcoBase(name) {
+        const base = String(name || "icon")
+          .split(/[\\/]/)
+          .pop()
+          .replace(/\.[^.]*$/, "")
+          .replace(/[<>:"/\\|?*\u0000-\u001f\u007f]/g, "-")
+          .replace(/^[. ]+|[. ]+$/g, "");
+        return Array.from(base || "icon")
+          .slice(0, 80)
+          .join("");
+      }
+      function frameFilename(name, entry) {
+        return (
+          safeIcoBase(name) +
+          "-layer-" +
+          String(entry.index).padStart(3, "0") +
+          "-" +
+          entry.width +
+          "x" +
+          entry.height +
+          "-" +
+          entry.bitDepth +
+          "bit.png"
+        );
+      }
+      function buildZip(files) {
+        if (!files.length || files.length > ICO_LIMITS.entries)
+          throw new Error("ZIP 需要 1–256 个成功图层。");
+        const encoder = new TextEncoder();
+        const records = files.map((file) => {
+          const name = encoder.encode(file.name),
+            bytes = icoBytes(file.bytes);
+          if (!name.length || name.length > 65535 || /[\\/\u0000-\u001f]|^\.{1,2}$/.test(file.name))
+            throw new Error("ZIP 文件名无效。");
+          return { name, bytes, crc: crc32(bytes), offset: 0 };
+        });
+        if (new Set(files.map((file) => file.name)).size !== files.length)
+          throw new Error("ZIP 文件名重复。");
+        const localSize = records.reduce(
+          (sum, file) => sum + 30 + file.name.length + file.bytes.length,
+          0
+        );
+        const centralSize = records.reduce((sum, file) => sum + 46 + file.name.length, 0);
+        const output = new Uint8Array(localSize + centralSize + 22),
+          view = new DataView(output.buffer);
+        let position = 0;
+        for (const file of records) {
+          file.offset = position;
+          view.setUint32(position, 0x04034b50, true);
+          view.setUint16(position + 4, 20, true);
+          view.setUint16(position + 6, 0x800, true);
+          view.setUint16(position + 12, 0x21, true);
+          view.setUint32(position + 14, file.crc, true);
+          view.setUint32(position + 18, file.bytes.length, true);
+          view.setUint32(position + 22, file.bytes.length, true);
+          view.setUint16(position + 26, file.name.length, true);
+          output.set(file.name, position + 30);
+          output.set(file.bytes, position + 30 + file.name.length);
+          position += 30 + file.name.length + file.bytes.length;
+        }
+        const centralOffset = position;
+        for (const file of records) {
+          view.setUint32(position, 0x02014b50, true);
+          view.setUint16(position + 4, 20, true);
+          view.setUint16(position + 6, 20, true);
+          view.setUint16(position + 8, 0x800, true);
+          view.setUint16(position + 14, 0x21, true);
+          view.setUint32(position + 16, file.crc, true);
+          view.setUint32(position + 20, file.bytes.length, true);
+          view.setUint32(position + 24, file.bytes.length, true);
+          view.setUint16(position + 28, file.name.length, true);
+          view.setUint32(position + 42, file.offset, true);
+          output.set(file.name, position + 46);
+          position += 46 + file.name.length;
+        }
+        view.setUint32(position, 0x06054b50, true);
+        view.setUint16(position + 8, records.length, true);
+        view.setUint16(position + 10, records.length, true);
+        view.setUint32(position + 12, centralSize, true);
+        view.setUint32(position + 16, centralOffset, true);
+        return output;
+      }
+      function makeIcoExample() {
+        const sizes = [16, 32, 48];
+        const payloads = sizes.map((size, index) => {
+          const stride = size * 4,
+            maskStride = Math.ceil(size / 32) * 4;
+          const bytes = new Uint8Array(40 + (stride + maskStride) * size),
+            view = new DataView(bytes.buffer);
+          view.setUint32(0, 40, true);
+          view.setInt32(4, size, true);
+          view.setInt32(8, size * 2, true);
+          view.setUint16(12, 1, true);
+          view.setUint16(14, 32, true);
+          for (let y = 0; y < size; y++)
+            for (let x = 0; x < size; x++) {
+              const inside =
+                x >= size / 4 && x < (size * 3) / 4 && y >= size / 4 && y < (size * 3) / 4;
+              const at = 40 + (size - y - 1) * stride + x * 4;
+              bytes.set(inside ? [130 + index * 20, 92, 42, 255] : [0, 0, 0, 0], at);
+            }
+          return { size, bytes };
+        });
+        const bytes = new Uint8Array(
+            6 + payloads.length * 16 + payloads.reduce((sum, item) => sum + item.bytes.length, 0)
+          ),
+          view = new DataView(bytes.buffer);
+        view.setUint16(2, 1, true);
+        view.setUint16(4, payloads.length, true);
+        let offset = 6 + payloads.length * 16;
+        payloads.forEach((item, i) => {
+          const at = 6 + i * 16;
+          bytes[at] = item.size;
+          bytes[at + 1] = item.size;
+          view.setUint16(at + 4, 1, true);
+          view.setUint16(at + 6, 32, true);
+          view.setUint32(at + 8, item.bytes.length, true);
+          view.setUint32(at + 12, offset, true);
+          bytes.set(item.bytes, offset);
+          offset += item.bytes.length;
+        });
+        return bytes;
       }
 
-      const savedTheme = localStorage.getItem("theme") || "dark";
-      document.documentElement.setAttribute("data-theme", savedTheme);
-      updateThemeUI(savedTheme);
-
-      // File Handling
-      const dropZone = document.getElementById("dropZone");
-      ["dragenter", "dragover", "dragleave", "drop"].forEach((evt) => {
-        dropZone.addEventListener(
-          evt,
-          (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-          },
-          false
+      // Bind ico interface
+      const icoState = {
+        revision: 0,
+        fileName: "",
+        parsed: null,
+        frames: [],
+        selectedIndex: -1,
+        ready: false,
+        busy: false,
+        urls: new Set()
+      };
+      const icoElements = Object.fromEntries(
+        [
+          "fileInput",
+          "dropZone",
+          "loadExample",
+          "clearFile",
+          "fileStatus",
+          "fileSummary",
+          "layerList",
+          "previewCanvas",
+          "previewEmpty",
+          "selectedInfo",
+          "backgroundSelect",
+          "zoomSelect",
+          "pixelMode",
+          "downloadPng",
+          "copyPng",
+          "downloadZip",
+          "actionStatus"
+        ].map((id) => [id, document.getElementById(id)])
+      );
+      function icoStatus(message, error = false, target = icoElements.fileStatus) {
+        target.textContent = message;
+        target.dataset.state = error ? "error" : "normal";
+      }
+      function resetIcoState() {
+        icoState.revision += 1;
+        icoState.fileName = "";
+        icoState.parsed = null;
+        icoState.frames = [];
+        icoState.selectedIndex = -1;
+        icoState.ready = false;
+        icoState.busy = false;
+        for (const url of icoState.urls) URL.revokeObjectURL(url);
+        icoState.urls.clear();
+        icoElements.layerList.replaceChildren();
+        icoElements.fileSummary.textContent = "尚未选择文件";
+        icoElements.selectedInfo.textContent = "选择图层后查看详细信息";
+        icoElements.previewCanvas.hidden = true;
+        icoElements.previewCanvas.width = 1;
+        icoElements.previewCanvas.height = 1;
+        icoElements.previewEmpty.hidden = false;
+        icoElements.previewEmpty.textContent = "选择一个 ICO 或 CUR 文件，查看其中的图层。";
+        icoElements.downloadPng.disabled = true;
+        icoElements.copyPng.disabled = true;
+        icoElements.downloadZip.disabled = true;
+        icoElements.fileInput.value = "";
+        icoStatus("");
+        icoStatus("", false, icoElements.actionStatus);
+        icoElements.layerList.setAttribute("aria-busy", "false");
+      }
+      function selectedIcoFrame() {
+        return icoState.frames[icoState.selectedIndex];
+      }
+      function syncIcoActions() {
+        const frame = selectedIcoFrame(),
+          canExport = icoState.ready && !icoState.busy;
+        icoElements.downloadPng.disabled = !(canExport && frame && frame.status === "success");
+        icoElements.copyPng.disabled = icoElements.downloadPng.disabled;
+        icoElements.downloadZip.disabled = !(
+          canExport && icoState.frames.some((item) => item.status === "success")
         );
-      });
-
-      dropZone.addEventListener("dragover", () => dropZone.classList.add("dragover"));
-      dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragover"));
-      dropZone.addEventListener("drop", (e) => {
-        dropZone.classList.remove("dragover");
-        handleFiles(e.dataTransfer.files[0]);
-      });
-
-      async function handleFiles(file) {
-        if (!file) return;
-        const errorMsg = document.getElementById("errorStatus");
-        errorMsg.classList.add("hidden");
-
-        const ext = file.name.split(".").pop().toLowerCase();
-        if (ext !== "ico" && ext !== "cur") {
-          errorMsg.textContent = "请上传 .ico 或 .cur 格式的文件";
-          errorMsg.classList.remove("hidden");
+      }
+      function renderIcoLayers() {
+        const focused = icoElements.layerList.contains(document.activeElement)
+          ? document.activeElement.dataset.layerIndex
+          : null;
+        icoElements.layerList.replaceChildren();
+        for (let i = 0; i < icoState.frames.length; i++) {
+          const frame = icoState.frames[i],
+            entry = frame.entry;
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "layer-row";
+          button.dataset.layerIndex = String(entry.index);
+          button.setAttribute("role", "option");
+          button.setAttribute("aria-selected", String(i === icoState.selectedIndex));
+          button.tabIndex =
+            i === icoState.selectedIndex || (icoState.selectedIndex < 0 && i === 0) ? 0 : -1;
+          const number = document.createElement("span");
+          number.className = "layer-number";
+          number.textContent = String(entry.index).padStart(2, "0");
+          const information = document.createElement("span");
+          information.className = "layer-information";
+          const title = document.createElement("strong");
+          title.textContent = entry.width + " × " + entry.height;
+          const detail = document.createElement("span");
+          detail.textContent =
+            entry.encoding +
+            (entry.bitDepth ? " · " + entry.bitDepth + " 位" : "") +
+            (icoState.parsed.type === "CUR"
+              ? " · 热点 " + entry.hotspotX + "," + entry.hotspotY
+              : "");
+          const status = document.createElement("span");
+          status.className = "layer-status";
+          status.dataset.state = frame.status;
+          status.textContent =
+            frame.status === "success" ? "可导出" : frame.status === "error" ? "失败" : "读取中";
+          information.append(title, detail);
+          button.append(number, information, status);
+          button.addEventListener("click", () => selectIcoLayer(i));
+          button.addEventListener("keydown", (event) => {
+            let next;
+            if (event.key === "ArrowDown") next = (i + 1) % icoState.frames.length;
+            if (event.key === "ArrowUp")
+              next = (i - 1 + icoState.frames.length) % icoState.frames.length;
+            if (event.key === "Home") next = 0;
+            if (event.key === "End") next = icoState.frames.length - 1;
+            if (next !== undefined) {
+              event.preventDefault();
+              selectIcoLayer(next);
+              icoElements.layerList
+                .querySelector('[data-layer-index="' + icoState.frames[next].entry.index + '"]')
+                .focus();
+            }
+          });
+          icoElements.layerList.append(button);
+        }
+        if (focused)
+          icoElements.layerList
+            .querySelector('[data-layer-index="' + focused + '"]')
+            ?.focus({ preventScroll: true });
+      }
+      function drawIcoPreview() {
+        const frame = selectedIcoFrame();
+        if (!frame) return;
+        const canvas = icoElements.previewCanvas;
+        if (frame.status !== "success") {
+          canvas.hidden = true;
+          icoElements.previewEmpty.hidden = false;
+          icoElements.previewEmpty.textContent = frame.error || "此图层正在读取。";
           return;
         }
-
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-          try {
-            const buffer = e.target.result;
-            const view = new DataView(buffer);
-
-            // Header: Reserved(2), Type(2), Count(2)
-            const reserved = view.getUint16(0, true);
-            const type = view.getUint16(2, true);
-            const count = view.getUint16(4, true);
-
-            if (reserved !== 0 || (type !== 1 && type !== 2)) {
-              throw new Error("无效的 ICO/CUR 文件格式");
-            }
-
-            // Update Info
-            document.getElementById("fileInfo").classList.remove("hidden");
-            document.getElementById("infoName").textContent = file.name;
-            document.getElementById("infoSize").textContent = (file.size / 1024).toFixed(1) + " KB";
-            document.getElementById("infoCount").textContent = count;
-            document.getElementById("infoType").textContent = type === 1 ? "ICO" : "CUR";
-
-            const icons = [];
-            for (let i = 0; i < count; i++) {
-              const offset = 6 + i * 16;
-              const entry = {
-                width: view.getUint8(offset) || 256,
-                height: view.getUint8(offset + 1) || 256,
-                colorCount: view.getUint8(offset + 2),
-                bitCount: view.getUint16(offset + 6, true),
-                bytesInRes: view.getUint32(offset + 8, true),
-                imageOffset: view.getUint32(offset + 12, true)
-              };
-
-              const imgData = new Uint8Array(buffer, entry.imageOffset, entry.bytesInRes);
-              entry.data = imgData;
-              entry.isPNG = imgData[0] === 0x89 && imgData[1] === 0x50; // PNG Magic Number
-              icons.push(entry);
-            }
-
-            icons.sort((a, b) => b.width * b.height - a.width * a.height);
-            renderIcons(icons);
-          } catch (err) {
-            errorMsg.textContent = err.message;
-            errorMsg.classList.remove("hidden");
-          }
-        };
-        reader.readAsArrayBuffer(file);
+        canvas.width = frame.entry.width;
+        canvas.height = frame.entry.height;
+        canvas.getContext("2d").drawImage(frame.canvas, 0, 0);
+        const scale = Number(icoElements.zoomSelect.value);
+        canvas.style.width = canvas.width * scale + "px";
+        canvas.style.height = canvas.height * scale + "px";
+        canvas.style.imageRendering = icoElements.pixelMode.checked ? "pixelated" : "auto";
+        canvas.hidden = false;
+        icoElements.previewEmpty.hidden = true;
       }
-
-      function renderIcons(icons) {
-        const grid = document.getElementById("iconsGrid");
-        grid.innerHTML = "";
-        grid.classList.remove("hidden");
-
-        icons.forEach((icon, idx) => {
-          const card = document.createElement("div");
-          card.className = "icon-card";
-
-          const preview = document.createElement("div");
-          preview.className = "icon-preview";
-
-          const canvas = document.createElement("canvas");
-          canvas.width = icon.width;
-          canvas.height = icon.height;
-          const ctx = canvas.getContext("2d");
-
-          if (icon.isPNG) {
-            const blob = new Blob([icon.data], { type: "image/png" });
-            const url = URL.createObjectURL(blob);
-            const img = new Image();
-            img.onload = () => {
-              ctx.drawImage(img, 0, 0);
-              const displayImg = document.createElement("img");
-              displayImg.src = url;
-              preview.appendChild(displayImg);
-            };
-            img.src = url;
-          } else {
-            renderBMPIcon(ctx, icon);
-            const displayImg = document.createElement("img");
-            displayImg.src = canvas.toDataURL("image/png");
-            preview.appendChild(displayImg);
-          }
-
-          card.innerHTML = `
-                <div class="icon-preview">${preview.innerHTML}</div>
-                <div class="icon-meta">
-                    <div class="icon-size">${icon.width} x ${icon.height}</div>
-                    <div class="icon-type">${icon.isPNG ? "PNG" : "BMP"} · ${icon.bitCount || "-"} bit</div>
-                </div>
-                <div class="icon-actions">
-                    <button class="btn-action" onclick="downloadIcon(${idx})">下载 PNG</button>
-                    <button class="btn-action" onclick="copyIcon(${idx}, this)">复制</button>
-                </div>
-            `;
-
-          // Store data for download
-          card.dataset.idx = idx;
-          card._iconData = icon;
-          grid.appendChild(card);
+      function selectIcoLayer(index) {
+        if (!icoState.frames[index]) return;
+        icoState.selectedIndex = index;
+        const frame = icoState.frames[index],
+          entry = frame.entry;
+        const detail = [
+          "图层 " + entry.index,
+          entry.width + " × " + entry.height + " px",
+          entry.encoding,
+          entry.bitDepth ? entry.bitDepth + " 位" : "未知位深"
+        ];
+        if (icoState.parsed.type === "CUR")
+          detail.push("热点 (" + entry.hotspotX + ", " + entry.hotspotY + ")");
+        if (frame.error) detail.push(frame.error);
+        if (frame.warnings && frame.warnings.length) detail.push(...frame.warnings);
+        icoElements.selectedInfo.textContent = detail.join("；");
+        icoElements.selectedInfo.dataset.state = frame.status === "error" ? "error" : "normal";
+        for (const button of icoElements.layerList.querySelectorAll("[data-layer-index]")) {
+          const selected = Number(button.dataset.layerIndex) === entry.index;
+          button.setAttribute("aria-selected", String(selected));
+          button.tabIndex = selected ? 0 : -1;
+        }
+        drawIcoPreview();
+        syncIcoActions();
+        icoStatus("", false, icoElements.actionStatus);
+      }
+      function canvasPngBlob(canvas) {
+        return new Promise((resolve, reject) => {
+          canvas.toBlob(
+            (blob) => (blob ? resolve(blob) : reject(new Error("当前浏览器无法编码 PNG。"))),
+            "image/png"
+          );
         });
       }
-
-      function renderBMPIcon(ctx, icon) {
-        const data = icon.data;
-        const view = new DataView(data.buffer, data.byteOffset, data.byteLength);
-        const headerSize = view.getUint32(0, true);
-        const bpp = view.getUint16(14, true);
-
-        const imageData = ctx.createImageData(icon.width, icon.height);
-        const pixels = imageData.data;
-
-        if (bpp === 32) {
-          for (let y = 0; y < icon.height; y++) {
-            for (let x = 0; x < icon.width; x++) {
-              const srcIdx = headerSize + ((icon.height - 1 - y) * icon.width + x) * 4;
-              const dstIdx = (y * icon.width + x) * 4;
-              pixels[dstIdx] = data[srcIdx + 2]; // R
-              pixels[dstIdx + 1] = data[srcIdx + 1]; // G
-              pixels[dstIdx + 2] = data[srcIdx]; // B
-              pixels[dstIdx + 3] = data[srcIdx + 3]; // A
+      function imageFromIcoPng(entry) {
+        return new Promise((resolve, reject) => {
+          const url = URL.createObjectURL(new Blob([entry.bytes], { type: "image/png" }));
+          icoState.urls.add(url);
+          const image = new Image();
+          const finish = () => {
+            URL.revokeObjectURL(url);
+            icoState.urls.delete(url);
+            image.onload = null;
+            image.onerror = null;
+          };
+          image.onload = () => {
+            try {
+              if (image.naturalWidth !== entry.width || image.naturalHeight !== entry.height)
+                throw new Error("PNG 解码尺寸与目录不一致。");
+              const canvas = document.createElement("canvas");
+              canvas.width = entry.width;
+              canvas.height = entry.height;
+              canvas.getContext("2d").drawImage(image, 0, 0);
+              finish();
+              resolve(canvas);
+            } catch (error) {
+              finish();
+              reject(error);
             }
-          }
-        } else if (bpp === 24) {
-          const rowSize = Math.ceil((icon.width * 3) / 4) * 4;
-          for (let y = 0; y < icon.height; y++) {
-            for (let x = 0; x < icon.width; x++) {
-              const srcIdx = headerSize + (icon.height - 1 - y) * rowSize + x * 3;
-              const dstIdx = (y * icon.width + x) * 4;
-              pixels[dstIdx] = data[srcIdx + 2];
-              pixels[dstIdx + 1] = data[srcIdx + 1];
-              pixels[dstIdx + 2] = data[srcIdx];
-              pixels[dstIdx + 3] = 255;
-            }
-          }
-        }
-        ctx.putImageData(imageData, 0, 0);
+          };
+          image.onerror = () => {
+            finish();
+            reject(new Error("浏览器无法解码 PNG 图层，数据可能损坏或格式不受支持。"));
+          };
+          image.src = url;
+        });
       }
-
-      window.downloadIcon = function (idx) {
-        const card = document.querySelectorAll(".icon-card")[idx];
-        const img = card.querySelector("img");
-        const a = document.createElement("a");
-        a.href = img.src;
-        a.download = `icon_${card.querySelector(".icon-size").textContent.replace(/ /g, "")}.png`;
-        a.click();
-      };
-
-      window.copyIcon = async function (idx, btn) {
-        const card = document.querySelectorAll(".icon-card")[idx];
-        const img = card.querySelector("img");
+      async function loadIcoFile(file) {
+        resetIcoState();
+        const revision = icoState.revision;
+        if (!file) return;
+        icoState.fileName = file.name || "icon.ico";
+        icoElements.fileSummary.textContent = icoState.fileName;
+        if (!Number.isFinite(file.size) || file.size < 6 || file.size > ICO_LIMITS.file) {
+          icoStatus("请选择 6 字节至 20 MiB 的 ICO 或 CUR 文件。", true);
+          return;
+        }
+        icoState.busy = true;
+        icoElements.layerList.setAttribute("aria-busy", "true");
+        icoStatus("正在读取文件…");
         try {
-          const response = await fetch(img.src);
-          const blob = await response.blob();
-          await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
-          const oldText = btn.textContent;
-          btn.textContent = "已复制!";
-          setTimeout(() => (btn.textContent = oldText), 2000);
-        } catch (err) {
-          alert("复制失败，请手动右键另存为");
+          const buffer = await file.arrayBuffer();
+          if (revision !== icoState.revision) return;
+          const parsed = parseIco(buffer);
+          icoState.parsed = parsed;
+          icoState.frames = parsed.entries.map((entry) => ({
+            entry,
+            status: "pending",
+            canvas: null,
+            pngBlob: null,
+            error: "",
+            warnings: [...entry.warnings]
+          }));
+          icoElements.fileSummary.textContent =
+            icoState.fileName +
+            " · " +
+            parsed.type +
+            " · " +
+            (file.size / 1024).toFixed(1) +
+            " KiB · " +
+            parsed.entries.length +
+            " 个目录图层";
+          renderIcoLayers();
+          icoStatus("正在逐层解码…");
+          for (let i = 0; i < icoState.frames.length; i++) {
+            if (revision !== icoState.revision) return;
+            const frame = icoState.frames[i],
+              entry = frame.entry;
+            try {
+              if (entry.error) throw new Error(entry.error);
+              let canvas;
+              if (entry.encoding === "PNG") canvas = await imageFromIcoPng(entry);
+              else {
+                const decoded = decodeDib(entry);
+                frame.warnings.push(...decoded.warnings);
+                canvas = document.createElement("canvas");
+                canvas.width = decoded.width;
+                canvas.height = decoded.height;
+                const context = canvas.getContext("2d"),
+                  pixels = context.createImageData(decoded.width, decoded.height);
+                pixels.data.set(decoded.rgba);
+                context.putImageData(pixels, 0, 0);
+              }
+              if (revision !== icoState.revision) return;
+              const blob = await canvasPngBlob(canvas);
+              if (revision !== icoState.revision) return;
+              frame.canvas = canvas;
+              frame.pngBlob = blob;
+              frame.status = "success";
+            } catch (error) {
+              if (revision !== icoState.revision) return;
+              frame.status = "error";
+              frame.error = error.message || "无法解码此图层。";
+            }
+            renderIcoLayers();
+          }
+          if (revision !== icoState.revision) return;
+          icoState.busy = false;
+          icoState.ready = true;
+          icoElements.layerList.setAttribute("aria-busy", "false");
+          const successes = icoState.frames.filter((frame) => frame.status === "success").length,
+            failed = icoState.frames.length - successes;
+          icoStatus(
+            successes
+              ? "已读取 " +
+                  successes +
+                  " 个可导出图层" +
+                  (failed ? "，另有 " + failed + " 个图层失败。选择失败层可查看原因。" : "。")
+              : "所有图层均无法解码，请在列表中查看原因。",
+            !successes
+          );
+          const first = icoState.frames.findIndex((frame) => frame.status === "success");
+          selectIcoLayer(first < 0 ? 0 : first);
+          syncIcoActions();
+        } catch (error) {
+          if (revision !== icoState.revision) return;
+          icoState.parsed = null;
+          icoState.frames = [];
+          icoState.busy = false;
+          icoState.ready = false;
+          icoElements.layerList.replaceChildren();
+          icoElements.layerList.setAttribute("aria-busy", "false");
+          syncIcoActions();
+          icoStatus(error.message || "无法读取文件，请重新选择 ICO 或 CUR。", true);
         }
-      };
+      }
+      function saveIcoBlob(blob, name) {
+        const url = URL.createObjectURL(blob);
+        icoState.urls.add(url);
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = name;
+        document.body.append(anchor);
+        anchor.click();
+        anchor.remove();
+        setTimeout(() => {
+          URL.revokeObjectURL(url);
+          icoState.urls.delete(url);
+        }, 1000);
+      }
+      icoElements.fileInput.addEventListener("change", () => {
+        const file = icoElements.fileInput.files[0];
+        if (file) loadIcoFile(file);
+      });
+      icoElements.dropZone.addEventListener("keydown", (event) => {
+        if (event.target === icoElements.dropZone && ["Enter", " "].includes(event.key)) {
+          event.preventDefault();
+          icoElements.fileInput.click();
+        }
+      });
+      ["dragenter", "dragover"].forEach((type) =>
+        icoElements.dropZone.addEventListener(type, (event) => {
+          event.preventDefault();
+          icoElements.dropZone.classList.add("drag-over");
+        })
+      );
+      ["dragleave", "drop"].forEach((type) =>
+        icoElements.dropZone.addEventListener(type, (event) => {
+          event.preventDefault();
+          icoElements.dropZone.classList.remove("drag-over");
+        })
+      );
+      icoElements.dropZone.addEventListener("drop", (event) => {
+        if (event.dataTransfer.files.length !== 1) {
+          resetIcoState();
+          icoStatus("一次请选择一个 ICO 或 CUR 文件。", true);
+          return;
+        }
+        loadIcoFile(event.dataTransfer.files[0]);
+      });
+      document.addEventListener("dragover", (event) => event.preventDefault());
+      document.addEventListener("drop", (event) => event.preventDefault());
+      icoElements.loadExample.addEventListener("click", () => {
+        const bytes = makeIcoExample();
+        loadIcoFile(new File([bytes], "example-layers.ico", { type: "image/x-icon" }));
+      });
+      icoElements.clearFile.addEventListener("click", () => {
+        resetIcoState();
+        icoStatus("已清空，选择文件可重新开始。");
+      });
+      icoElements.zoomSelect.addEventListener("change", drawIcoPreview);
+      icoElements.pixelMode.addEventListener("change", drawIcoPreview);
+      icoElements.backgroundSelect.addEventListener("change", () => {
+        document.getElementById("previewViewport").dataset.background =
+          icoElements.backgroundSelect.value;
+      });
+      icoElements.downloadPng.addEventListener("click", () => {
+        const frame = selectedIcoFrame();
+        if (!icoState.ready || icoState.busy || !frame || frame.status !== "success") return;
+        try {
+          saveIcoBlob(frame.pngBlob, frameFilename(icoState.fileName, frame.entry));
+          icoStatus("已准备下载当前图层的原始尺寸 PNG。", false, icoElements.actionStatus);
+        } catch {
+          icoStatus("浏览器无法启动下载，请尝试复制 PNG。", true, icoElements.actionStatus);
+        }
+      });
+      icoElements.copyPng.addEventListener("click", async () => {
+        const frame = selectedIcoFrame();
+        if (!icoState.ready || icoState.busy || !frame || frame.status !== "success") return;
+        const revision = icoState.revision,
+          selectedIndex = icoState.selectedIndex;
+        try {
+          if (!navigator.clipboard || !navigator.clipboard.write || !window.ClipboardItem)
+            throw new Error("unsupported");
+          await navigator.clipboard.write([
+            new window.ClipboardItem({ "image/png": frame.pngBlob })
+          ]);
+          if (revision !== icoState.revision || selectedIndex !== icoState.selectedIndex) return;
+          icoStatus("已复制当前 PNG 图层。", false, icoElements.actionStatus);
+        } catch {
+          if (revision !== icoState.revision || selectedIndex !== icoState.selectedIndex) return;
+          icoStatus(
+            "浏览器未允许复制图片，请使用“下载 PNG”保存当前图层。",
+            true,
+            icoElements.actionStatus
+          );
+        }
+      });
+      icoElements.downloadZip.addEventListener("click", async () => {
+        if (!icoState.ready || icoState.busy) return;
+        const revision = icoState.revision,
+          successful = icoState.frames.filter((frame) => frame.status === "success");
+        if (!successful.length) return;
+        icoState.busy = true;
+        syncIcoActions();
+        icoStatus("正在整理 PNG 图层…", false, icoElements.actionStatus);
+        try {
+          const files = [];
+          for (const frame of successful) {
+            const bytes = new Uint8Array(await frame.pngBlob.arrayBuffer());
+            if (revision !== icoState.revision) return;
+            files.push({ name: frameFilename(icoState.fileName, frame.entry), bytes });
+          }
+          const zip = buildZip(files);
+          if (revision !== icoState.revision) return;
+          saveIcoBlob(
+            new Blob([zip], { type: "application/zip" }),
+            safeIcoBase(icoState.fileName) + "-layers.zip"
+          );
+          icoStatus(
+            "已准备打包 " + successful.length + " 个成功图层；失败层未包含在 ZIP 中。",
+            false,
+            icoElements.actionStatus
+          );
+        } catch (error) {
+          if (revision !== icoState.revision) return;
+          icoStatus(error.message || "打包失败，请逐层下载 PNG。", true, icoElements.actionStatus);
+        } finally {
+          if (revision === icoState.revision) {
+            icoState.busy = false;
+            syncIcoActions();
+          }
+        }
+      });
+      const themeToggle = document.getElementById("themeToggle");
+      function applyIcoTheme(theme) {
+        document.documentElement.dataset.theme = theme === "dark" ? "dark" : "light";
+        themeToggle.textContent = theme === "dark" ? "浅色外观" : "深色外观";
+        themeToggle.setAttribute("aria-pressed", String(theme === "dark"));
+      }
+      let icoTheme = "light";
+      try {
+        icoTheme =
+          localStorage.getItem("webutils-ico-theme") ||
+          (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      } catch {
+        /* Appearance storage is optional. */
+      }
+      applyIcoTheme(icoTheme);
+      themeToggle.addEventListener("click", () => {
+        const theme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+        applyIcoTheme(theme);
+        try {
+          localStorage.setItem("webutils-ico-theme", theme);
+        } catch {
+          /* Keep appearance in memory. */
+        }
+      });
+      window.addEventListener("pagehide", () => {
+        icoState.revision += 1;
+        for (const url of icoState.urls) URL.revokeObjectURL(url);
+        icoState.urls.clear();
+      });
+      resetIcoState();
     </script>
-<!-- FAQ（GEO 优化）-->
-    
-<!-- Internal links: outgoing link audit fix -->
-      <nav class="related-links-section" aria-label="相关站内链接">
-        <h2>相关工具与导航</h2>
-        <div class="related-links-list">
-          <a href="/">WebUtils 首页</a>
-          <a href="/tools-directory">全部工具目录</a>
-          <a href="/tools-directory">media 工具分类</a>
-          <a href="/tools/media/favicon-generator">Favicon 生成器</a>
-          <a href="/tools/media/gif-maker">GIF制作</a>
-          <a href="/tools/media/gif-splitter">GIF分割</a>
-          <a href="/tools/media/id-photo">智能证件照制作</a>
-        </div>
-      </nav>
-      <style>
-        /* related-links centered */
-        .related-links-section {
-          width: min(960px, 92%);
-          margin: 40px auto 0;
-          padding: 24px 0 8px;
-          border-top: 1px solid var(--border-subtle, var(--border-color, #e5e7eb));
-          text-align: center;
-        }
-        .related-links-section h2 {
-          margin: 0 0 14px;
-          font-size: 1.15rem;
-          color: var(--text-primary, inherit);
-          text-align: center;
-        }
-        .related-links-list {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 10px;
-          justify-content: center;
-          align-items: center;
-        }
-        .related-links-list a {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          min-height: 36px;
-          padding: 8px 14px;
-          border: 1px solid var(--border-subtle, var(--border-color, #e5e7eb));
-          border-radius: var(--radius-md, 8px);
-          color: var(--accent-cyan, var(--accent-blue, var(--accent, #2563eb)));
-          background: var(--bg-card, rgba(255, 255, 255, 0.04));
-          text-decoration: none;
-          font-size: 0.92rem;
-          line-height: 1.3;
-        }
-        .related-links-list a:hover {
-          border-color: var(--border-strong, currentColor);
-          text-decoration: underline;
-        }
-      </style>
-
-  
-      
-
-
-      <!-- 折叠手风琴式工具导航 - 自动生成 -->
-      <section style="max-width: 960px; margin: 0 auto; padding: 0 24px;">
-        <div style="margin: 2.5rem 0; padding: 2rem; background: var(--bg-card, var(--card, #fff)); border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-lg, var(--radius, 12px)); box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);">
-        <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--text-primary, var(--text-main, #111)); text-align: center;">
-          🗂️ 按分类浏览更多工具
-        </h2>
-
-        <!-- 媒体工具 -->
-        <details style="margin-bottom: 12px; border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-md, 8px); overflow: hidden; background: var(--bg-elevated, var(--bg-card, #fff));">
-          <summary style="padding: 14px 18px; cursor: pointer; font-weight: 600; font-size: 0.95rem; color: var(--text-primary, var(--text-main, #111)); user-select: none; list-style: none; display: flex; align-items: center; justify-content: space-between; transition: background 0.2s;">
-            <span style="display: flex; align-items: center; gap: 10px;">
-              <span style="font-size: 1.3rem;">🖼️</span>
-              <span>媒体工具</span>
-              <span style="font-size: 0.8rem; color: var(--text-muted, var(--text-secondary, #999));">(12个)</span>
-            </span>
-            <span class="arrow" style="font-size: 0.8rem; color: var(--text-muted, var(--text-secondary, #999)); transition: transform 0.3s;">▼</span>
-          </summary>
-          <div style="padding: 16px 18px; display: flex; flex-wrap: wrap; gap: 10px; background: var(--bg-input, var(--bg-color, #f9f9f9)); border-top: 1px solid var(--border-color, var(--border, #e2e8f0));">
-            <a href="/tools/media/image-crop" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--bg-card, var(--card, #fff)); border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-sm, 6px); text-decoration: none; color: var(--text-primary, var(--text-main, #333)); font-size: 0.9rem; transition: all 0.2s;">
-              <span>✂</span><span>图片裁剪</span>
-            </a>
-            <a href="/tools/media/image-flip" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--bg-card, var(--card, #fff)); border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-sm, 6px); text-decoration: none; color: var(--text-primary, var(--text-main, #333)); font-size: 0.9rem; transition: all 0.2s;">
-              <span>🔄</span><span>在线图片翻转工具</span>
-            </a>
-            <a href="/tools/media/image-resizer" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--bg-card, var(--card, #fff)); border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-sm, 6px); text-decoration: none; color: var(--text-primary, var(--text-main, #333)); font-size: 0.9rem; transition: all 0.2s;">
-              <span>📐</span><span>图片尺寸调整工具</span>
-            </a>
-            <a href="/tools/media/image-format-converter" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--bg-card, var(--card, #fff)); border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-sm, 6px); text-decoration: none; color: var(--text-primary, var(--text-main, #333)); font-size: 0.9rem; transition: all 0.2s;">
-              <span>🔄</span><span>图片格式批量转换</span>
-            </a>
-            <a href="/tools/media/text-to-image" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--bg-card, var(--card, #fff)); border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-sm, 6px); text-decoration: none; color: var(--text-primary, var(--text-main, #333)); font-size: 0.9rem; transition: all 0.2s;">
-              <span>🔧</span><span>文字转图片</span>
-            </a>
-            <a href="/tools/media/image-stitcher" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--bg-card, var(--card, #fff)); border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-sm, 6px); text-decoration: none; color: var(--text-primary, var(--text-main, #333)); font-size: 0.9rem; transition: all 0.2s;">
-              <span>🎨</span><span>图片拼接器</span>
-            </a>
-            <a href="/tools/media/video-thumbnail" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--bg-card, var(--card, #fff)); border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-sm, 6px); text-decoration: none; color: var(--text-primary, var(--text-main, #333)); font-size: 0.9rem; transition: all 0.2s;">
-              <span>🎬</span><span>视频缩略图提取器</span>
-            </a>
-            <a href="/tools/media/color-extractor" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--bg-card, var(--card, #fff)); border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-sm, 6px); text-decoration: none; color: var(--text-primary, var(--text-main, #333)); font-size: 0.9rem; transition: all 0.2s;">
-              <span>🎨</span><span>在线图片颜色提取</span>
-            </a>
-            <a href="/tools/media/image-color-picker" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--bg-card, var(--card, #fff)); border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-sm, 6px); text-decoration: none; color: var(--text-primary, var(--text-main, #333)); font-size: 0.9rem; transition: all 0.2s;">
-              <span>🔧</span><span>图片颜色提取</span>
-            </a>
-            <a href="/tools/media/image-filter" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--bg-card, var(--card, #fff)); border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-sm, 6px); text-decoration: none; color: var(--text-primary, var(--text-main, #333)); font-size: 0.9rem; transition: all 0.2s;">
-              <span>✨</span><span>在线图片滤镜工具</span>
-            </a>
-            <a href="/tools/media/image-resize" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--bg-card, var(--card, #fff)); border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-sm, 6px); text-decoration: none; color: var(--text-primary, var(--text-main, #333)); font-size: 0.9rem; transition: all 0.2s;">
-              <span>⚖</span><span>图片压缩对比</span>
-            </a>
-            <a href="/tools/media/text-to-speech" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--bg-card, var(--card, #fff)); border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-sm, 6px); text-decoration: none; color: var(--text-primary, var(--text-main, #333)); font-size: 0.9rem; transition: all 0.2s;">
-              <span>🔊</span><span>文字转语音</span>
-            </a>
-          </div>
-        </details>
-
-        <!-- 提取器 -->
-        <details style="margin-bottom: 12px; border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-md, 8px); overflow: hidden; background: var(--bg-elevated, var(--bg-card, #fff));">
-          <summary style="padding: 14px 18px; cursor: pointer; font-weight: 600; font-size: 0.95rem; color: var(--text-primary, var(--text-main, #111)); user-select: none; list-style: none; display: flex; align-items: center; justify-content: space-between; transition: background 0.2s;">
-            <span style="display: flex; align-items: center; gap: 10px;">
-              <span style="font-size: 1.3rem;">📤</span>
-              <span>提取器</span>
-              <span style="font-size: 0.8rem; color: var(--text-muted, var(--text-secondary, #999));">(4个)</span>
-            </span>
-            <span class="arrow" style="font-size: 0.8rem; color: var(--text-muted, var(--text-secondary, #999)); transition: transform 0.3s;">▼</span>
-          </summary>
-          <div style="padding: 16px 18px; display: flex; flex-wrap: wrap; gap: 10px; background: var(--bg-input, var(--bg-color, #f9f9f9)); border-top: 1px solid var(--border-color, var(--border, #e2e8f0));">
-            <a href="/tools/extractor/favicon-extractor" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--bg-card, var(--card, #fff)); border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-sm, 6px); text-decoration: none; color: var(--text-primary, var(--text-main, #333)); font-size: 0.9rem; transition: all 0.2s;">
-              <span>🎯</span><span>网站图标提取器</span>
-            </a>
-            <a href="/tools/extractor/link-extractor" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--bg-card, var(--card, #fff)); border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-sm, 6px); text-decoration: none; color: var(--text-primary, var(--text-main, #333)); font-size: 0.9rem; transition: all 0.2s;">
-              <span>🔗</span><span>链接提取器</span>
-            </a>
-            <a href="/tools/extractor/regex-extractor" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--bg-card, var(--card, #fff)); border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-sm, 6px); text-decoration: none; color: var(--text-primary, var(--text-main, #333)); font-size: 0.9rem; transition: all 0.2s;">
-              <span>🔍</span><span>正则提取器</span>
-            </a>
-            <a href="/tools/extractor/text-extractor" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--bg-card, var(--card, #fff)); border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-sm, 6px); text-decoration: none; color: var(--text-primary, var(--text-main, #333)); font-size: 0.9rem; transition: all 0.2s;">
-              <span>📤</span><span>文本信息提取器</span>
-            </a>
-          </div>
-        </details>
-
-        <!-- 运动健身 -->
-        <details style="margin-bottom: 12px; border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-md, 8px); overflow: hidden; background: var(--bg-elevated, var(--bg-card, #fff));">
-          <summary style="padding: 14px 18px; cursor: pointer; font-weight: 600; font-size: 0.95rem; color: var(--text-primary, var(--text-main, #111)); user-select: none; list-style: none; display: flex; align-items: center; justify-content: space-between; transition: background 0.2s;">
-            <span style="display: flex; align-items: center; gap: 10px;">
-              <span style="font-size: 1.3rem;">⚽</span>
-              <span>运动健身</span>
-              <span style="font-size: 0.8rem; color: var(--text-muted, var(--text-secondary, #999));">(3个)</span>
-            </span>
-            <span class="arrow" style="font-size: 0.8rem; color: var(--text-muted, var(--text-secondary, #999)); transition: transform 0.3s;">▼</span>
-          </summary>
-          <div style="padding: 16px 18px; display: flex; flex-wrap: wrap; gap: 10px; background: var(--bg-input, var(--bg-color, #f9f9f9)); border-top: 1px solid var(--border-color, var(--border, #e2e8f0));">
-            <a href="/tools/sports/running-pace" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--bg-card, var(--card, #fff)); border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-sm, 6px); text-decoration: none; color: var(--text-primary, var(--text-main, #333)); font-size: 0.9rem; transition: all 0.2s;">
-              <span>🔧</span><span>跑步配速计算</span>
-            </a>
-            <a href="/tools/sports/calories-burned" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--bg-card, var(--card, #fff)); border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-sm, 6px); text-decoration: none; color: var(--text-primary, var(--text-main, #333)); font-size: 0.9rem; transition: all 0.2s;">
-              <span>🔧</span><span>运动卡路里计算</span>
-            </a>
-            <a href="/tools/sports/score-keeper" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--bg-card, var(--card, #fff)); border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-sm, 6px); text-decoration: none; color: var(--text-primary, var(--text-main, #333)); font-size: 0.9rem; transition: all 0.2s;">
-              <span>🏆</span><span>比分记录器</span>
-            </a>
-          </div>
-        </details>
-
-        <!-- 育儿工具 -->
-        <details style="margin-bottom: 12px; border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-md, 8px); overflow: hidden; background: var(--bg-elevated, var(--bg-card, #fff));">
-          <summary style="padding: 14px 18px; cursor: pointer; font-weight: 600; font-size: 0.95rem; color: var(--text-primary, var(--text-main, #111)); user-select: none; list-style: none; display: flex; align-items: center; justify-content: space-between; transition: background 0.2s;">
-            <span style="display: flex; align-items: center; gap: 10px;">
-              <span style="font-size: 1.3rem;">👶</span>
-              <span>育儿工具</span>
-              <span style="font-size: 0.8rem; color: var(--text-muted, var(--text-secondary, #999));">(3个)</span>
-            </span>
-            <span class="arrow" style="font-size: 0.8rem; color: var(--text-muted, var(--text-secondary, #999)); transition: transform 0.3s;">▼</span>
-          </summary>
-          <div style="padding: 16px 18px; display: flex; flex-wrap: wrap; gap: 10px; background: var(--bg-input, var(--bg-color, #f9f9f9)); border-top: 1px solid var(--border-color, var(--border, #e2e8f0));">
-            <a href="/tools/parenting/baby-food" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--bg-card, var(--card, #fff)); border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-sm, 6px); text-decoration: none; color: var(--text-primary, var(--text-main, #333)); font-size: 0.9rem; transition: all 0.2s;">
-              <span>🔧</span><span>婴儿辅食指南</span>
-            </a>
-            <a href="/tools/parenting/growth-tracker" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--bg-card, var(--card, #fff)); border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-sm, 6px); text-decoration: none; color: var(--text-primary, var(--text-main, #333)); font-size: 0.9rem; transition: all 0.2s;">
-              <span>👶</span><span>儿童生长曲线</span>
-            </a>
-            <a href="/tools/parenting/baby-sleep-tracker" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--bg-card, var(--card, #fff)); border: 1px solid var(--border-color, var(--border, #e2e8f0)); border-radius: var(--radius-sm, 6px); text-decoration: none; color: var(--text-primary, var(--text-main, #333)); font-size: 0.9rem; transition: all 0.2s;">
-              <span>👶</span><span>宝宝睡眠记录</span>
-            </a>
-          </div>
-        </details>
-
-        <!-- 查看全部工具 -->
-        <div style="margin-top: 1.5rem; text-align: center; padding-top: 1.5rem; border-top: 1px solid var(--border-color, var(--border, #e2e8f0));">
-          <a href="/tools-directory" style="display: inline-flex; align-items: center; gap: 10px; padding: 12px 24px; background: var(--accent, var(--primary-color, #3b82f6)); color: white; text-decoration: none; border-radius: var(--radius-md, var(--radius, 8px)); font-weight: 600; font-size: 0.95rem; transition: all 0.2s; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);">
-            <span>📚</span>
-            <span>查看全部 1000+ 工具</span>
-          </a>
-        </div>
-        </div>
-      </section>
-
-      <style>
-        /* 折叠手风琴样式增强 */
-        details[open] summary .arrow {
-          transform: rotate(180deg);
-        }
-        details summary:hover {
-          background: var(--bg-input, var(--bg-color, #f9f9f9));
-        }
-        details a:hover {
-          border-color: var(--accent, var(--primary-color, #3b82f6)) !important;
-          color: var(--accent, var(--primary-color, #3b82f6)) !important;
-          transform: translateY(-1px);
-        }
-        a[href="/tools-directory"]:hover {
-          opacity: 0.9;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
-        }
-      </style>
-
-<footer class="site-footer">
-  <nav data-site-policy-links aria-label="网站政策" style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px 20px;margin:16px auto;padding:0 16px;font-size:14px">
-    <a href="/about">关于本站</a>
-    <a href="/contact">联系我们</a>
-    <a href="/terms">使用条款</a>
-    <a href="/privacy-policy">隐私政策</a>
-  </nav>
-</footer>
-</body>
+  </body>
 </html>
